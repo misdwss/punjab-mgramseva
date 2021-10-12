@@ -741,12 +741,14 @@ public class SchedulerService {
 										tenantId, Arrays.asList("COLLECTION_OPERATOR"));
 								Map<String, String> mobileNumberIdMap = new LinkedHashMap<>();
 
-								for (UserInfo userInfo : userDetailResponse.getUser())
+								for (UserInfo userInfo : userDetailResponse.getUser()) {
+									System.out.println("TODAY Coll User Info::" + userInfo);
 									if (userInfo.getName() != null) {
 										mobileNumberIdMap.put(userInfo.getMobileNumber(), userInfo.getName());
 									} else {
 										mobileNumberIdMap.put(userInfo.getMobileNumber(), userInfo.getUserName());
 									}
+								}
 								mobileNumberIdMap.entrySet().stream().forEach(map -> {
 									if (!messages.isEmpty()) {
 										String uuidUsername = map.getValue();
