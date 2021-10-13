@@ -32,5 +32,11 @@ public class FeedbackSearchCriteria {
 	
 	private Long limit;
 	
+	@JsonProperty("fromDate")
+	private Long fromDate = null;
+
+	@JsonProperty("toDate")
+	private Long toDate = null;
+	
 	
 }
