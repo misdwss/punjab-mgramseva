@@ -10,7 +10,7 @@ spec:
         spec:
           containers:
           - name: fortnightevening
-            image: talele08/api-cronjob-image-4
+            image: mgramseva/api-cronjob-image-4
             command: ["python3","cronJobAPIConfig.py"]
             args: ["fortnightevening"]  
             env:
