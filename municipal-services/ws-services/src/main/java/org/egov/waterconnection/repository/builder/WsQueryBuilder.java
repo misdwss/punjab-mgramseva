@@ -387,6 +387,17 @@ public class WsQueryBuilder {
 			preparedStatementValues.add(feedBackSearchCriteira.getConnectionNo());
 		}
 		
+		if (feedBackSearchCriteira.getFromDate() != null) {
+			addClauseIfRequired(preparedStatementValues, query);
+			query.append(" createdTime >= ? ");
+			preparedStatementValues.add(feedBackSearchCriteira.getFromDate());
+		}
+		if (feedBackSearchCriteira.getToDate() != null) {
+			addClauseIfRequired(preparedStatementValues, query);
+			query.append(" createdTime <= ? ");
+			preparedStatementValues.add(feedBackSearchCriteira.getToDate());
+		}
+		
 		if(feedBackSearchCriteira.getOffset()!=null) {
 			
 			query.append(" offset ? ");
