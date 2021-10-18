@@ -373,8 +373,9 @@ public class WaterServiceImpl implements WaterService {
 			for (Map.Entry<Object,Double> entry : feedbackGroupByCode.entrySet()) {
 				returnMap.put(entry.getKey().toString(), entry.getValue().intValue());
 			}
+			returnMap.put("count", feedbackList.size());
 		}
-		returnMap.put("count", feedbackList.size());
+		
 		return returnMap;
 	}
 	
