@@ -8,6 +8,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.validation.Valid;
+
 import org.egov.common.contract.request.RequestInfo;
 import org.egov.echallan.config.ChallanConfiguration;
 import org.egov.echallan.model.Challan;
@@ -266,6 +268,24 @@ public class ChallanRepository {
 				.append(endDate).append(" and py.tenantId = '").append(tenantId).append("'");
 		return jdbcTemplate.queryForObject(query.toString(), Integer.class);
 
+	}
+
+
+	public Integer getTotalExpense(@Valid SearchCriteria criteria) {
+		StringBuilder query = new StringBuilder(queryBuilder.PREVIOUSMONTHNEWEXPENSE);
+		query.append("  WHERE  CHALLAN.BILLISSUEDDATE BETWEEN ").append(criteria.getFromDate()).append(" and  ")
+				.append(criteria.getToDate()).append(" and CHALLAN.TENANTID = '").append(criteria.getTenantId()).append("'");
+		return jdbcTemplate.queryForObject(query.toString(), Integer.class);
+	}
+
+
+	public Integer getPaidAmountDetails(@Valid SearchCriteria criteria) {
+	StringBuilder query = new StringBuilder(queryBuilder.PREVIOUSMONTHEXPPAYMENT);
+		
+		query.append( " and PAYMTDTL.receiptdate  >= ").append( criteria.getFromDate())  
+		.append(" and  PAYMTDTL.receiptdate <= " ).append(criteria.getToDate()); 
+		log.info("Previous month expense paid query : " + query);
+		return jdbcTemplate.queryForObject(query.toString(), Integer.class);
 	}
 	
     

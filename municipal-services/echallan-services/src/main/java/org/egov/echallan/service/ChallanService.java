@@ -12,6 +12,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import javax.validation.Valid;
+
 import org.egov.common.contract.request.RequestInfo;
 import org.egov.echallan.expense.service.PaymentService;
 import org.egov.echallan.expense.validator.ExpenseValidator;
@@ -23,6 +25,7 @@ import org.egov.echallan.model.SearchCriteria;
 import org.egov.echallan.repository.ChallanRepository;
 import org.egov.echallan.util.CommonUtils;
 import org.egov.echallan.validator.ChallanValidator;
+import org.egov.echallan.web.models.ExpenseDashboard;
 import org.egov.echallan.web.models.user.UserDetailResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -234,6 +237,25 @@ public class ChallanService {
 		StringBuilder monthYearBuilder = new StringBuilder(localDateTime.getMonth().toString()).append(" ").append(monthYear);
 
 		return monthYearBuilder.toString() ;
+	}
+
+	public ExpenseDashboard getExpenseDashboardData(@Valid SearchCriteria criteria, RequestInfo requestInfo) {
+		ExpenseDashboard dashboardData = new ExpenseDashboard();
+		String tenantId = criteria.getTenantId();
+		Integer totalExpenses = repository.getTotalExpense(criteria);
+		if (null != totalExpenses) {
+			dashboardData.setTotalExpenditure(totalExpenses.toString());
+		}
+		Integer paidAmount = repository.getPaidAmountDetails(criteria);
+		if (null != paidAmount) {
+			dashboardData.setAmountPaid(paidAmount.toString());
+		}
+		if (totalExpenses != null && paidAmount != null) {
+			Integer amountUnpaid = totalExpenses - paidAmount;
+			dashboardData.setAmountUnpaid(tenantId);
+		}
+
+		return dashboardData;
 	}
 	
 }
