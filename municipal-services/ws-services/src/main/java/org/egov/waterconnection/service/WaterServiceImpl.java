@@ -336,8 +336,7 @@ public class WaterServiceImpl implements WaterService {
 		// TODO Auto-generated method stub
 		List<Feedback> feedbackList = waterDaoImpl.getFeebback(feedbackSearchCriteria);
 
-	Object data=	getFeedBackRatingsAvarage(feedbackList);
-
+		Object data = getFeedBackRatingsAvarage(feedbackList);
 		return data;
 	}
 
@@ -375,7 +374,7 @@ public class WaterServiceImpl implements WaterService {
 				returnMap.put(entry.getKey().toString(), entry.getValue().intValue());
 			}
 		}
-
+		returnMap.put("count", feedbackList.size());
 		return returnMap;
 	}
 	
