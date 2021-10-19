@@ -165,7 +165,7 @@ class _Dashboard extends State<Dashboard> with SingleTickerProviderStateMixin {
                                     visible: dashBoardProvider.selectedMonth.dateType == DateType.MONTH,
                                     child: Padding(
                                       padding: const EdgeInsets.only(top: 5),
-                                      child: GridViewBuilder(gridList: a, physics: NeverScrollableScrollPhysics()),
+                                      child: GridViewBuilder(gridList: [], physics: NeverScrollableScrollPhysics()),
                                     )
                                 )
                               ])),
@@ -443,14 +443,3 @@ class _Dashboard extends State<Dashboard> with SingleTickerProviderStateMixin {
   }
 
 }
-
-var a = [
-  Metric(label: '700', value: 'Total Expenditure', type: 'amount'),
-  Metric(label: '700', value: 'Total Expenditure', type: 'amount'),
-  Metric(label: '700', value: 'Total Expenditure', type: 'amount'),
-  Metric(label: '700', value: 'Total Expenditure', type: 'amount'),
-  Metric(label: '700', value: 'Total Expenditure', type: 'amount'),
-  Metric(label: '700', value: 'Total Expenditure', type: 'amount'),
-  Metric(label: '700', value: 'Total Expenditure', type: 'amount'),
-  Metric(label: '700', value: 'Total Expenditure', type: 'amount'),
-];
