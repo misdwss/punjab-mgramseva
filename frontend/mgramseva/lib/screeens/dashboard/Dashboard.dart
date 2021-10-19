@@ -162,13 +162,6 @@ class _Dashboard extends State<Dashboard> with SingleTickerProviderStateMixin {
                                         ],
                                       ),
                                     ),
-                                    Visibility(
-                                        visible: dashBoardProvider.selectedMonth.dateType == DateType.MONTH,
-                                        child: Padding(
-                                          padding: const EdgeInsets.only(top: 5),
-                                          child: GridViewBuilder(gridList: [], physics: NeverScrollableScrollPhysics()),
-                                        )
-                                    )
                                   ])),
                               _buildViewBasedOnTheSelection(dashBoardProvider)
                             ])),
