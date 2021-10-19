@@ -252,7 +252,7 @@ public class ChallanService {
 		}
 		if (totalExpenses != null && paidAmount != null) {
 			Integer amountUnpaid = totalExpenses - paidAmount;
-			dashboardData.setAmountUnpaid(amountUnpaid);
+			dashboardData.setAmountUnpaid(amountUnpaid.toString());
 		}
 
 		return dashboardData;
