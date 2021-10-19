@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:mgramseva/model/Events/events_List.dart';
 import 'package:mgramseva/providers/notifications_provider.dart';
+import 'package:mgramseva/routers/Routers.dart';
 import 'package:mgramseva/utils/Constants/I18KeyConstants.dart';
 import 'package:mgramseva/utils/Locilization/application_localizations.dart';
 import 'package:mgramseva/utils/loaders.dart';
 import 'package:mgramseva/utils/notifyers.dart';
+import 'package:mgramseva/widgets/ButtonLink.dart';
 import 'package:mgramseva/widgets/ListLabelText.dart';
 import 'package:mgramseva/widgets/Notifications.dart';
 import 'package:provider/provider.dart';
@@ -41,7 +43,9 @@ class NotificationsListState extends State<NotificationsList> {
               ..updateNotify(item, events);
               }
               return Notifications(item, callBack, widget.close);
-            })
+            }),
+        events.length > 0 ? Center(
+            child: ButtonLink(i18.common.VIEW_ALL, () => Navigator.pushNamed(context, Routes.NOTIFICATIONS))) : Text(""),
       ]);
     });
   }
