@@ -168,7 +168,7 @@ class _HomeState extends State<Home> {
             }
             return userProvider.userDetails?.selectedtenant?.code != null
                 ?
-                  NotificationsList(close: true,)
+                  NotificationsList(close: true, view: true,)
                 : Text("");
           })),
     );

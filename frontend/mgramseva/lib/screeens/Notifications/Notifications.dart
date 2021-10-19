@@ -5,6 +5,7 @@ import 'package:mgramseva/providers/notifications_provider.dart';
 import 'package:mgramseva/utils/error_logging.dart';
 import 'package:mgramseva/utils/global_variables.dart';
 import 'package:mgramseva/widgets/DrawerWrapper.dart';
+import 'package:mgramseva/widgets/FormWrapper.dart';
 import 'package:mgramseva/widgets/SideBar.dart';
 import 'package:mgramseva/widgets/customAppbar.dart';
 import 'package:provider/provider.dart';
@@ -31,7 +32,9 @@ class _NotificationScreen extends State<NotificationScreen> {
           "tenantId": commonProvider.userDetails?.selectedtenant?.code!,
           "eventType": "SYSTEMGENERATED",
           "recepients": commonProvider.userDetails?.userRequest?.uuid,
-          "status": "READ,ACTIVE"
+          "status": "READ,ACTIVE",
+          "offset": "0",
+          "limit": "200"
         }, {
           "tenantId": commonProvider.userDetails?.selectedtenant?.code!,
           "eventType": "SYSTEMGENERATED",
@@ -39,7 +42,9 @@ class _NotificationScreen extends State<NotificationScreen> {
               .map((e) => e.code.toString())
               .join(',')
               .toString(),
-          "status": "READ,ACTIVE"
+          "status": "READ,ACTIVE",
+          "offset": "0",
+          "limit": "200"
         });
     }
     catch (e, s) {
@@ -55,7 +60,8 @@ class _NotificationScreen extends State<NotificationScreen> {
     Drawer(child: SideBar()),
     ),
     body: SingleChildScrollView(
-    child: NotificationsList(close : false)
-    ));
+    child: FormWrapper(
+        NotificationsList(close : false, view: false,)
+    )));
   }
 }
