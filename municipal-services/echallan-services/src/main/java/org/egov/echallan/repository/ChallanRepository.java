@@ -288,7 +288,7 @@ public class ChallanRepository {
 	}
 	public Integer getPendingAmount(@Valid SearchCriteria criteria) {
 		StringBuilder query = new StringBuilder(queryBuilder.PENDINGEXPCOLL);
-		query.append(" and demand.tenantid = '").append(criteria.getTenantId()).append("'")
+		query.append(" and dmd.tenantid = '").append(criteria.getTenantId()).append("'")
 		.append( " and taxperiodfrom  >= ").append( criteria.getFromDate())  
 		.append(" and  taxperiodto <= " ).append(criteria.getToDate());
 		log.info("Active pending collection query : " + query);
