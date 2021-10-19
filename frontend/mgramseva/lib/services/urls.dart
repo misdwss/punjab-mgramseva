@@ -57,7 +57,9 @@ class Url {
   static const String FETCH_BILL_PAYMENTS =
       'collection-services/payments/WS/_search';
 
+  /// user feed back
   static const String POST_PAYMENT_FEEDBACK = 'ws-services/wc/_submitfeedback';
+  static const String GET_USERS_PAYMENT_FEEDBACK = 'ws-services/wc/_getfeedback';
 }
 
 class UserUrl {

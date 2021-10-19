@@ -504,4 +504,25 @@ class DashBoardProvider with ChangeNotifier {
       return false;
     }
   }
+
+  Future<void> fetchUserFeedbackDetails(BuildContext context) async {
+    var commonProvider = Provider.of<CommonProvider>(
+        navigatorKey.currentContext!,
+        listen: false);
+    userFeedBackInformation = null;
+
+    Map<String, dynamic> query = {
+      'tenantId' : commonProvider.userDetails?.selectedtenant?.code,
+      'fromDate' : '${selectedMonth.startDate.millisecondsSinceEpoch}',
+      'toDate' : '${selectedMonth.endDate.millisecondsSinceEpoch}'
+    };
+
+    try{
+      var response = await DashBoardRepository().getUsersFeedBackByMonth(query);
+      userFeedBackInformation = response;
+      notifyListeners();
+    } catch(e,s){
+      ErrorHandler().allExceptionsHandler(context, e,s);
+    }
+  }
 }

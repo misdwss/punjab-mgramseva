@@ -76,6 +76,13 @@ class _Dashboard extends State<Dashboard> with SingleTickerProviderStateMixin {
       FocusScope.of(context).unfocus();
       dashBoardProvider.debounce = null;
     });
+    WidgetsBinding.instance?.addPostFrameCallback((_) => afterViewBuild());
+  }
+
+  afterViewBuild(){
+    var dashBoardProvider =
+    Provider.of<DashBoardProvider>(context, listen: false);
+    dashBoardProvider.fetchUserFeedbackDetails(context);
   }
 
   @override
