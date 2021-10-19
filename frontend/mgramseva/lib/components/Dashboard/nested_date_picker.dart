@@ -6,26 +6,27 @@ import 'package:mgramseva/utils/models.dart';
 import 'package:mgramseva/utils/Constants/I18KeyConstants.dart';
 import 'package:mgramseva/widgets/custom_overlay/show_overlay.dart';
 
-class NestedYearPicker extends StatefulWidget {
+class NestedDatePicker extends StatefulWidget {
   final ValueChanged<DatePeriod?> onSelectionOfDate;
   final List<YearWithMonths>? yearsWithMonths;
   final DatePeriod? selectedMonth;
+  final int maximumYears;
   final double? left;
   final double? top;
-  const NestedYearPicker({Key? key, required this.onSelectionOfDate, this.left, this.top, this.yearsWithMonths, this.selectedMonth}) : super(key: key);
+  const NestedDatePicker({Key? key, required this.onSelectionOfDate, this.left, this.top, this.yearsWithMonths, this.selectedMonth, this.maximumYears = 5}) : super(key: key);
 
   @override
-  State<NestedYearPicker> createState() => _NestedYearPickerState();
+  State<NestedDatePicker> createState() => _NestedDatePickerState();
 }
 
-class _NestedYearPickerState extends State<NestedYearPicker> {
+class _NestedDatePickerState extends State<NestedDatePicker> {
 
   late List<YearWithMonths> yearsWithMonths;
   DatePeriod? selectedMonth;
 
   @override
   void initState() {
-    yearsWithMonths = widget.yearsWithMonths ?? CommonMethods.getFinancialYearList();
+    yearsWithMonths = widget.yearsWithMonths ?? CommonMethods.getFinancialYearList(widget.maximumYears);
 
     if(widget.selectedMonth != null){
        DatePeriod? date;
