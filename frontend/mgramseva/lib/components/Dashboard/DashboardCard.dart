@@ -47,81 +47,99 @@ class DashboardCard extends StatelessWidget {
                       ),
                     )
                   ]),
-                Padding(
-                  padding: constraints.maxWidth > 760 ? const EdgeInsets.all(20.0) : const EdgeInsets.all(8.0),
-                  child: Consumer<DashBoardProvider>(
-                    builder: (_,dashBoardProvider, child) => _buildRatingView(context, dashBoardProvider, constraints),
-                  ),
-                )
+                _buildRatingView(context, constraints)
               ]
           ));
     });
   }
 
 
-  Widget _buildRatingView(BuildContext context, DashBoardProvider dashBoardProvider, BoxConstraints constraints, [Map? map]) {
+  Widget _buildRatingView(BuildContext context, BoxConstraints constraints) {
     return Consumer<DashBoardProvider>(
-      builder: (_,dashBoardProvider, child) => dashBoardProvider.userFeedBackInformation == null ? Container() : Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            GridView.count(
-              crossAxisCount: 3,
-              childAspectRatio: constraints.maxWidth > 760 ?  (1 / .3) : 1.0,
-              shrinkWrap: true,
-              physics: NeverScrollableScrollPhysics(),
-              children: List.generate(dashBoardProvider.userFeedBackInformation!.keys.length, (index) =>
-                  GridTile(
-                    child: Container(
-                        decoration: BoxDecoration(
-                          border: index == 0 ? null : Border(
-                              left:
-                              BorderSide(width: 1.0, color: Colors.grey)),
-                          color: Colors.white,
-                        ),
-                        padding: EdgeInsets.all(12),
-                        child: new Center(
-                          child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                Row(
+      builder: (_,dashBoardProvider, child)
+    {
+      var feedBack = dashBoardProvider.userFeedBackInformation;
+      if(feedBack != null && feedBack.isNotEmpty) {
+        Map feedBackDetails = Map.from(feedBack);
+        feedBackDetails.remove('count');
+       var localizationLabel =  '${ApplicationLocalizations.of(context).translate(i18.dashboard.USER_GAVE_FEEDBACK)}';
+       localizationLabel = localizationLabel.replaceAll('<n>', (feedBack['count'] ?? 0).toString());
+       localizationLabel = localizationLabel.replaceAll('<date>', DateFormats.getMonthAndYear(dashBoardProvider.selectedMonth, context)).toString();
+        return Padding(
+          padding: constraints.maxWidth > 760 ? const EdgeInsets.all(20.0) : const EdgeInsets.all(8.0),
+          child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                GridView.count(
+                  crossAxisCount: 3,
+                  childAspectRatio: constraints.maxWidth > 760 ? (1 / .3) : 1.3,
+                  shrinkWrap: true,
+                  physics: NeverScrollableScrollPhysics(),
+                  children: List.generate(
+                      feedBackDetails.keys.length, (
+                      index) =>
+                      GridTile(
+                        child: Container(
+                            decoration: BoxDecoration(
+                              border: index == 0 ? null : Border(
+                                  left:
+                                  BorderSide(width: 1.0, color: Colors.grey)),
+                              color: Colors.white,
+                            ),
+                            padding: EdgeInsets.all(12),
+                            child: new Center(
+                              child: Column(
                                   mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
-                                    new Text(
-                                      dashBoardProvider.userFeedBackInformation!.values.toList()[index].toString(),
-                                      textAlign: TextAlign.center,
-                                      style: TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w700,
-                                      ),
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        new Text(
+                                          feedBackDetails
+                                              .values.toList()[index].toString(),
+                                          textAlign: TextAlign.center,
+                                          style: TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w700,
+                                          ),
+                                        ),
+                                        Icon(Icons.star,
+                                            color:
+                                            Theme
+                                                .of(context)
+                                                .primaryColor),
+                                      ],
                                     ),
-                                    Icon(Icons.star,
-                                        color:
-                                        Theme.of(context).primaryColor),
-                                  ],
-                                ),
-                                Expanded(
-                                  child: Text(
-                                    '${ApplicationLocalizations.of(context).translate(dashBoardProvider.userFeedBackInformation!.keys.toList()[index].toString())}',
-                                    textAlign: TextAlign.center,
-                                  ),
-                                )
-                              ]),
-                        )),
-                  )
-              ).toList(),
-            ),
-            SizedBox(height: 10),
-            Text("230 ${ApplicationLocalizations.of(context).translate(i18.dashboard.USER_GAVE_FEEDBACK)}",
-              textAlign: TextAlign.start,
-              style: TextStyle(
-                  fontSize: 12,
-                  color: Color.fromRGBO(11, 12, 12, 1),
-                  fontWeight: FontWeight.w400
-              ),
-            ),
-            SizedBox(height: 10)
-          ]),
+                                    Expanded(
+                                      child: Text(
+                                        '${ApplicationLocalizations.of(context)
+                                            .translate(feedBackDetails.keys
+                                            .toList()[index].toString())}',
+                                        textAlign: TextAlign.center,
+                                      ),
+                                    )
+                                  ]),
+                            )),
+                      )
+                  ).toList(),
+                ),
+                SizedBox(height: 10),
+                Text("$localizationLabel",
+                  textAlign: TextAlign.start,
+                  style: TextStyle(
+                      fontSize: 12,
+                      color: Color.fromRGBO(11, 12, 12, 1),
+                      fontWeight: FontWeight.w400
+                  ),
+                ),
+                SizedBox(height: 10)
+              ]),
+        );
+      }else{
+        return Container();
+      }
+    }
     );
   }
 }

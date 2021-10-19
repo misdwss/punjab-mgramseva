@@ -71,6 +71,7 @@ class _Dashboard extends State<Dashboard> with SingleTickerProviderStateMixin {
     dashBoardProvider.selectedMonth = CommonMethods.getFinancialYearList().first.monthList.first;
     dashBoardProvider.scrollController = ScrollController();
     dashBoardProvider.debounce = null;
+    dashBoardProvider.userFeedBackInformation = null;
     _tabController = new TabController(vsync: this, length: 2, initialIndex: widget.initialTabIndex);
     _tabController.addListener(() {
       FocusScope.of(context).unfocus();

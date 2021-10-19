@@ -31,23 +31,6 @@ class DashBoardRepository extends BaseService {
           commonProvider.userDetails!.accessToken,
         ));
 
-    await Future.delayed(Duration(seconds: 2));
-    res = {
-      "responseInfo": {
-        "apiId": "mgramseva",
-        "ver": "1",
-        "ts": null,
-        "resMsgId": "uief87324",
-        "msgId": "",
-        "status": "successful"
-      },
-      "feedback": {
-        "WATER_QUALITY_GOOD": 5,
-        "WATER_SUPPLY_REGULAR": 5,
-        "HAPPY_WATER_SUPPLY": 5
-      }
-    };
-
     if (res != null) {
       feedBack = res['feedback'];
     }
