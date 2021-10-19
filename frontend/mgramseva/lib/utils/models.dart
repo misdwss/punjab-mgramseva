@@ -33,12 +33,12 @@ class HomeItem {
   final Map<String, dynamic> arguments;
 
   const HomeItem(
-    this.label,
-    this.walkThroughMsg,
-    this.iconData,
-    this.link,
-    this.arguments,
-  );
+      this.label,
+      this.walkThroughMsg,
+      this.iconData,
+      this.link,
+      this.arguments,
+      );
 }
 
 class SearchResult {
@@ -62,9 +62,9 @@ class TableHeader {
   String? apiKey;
   TableHeader(this.label,
       {this.callBack,
-      this.isSortingRequired,
-      this.isAscendingOrder,
-      this.apiKey});
+        this.isSortingRequired,
+        this.isAscendingOrder,
+        this.apiKey});
 }
 
 class TableDataRow {
