@@ -318,10 +318,14 @@ public class WsQueryBuilder {
 
 		if (criteria.getOffset() != null)
 			offset = criteria.getOffset();
-
-		finalQuery = finalQuery.replace("{pagination}", " offset ?  limit ?  ");
-		preparedStmtList.add(offset);
-		preparedStmtList.add(limit + offset);
+		
+		if (limit == -1) {
+			finalQuery = finalQuery.replace("{pagination}", "");
+		} else {
+			finalQuery = finalQuery.replace("{pagination}", " offset ?  limit ?  ");
+			preparedStmtList.add(offset);
+			preparedStmtList.add(limit + offset);
+		}
 		return finalQuery;
 	}
 	
