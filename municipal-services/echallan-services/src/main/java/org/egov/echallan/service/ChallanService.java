@@ -250,8 +250,8 @@ public class ChallanService {
 		if (null != paidAmount) {
 			dashboardData.setAmountPaid(paidAmount.toString());
 		}
-		if (totalExpenses != null && paidAmount != null) {
-			Integer amountUnpaid = totalExpenses - paidAmount;
+		Integer amountUnpaid = repository.getPendingAmount(criteria);
+		if (null != paidAmount) {
 			dashboardData.setAmountUnpaid(amountUnpaid.toString());
 		}
 
