@@ -12,7 +12,6 @@ import 'package:mgramseva/utils/error_logging.dart';
 import 'package:mgramseva/utils/global_variables.dart';
 import 'package:mgramseva/utils/loaders.dart';
 import 'package:mgramseva/utils/notifyers.dart';
-import 'package:mgramseva/utils/role_actions.dart';
 import 'package:mgramseva/widgets/DrawerWrapper.dart';
 import 'package:mgramseva/widgets/SideBar.dart';
 import 'package:mgramseva/widgets/footer.dart';
@@ -152,6 +151,7 @@ class _HomeState extends State<Home> {
                     "tenantId": userProvider.userDetails?.selectedtenant?.code!,
                     "eventType": "SYSTEMGENERATED",
                     "recepients": commonProvider.userDetails?.userRequest?.uuid,
+                    "limit": "50"
                   }, {
                     "tenantId": userProvider.userDetails?.selectedtenant?.code!,
                     "eventType": "SYSTEMGENERATED",
@@ -159,6 +159,7 @@ class _HomeState extends State<Home> {
                         .map((e) => e.code.toString())
                         .join(',')
                         .toString(),
+                    "limit": "50"
                   });
               } catch (e, s) {
                 ErrorHandler()

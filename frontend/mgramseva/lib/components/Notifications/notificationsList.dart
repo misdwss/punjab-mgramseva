@@ -25,11 +25,20 @@ class NotificationsListState extends State<NotificationsList> {
     return LayoutBuilder(builder: (context, constraints) {
       return Column(mainAxisSize: MainAxisSize.min, children: [
         events!.length > 0
-            ? ListLabelText(ApplicationLocalizations.of(context)
-                    .translate(i18.common.NOTIFICATIONS) +
-                " (" +
-                events.length.toString() +
-                ")")
+            ? Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                ListLabelText(ApplicationLocalizations.of(context)
+                        .translate(i18.common.NOTIFICATIONS) +
+                    " (" +
+                    events.length.toString() +
+                    ")"),
+                (events.length > 0)
+                    ? Center(
+                        child: ButtonLink(
+                            i18.common.VIEW_ALL,
+                            () => Navigator.pushNamed(
+                                context, Routes.NOTIFICATIONS)))
+                    : Text(""),
+              ])
             : Text(""),
         ListView.builder(
             shrinkWrap: true,
