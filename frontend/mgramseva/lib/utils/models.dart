@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 
 enum RequestType { GET, PUT, POST, DELETE }
@@ -31,12 +33,12 @@ class HomeItem {
   final Map<String, dynamic> arguments;
 
   const HomeItem(
-    this.label,
-    this.walkThroughMsg,
-    this.iconData,
-    this.link,
-    this.arguments,
-  );
+      this.label,
+      this.walkThroughMsg,
+      this.iconData,
+      this.link,
+      this.arguments,
+      );
 }
 
 class SearchResult {
@@ -60,9 +62,9 @@ class TableHeader {
   String? apiKey;
   TableHeader(this.label,
       {this.callBack,
-      this.isSortingRequired,
-      this.isAscendingOrder,
-      this.apiKey});
+        this.isSortingRequired,
+        this.isAscendingOrder,
+        this.apiKey});
 }
 
 class TableDataRow {
@@ -97,4 +99,13 @@ class Legend {
   final Color color;
 
   Legend(this.label, this.color);
+}
+
+
+class CustomFile {
+  final Uint8List bytes;
+  final String name;
+  final String extension;
+
+  CustomFile(this.bytes, this.name, this.extension);
 }

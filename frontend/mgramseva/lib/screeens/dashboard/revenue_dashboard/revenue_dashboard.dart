@@ -14,7 +14,8 @@ import 'package:provider/provider.dart';
 import 'package:mgramseva/utils/Constants/I18KeyConstants.dart';
 
 class RevenueDashBoard extends StatefulWidget {
-  const RevenueDashBoard({Key? key}) : super(key: key);
+  final bool isFromScreenshot;
+  const RevenueDashBoard({Key? key, this.isFromScreenshot = false}) : super(key: key);
 
   @override
   _RevenueDashBoardState createState() => _RevenueDashBoardState();
@@ -37,9 +38,12 @@ class _RevenueDashBoardState extends State<RevenueDashBoard> {
         children: [
           RevenueCharts(),
           _buildLoaderView(),
-          Align(
-              alignment: Alignment.centerLeft,
-              child: _buildNote()),
+          Visibility(
+            visible: !widget.isFromScreenshot,
+            child: Align(
+                alignment: Alignment.centerLeft,
+                child: _buildNote()),
+          ),
           Footer()
         ],
       ),
@@ -72,36 +76,36 @@ class _RevenueDashBoardState extends State<RevenueDashBoard> {
   }
 
   Widget _buildNote(){
-   return Container(
-     decoration: new BoxDecoration(color: Theme.of(context).highlightColor),
-     width: MediaQuery.of(context).size.width,
-     padding: EdgeInsets.all(8),
-     child: Column(
-       crossAxisAlignment: CrossAxisAlignment.start,
-       children: [
-         Wrap(
-           spacing: 5,
-           crossAxisAlignment: WrapCrossAlignment.center,
-           children: [
-           Icon(Icons.info, color: Theme.of(context).hintColor),
-           Text(ApplicationLocalizations.of(context).translate(i18.common.NOTE),
-               style: TextStyle(
-                   fontSize: 18,
-                   fontWeight: FontWeight.w700,
-                   color: Theme.of(context).hintColor))
-         ],),
-         Padding(
-           padding: const EdgeInsets.symmetric(vertical: 8),
-           child: Text('${ApplicationLocalizations.of(context).translate(i18.dashboard.REVENUE_NOTE)}',
-           style: TextStyle(fontSize: 16,
-           fontWeight: FontWeight.w400,
-             height: 1.5,
-             color: Color.fromRGBO(52, 152, 219, 1)
-           ),
-           ),
-         )
-       ],
-     ),
+    return Container(
+      decoration: new BoxDecoration(color: Theme.of(context).highlightColor),
+      width: MediaQuery.of(context).size.width,
+      padding: EdgeInsets.all(8),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Wrap(
+            spacing: 5,
+            crossAxisAlignment: WrapCrossAlignment.center,
+            children: [
+              Icon(Icons.info, color: Theme.of(context).hintColor),
+              Text(ApplicationLocalizations.of(context).translate(i18.common.NOTE),
+                  style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w700,
+                      color: Theme.of(context).hintColor))
+            ],),
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8),
+            child: Text('${ApplicationLocalizations.of(context).translate(i18.dashboard.REVENUE_NOTE)}',
+              style: TextStyle(fontSize: 16,
+                  fontWeight: FontWeight.w400,
+                  height: 1.5,
+                  color: Color.fromRGBO(52, 152, 219, 1)
+              ),
+            ),
+          )
+        ],
+      ),
     );
   }
 
@@ -112,17 +116,17 @@ class _RevenueDashBoardState extends State<RevenueDashBoard> {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 16),
       child: LayoutBuilder(
-        builder : (context, constraints) {
-          var width = constraints.maxWidth < 760 ?  150.0 : constraints.maxWidth / 8;
-         return BillsTable
-            (headerList: revenueDashboard.revenueHeaderList,
-            tableData:  tableData,
-            leftColumnWidth: width,
-            rightColumnWidth:  width * 7,
-           height: 68 + (52.0 * tableData.length),
-           scrollPhysics:  NeverScrollableScrollPhysics(),
-          );
-        }),
+          builder : (context, constraints) {
+            var width = constraints.maxWidth < 760 ?  150.0 : constraints.maxWidth / 8;
+            return BillsTable
+              (headerList: revenueDashboard.revenueHeaderList,
+              tableData:  tableData,
+              leftColumnWidth: width,
+              rightColumnWidth:  width * 7,
+              height: 68 + (52.0 * tableData.length),
+              scrollPhysics:  NeverScrollableScrollPhysics(),
+            );
+          }),
     );
   }
 }
