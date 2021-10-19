@@ -71,10 +71,9 @@ class RevenueDashboard with ChangeNotifier {
   void onTapOfMonth(TableData tableData) {
     var dashBoardProvider = Provider.of<DashBoardProvider>(navigatorKey.currentContext!, listen: false);
 
-    Navigator.pushReplacementNamed(navigatorKey.currentContext!, Routes.DASHBOARD, arguments: {
-      'tab' : '0',
-      'startDate' : dashBoardProvider.selectedMonth.startDate.millisecondsSinceEpoch.toString(),
-      'endDate' : dashBoardProvider.selectedMonth.endDate.millisecondsSinceEpoch.toString(),
-    });
+    var monthIndex = 0;
+    var date = monthIndex >= 4 ? dashBoardProvider.selectedMonth.startDate : dashBoardProvider.selectedMonth.endDate;
+    dashBoardProvider.onChangeOfDate(DatePeriod(DateTime(date.year, monthIndex, 1), DateTime(date.year, monthIndex + 1, 0), DateType.MONTH), navigatorKey.currentContext!);
+    dashBoardProvider.scrollController.jumpTo(0.0);
   }
 }

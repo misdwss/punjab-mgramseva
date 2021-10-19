@@ -19,37 +19,44 @@ class CommonMethods {
     return url.substring(0, url.indexOf('?')).split('/').last;
   }
 
-  static List<DatePeriod> getPastMonthUntilFinancialYear(){
+  static List<DatePeriod> getPastMonthUntilFinancialYear(int year){
     var monthList = <DateTime>[];
-    if(DateTime.now().month >= 4){
+    if(DateTime.now().year == year && DateTime.now().month >= 4){
       for(int i = 4; i <= DateTime.now().month; i++){
         monthList.add(DateTime(DateTime.now().year, i));
       }
     }else {
+      var yearDetails = DateTime(year);
       for(int i = 4; i <= 12; i++){
-        monthList.add(DateTime(DateTime.now().year - 1, i));
+        monthList.add(DateTime(yearDetails.year, i));
       }
-      for(int i = 1; i <= DateTime.now().month; i++){
-        monthList.add(DateTime(DateTime.now().year, i));
+      for(int i = 1; i <= (DateTime.now().year == year ? DateTime.now().month : 3); i++){
+        monthList.add(DateTime(yearDetails.year + 1, i));
       }
     }
     return monthList.map((e) => DatePeriod(DateTime(e.year, e.month, 1), DateTime(e.year, e.month + 1, 0), DateType.MONTH)).toList().reversed.toList();
   }
 
-  static List<DatePeriod> getFinancialYearList([int count = 5]){
-    var monthList = <DatePeriod>[];
+  static List<YearWithMonths> getFinancialYearList([int count = 5]){
+    var yearWithMonths = <YearWithMonths>[];
 
     if(DateTime.now().month >= 4) {
-      monthList.add(DatePeriod(DateTime(DateTime.now().year, 4) , DateTime(DateTime.now().year + 1), DateType.YTD));
+      var year = DatePeriod(DateTime(DateTime.now().year, 4) , DateTime(DateTime.now().year + 1), DateType.YTD);
+      var monthList = getPastMonthUntilFinancialYear(DateTime.now().year);
+      yearWithMonths.add(YearWithMonths(monthList, year));
     }else{
-      monthList.add(DatePeriod(DateTime( DateTime.now().year - 1, 1), DateTime.now(), DateType.YTD));
+      var year = DatePeriod(DateTime( DateTime.now().year - 1, 1), DateTime.now(), DateType.YTD);
+      var monthList = getPastMonthUntilFinancialYear(year.startDate.year);
+      yearWithMonths.add(YearWithMonths(monthList, year));
     }
 
     for(int i =0; i < count-1; i++){
-      var year = DateTime(DateTime.now().year - i);
-      monthList.add(DatePeriod(DateTime(year.year - 1, 4), DateTime(year.year, 3), DateType.YEAR));
+      dynamic year = DateTime(DateTime.now().year - i);
+      year = DatePeriod(DateTime(year.year - 1, 4), DateTime(year.year, 3), DateType.YEAR);
+      var monthList = getPastMonthUntilFinancialYear(year.startDate.year);
+      yearWithMonths.add(YearWithMonths(monthList, year));
     }
-    return monthList;
+    return yearWithMonths;
   }
 
   String truncateWithEllipsis(int cutoff, String myString) {
