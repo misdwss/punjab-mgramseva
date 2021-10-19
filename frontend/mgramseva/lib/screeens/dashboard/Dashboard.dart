@@ -28,7 +28,7 @@ import 'package:mgramseva/widgets/ListLabelText.dart';
 import 'package:mgramseva/widgets/SideBar.dart';
 import 'package:mgramseva/widgets/custom_overlay/show_overlay.dart';
 import 'package:mgramseva/widgets/grid_view.dart';
-import 'package:mgramseva/widgets/month_year.dart';
+import 'package:mgramseva/widgets/nested_date_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:screenshot/screenshot.dart';
@@ -251,7 +251,7 @@ class _Dashboard extends State<Dashboard> with SingleTickerProviderStateMixin {
     RenderBox? box = key.currentContext!.findRenderObject() as RenderBox?;
     Offset position = box!.localToGlobal(Offset.zero);
 
-    CustomOVerlay.showOverlay(context, MonthYear(onSelectionOfDate: (date) => dashBoardProvider.onChangeOfDate(date, context),
+    CustomOVerlay.showOverlay(context, NestedYearPicker(onSelectionOfDate: (date) => dashBoardProvider.onChangeOfDate(date, context),
         selectedMonth: dashBoardProvider.selectedMonth,
         left: position.dx + box.size.width - 200, top : position.dy + 60  - 10));
   }

@@ -6,26 +6,26 @@ import 'package:mgramseva/utils/models.dart';
 import 'package:mgramseva/utils/Constants/I18KeyConstants.dart';
 import 'package:mgramseva/widgets/custom_overlay/show_overlay.dart';
 
-class MonthYear extends StatefulWidget {
+class NestedYearPicker extends StatefulWidget {
   final ValueChanged<DatePeriod?> onSelectionOfDate;
   final List<YearWithMonths>? yearsWithMonths;
   final DatePeriod? selectedMonth;
   final double? left;
   final double? top;
-  const MonthYear({Key? key, required this.onSelectionOfDate, this.left, this.top, this.yearsWithMonths, this.selectedMonth}) : super(key: key);
+  const NestedYearPicker({Key? key, required this.onSelectionOfDate, this.left, this.top, this.yearsWithMonths, this.selectedMonth}) : super(key: key);
 
   @override
-  State<MonthYear> createState() => _MonthYearState();
+  State<NestedYearPicker> createState() => _NestedYearPickerState();
 }
 
-class _MonthYearState extends State<MonthYear> {
+class _NestedYearPickerState extends State<NestedYearPicker> {
 
   late List<YearWithMonths> yearsWithMonths;
   DatePeriod? selectedMonth;
 
   @override
   void initState() {
-    yearsWithMonths = CommonMethods.getFinancialYearList();
+    yearsWithMonths = widget.yearsWithMonths ?? CommonMethods.getFinancialYearList();
 
     if(widget.selectedMonth != null){
        DatePeriod? date;
@@ -49,8 +49,6 @@ class _MonthYearState extends State<MonthYear> {
   @override
   Widget build(BuildContext context) {
     var height = MediaQuery.of(context).size.height;
-    int colorDivider = -1;
-
     return Positioned(
         left: widget.left,
         top: widget.top,
@@ -83,7 +81,6 @@ class _MonthYearState extends State<MonthYear> {
                     children: List.generate(
                         yearsWithMonths.length, (index) {
                       var yearWithMonths = yearsWithMonths[index];
-                      colorDivider++;
                       return Wrap(
                         direction: Axis.vertical,
                         children: [
@@ -136,7 +133,6 @@ class _MonthYearState extends State<MonthYear> {
                               direction: Axis.vertical,
                               children: List.generate(yearWithMonths.monthList.length, (monthIndex) {
                                 var date = yearWithMonths.monthList[monthIndex];
-                                colorDivider++;
                                   return InkWell(
                                     onTap: () => onSelectionOfDate(date),
                                     child: Container(
