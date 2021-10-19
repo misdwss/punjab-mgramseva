@@ -17,7 +17,7 @@ enum MDMSType { BusinessService, ConsumerType, TaxHeadCode }
 
 enum DashBoardType { collections, Expenditure }
 
-enum DateType {YTD, MONTH, YEAR, LABEL}
+enum DateType {YTD, MONTH, YEAR}
 
 class KeyValue {
   String label;
@@ -92,6 +92,15 @@ class DatePeriod {
   final DateType dateType;
   final String? label;
   DatePeriod(this.startDate, this.endDate, this.dateType, [this.label]);
+
+  @override
+  bool operator ==(otherDate) {
+    return (otherDate is DatePeriod)
+        && otherDate.startDate == startDate
+        && otherDate.endDate == endDate
+        && otherDate.dateType == dateType
+        && otherDate.label == label;
+  }
 }
 
 class Legend {
@@ -108,4 +117,11 @@ class CustomFile {
   final String extension;
 
   CustomFile(this.bytes, this.name, this.extension);
+}
+
+class YearWithMonths {
+  final List<DatePeriod> monthList;
+  final DatePeriod year;
+  bool isExpanded = false;
+  YearWithMonths(this.monthList, this.year);
 }

@@ -40,6 +40,8 @@ class DashBoardProvider with ChangeNotifier {
   Timer? debounce;
   List<PropertyType> propertyTaxList = <PropertyType>[];
   bool isLoaderEnabled = false;
+  var scrollController = ScrollController();
+  Map? userFeedBackInformation;
 
   @override
   void dispose() {
@@ -470,10 +472,9 @@ class DashBoardProvider with ChangeNotifier {
     });
   }
 
-  void onChangeOfDate(DatePeriod? date, BuildContext context, _overlayEntry) {
+  void onChangeOfDate(DatePeriod? date, BuildContext context) {
     selectedMonth = date ?? DatePeriod(DateTime.now(),DateTime.now(), DateType.MONTH);
     notifyListeners();
-    removeOverLay(_overlayEntry);
     fetchDetails(context, limit, 1, true);
   }
 
