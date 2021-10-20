@@ -9,6 +9,35 @@ import 'package:provider/provider.dart';
 
 class DashBoardRepository extends BaseService {
 
+  Future<Map?> getMetricInformation(bool isExpenditure, Map<String, dynamic> query) async {
+    var commonProvider = Provider.of<CommonProvider>(
+        navigatorKey.currentContext!,
+        listen: false);
+    Map? metricInformation;
+
+    var res = await makeRequest(
+        url: isExpenditure ? Url.EXPENDITURE_METRIC : Url.REVENUE_METRIC,
+        method: RequestType.POST,
+        queryParameters: query,
+        body: {},
+        requestInfo:  RequestInfo(
+            APIConstants.API_MODULE_NAME,
+            APIConstants.API_VERSION,
+            APIConstants.API_TS,
+            "",
+            APIConstants.API_DID,
+            APIConstants.API_KEY,
+            APIConstants.API_MESSAGE_ID,
+            commonProvider.userDetails?.accessToken,
+            commonProvider.userDetails?.userRequest?.toJson()
+        ));
+
+    if (res != null) {
+      metricInformation = res[isExpenditure ? 'ExpenseDashboard' : 'RevenueDashboard'];
+    }
+    return metricInformation;
+  }
+
   Future<Map?> getUsersFeedBackByMonth(Map<String, dynamic> query) async {
     var commonProvider = Provider.of<CommonProvider>(
         navigatorKey.currentContext!,
