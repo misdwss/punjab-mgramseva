@@ -1,5 +1,7 @@
 package org.egov.waterconnection.service;
 
+import static org.egov.waterconnection.constants.WCConstants.APPROVE_CONNECTION;
+
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -11,6 +13,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
+
+import javax.validation.Valid;
 
 import org.egov.common.contract.request.RequestInfo;
 import org.egov.tracer.model.CustomException;
@@ -31,6 +35,7 @@ import org.egov.waterconnection.web.models.Feedback;
 import org.egov.waterconnection.web.models.FeedbackRequest;
 import org.egov.waterconnection.web.models.FeedbackSearchCriteria;
 import org.egov.waterconnection.web.models.Property;
+import org.egov.waterconnection.web.models.RevenueDashboard;
 import org.egov.waterconnection.web.models.SearchCriteria;
 import org.egov.waterconnection.web.models.WaterConnection;
 import org.egov.waterconnection.web.models.WaterConnectionRequest;
@@ -48,8 +53,6 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-
-import static org.egov.waterconnection.constants.WCConstants.APPROVE_CONNECTION;
 
 @Component
 public class WaterServiceImpl implements WaterService {
@@ -97,7 +100,6 @@ public class WaterServiceImpl implements WaterService {
 	private WaterServicesUtil wsUtil;
 
 	@Autowired
-
 	private WaterConnectionProducer waterConnectionProducer;
 
 	/**
@@ -119,6 +121,7 @@ public class WaterServiceImpl implements WaterService {
 //			}
 			reqType = WCConstants.MODIFY_CONNECTION;
 		}
+		mDMSValidator.validateMISFields(waterConnectionRequest);
 		waterConnectionValidator.validateWaterConnection(waterConnectionRequest, reqType);
 		Property property = validateProperty.getOrValidateProperty(waterConnectionRequest);
 		validateProperty.validatePropertyFields(property, waterConnectionRequest.getRequestInfo());
@@ -190,6 +193,7 @@ public class WaterServiceImpl implements WaterService {
 			// Received request to update the connection for modifyConnection WF
 			return updateWaterConnectionForModifyFlow(waterConnectionRequest);
 		}
+		mDMSValidator.validateMISFields(waterConnectionRequest);
 		waterConnectionValidator.validateWaterConnection(waterConnectionRequest, WCConstants.UPDATE_APPLICATION);
 		mDMSValidator.validateMasterData(waterConnectionRequest, WCConstants.UPDATE_APPLICATION);
 		Property property = validateProperty.getOrValidateProperty(waterConnectionRequest);
@@ -377,6 +381,26 @@ public class WaterServiceImpl implements WaterService {
 		}
 		
 		return returnMap;
+	}
+
+	@Override
+	public RevenueDashboard getRevenueDashboardData(@Valid SearchCriteria criteria, RequestInfo requestInfo) {
+		RevenueDashboard dashboardData = new RevenueDashboard();
+		String tenantId = criteria.getTenantId();
+		Integer demand = waterDaoImpl.getTotalDemandAmount(criteria);
+		if (null != demand) {
+			dashboardData.setDemand(demand.toString());
+		}
+		Integer paidAmount = waterDaoImpl.getActualCollectionAmount(criteria);
+		if (null != paidAmount) {
+			dashboardData.setActualCollection(paidAmount.toString());
+		}
+		Integer unpaidAmount = waterDaoImpl.getPendingCollectionAmount(criteria);
+		if (null != unpaidAmount) {
+			dashboardData.setPendingCollection(unpaidAmount.toString());
+		}
+
+		return dashboardData;
 	}
 	
 	

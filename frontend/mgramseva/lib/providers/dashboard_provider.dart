@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:mgramseva/model/common/metric.dart';
 import 'package:mgramseva/model/connection/water_connection.dart';
 import 'package:mgramseva/model/connection/water_connections.dart';
 import 'package:mgramseva/model/expensesDetails/expenses_details.dart';
@@ -42,6 +43,7 @@ class DashBoardProvider with ChangeNotifier {
   bool isLoaderEnabled = false;
   var scrollController = ScrollController();
   Map? userFeedBackInformation;
+  List<Metric>? metricInformation;
 
   @override
   void dispose() {
@@ -475,6 +477,8 @@ class DashBoardProvider with ChangeNotifier {
   void onChangeOfDate(DatePeriod? date, BuildContext context) {
     selectedMonth = date ?? DatePeriod(DateTime.now(),DateTime.now(), DateType.MONTH);
     notifyListeners();
+    fetchDashboardMetricInformation(context, selectedDashboardType == DashBoardType.Expenditure ? true : false);
+    fetchUserFeedbackDetails(context);
     fetchDetails(context, limit, 1, true);
   }
 
@@ -502,6 +506,52 @@ class DashBoardProvider with ChangeNotifier {
       return true;
     } catch (e) {
       return false;
+    }
+  }
+
+  Future<void> fetchUserFeedbackDetails(BuildContext context) async {
+    var commonProvider = Provider.of<CommonProvider>(
+        navigatorKey.currentContext!,
+        listen: false);
+    userFeedBackInformation = null;
+
+    Map<String, dynamic> query = {
+      'tenantId' : commonProvider.userDetails?.selectedtenant?.code,
+      'fromDate' : '${selectedMonth.startDate.millisecondsSinceEpoch}',
+      'toDate' : '${selectedMonth.endDate.millisecondsSinceEpoch}'
+    };
+
+    try{
+      var response = await DashBoardRepository().getUsersFeedBackByMonth(query);
+      userFeedBackInformation = response;
+      notifyListeners();
+    } catch(e,s){
+      ErrorHandler().allExceptionsHandler(context, e,s);
+    }
+  }
+
+  Future<void> fetchDashboardMetricInformation(BuildContext context, [bool isExpenditure = false]) async {
+    var commonProvider = Provider.of<CommonProvider>(
+        navigatorKey.currentContext!,
+        listen: false);
+    Map<String, dynamic> query = {
+      'tenantId' : commonProvider.userDetails?.selectedtenant?.code,
+      'fromDate' : '${selectedMonth.startDate.millisecondsSinceEpoch}',
+      'toDate' : '${selectedMonth.endDate.millisecondsSinceEpoch}'
+    };
+
+    try{
+      var response = await DashBoardRepository().getMetricInformation(isExpenditure, query);
+      if(response != null){
+        var metricList = <Metric>[];
+        response.forEach((key, value) {
+          metricList.add(Metric(label: value, value: 'dashboard_$key', type: 'amount'));
+        });
+        metricInformation = metricList;
+      }
+      notifyListeners();
+    } catch(e,s){
+      ErrorHandler().allExceptionsHandler(context, e,s);
     }
   }
 }
