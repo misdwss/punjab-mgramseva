@@ -3,6 +3,8 @@ package org.egov.waterconnection.service;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.Month;
+import java.time.YearMonth;
 import java.time.ZoneId;
 import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
@@ -26,6 +28,7 @@ import org.egov.waterconnection.constants.WCConstants;
 import org.egov.waterconnection.producer.WaterConnectionProducer;
 import org.egov.waterconnection.repository.WaterDao;
 import org.egov.waterconnection.repository.WaterDaoImpl;
+import org.egov.waterconnection.repository.WaterRepository;
 import org.egov.waterconnection.util.WaterServicesUtil;
 import org.egov.waterconnection.validator.ActionValidator;
 import org.egov.waterconnection.validator.MDMSValidator;
@@ -105,8 +108,11 @@ public class WaterServiceImpl implements WaterService {
 	private WaterServicesUtil wsUtil;
 
 	@Autowired
-
 	private WaterConnectionProducer waterConnectionProducer;
+	
+
+	@Autowired
+	private WaterRepository repository;
 
 	/**
 	 * 
@@ -412,21 +418,9 @@ public class WaterServiceImpl implements WaterService {
 		if (null != previousMonthExpensePayments)
 			lastMonthSummary.setPreviousMonthCollection(previousMonthExpensePayments.toString());
 
-		// new expenditure
-		Integer previousMonthNewExpense = repository.getPreviousMonthNewExpense(tenantId,
-				((Long) previousMonthStartDateTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()),
-				((Long) previousMonthEndDateTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()));
-		if (null != previousMonthNewExpense )
-			lastMonthSummary.setPreviousMonthNewExpense(previousMonthNewExpense.toString());
-
-		// pending expenes to be paid
-		Integer cumulativePendingExpense = repository.getCumulativePendingExpense(tenantId);
-		if (null != cumulativePendingExpense )
-			lastMonthSummary.setCumulativePendingExpense(cumulativePendingExpense.toString());
-
 		//pending ws collectioni
 		Integer cumulativePendingCollection = repository.getTotalPendingCollection(tenantId);
-		if (null != cumulativePendingExpense )
+		if (null != cumulativePendingCollection )
 			lastMonthSummary.setCumulativePendingCollection(cumulativePendingCollection.toString());
 
 		// ws demands in period
@@ -449,6 +443,25 @@ public class WaterServiceImpl implements WaterService {
 
 	}
 	
+	public String getMonthYear() {
+		LocalDateTime localDateTime = LocalDateTime.now();
+		int currentMonth = localDateTime.getMonthValue();
+		String monthYear ;
+		if (currentMonth >= Month.APRIL.getValue()) {
+			monthYear = YearMonth.now().getYear() + "-";
+			monthYear = monthYear
+					+ (Integer.toString(YearMonth.now().getYear() + 1).substring(2, monthYear.length() - 1));
+		} else {
+			monthYear = YearMonth.now().getYear() - 1 + "-";
+			monthYear = monthYear
+					+ (Integer.toString(YearMonth.now().getYear()).substring(2, monthYear.length() - 1));
+
+		}
+		localDateTime.minusMonths(1);
+		StringBuilder monthYearBuilder = new StringBuilder(localDateTime.getMonth().toString()).append(" ").append(monthYear);
+
+		return monthYearBuilder.toString() ;
+	}
 	
 	
 }

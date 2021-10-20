@@ -4,8 +4,6 @@ import java.util.List;
 
 import javax.validation.Valid;
 
-import org.egov.echallan.model.LastMonthSummary;
-import org.egov.echallan.model.LastMonthSummaryResponse;
 import org.egov.waterconnection.constants.WCConstants;
 import org.egov.waterconnection.repository.WaterDaoImpl;
 import org.egov.waterconnection.service.SchedulerService;
@@ -14,6 +12,8 @@ import org.egov.waterconnection.util.ResponseInfoFactory;
 import org.egov.waterconnection.web.models.FeedbackRequest;
 import org.egov.waterconnection.web.models.FeedbackResponse;
 import org.egov.waterconnection.web.models.FeedbackSearchCriteria;
+import org.egov.waterconnection.web.models.LastMonthSummary;
+import org.egov.waterconnection.web.models.LastMonthSummaryResponse;
 import org.egov.waterconnection.web.models.RequestInfoWrapper;
 import org.egov.waterconnection.web.models.SearchCriteria;
 import org.egov.waterconnection.web.models.WaterConnection;

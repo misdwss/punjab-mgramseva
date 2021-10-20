@@ -77,6 +77,29 @@ public class WaterRepository {
 		return list;
 	}
 	
+	public Integer getTotalPendingCollection(String tenantId) {
+		StringBuilder query = new StringBuilder(queryBuilder.PENDINGCOLLECTION);
+		query.append(" and CONN.tenantid = '").append(tenantId).append("'");
+		return jdbcTemplate.queryForObject(query.toString(), Integer.class);
+
+	}
+
+	public Integer getNewDemand(String tenantId, Long startDate, Long endDate) {
+		StringBuilder query = new StringBuilder(queryBuilder.NEWDEMAND);
+		query.append(" and dmd.taxPeriodFrom  >= ").append(startDate).append(" and dmd.taxPeriodTo <= ").append(endDate)
+				.append(" and dmd.tenantId = '").append(tenantId).append("'");
+		return jdbcTemplate.queryForObject(query.toString(), Integer.class);
+
+	}
+
+	public Integer getActualCollection(String tenantId, Long startDate, Long endDate) {
+		StringBuilder query = new StringBuilder(queryBuilder.ACTUALCOLLECTION);
+		query.append(" and py.transactionDate  >= ").append(startDate).append(" and py.transactionDate <= ")
+				.append(endDate).append(" and py.tenantId = '").append(tenantId).append("'");
+		return jdbcTemplate.queryForObject(query.toString(), Integer.class);
+
+	}
+	
 
 
 }

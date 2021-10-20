@@ -112,7 +112,10 @@ public class SearchCriteria {
 	
 	@JsonProperty("isCollectionCount") 
 	private Boolean isCollectionCount = false;
-	
+
+	@JsonProperty("currentDate")
+	private Long currentDate;
+
 	public enum SortOrder {
 	    ASC,
 	    DESC
