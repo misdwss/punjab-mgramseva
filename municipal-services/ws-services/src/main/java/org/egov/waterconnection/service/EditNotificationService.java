@@ -1,5 +1,10 @@
 package org.egov.waterconnection.service;
 
+import static org.egov.waterconnection.constants.WCConstants.DEFAULT_OBJECT_EDIT_APP_MSG;
+import static org.egov.waterconnection.constants.WCConstants.DEFAULT_OBJECT_EDIT_SMS_MSG;
+import static org.egov.waterconnection.constants.WCConstants.DEFAULT_OBJECT_MODIFY_APP_MSG;
+import static org.egov.waterconnection.constants.WCConstants.DEFAULT_OBJECT_MODIFY_SMS_MSG;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -9,6 +14,7 @@ import java.util.stream.Collectors;
 
 import org.egov.waterconnection.config.WSConfiguration;
 import org.egov.waterconnection.constants.WCConstants;
+import org.egov.waterconnection.producer.WaterConnectionProducer;
 import org.egov.waterconnection.util.NotificationUtil;
 import org.egov.waterconnection.util.WaterServicesUtil;
 import org.egov.waterconnection.validator.ValidateProperty;
@@ -29,8 +35,6 @@ import org.springframework.util.StringUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.extern.slf4j.Slf4j;
-
-import static org.egov.waterconnection.constants.WCConstants.*;
 
 @Service
 @Slf4j
@@ -53,6 +57,9 @@ public class EditNotificationService {
 	
 	@Autowired
 	private WaterServicesUtil waterServicesUtil;
+
+	@Autowired
+	private WaterConnectionProducer producer;
 	
 
 	public void sendEditNotification(WaterConnectionRequest request) {
@@ -173,5 +180,10 @@ public class EditNotificationService {
 			smsRequest.add(req);
 		});
 		return smsRequest;
+	}
+
+
+	public void sendEventNotification(EventRequest request) {
+		producer.push(config.getSaveUserEventsTopic(), request);
 	}
 }

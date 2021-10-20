@@ -1,6 +1,10 @@
 package org.egov.waterconnection.util;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import org.egov.common.contract.request.RequestInfo;
@@ -11,6 +15,7 @@ import org.egov.mdms.model.MdmsCriteriaReq;
 import org.egov.mdms.model.ModuleDetail;
 import org.egov.tracer.model.CustomException;
 import org.egov.waterconnection.config.WSConfiguration;
+import org.egov.waterconnection.repository.ServiceRequestRepository;
 import org.egov.waterconnection.web.models.AuditDetails;
 import org.egov.waterconnection.web.models.Property;
 import org.egov.waterconnection.web.models.PropertyCriteria;
@@ -19,7 +24,6 @@ import org.egov.waterconnection.web.models.RequestInfoWrapper;
 import org.egov.waterconnection.web.models.SearchCriteria;
 import org.egov.waterconnection.web.models.WaterConnectionRequest;
 import org.egov.waterconnection.web.models.workflow.BusinessService;
-import org.egov.waterconnection.repository.ServiceRequestRepository;
 import org.egov.waterconnection.workflow.WorkflowService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -303,5 +307,8 @@ public class WaterServicesUtil {
 		StringBuilder builder = new StringBuilder();
 		return builder.append(config.getCollectionHost()).append(config.getPaymentSearch());
 	}
-
+	
+	public StringBuilder getMdmsSearchUrl() {
+	        return new StringBuilder().append(config.getMdmsHost()).append(config.getMdmsEndPoint());
+	}
 }

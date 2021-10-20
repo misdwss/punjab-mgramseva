@@ -268,4 +268,6 @@ public class WCConstants {
 	public static final String INVALID_CHECKLIST_ANS = "INVALID_CHECKLIST_ANS";	
 	public static final String SUCCESSFUL_FEEDBACK_SUBMIT = "Successfully submitted feedback";
 
+    public static final String MDMS_EGFFINACIALYEAR_PATH = "$.MdmsRes.egf-master.FinancialYear[?(@.code==\"{}\")]";
+
 }

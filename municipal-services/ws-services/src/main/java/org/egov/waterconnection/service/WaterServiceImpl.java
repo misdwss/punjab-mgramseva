@@ -1,8 +1,13 @@
 package org.egov.waterconnection.service;
 
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -11,6 +16,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
+
+import javax.validation.Valid;
 
 import org.egov.common.contract.request.RequestInfo;
 import org.egov.tracer.model.CustomException;
@@ -30,6 +37,7 @@ import org.egov.waterconnection.web.models.CheckList;
 import org.egov.waterconnection.web.models.Feedback;
 import org.egov.waterconnection.web.models.FeedbackRequest;
 import org.egov.waterconnection.web.models.FeedbackSearchCriteria;
+import org.egov.waterconnection.web.models.LastMonthSummary;
 import org.egov.waterconnection.web.models.Property;
 import org.egov.waterconnection.web.models.SearchCriteria;
 import org.egov.waterconnection.web.models.WaterConnection;
@@ -378,6 +386,69 @@ public class WaterServiceImpl implements WaterService {
 
 		return returnMap;
 	}
+
+	public LastMonthSummary getLastMonthSummary(SearchCriteria criteria, RequestInfo requestInfo) {
+
+		LastMonthSummary lastMonthSummary = new LastMonthSummary();
+		String tenantId = criteria.getTenantId();
+		LocalDate currentMonthDate = LocalDate.now();
+		if(criteria.getCurrentDate() !=null) {
+			Calendar currentDate =Calendar.getInstance();
+			currentDate.setTimeInMillis(criteria.getCurrentDate());
+			currentMonthDate = LocalDate.of(currentDate.get(Calendar.YEAR),currentDate.get(Calendar.MONTH)+1, currentDate.get(Calendar.DAY_OF_MONTH));
+		}
+		LocalDate prviousMonthStart = currentMonthDate.minusMonths(1).with(TemporalAdjusters.firstDayOfMonth());
+		LocalDate prviousMonthEnd = currentMonthDate.minusMonths(1).with(TemporalAdjusters.lastDayOfMonth());
+
+		LocalDateTime previousMonthStartDateTime = LocalDateTime.of(prviousMonthStart.getYear(),
+				prviousMonthStart.getMonth(), prviousMonthStart.getDayOfMonth(), 0, 0, 0);
+		LocalDateTime previousMonthEndDateTime = LocalDateTime.of(prviousMonthEnd.getYear(), prviousMonthEnd.getMonth(),
+				prviousMonthEnd.getDayOfMonth(), 23, 59, 59);
+
+		// actual payments
+		Integer previousMonthExpensePayments = repository.getPreviousMonthExpensePayments(tenantId,
+				((Long) previousMonthStartDateTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()),
+				((Long) previousMonthEndDateTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()));
+		if (null != previousMonthExpensePayments)
+			lastMonthSummary.setPreviousMonthCollection(previousMonthExpensePayments.toString());
+
+		// new expenditure
+		Integer previousMonthNewExpense = repository.getPreviousMonthNewExpense(tenantId,
+				((Long) previousMonthStartDateTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()),
+				((Long) previousMonthEndDateTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()));
+		if (null != previousMonthNewExpense )
+			lastMonthSummary.setPreviousMonthNewExpense(previousMonthNewExpense.toString());
+
+		// pending expenes to be paid
+		Integer cumulativePendingExpense = repository.getCumulativePendingExpense(tenantId);
+		if (null != cumulativePendingExpense )
+			lastMonthSummary.setCumulativePendingExpense(cumulativePendingExpense.toString());
+
+		//pending ws collectioni
+		Integer cumulativePendingCollection = repository.getTotalPendingCollection(tenantId);
+		if (null != cumulativePendingExpense )
+			lastMonthSummary.setCumulativePendingCollection(cumulativePendingCollection.toString());
+
+		// ws demands in period
+		Integer newDemand = repository.getNewDemand(tenantId,
+				((Long) previousMonthStartDateTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()),
+				((Long) previousMonthEndDateTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()));
+		if (null != newDemand )
+			lastMonthSummary.setNewDemand(newDemand.toString());
+
+		// actuall ws collection
+		Integer actualCollection = repository.getActualCollection(tenantId,
+				((Long) previousMonthStartDateTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()),
+				((Long) previousMonthEndDateTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()));
+		if (null != actualCollection )
+			lastMonthSummary.setActualCollection(actualCollection.toString());
+
+		lastMonthSummary.setPreviousMonthYear(getMonthYear());
+		
+		return lastMonthSummary;
+
+	}
+	
 	
 	
 }

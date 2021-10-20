@@ -1,5 +1,7 @@
 package org.egov.waterconnection.repository.builder;
 
+import static org.egov.waterconnection.constants.WCConstants.SEARCH_TYPE_CONNECTION;
+
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -12,13 +14,10 @@ import org.egov.waterconnection.util.WaterServicesUtil;
 import org.egov.waterconnection.web.models.FeedbackSearchCriteria;
 import org.egov.waterconnection.web.models.Property;
 import org.egov.waterconnection.web.models.SearchCriteria;
-import org.egov.waterconnection.web.models.users.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
-
-import static org.egov.waterconnection.constants.WCConstants.SEARCH_TYPE_CONNECTION;
 
 @Component
 public class WsQueryBuilder {
@@ -63,22 +62,33 @@ public class WsQueryBuilder {
 			+ "eg_ws_roadcuttinginfo roadcuttingInfo ON roadcuttingInfo.wsid = conn.id" ;
 
 	private static final String PAGINATION_WRAPPER = "{} {orderby} {pagination}";
-	
-	private static final String ORDER_BY_CLAUSE= " ORDER BY wc.appCreatedDate DESC";
-	
+
+	private static final String ORDER_BY_CLAUSE = " ORDER BY wc.appCreatedDate DESC";
+
 	public static final String GET_BILLING_CYCLE = "select fromperiod,toperiod from egcl_billdetial where billid=(select billid from egcl_paymentdetail where paymentid=?)";
 
 	public static final String FEEDBACK_BASE_QUERY = "select id,tenantid,connectionno,paymentid, billingcycle,additionaldetails,createdtime,lastmodifiedtime,createdby,lastmodifiedby from eg_ws_feedback where tenantid=?";
-	
+
 	public static final String TotalCollectionAmount = " select sum(payd.amountpaid)  from egcl_paymentdetail payd join egcl_bill payspay ON ( payd.billid = payspay.id) where payd.businessservice='WS' ";
 
 	public static final String CollectionAmountList = " select sum(payd.amountpaid) from egcl_paymentdetail payd join egcl_bill payspay ON ( payd.billid = payspay.id) where payd.businessservice='WS' ";
 
 	public static final String PROPERTY_COUNT = "select additionaldetails->>'propertyType' as propertytype,count(additionaldetails->>'propertyType') from eg_ws_connection as conn";
 
-	public static final String COLLECTION_DATA_COUNT =  "SELECT (select sum(dd.taxamount) - sum(dd.collectionamount) as pendingamount from egbs_demand_v1 d join egbs_demanddetail_v1 dd on d.id = dd.demandid group by d.consumercode, d.status having d.status = 'ACTIVE' and d.consumercode = conn.connectionno ) as pendingamount FROM eg_ws_connection conn INNER JOIN eg_ws_service wc ON wc.connection_id = conn.id";
+	public static final String COLLECTION_DATA_COUNT = "SELECT (select sum(dd.taxamount) - sum(dd.collectionamount) as pendingamount from egbs_demand_v1 d join egbs_demanddetail_v1 dd on d.id = dd.demandid group by d.consumercode, d.status having d.status = 'ACTIVE' and d.consumercode = conn.connectionno ) as pendingamount FROM eg_ws_connection conn INNER JOIN eg_ws_service wc ON wc.connection_id = conn.id";
+
+	public static final String PENDINGCOLLECTION = "SELECT SUM(DEMANDDTL.TAXAMOUNT) FROM EGBS_DEMANDDETAIL_V1 DEMANDDTL JOIN EGBS_DEMAND_V1 DEMAND ON(DEMANDDTL.DEMANDID = DEMAND.ID) JOIN EG_WS_CONNECTION CONN ON(DEMAND.CONSUMERCODE = CONN.CONNECTIONNO) WHERE DEMANDDTL.COLLECTIONAMOUNT <= 0";
+
+	private static final String TENANTIDS = "SELECT distinct(tenantid) FROM eg_echallan challan";
+
+	public static final String PREVIOUSMONTHEXPPAYMENT = "SELECT SUM(PAYMT.TOTALAMOUNTPAID) FROM EGCL_PAYMENT PAYMT JOIN EGCL_PAYMENTDETAIL PAYMTDTL ON (PAYMTDTL.PAYMENTID = PAYMT.ID) WHERE PAYMTDTL.BUSINESSSERVICE like '%EXPENSE%' ";
+
+	public static final String PREVIOUSMONTHEXPENSE = " select sum(billdtl.totalamount) from eg_echallan challan, egbs_billdetail_v1 billdtl, egbs_bill_v1 bill  where challan.challanno= billdtl.consumercode  and billdtl.billid = bill.id and challan.isbillpaid ='true'  ";
+
+	public static final String PREVIOUSDAYCASHCOLLECTION = "select  count(*), sum(totalamountpaid) from egcl_payment where paymentmode='CASH' ";
 	
-	
+	public static final String PREVIOUSDAYONLINECOLLECTION = "select  count(*), sum(totalamountpaid) from egcl_payment where paymentmode='ONLINE' ";
+
 	/**
 	 * 
 	 * @param criteria
@@ -416,5 +426,9 @@ public class WsQueryBuilder {
 
 		return query.toString();
 
+	}
+
+	public String getDistinctTenantIds() {
+		return TENANTIDS;
 	}
 }
