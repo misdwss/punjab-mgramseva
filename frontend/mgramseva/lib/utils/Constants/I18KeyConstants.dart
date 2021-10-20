@@ -538,6 +538,8 @@ class _DashBoard {
   String get DASHBOARD_TOTAL_EXPENDITURE => 'dashboard_totalExpenditure';
   String get DASHBOARD_AMOUNT_UNPAID => 'dashboard_amountUnpaid';
   String get DASHBOARD_AMOUNT_PAID => 'dashboard_amountPaid';
+
+  String get YEAR_TOOL_TIP_MESSAGE => 'YEAR_TOOL_TIP_MESSAGE';
 }
 
 class _ExpenseWalkThroughMsg {

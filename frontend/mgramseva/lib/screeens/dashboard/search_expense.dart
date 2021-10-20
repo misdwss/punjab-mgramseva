@@ -16,6 +16,7 @@ import 'package:mgramseva/utils/models.dart';
 import 'package:mgramseva/utils/notifyers.dart';
 import 'package:mgramseva/widgets/ListLabelText.dart';
 import 'package:mgramseva/widgets/TextFieldBuilder.dart';
+import 'package:mgramseva/widgets/footer.dart';
 import 'package:mgramseva/widgets/grid_view.dart';
 import 'package:provider/provider.dart';
 
@@ -67,10 +68,7 @@ class _SearchExpenseDashboardState extends State<SearchExpenseDashboard> with Si
         children: [
           Visibility(
               visible: dashBoardProvider.selectedMonth.dateType == DateType.MONTH && dashBoardProvider.metricInformation != null,
-              child: Padding(
-                padding: const EdgeInsets.only(top: 5),
-                child: GridViewBuilder(gridList:  dashBoardProvider.metricInformation ?? <Metric>[], physics: NeverScrollableScrollPhysics()),
-              )
+              child: GridViewBuilder(gridList:  dashBoardProvider.metricInformation ?? <Metric>[], physics: NeverScrollableScrollPhysics())
           ),
           ListLabelText(widget.dashBoardType == DashBoardType.collections ?  i18.dashboard.SEARCH_CONSUMER_RECORDS : i18.dashboard.SEARCH_EXPENSE_BILL,
           style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),

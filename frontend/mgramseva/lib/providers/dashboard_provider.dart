@@ -477,6 +477,8 @@ class DashBoardProvider with ChangeNotifier {
   void onChangeOfDate(DatePeriod? date, BuildContext context) {
     selectedMonth = date ?? DatePeriod(DateTime.now(),DateTime.now(), DateType.MONTH);
     notifyListeners();
+    fetchDashboardMetricInformation(context, selectedDashboardType == DashBoardType.Expenditure ? true : false);
+    fetchUserFeedbackDetails(context);
     fetchDetails(context, limit, 1, true);
   }
 

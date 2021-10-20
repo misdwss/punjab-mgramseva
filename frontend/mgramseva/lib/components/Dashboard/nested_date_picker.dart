@@ -85,47 +85,51 @@ class _NestedDatePickerState extends State<NestedDatePicker> {
                       return Wrap(
                         direction: Axis.vertical,
                         children: [
-                          Container(
-                            width: 200,
-                            decoration: index ==
-                                yearWithMonths.monthList.length - 1
-                                ? BoxDecoration(
+                          Tooltip(
+                            padding: EdgeInsets.all(5),
+                            message: '${ApplicationLocalizations.of(context).translate(i18.dashboard.YEAR_TOOL_TIP_MESSAGE)}',
+                            child: Container(
+                              width: 200,
+                              decoration: index ==
+                                  yearWithMonths.monthList.length - 1
+                                  ? BoxDecoration(
+                                  color: index % 2 == 0
+                                      ? Color.fromRGBO(238, 238, 238, 1)
+                                      : Color.fromRGBO(255, 255, 255, 1),
+                                  borderRadius: BorderRadius.only(
+                                    bottomRight: Radius.circular(5.0),
+                                    bottomLeft: Radius.circular(5.0),
+                                  ))
+                                  : BoxDecoration(
                                 color: index % 2 == 0
                                     ? Color.fromRGBO(238, 238, 238, 1)
                                     : Color.fromRGBO(255, 255, 255, 1),
-                                borderRadius: BorderRadius.only(
-                                  bottomRight: Radius.circular(5.0),
-                                  bottomLeft: Radius.circular(5.0),
-                                ))
-                                : BoxDecoration(
-                              color: index % 2 == 0
-                                  ? Color.fromRGBO(238, 238, 238, 1)
-                                  : Color.fromRGBO(255, 255, 255, 1),
-                            ),
-                            padding: EdgeInsets.symmetric(
-                                vertical: 8, horizontal: 8),
-                            child:
-                            Wrap(
-                              spacing: 5,
-                              crossAxisAlignment: WrapCrossAlignment.center,
-                              alignment: WrapAlignment.spaceBetween,
-                              children: [
-                                InkWell(
-                                  onTap: () => onSelectionOfExpansion(yearWithMonths),
-                                  child: Text(
-                                    '${DateFormats.getMonthAndYear(yearWithMonths.year, context)}',
-                                    style: TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: yearStatus(yearWithMonths)
-                                            ? FontWeight.bold
-                                            : FontWeight.normal),
+                              ),
+                              padding: EdgeInsets.symmetric(
+                                  vertical: 8, horizontal: 8),
+                              child:
+                              Wrap(
+                                spacing: 5,
+                                crossAxisAlignment: WrapCrossAlignment.center,
+                                alignment: WrapAlignment.spaceBetween,
+                                children: [
+                                  InkWell(
+                                    onTap: () => onSelectionOfExpansion(yearWithMonths),
+                                    child: Text(
+                                      '${DateFormats.getMonthAndYear(yearWithMonths.year, context)}',
+                                      style: TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: yearStatus(yearWithMonths)
+                                              ? FontWeight.bold
+                                              : FontWeight.normal),
+                                    ),
                                   ),
-                                ),
-                                Radio(
-                                    value: yearWithMonths.year,
-                                    groupValue: selectedMonth,
-                                    onChanged: onSelectionOfDate)
-                              ],
+                                  Radio(
+                                      value: yearWithMonths.year,
+                                      groupValue: selectedMonth,
+                                      onChanged: onSelectionOfDate)
+                                ],
+                              ),
                             ),
                           ),
                           Visibility(
