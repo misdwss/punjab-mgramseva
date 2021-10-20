@@ -56,11 +56,9 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class SchedulerService {
 
-
-
 	@Autowired
 	private WaterRepository repository;
-	
+
 	@Autowired
 	private WSConfiguration config;
 
@@ -69,23 +67,21 @@ public class SchedulerService {
 
 	@Autowired
 	private NotificationUtil util;
-	
+
 	@Autowired
 	private UserService userService;
 
 	@Autowired
 	private WaterConnectionProducer producer;
-	
+
 	@Autowired
 	private RestTemplate restTemplate;
 
-	
 	@Autowired
 	private WaterServicesUtil utils;
-	
+
 	@Autowired
 	private ServiceRequestRepository serviceRequestRepository;
-	
 
 	public static final String USREVENTS_EVENT_TYPE = "SYSTEMGENERATED";
 	public static final String USREVENTS_EVENT_NAME = "Challan";
@@ -102,7 +98,6 @@ public class SchedulerService {
 	private static final String TODAY_CASH_COLLECTION_SMS = "TODAY_COLLECTION_FROM_CASH";
 	private static final String TODAY_ONLINE_COLLECTION_SMS = "TODAY_COLLECTION_FROM_ONLINE";
 
-	
 	/**
 	 * Send the pending collection notification every fortnight
 	 * 
@@ -118,84 +113,80 @@ public class SchedulerService {
 				dateTimeFormatter);
 
 		List<String> tenantIds = repository.getTenantId();
-		if (currentTime.isEqual(scheduleTimeFirst) || currentTime.isEqual(scheduleTimeSecond)) {
-			tenantIds.forEach(tenantId -> {
-				if (tenantId.split("\\.").length >= 2) {
-					if (null != config.getIsUserEventsNotificationEnabled()) {
-						if (config.getIsUserEventsNotificationEnabled()) {
-							EventRequest eventRequest = sendPendingCollectionNotification(requestInfo, tenantId);
-							if (null != eventRequest)
-								notificationService.sendEventNotification(eventRequest);
-						}
-					}
-
-					if (null != config.getIsSMSEnabled()) {
-						if (config.getIsSMSEnabled()) {
-							HashMap<String, String> messageMap = util.getLocalizationMessage(requestInfo,
-									PENDING_COLLECTION_SMS, tenantId);
-							UserDetailResponse userDetailResponse = userService.getUserByRoleCodes(requestInfo,
-									tenantId, Arrays.asList("GP_ADMIN"));
-
-							String penColLink = config.getWebUiPath() + config.getMonthRevenueDashboardLink();
-							Map<String, String> mobileNumberIdMap = new LinkedHashMap<>();
-
-							for (OwnerInfo userInfo : userDetailResponse.getUser())
-								if (userInfo.getName() != null) {
-									mobileNumberIdMap.put(userInfo.getMobileNumber(), userInfo.getName());
-								} else {
-									mobileNumberIdMap.put(userInfo.getMobileNumber(), userInfo.getUserName());
-								}
-							mobileNumberIdMap.entrySet().stream().forEach(map -> {
-								if (messageMap != null
-										&& !StringUtils.isEmpty(messageMap.get(NotificationUtil.MSG_KEY))) {
-									String uuidUsername = map.getValue();
-									String message = formatPendingCollectionMessage(requestInfo, tenantId,
-											messageMap.get(NotificationUtil.MSG_KEY));
-									message = message.replace("{PENDING_COL_LINK}",
-											getShortenedUrl(penColLink));
-									message = message.replace("{GPWSC}", tenantId);
-									message = message.replace("{ownername}", uuidUsername);
-									DateFormat format = new SimpleDateFormat("dd/MM/yyyy");
-                                                                        Date today = new Date();
-                                                                        String formattedDate = format.format(today);
-                                                                        message = message.replace("{Date}", formattedDate);
-
-									message = message.replace("{Date}", LocalDate.now().toString());
-									System.out.println("PENDING Coll SMS::" + message);
-									SMSRequest smsRequest = SMSRequest.builder().mobileNumber(map.getKey())
-											.message(message)
-											.templateId(messageMap.get(NotificationUtil.TEMPLATE_KEY))
-											.users(new String[] { uuidUsername }).build();
-									producer.push(config.getSmsNotifTopic(), smsRequest);
-								}
-							});
-						}
+		tenantIds.forEach(tenantId -> {
+			if (tenantId.split("\\.").length >= 2) {
+				if (null != config.getIsUserEventsNotificationEnabled()) {
+					if (config.getIsUserEventsNotificationEnabled()) {
+						EventRequest eventRequest = sendPendingCollectionNotification(requestInfo, tenantId);
+						if (null != eventRequest)
+							notificationService.sendEventNotification(eventRequest);
 					}
 				}
-			});
-		}
+
+				if (null != config.getIsSMSEnabled()) {
+					if (config.getIsSMSEnabled()) {
+						HashMap<String, String> messageMap = util.getLocalizationMessage(requestInfo,
+								PENDING_COLLECTION_SMS, tenantId);
+						UserDetailResponse userDetailResponse = userService.getUserByRoleCodes(requestInfo, tenantId,
+								Arrays.asList("GP_ADMIN"));
+
+						String penColLink = config.getWebUiPath() + config.getMonthRevenueDashboardLink();
+						Map<String, String> mobileNumberIdMap = new LinkedHashMap<>();
+
+						for (OwnerInfo userInfo : userDetailResponse.getUser())
+							if (userInfo.getName() != null) {
+								mobileNumberIdMap.put(userInfo.getMobileNumber(), userInfo.getName());
+							} else {
+								mobileNumberIdMap.put(userInfo.getMobileNumber(), userInfo.getUserName());
+							}
+						mobileNumberIdMap.entrySet().stream().forEach(map -> {
+							if (messageMap != null && !StringUtils.isEmpty(messageMap.get(NotificationUtil.MSG_KEY))) {
+								String uuidUsername = map.getValue();
+								String message = formatPendingCollectionMessage(requestInfo, tenantId,
+										messageMap.get(NotificationUtil.MSG_KEY));
+								message = message.replace("{PENDING_COL_LINK}", getShortenedUrl(penColLink));
+								message = message.replace("{GPWSC}", tenantId);
+								message = message.replace("{ownername}", uuidUsername);
+								DateFormat format = new SimpleDateFormat("dd/MM/yyyy");
+								Date today = new Date();
+								String formattedDate = format.format(today);
+								message = message.replace("{Date}", formattedDate);
+
+								message = message.replace("{Date}", LocalDate.now().toString());
+								System.out.println("PENDING Coll SMS::" + message);
+								SMSRequest smsRequest = SMSRequest.builder().mobileNumber(map.getKey()).message(message)
+										.templateId(messageMap.get(NotificationUtil.TEMPLATE_KEY))
+										.users(new String[] { uuidUsername }).build();
+								producer.push(config.getSmsNotifTopic(), smsRequest);
+							}
+						});
+					}
+				}
+			}
+		});
 	}
 
 	private CharSequence getShortenedUrl(String url) {
 		String res = null;
-		HashMap<String,String> body = new HashMap<>();
-		body.put("url",url);
+		HashMap<String, String> body = new HashMap<>();
+		body.put("url", url);
 		StringBuilder builder = new StringBuilder(config.getUrlShortnerHost());
 		builder.append(config.getUrlShortnerEndpoint());
 		try {
 			res = restTemplate.postForObject(builder.toString(), body, String.class);
 
-		}catch(Exception e) {
-			 log.error("Error while shortening the url: " + url,e);
-			
+		} catch (Exception e) {
+			log.error("Error while shortening the url: " + url, e);
+
 		}
-		if(StringUtils.isEmpty(res)){
-			log.error("URL_SHORTENING_ERROR","Unable to shorten url: "+url); ;
+		if (StringUtils.isEmpty(res)) {
+			log.error("URL_SHORTENING_ERROR", "Unable to shorten url: " + url);
+			;
 			return url;
-		}
-		else return res;
+		} else
+			return res;
 	}
-	
+
 	public String formatPendingCollectionMessage(RequestInfo requestInfo, String tenantId, String message) {
 
 		Map<String, Object> financialYear = getFinancialYear(requestInfo, tenantId);
@@ -214,12 +205,13 @@ public class SchedulerService {
 				else
 					message = message.replace("{amount}", "0");
 				System.out.println("Final SMS MEssage is :" + message);
-			}if(message.contains("{TODAY_DATE}")) {
-				DateFormat format = new SimpleDateFormat("dd/MM/yyyy");
-                                Date today = new Date();
-                                String formattedDate = format.format(today);
-                                message = message.replace("{TODAY_DATE}", formattedDate);
 			}
+		if (message.contains("{TODAY_DATE}")) {
+			DateFormat format = new SimpleDateFormat("dd/MM/yyyy");
+			Date today = new Date();
+			String formattedDate = format.format(today);
+			message = message.replace("{TODAY_DATE}", formattedDate);
+		}
 		System.out.println("Final message is :" + message);
 		return message;
 	}
@@ -242,7 +234,7 @@ public class SchedulerService {
 
 		return financialYearProperties;
 	}
-	
+
 	public String prepareFinanceYear() {
 		LocalDateTime localDateTime = LocalDateTime.now();
 		int currentMonth = localDateTime.getMonthValue();
@@ -270,7 +262,7 @@ public class SchedulerService {
 				.build();
 		return MdmsCriteriaReq.builder().requestInfo(requestInfo).mdmsCriteria(mdmsCriteria).build();
 	}
-	
+
 	public EventRequest sendPendingCollectionNotification(RequestInfo requestInfo, String tenantId) {
 		List<ActionItem> items = new ArrayList<>();
 		String actionLink = config.getPendingCollectionLink();
@@ -311,7 +303,6 @@ public class SchedulerService {
 		return recepient;
 	}
 
-	
 	/**
 	 * Send the month summary notification new calendar month
 	 * 
@@ -328,58 +319,55 @@ public class SchedulerService {
 				dateTimeFormatter);
 
 		List<String> tenantIds = repository.getTenantId();
-		if (currentTime.isEqual(scheduleTime)) {
-			tenantIds.forEach(tenantId -> {
-				if (tenantId.split("\\.").length >= 2) {
-					if (null != config.getIsUserEventsNotificationEnabled()) {
-						if (config.getIsUserEventsNotificationEnabled()) {
-							EventRequest eventRequest = sendMonthSummaryNotification(requestInfo, tenantId);
-							if (null != eventRequest)
-								notificationService.sendEventNotification(eventRequest);
-						}
-					}
-
-					if (null != config.getIsSMSEnabled()) {
-						if (config.getIsSMSEnabled()) {
-							HashMap<String, String> messageMap = util.getLocalizationMessage(requestInfo,
-									MONTHLY_SUMMARY_SMS, tenantId);
-							UserDetailResponse userDetailResponse = userService.getUserByRoleCodes(requestInfo, tenantId,
-									Arrays.asList("EXPENSE_PROCESSING"));
-
-							String revenueLink = config.getWebUiPath() + config.getMonthRevenueDashboardLink();
-							
-							Map<String, String> mobileNumberIdMap = new LinkedHashMap<>();
-							for (OwnerInfo userInfo : userDetailResponse.getUser())
-								if (userInfo.getName() != null) {
-									mobileNumberIdMap.put(userInfo.getMobileNumber(), userInfo.getName());
-								} else {
-									mobileNumberIdMap.put(userInfo.getMobileNumber(), userInfo.getUserName());
-								}
-							mobileNumberIdMap.entrySet().stream().forEach(map -> {
-								if (messageMap != null
-										&& !StringUtils.isEmpty(messageMap.get(NotificationUtil.MSG_KEY))) {
-									String uuidUsername = (String) map.getValue();
-									String message = formatMonthSummaryMessage(requestInfo, tenantId,
-											messageMap.get(NotificationUtil.MSG_KEY));
-									message = message.replace("{LINK}", getShortenedUrl(revenueLink));
-									message = message.replace("{GPWSC}", tenantId); // TODO Replace
-									// <GPWSC> with
-									// value
-									message = message.replace("{user}", uuidUsername);
-									System.out.println("SMS Notification::" + message);
-									SMSRequest smsRequest = SMSRequest.builder().mobileNumber(map.getKey())
-											.message(message).templateId(messageMap.get(NotificationUtil.TEMPLATE_KEY))
-											.users(new String[] { uuidUsername }).build();
-									producer.push(config.getSmsNotifTopic(), smsRequest);
-								}
-							});
-						}
+		tenantIds.forEach(tenantId -> {
+			if (tenantId.split("\\.").length >= 2) {
+				if (null != config.getIsUserEventsNotificationEnabled()) {
+					if (config.getIsUserEventsNotificationEnabled()) {
+						EventRequest eventRequest = sendMonthSummaryNotification(requestInfo, tenantId);
+						if (null != eventRequest)
+							notificationService.sendEventNotification(eventRequest);
 					}
 				}
-			});
 
-		}
+				if (null != config.getIsSMSEnabled()) {
+					if (config.getIsSMSEnabled()) {
+						HashMap<String, String> messageMap = util.getLocalizationMessage(requestInfo,
+								MONTHLY_SUMMARY_SMS, tenantId);
+						UserDetailResponse userDetailResponse = userService.getUserByRoleCodes(requestInfo, tenantId,
+								Arrays.asList("EXPENSE_PROCESSING"));
+
+						String revenueLink = config.getWebUiPath() + config.getMonthRevenueDashboardLink();
+
+						Map<String, String> mobileNumberIdMap = new LinkedHashMap<>();
+						for (OwnerInfo userInfo : userDetailResponse.getUser())
+							if (userInfo.getName() != null) {
+								mobileNumberIdMap.put(userInfo.getMobileNumber(), userInfo.getName());
+							} else {
+								mobileNumberIdMap.put(userInfo.getMobileNumber(), userInfo.getUserName());
+							}
+						mobileNumberIdMap.entrySet().stream().forEach(map -> {
+							if (messageMap != null && !StringUtils.isEmpty(messageMap.get(NotificationUtil.MSG_KEY))) {
+								String uuidUsername = (String) map.getValue();
+								String message = formatMonthSummaryMessage(requestInfo, tenantId,
+										messageMap.get(NotificationUtil.MSG_KEY));
+								message = message.replace("{LINK}", getShortenedUrl(revenueLink));
+								message = message.replace("{GPWSC}", tenantId); // TODO Replace
+								// <GPWSC> with
+								// value
+								message = message.replace("{user}", uuidUsername);
+								System.out.println("SMS Notification::" + message);
+								SMSRequest smsRequest = SMSRequest.builder().mobileNumber(map.getKey()).message(message)
+										.templateId(messageMap.get(NotificationUtil.TEMPLATE_KEY))
+										.users(new String[] { uuidUsername }).build();
+								producer.push(config.getSmsNotifTopic(), smsRequest);
+							}
+						});
+					}
+				}
+			}
+		});
 	}
+
 	public EventRequest sendMonthSummaryNotification(RequestInfo requestInfo, String tenantId) {
 
 		List<ActionItem> items = new ArrayList<>();
@@ -413,13 +401,11 @@ public class SchedulerService {
 		LocalDateTime previousMonthEndDateTime = LocalDateTime.of(prviousMonthEnd.getYear(), prviousMonthEnd.getMonth(),
 				prviousMonthEnd.getDayOfMonth(), 23, 59, 59);
 
-
 		Integer previousMonthCollection = repository.getPreviousMonthExpensePayments(tenantId,
 				((Long) previousMonthStartDateTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()),
 				((Long) previousMonthEndDateTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()));
-		if (null != previousMonthCollection )
+		if (null != previousMonthCollection)
 			message = message.replace("{PREVIOUS_MONTH_COLLECTION}", previousMonthCollection.toString());
-
 
 		message = message.replace("{PREVIOUS_MONTH}", LocalDate.now().minusMonths(1).getMonth().toString());
 		List<String> previousMonthExpense = repository.getPreviousMonthExpenseExpenses(tenantId,
@@ -441,19 +427,17 @@ public class SchedulerService {
 				dateTimeFormatter);
 
 		List<String> tenantIds = repository.getTenantId();
-		if (currentTime.isEqual(scheduleTime)) {
-			tenantIds.forEach(tenantId -> {
-				if (tenantId.split("\\.").length >= 2) {
-					if (null != config.getIsUserEventsNotificationEnabled()) {
-						if (config.getIsUserEventsNotificationEnabled()) {
-							EventRequest eventRequest = sendGenerateDemandNotification(requestInfo, tenantId);
-							if (null != eventRequest)
-								notificationService.sendEventNotification(eventRequest);
-						}
+		tenantIds.forEach(tenantId -> {
+			if (tenantId.split("\\.").length >= 2) {
+				if (null != config.getIsUserEventsNotificationEnabled()) {
+					if (config.getIsUserEventsNotificationEnabled()) {
+						EventRequest eventRequest = sendGenerateDemandNotification(requestInfo, tenantId);
+						if (null != eventRequest)
+							notificationService.sendEventNotification(eventRequest);
 					}
 				}
-			});
-		}
+			}
+		});
 	}
 
 	public EventRequest sendGenerateDemandNotification(RequestInfo requestInfo, String tenantId) {
@@ -464,14 +448,14 @@ public class SchedulerService {
 		items.add(item);
 		Action action = Action.builder().actionUrls(items).build();
 		System.out.println("Action Link::" + actionLink);
-		
+
 		List<Event> events = new ArrayList<>();
 		HashMap<String, String> messageMap = util.getLocalizationMessage(requestInfo, GENERATE_DEMAND_EVENT, tenantId);
 		String message = messageMap.get(NotificationUtil.MSG_KEY);
 		message = message.replace("{BILLING_CYCLE}", LocalDate.now().getMonth().toString());
 		System.out.println("Demand Genaration Failed::" + messageMap);
-		events.add(Event.builder().tenantId(tenantId).description(message)
-				.eventType(USREVENTS_EVENT_TYPE).name(USREVENTS_EVENT_NAME).postedBy(USREVENTS_EVENT_POSTEDBY)
+		events.add(Event.builder().tenantId(tenantId).description(message).eventType(USREVENTS_EVENT_TYPE)
+				.name(USREVENTS_EVENT_NAME).postedBy(USREVENTS_EVENT_POSTEDBY)
 				.recepient(getRecepient(requestInfo, tenantId)).source(Source.WEBAPP).eventDetails(null).actions(action)
 				.build());
 
@@ -482,7 +466,7 @@ public class SchedulerService {
 		}
 
 	}
-	
+
 	public void sendTodaysCollection(RequestInfo requestInfo) {
 
 		LocalDate date = LocalDate.now();
@@ -494,71 +478,67 @@ public class SchedulerService {
 				dateTimeFormatter);
 		List<String> tenantIds = repository.getTenantId();
 
-		if (currentTime.isEqual(scheduleTime)) {
-			tenantIds.forEach(tenantId -> {
-				if (tenantId.split("\\.").length >= 2) {
-						if (null != config.getIsUserEventsNotificationEnabled()) {
-							if (config.getIsUserEventsNotificationEnabled()) {
-								EventRequest eventRequest = sendDayCollectionNotification(requestInfo, tenantId);
-								if (null != eventRequest)
-									notificationService.sendEventNotification(eventRequest);
-							}
-						}
+		tenantIds.forEach(tenantId -> {
+			if (tenantId.split("\\.").length >= 2) {
+				if (null != config.getIsUserEventsNotificationEnabled()) {
+					if (config.getIsUserEventsNotificationEnabled()) {
+						EventRequest eventRequest = sendDayCollectionNotification(requestInfo, tenantId);
+						if (null != eventRequest)
+							notificationService.sendEventNotification(eventRequest);
+					}
+				}
 
-						if (null != config.getIsSMSEnabled()) {
-							if (config.getIsSMSEnabled()) {
-								List<String> messages = new ArrayList<String>();
-								HashMap<String, String> messageMap = util.getLocalizationMessage(requestInfo,
-										TODAY_CASH_COLLECTION_SMS, tenantId);
-								String mode = "cash";
-								String message = formatTodayCollectionMessage(requestInfo, tenantId,
-										messageMap.get(NotificationUtil.MSG_KEY), mode);
-								HashMap<String, String> onlineMessageMap = util.getLocalizationMessage(requestInfo,
-										TODAY_ONLINE_COLLECTION_SMS, tenantId);
-								messages.add(message);
-								mode = "online";
+				if (null != config.getIsSMSEnabled()) {
+					if (config.getIsSMSEnabled()) {
+						List<String> messages = new ArrayList<String>();
+						HashMap<String, String> messageMap = util.getLocalizationMessage(requestInfo,
+								TODAY_CASH_COLLECTION_SMS, tenantId);
+						String mode = "cash";
+						String message = formatTodayCollectionMessage(requestInfo, tenantId,
+								messageMap.get(NotificationUtil.MSG_KEY), mode);
+						HashMap<String, String> onlineMessageMap = util.getLocalizationMessage(requestInfo,
+								TODAY_ONLINE_COLLECTION_SMS, tenantId);
+						messages.add(message);
+						mode = "online";
 //								String onlineMessage = formatTodayCollectionMessage(requestInfo, tenantId,
 //										onlineMessageMap.get(NotificationUtil.MSG_KEY), mode);
 //								messages.add(onlineMessage);
-								UserDetailResponse userDetailResponse = userService.getUserByRoleCodes(requestInfo,
-										tenantId, Arrays.asList("COLLECTION_OPERATOR"));
-								Map<String, String> mobileNumberIdMap = new LinkedHashMap<>();
+						UserDetailResponse userDetailResponse = userService.getUserByRoleCodes(requestInfo, tenantId,
+								Arrays.asList("COLLECTION_OPERATOR"));
+						Map<String, String> mobileNumberIdMap = new LinkedHashMap<>();
 
-								for (OwnerInfo userInfo : userDetailResponse.getUser()) {
-									System.out.println("TODAY Coll User Info::" + userInfo);
-									if (userInfo.getName() != null) {
-										mobileNumberIdMap.put(userInfo.getMobileNumber(), userInfo.getName());
-									} else {
-										mobileNumberIdMap.put(userInfo.getMobileNumber(), userInfo.getUserName());
-									}
-								}
-								mobileNumberIdMap.entrySet().stream().forEach(map -> {
-									if (!messages.isEmpty()) {
-										String uuidUsername = map.getValue();
-
-										messages.forEach(msg -> {
-											msg = msg.replace("{ownername}", uuidUsername);
-											msg = msg.replace("{GPWSC}", tenantId);
-											DateFormat format = new SimpleDateFormat("dd/MM/yyyy");
-                                                                                        Date today = new Date();
-                                                                                        String formattedDate = format.format(today);
-                                                                                        msg = msg.replace("{date}", formattedDate);
-											System.out.println("TODAY Coll SMS::" + msg);
-											SMSRequest smsRequest = SMSRequest.builder().mobileNumber(map.getKey())
-													.message(msg)
-													.templateId(messageMap.get(NotificationUtil.TEMPLATE_KEY))
-													.users(new String[] { uuidUsername }).build();
-											producer.push(config.getSmsNotifTopic(), smsRequest);
-										});
-									}
-								});
+						for (OwnerInfo userInfo : userDetailResponse.getUser()) {
+							System.out.println("TODAY Coll User Info::" + userInfo);
+							if (userInfo.getName() != null) {
+								mobileNumberIdMap.put(userInfo.getMobileNumber(), userInfo.getName());
+							} else {
+								mobileNumberIdMap.put(userInfo.getMobileNumber(), userInfo.getUserName());
 							}
 						}
-				}
-			});
-		}
-	}
+						mobileNumberIdMap.entrySet().stream().forEach(map -> {
+							if (!messages.isEmpty()) {
+								String uuidUsername = map.getValue();
 
+								messages.forEach(msg -> {
+									msg = msg.replace("{ownername}", uuidUsername);
+									msg = msg.replace("{GPWSC}", tenantId);
+									DateFormat format = new SimpleDateFormat("dd/MM/yyyy");
+									Date today = new Date();
+									String formattedDate = format.format(today);
+									msg = msg.replace("{date}", formattedDate);
+									System.out.println("TODAY Coll SMS::" + msg);
+									SMSRequest smsRequest = SMSRequest.builder().mobileNumber(map.getKey()).message(msg)
+											.templateId(messageMap.get(NotificationUtil.TEMPLATE_KEY))
+											.users(new String[] { uuidUsername }).build();
+									producer.push(config.getSmsNotifTopic(), smsRequest);
+								});
+							}
+						});
+					}
+				}
+			}
+		});
+	}
 
 	@SuppressWarnings("null")
 	private EventRequest sendDayCollectionNotification(RequestInfo requestInfo, String tenantId) {
@@ -598,6 +578,7 @@ public class SchedulerService {
 		}
 
 	}
+
 	private String formatTodayCollectionMessage(RequestInfo requestInfo, String tenantId, String message, String mode) {
 		// TODO Auto-generated method stub
 		LocalDate today = LocalDate.now();
@@ -639,5 +620,5 @@ public class SchedulerService {
 		}
 		return message;
 	}
-	
+
 }
