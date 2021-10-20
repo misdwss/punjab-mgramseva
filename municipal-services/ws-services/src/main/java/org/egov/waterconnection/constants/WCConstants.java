@@ -268,4 +268,11 @@ public class WCConstants {
 	public static final String INVALID_CHECKLIST_ANS = "INVALID_CHECKLIST_ANS";	
 	public static final String SUCCESSFUL_FEEDBACK_SUBMIT = "Successfully submitted feedback";
 
+	public static final String AADHAR_KEY = "aadharNumber";
+	public static final String CATEGORY_KEY = "category";
+	public static final String SUBCATEGORY_KEY = "subCategory";
+	public static final String MDMS_WC_MIS_CATEGORY="Category";
+	public static final String MDMS_WC_MIS_SUBCATEGORY="SubCategory";
+	
+
 }

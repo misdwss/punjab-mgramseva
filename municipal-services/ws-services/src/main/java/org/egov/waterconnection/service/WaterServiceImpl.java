@@ -121,6 +121,7 @@ public class WaterServiceImpl implements WaterService {
 //			}
 			reqType = WCConstants.MODIFY_CONNECTION;
 		}
+		mDMSValidator.validateMISFields(waterConnectionRequest);
 		waterConnectionValidator.validateWaterConnection(waterConnectionRequest, reqType);
 		Property property = validateProperty.getOrValidateProperty(waterConnectionRequest);
 		validateProperty.validatePropertyFields(property, waterConnectionRequest.getRequestInfo());
@@ -192,6 +193,7 @@ public class WaterServiceImpl implements WaterService {
 			// Received request to update the connection for modifyConnection WF
 			return updateWaterConnectionForModifyFlow(waterConnectionRequest);
 		}
+		mDMSValidator.validateMISFields(waterConnectionRequest);
 		waterConnectionValidator.validateWaterConnection(waterConnectionRequest, WCConstants.UPDATE_APPLICATION);
 		mDMSValidator.validateMasterData(waterConnectionRequest, WCConstants.UPDATE_APPLICATION);
 		Property property = validateProperty.getOrValidateProperty(waterConnectionRequest);
