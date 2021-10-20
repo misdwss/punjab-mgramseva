@@ -72,7 +72,7 @@ class DashboardCard extends StatelessWidget {
               children: [
                 GridView.count(
                   crossAxisCount: 3,
-                  childAspectRatio: constraints.maxWidth > 760 ? (1 / .3) : 1.3,
+                  childAspectRatio: constraints.maxWidth > 760 ? (1 / .3) : 1.2,
                   shrinkWrap: true,
                   physics: NeverScrollableScrollPhysics(),
                   children: List.generate(
@@ -112,11 +112,14 @@ class DashboardCard extends StatelessWidget {
                                       ],
                                     ),
                                     Expanded(
-                                      child: Text(
-                                        '${ApplicationLocalizations.of(context)
-                                            .translate(feedBackDetails.keys
-                                            .toList()[index].toString())}',
-                                        textAlign: TextAlign.center,
+                                      child: Padding(
+                                        padding: const EdgeInsets.only(top: 5.0),
+                                        child: Text(
+                                          '${ApplicationLocalizations.of(context)
+                                              .translate(feedBackDetails.keys
+                                              .toList()[index].toString())}',
+                                          textAlign: TextAlign.center,
+                                        ),
                                       ),
                                     )
                                   ]),
