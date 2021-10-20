@@ -215,12 +215,14 @@ public class WaterDaoImpl implements WaterDao {
 			for(Map<String, Object> wc : countDataMap) {
 				BigDecimal collectionPendingAmount = (BigDecimal)wc.get("pendingamount");
 				if(collectionPendingAmount != null ) {
-					if(collectionPendingAmount.compareTo(BigDecimal.ZERO) == 0) {
+					if(collectionPendingAmount.compareTo(BigDecimal.ZERO) <= 0) {
 						++paidCount;
 					}
 					else {
 						++pendingCount;
 					}
+				}else {
+					++paidCount;
 				}
 			}
 			if(flag != null) {
