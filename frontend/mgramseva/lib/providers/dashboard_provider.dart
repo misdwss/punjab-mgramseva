@@ -12,6 +12,7 @@ import 'package:mgramseva/repository/dashboard.dart';
 import 'package:mgramseva/repository/expenses_repo.dart';
 import 'package:mgramseva/repository/search_connection_repo.dart';
 import 'package:mgramseva/routers/Routers.dart';
+import 'package:mgramseva/screeens/dashboard/dashboard_pdf.dart';
 import 'package:mgramseva/services/MDMS.dart';
 import 'package:mgramseva/utils/Constants/I18KeyConstants.dart';
 import 'package:mgramseva/utils/Locilization/application_localizations.dart';
@@ -19,6 +20,7 @@ import 'package:mgramseva/utils/common_methods.dart';
 import 'package:mgramseva/utils/date_formats.dart';
 import 'package:mgramseva/utils/error_logging.dart';
 import 'package:mgramseva/utils/global_variables.dart';
+import 'package:mgramseva/utils/loaders.dart';
 import 'package:mgramseva/utils/models.dart';
 import 'package:mgramseva/utils/models.dart';
 import 'package:provider/provider.dart';
@@ -554,4 +556,98 @@ class DashBoardProvider with ChangeNotifier {
       ErrorHandler().allExceptionsHandler(context, e,s);
     }
   }
+
+
+  void createPdfForExpenditure(BuildContext context) async {
+    var commonProvider = Provider.of<CommonProvider>(
+        navigatorKey.currentContext!,
+        listen: false);
+    ExpensesDetailsWithPagination? expenseDashboardDetails;
+
+    Map<String, dynamic> query ={
+      'tenantId': commonProvider.userDetails?.selectedtenant?.code,
+      'offset': '${offset - 1}',
+      'fromDate':
+      '${selectedMonth.startDate.millisecondsSinceEpoch}',
+      'toDate':
+      '${selectedMonth.endDate.millisecondsSinceEpoch}',
+      'status': ["ACTIVE", "PAID"],
+      'isBillCount': 'true'
+    };
+
+    if(selectedTab != 'all'){
+      query['isBillPaid'] = ((selectedTab == 'ACTIVE') ? 'false' : 'true');
+    }
+
+    Loaders.showLoadingDialog(context);
+    try {
+      expenseDashboardDetails = await ExpensesRepository().expenseDashboard(query);
+      Navigator.pop(context);
+    }catch(e,s){
+      Navigator.pop(context);
+      ErrorHandler().allExceptionsHandler(context, e, s);
+      return;
+    }
+
+    if(expenseDashboardDetails == null || expenseDashboardDetails.expenseDetailList == null || expenseDashboardDetails.expenseDetailList!.isEmpty) return;
+
+   var hearList = [i18.dashboard.BILL_ID_VENDOR, i18.expense.EXPENSE_TYPE, i18.common.AMOUNT, i18.expense.BILL_DATE, i18.common.PAID_DATE];
+
+    var tableData = expenseDashboardDetails.expenseDetailList?.map<List<String>>((expense) => [
+     '${expense.challanNo} \n ${expense.vendorName}',
+     '${ApplicationLocalizations.of(context).translate(expense.expenseType ?? '')}',
+     '₹ ${expense.totalAmount ?? '-'}',
+     '${DateFormats.timeStampToDate(expense.billDate)}',
+     '${expense.paidDate != null && expense.paidDate != 0 ? DateFormats.timeStampToDate(expense.paidDate) : (ApplicationLocalizations.of(navigatorKey.currentContext!).translate(i18.dashboard.PENDING))}',
+   ]).toList() ?? [];
+
+    DashboardPdfCreator(context,  hearList.map<String>((e) => '${ApplicationLocalizations.of(navigatorKey.currentContext!).translate(e)}').toList(), tableData, metricInformation ?? <Metric>[], userFeedBackInformation ?? {},).pdfPreview();
+  }
+
+  void createPdfForCollection(BuildContext context) async {
+    var commonProvider = Provider.of<CommonProvider>(
+        navigatorKey.currentContext!,
+        listen: false);
+    WaterConnections? waterConnectionsDetails;
+
+    var query = {
+      'tenantId': commonProvider.userDetails?.selectedtenant?.code,
+      'offset': '${offset - 1}',
+      'fromDate':
+      '${selectedMonth.startDate.millisecondsSinceEpoch}',
+      'toDate':
+      '${selectedMonth.endDate.millisecondsSinceEpoch}',
+      'iscollectionAmount': 'true',
+      'isPropertyCount': 'true',
+    };
+
+    if(selectedTab != 'all'){
+      query['propertyType'] = selectedTab;
+    }
+
+    Loaders.showLoadingDialog(context);
+    try {
+      waterConnectionsDetails = await SearchConnectionRepository().getconnection(query);
+
+      Navigator.pop(context);
+    }catch(e,s){
+      Navigator.pop(context);
+      ErrorHandler().allExceptionsHandler(context, e, s);
+      return;
+    }
+
+    if(waterConnectionsDetails.waterConnection == null || waterConnectionsDetails.waterConnection!.isEmpty) return;
+
+    var hearList = [i18.common.CONNECTION_ID, i18.common.NAME, i18.dashboard.COLLECTIONS];
+
+    var tableData = waterConnectionsDetails.waterConnection?.map<List<String>>((connection) => [
+      '${connection.connectionNo ?? ''} ${connection.connectionType == 'Metered' ? '- M' : ''}',
+      '${connection.connectionHolders?.first.name ?? ''}',
+      '${connection.additionalDetails?.collectionAmount != null ? '₹ ${connection.additionalDetails?.collectionAmount}' : '-'}',
+    ]).toList() ?? [];
+
+    DashboardPdfCreator(context,  hearList.map<String>((e) => '${ApplicationLocalizations.of(navigatorKey.currentContext!).translate(e)}').toList(), tableData, metricInformation ?? <Metric>[], userFeedBackInformation ?? {}).pdfPreview();
+  }
+
+
 }

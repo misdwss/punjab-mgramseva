@@ -1,6 +1,8 @@
 import 'dart:async';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:mgramseva/model/bill/bill_payments.dart';
 import 'package:mgramseva/model/file/file_store.dart';
 import 'package:mgramseva/model/localization/language.dart';
@@ -18,14 +20,17 @@ import 'package:mgramseva/utils/constants.dart';
 import 'package:mgramseva/utils/date_formats.dart';
 import 'package:mgramseva/utils/error_logging.dart';
 import 'package:mgramseva/utils/global_variables.dart';
+import 'package:mgramseva/utils/loaders.dart';
 import 'package:mgramseva/utils/models.dart';
 import 'package:mgramseva/utils/notifyers.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/foundation.dart';
 import 'package:universal_html/html.dart' as html;
 import 'package:universal_html/html.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:url_launcher/url_launcher.dart';
+import 'package:pdf/widgets.dart' as pw;
 
 class CommonProvider with ChangeNotifier {
   List<LocalizationLabel> localizedStrings = <LocalizationLabel>[];
@@ -382,6 +387,57 @@ class CommonProvider with ChangeNotifier {
       }
     } catch (e) {
       return '';
+    }
+  }
+
+
+  Future<void> sharePdfOnWhatsApp(BuildContext context, pw.Document pdf, String fileName, String localizedText) async {
+    try {
+
+      /// Enable loader
+      Loaders.showLoadingDialog(context, label : '');
+
+      Uint8List data = await pdf.save();
+
+      /// Uploading file to S3 bucket
+      var file = CustomFile(data, fileName, 'pdf');
+      var response = await CoreRepository().uploadFiles(
+          <CustomFile>[file], APIConstants.API_MODULE_NAME);
+
+      if(response.isNotEmpty){
+        var commonProvider = Provider.of<CommonProvider>(context, listen: false);
+        var res = await CoreRepository().fetchFiles([response.first.fileStoreId!]);
+        if(res != null && res.isNotEmpty) {
+          var url = res.first.url ?? '';
+          if (url.contains(',')) {
+            url = url.split(',').first;
+          }
+          response.first.url = url;
+
+          commonProvider.shareonwatsapp(
+              response.first, null,
+              localizedText);
+        }
+      }
+      navigatorKey.currentState?.pop();
+    }catch(e,s){
+      navigatorKey.currentState?.pop();
+      ErrorHandler().allExceptionsHandler(context, e, s);
+    }
+  }
+
+
+  Future<pw.Font> getPdfFontFamily() async {
+    var language = Provider.of<LanguageProvider>(navigatorKey.currentContext!,
+        listen: false);
+
+    switch(language.selectedLanguage!.value){
+      case 'en_IN' :
+        return pw.Font.ttf(await rootBundle.load('assets/fonts/Roboto/Roboto-Regular.ttf'));
+      case 'hi_IN' :
+        return pw.Font.ttf(await rootBundle.load('assets/fonts/Roboto/Hind-Regular.ttf'));
+      default :
+        return pw.Font.ttf(await rootBundle.load('assets/fonts/Roboto/raavi.ttf'));
     }
   }
 }
