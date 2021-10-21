@@ -37,7 +37,7 @@ public class NICSMSServiceImpl extends BaseSMSService {
     	try {
         	String url = smsProperties.getUrl();
         	
-            if (smsProperties.requestType.equals("POST")) {
+            if (!smsProperties.requestType.equals("POST")) {
                 HttpEntity<MultiValueMap<String, String>> request = getRequest(sms);
                 log.info("calling executeApi() method :: POST call");
                 executeAPI(URI.create(url), HttpMethod.POST, request, String.class);
