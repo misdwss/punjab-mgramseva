@@ -8,7 +8,11 @@ class EventsList {
   List<Events>? events;
 
   @JsonKey(name: "totalCount")
+<<<<<<< HEAD
   int? totalCount;
+=======
+  String? totalCount;
+>>>>>>> 5f1eadc8 (IFIX-578)
 
   EventsList();
   factory EventsList.fromJson(Map<String, dynamic> json) =>

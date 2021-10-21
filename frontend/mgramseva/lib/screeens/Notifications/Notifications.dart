@@ -8,7 +8,6 @@ import 'package:mgramseva/utils/loaders.dart';
 import 'package:mgramseva/utils/notifyers.dart';
 import 'package:mgramseva/widgets/DrawerWrapper.dart';
 import 'package:mgramseva/widgets/FormWrapper.dart';
-import 'package:mgramseva/widgets/HomeBack.dart';
 import 'package:mgramseva/widgets/ListLabelText.dart';
 import 'package:mgramseva/widgets/Notifications.dart';
 import 'package:mgramseva/widgets/SideBar.dart';
@@ -67,7 +66,6 @@ class _NotificationScreen extends State<NotificationScreen> {
                 SingleChildScrollView(
                     child: Container(
                         child: Column(children: [
-                  HomeBack(),
                   StreamBuilder(
                       stream: notificationProvider.streamController.stream,
                       builder: (context, AsyncSnapshot snapshot) {
@@ -93,17 +91,16 @@ class _NotificationScreen extends State<NotificationScreen> {
                     alignment: Alignment.bottomRight,
                     child: Consumer<NotificationScreenProvider>(
                         builder: (_, notificationProvider, child) {
-                      var totalCount = notificationProvider.totalCount;
+                      var totalCount = (200) ?? 0;
                       return Visibility(
                           visible: totalCount > 0,
                           child: Pagination(
-                              limit: notificationProvider.limit,
-                              offSet: notificationProvider.offset,
-                              callBack: (pageResponse) => notificationProvider
-                                  .onChangeOfPageLimit(pageResponse),
-                              totalCount: totalCount,
-                              isDisabled:
-                                  notificationProvider.enableNotification));
+                            limit: notificationProvider.limit,
+                            offSet: notificationProvider.offset,
+                            callBack: (pageResponse) => notificationProvider
+                                .onChangeOfPageLimit(pageResponse),
+                            totalCount: totalCount,
+                          ));
                     })),
               ]))),
         ));
@@ -115,7 +112,7 @@ class _NotificationScreen extends State<NotificationScreen> {
         events!.length > 0
             ? Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
                 ListLabelText(ApplicationLocalizations.of(context)
-                        .translate(i18.common.ALL_NOTIFICATIONS) +
+                        .translate(i18.common.NOTIFICATIONS) +
                     " (" +
                     events.length.toString() +
                     ")"),
