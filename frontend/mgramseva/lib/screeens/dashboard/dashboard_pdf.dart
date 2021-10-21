@@ -45,6 +45,7 @@ class DashboardPdfCreator {
     pdf.addPage(
         pw.MultiPage(
         pageFormat: PdfPageFormat.a4,
+        margin: pw.EdgeInsets.symmetric(horizontal: 16),
         footer: (_) => PdfUtils.pdfFooter(digitLogo),
         build: (pw.Context context) {
           return [
@@ -72,25 +73,6 @@ class DashboardPdfCreator {
     localizedText = localizedText.replaceAll('<Month-Year>', DateFormats.getMonthAndYear(dashBoardProvider.selectedMonth, buildContext));
 
     Provider.of<CommonProvider>(buildContext, listen: false).sharePdfOnWhatsApp(buildContext, pdf, 'dashboard', localizedText);
-
-    if (kIsWeb) {
-      final blob = html.Blob([await pdf.save()]);
-      final url = html.Url.createObjectUrlFromBlob(blob);
-      final anchor = html.document.createElement('a') as html.AnchorElement
-        ..href = url
-        ..style.display = 'none'
-        ..download = 'dashboard.pdf';
-      html.document.body?.children.add(anchor);
-      anchor.click();
-      html.document.body?.children.remove(anchor);
-      html.Url.revokeObjectUrl(url);
-    } else {
-      final Directory directory = await getApplicationDocumentsDirectory();
-      final file = File('${directory.path}/example.pdf');
-      await file.writeAsBytes(await pdf.save());
-      // Navigator.pushReplacement(buildContext,
-      //     MaterialPageRoute(builder: (_) => PdfPreview(path: file.path)));
-    }
   }
 
 
@@ -166,7 +148,6 @@ class DashboardPdfCreator {
     return pw.Container(
         color: PdfColor.fromHex('#fafafa'),
         padding: pw.EdgeInsets.symmetric(vertical: 3, horizontal: 8),
-        margin: pw.EdgeInsets.symmetric(vertical: 3),
         child: pw.Column(mainAxisSize: pw.MainAxisSize.min, children: [
           pw.Padding(
               padding: pw.EdgeInsets.symmetric(vertical: 8),
@@ -192,7 +173,9 @@ class DashboardPdfCreator {
     localizationLabel = localizationLabel.replaceAll('<n>', (feedBack['count'] ?? 0).toString());
     localizationLabel = localizationLabel.replaceAll('<date>', DateFormats.getMonthAndYear(dashBoardProvider.selectedMonth, context)).toString();
     
-    return pw.Wrap(
+    return pw.Padding(
+        padding: pw.EdgeInsets.symmetric(horizontal : 10),
+        child : pw.Wrap(
         children : [
           pw.Container(
         height: 60,
@@ -251,17 +234,17 @@ class DashboardPdfCreator {
                 )),
           ).toList(),
         )),
-          pw.SizedBox(height: 10),
-          pw.Text("$localizationLabel",
+        pw.Padding(
+            padding: pw.EdgeInsets.only(top: 10, bottom: 5),
+            child : pw.Text("$localizationLabel",
             textAlign: pw.TextAlign.left,
             style: pw.TextStyle(
                 fontSize: 12,
                 color: PdfColor.fromHex('#0B0C0C'),
                 font: font
             ),
-          ),
-          pw.SizedBox(height: 10)
-    ]);
+          ))
+    ]));
   }
 
   pw.Table _buildTable(pw.Font ttf){
@@ -269,9 +252,11 @@ class DashboardPdfCreator {
             headers: headers,
             headerStyle:
             pw.TextStyle(font: ttf, fontWeight: pw.FontWeight.bold),
+            cellPadding: pw.EdgeInsets.symmetric(vertical: 10),
             cellStyle: pw.TextStyle(
               font: ttf,
-              fontSize: 12
+              fontSize: 12,
+              fontWeight: pw.FontWeight.normal,
             ),
             cellAlignment: pw.Alignment.center,
             data: tableData,

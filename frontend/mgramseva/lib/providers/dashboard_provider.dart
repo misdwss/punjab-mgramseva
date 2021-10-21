@@ -566,7 +566,7 @@ class DashBoardProvider with ChangeNotifier {
 
     Map<String, dynamic> query ={
       'tenantId': commonProvider.userDetails?.selectedtenant?.code,
-      'offset': '${offset - 1}',
+      'offset': '0',
       'fromDate':
       '${selectedMonth.startDate.millisecondsSinceEpoch}',
       'toDate':
@@ -574,10 +574,6 @@ class DashBoardProvider with ChangeNotifier {
       'status': ["ACTIVE", "PAID"],
       'isBillCount': 'true'
     };
-
-    if(selectedTab != 'all'){
-      query['isBillPaid'] = ((selectedTab == 'ACTIVE') ? 'false' : 'true');
-    }
 
     Loaders.showLoadingDialog(context);
     try {
@@ -612,18 +608,15 @@ class DashBoardProvider with ChangeNotifier {
 
     var query = {
       'tenantId': commonProvider.userDetails?.selectedtenant?.code,
-      'offset': '${offset - 1}',
+      'offset': '0',
       'fromDate':
       '${selectedMonth.startDate.millisecondsSinceEpoch}',
       'toDate':
       '${selectedMonth.endDate.millisecondsSinceEpoch}',
       'iscollectionAmount': 'true',
-      'isPropertyCount': 'true',
+      // 'isPropertyCount': 'true',
     };
 
-    if(selectedTab != 'all'){
-      query['propertyType'] = selectedTab;
-    }
 
     Loaders.showLoadingDialog(context);
     try {
@@ -635,8 +628,6 @@ class DashBoardProvider with ChangeNotifier {
       ErrorHandler().allExceptionsHandler(context, e, s);
       return;
     }
-
-    if(waterConnectionsDetails.waterConnection == null || waterConnectionsDetails.waterConnection!.isEmpty) return;
 
     var hearList = [i18.common.CONNECTION_ID, i18.common.NAME, i18.dashboard.COLLECTIONS];
 
