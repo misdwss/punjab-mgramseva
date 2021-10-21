@@ -31,6 +31,8 @@ class PdfUtils {
               pw.Wrap(
                   crossAxisAlignment: pw.WrapCrossAlignment.center,
                   children: [
+                    pw.Icon(pw.IconData(0xe800),
+                        color: PdfColor.fromHex('#FFFFFF'), font: icons),
                     pw.SizedBox(width: 2),
                     pw.Image(image, width: 90),
                   ]),
@@ -58,11 +60,12 @@ class PdfUtils {
         navigatorKey.currentContext!,
         listen: false);
 
-    return await networkImage(languageProvider.stateInfo?.logoUrlWhite ?? '');
+    return await networkImage(
+        /*languageProvider.stateInfo?.logoUrlWhite ?? */ 'https://mgramseva-qa.egov.org.in/mgramseva-dev-assets/logo/imagewhite.png');
   }
 
-  static Future<pw.ImageProvider> get powerdByDigit async =>
-      await networkImage("$apiBaseUrl${Constants.DIGIT_FOOTER_ENDPOINT}");
+  static Future<pw.ImageProvider> get powerdByDigit async => await networkImage(
+      'https://s3.ap-south-1.amazonaws.com/egov-qa-assets/digit-footer.png');
 
   static pw.Widget pdfFooter(pw.ImageProvider image) {
     return pw.Container(
