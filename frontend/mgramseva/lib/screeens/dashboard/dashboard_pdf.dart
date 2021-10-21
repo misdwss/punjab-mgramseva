@@ -50,7 +50,7 @@ class DashboardPdfCreator {
           return [
             PdfUtils.buildAppBar(buildContext, mgramSevaLogo, icons, ttf),
             _buildDashboardView(buildContext, feedBack, icons, ttf),
-            _buildGridView(gridList, buildContext),
+            _buildGridView(gridList, buildContext, ttf),
             pw.Container(
               margin: pw.EdgeInsets.only(top: 14, bottom: 3),
               child: pw.Text(
@@ -58,7 +58,8 @@ class DashboardPdfCreator {
                   i18.dashboard.EXPENDITURE_ALL_RECORDS :  i18.dashboard.CONSUMER_ALL_RECORDS)}',
               style: pw.TextStyle(
                 fontSize: 14,
-                fontWeight: pw.FontWeight.bold
+                fontWeight: pw.FontWeight.bold,
+                font: ttf
               )
               )
             ),
@@ -94,7 +95,7 @@ class DashboardPdfCreator {
 
 
 
-  pw.Widget _buildGridView(List<Metric> gridList, BuildContext context) {
+  pw.Widget _buildGridView(List<Metric> gridList, BuildContext context, pw.Font font) {
     var dashBoardProvider = Provider.of<DashBoardProvider>(navigatorKey.currentContext!, listen: false);
 
     var crossAxisCount = 3;
@@ -111,7 +112,7 @@ class DashboardPdfCreator {
               padding: pw.EdgeInsets.symmetric(vertical: 5, horizontal: 10),
               margin: pw.EdgeInsets.only(top: 8, bottom: 3),
               child:
-                  pw.Text('${ApplicationLocalizations.of(context).translate('${dashBoardProvider.selectedDashboardType == DashBoardType.Expenditure ? i18.dashboard.EXPENDITURE : i18.dashboard.COLLECTIONS}')}', style: pw.TextStyle(fontSize: 16, fontWeight: pw.FontWeight.bold))),
+                  pw.Text('${ApplicationLocalizations.of(context).translate('${dashBoardProvider.selectedDashboardType == DashBoardType.Expenditure ? i18.dashboard.EXPENDITURE : i18.dashboard.COLLECTIONS}')}', style: pw.TextStyle(fontSize: 16, font: font, fontWeight: pw.FontWeight.bold))),
       pw.Container(
           height: 60,
           color: PdfColor.fromHex('#fafafa'),
@@ -143,6 +144,7 @@ class DashboardPdfCreator {
                             textAlign: pw.TextAlign.center,
                             style: pw.TextStyle(
                               fontSize: 16,
+                              font: font,
                               fontWeight: pw.FontWeight.bold,
                             ),
                           ),
@@ -151,7 +153,7 @@ class DashboardPdfCreator {
                             ApplicationLocalizations.of(context)
                                 .translate('${item.value}'),
                             textAlign: pw.TextAlign.center,
-                            style: pw.TextStyle(fontSize: 14),
+                            style: pw.TextStyle(fontSize: 14, font: font),
                           )
                         ]));
               })))
@@ -173,9 +175,9 @@ class DashboardPdfCreator {
                   children: [
                     pw.Text( '${ApplicationLocalizations.of(context).translate(i18.dashboard.DASHBOARD)}',
                         style: pw.TextStyle(
-                            fontSize: 16, fontWeight: pw.FontWeight.bold)),
+                            fontSize: 16, font: font, fontWeight: pw.FontWeight.bold)),
                     pw.Text(DateFormats.getMonthAndYear(dashBoardProvider.selectedMonth, context),
-                        style: pw.TextStyle(color: PdfColor.fromHex('#F47738')))
+                        style: pw.TextStyle(font : font, color: PdfColor.fromHex('#F47738')))
                   ])),
          if(feedBack.isNotEmpty) _buildRatingView(context, feedBack, icons, font)
         ]));
@@ -224,6 +226,7 @@ class DashboardPdfCreator {
                               textAlign: pw.TextAlign.center,
                               style: pw.TextStyle(
                                 fontSize: 14,
+                                font: font,
                                 fontWeight: pw.FontWeight.bold,
                               ),
                             ),
@@ -238,6 +241,9 @@ class DashboardPdfCreator {
                             child: pw.Text(
                               '${ApplicationLocalizations.of(context).translate('DASHBOARD_${feedBackDetails.keys.toList()[index].toString()}')}',
                               textAlign: pw.TextAlign.center,
+                              style: pw.TextStyle(
+                                font: font
+                              )
                             ),
                           ),
                         )
