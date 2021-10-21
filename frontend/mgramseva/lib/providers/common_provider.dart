@@ -274,9 +274,10 @@ class CommonProvider with ChangeNotifier {
     if (store.url == null) return;
     late html.AnchorElement anchorElement;
     try {
+      print(mobileNumber);
       var res = await CoreRepository().urlShotner(store.url as String);
       if (kIsWeb) {
-
+        print(mobileNumber);
         if(mobileNumber == null){
           anchorElement = new html.AnchorElement(
               href: "https://wa.me/send?text=" +
@@ -290,8 +291,16 @@ class CommonProvider with ChangeNotifier {
         anchorElement.target = "_blank";
         anchorElement.click();
       } else {
-        var link = "https://wa.me/+91$mobileNumber?text=" +
+        var link ;
+        print(mobileNumber);
+        if(mobileNumber == null) {
+          link = "https://wa.me/send?text=" +
+              input.toString().replaceFirst('<link>', res!);
+        }
+        else{
+         link = "https://wa.me/+91$mobileNumber?text=" +
             input.toString().replaceFirst('<link>', res!);
+        }
         await canLaunch(link)
             ? launch(link)
             : ErrorHandler.logError('failed to launch the url ${link}');
@@ -391,35 +400,56 @@ class CommonProvider with ChangeNotifier {
   }
 
 
-  Future<void> sharePdfOnWhatsApp(BuildContext context, pw.Document pdf, String fileName, String localizedText) async {
+  Future<void> sharePdfOnWhatsApp(BuildContext context, pw.Document pdf, String fileName, String localizedText, {bool isDownload = false}) async {
     try {
 
-      /// Enable loader
-      Loaders.showLoadingDialog(context, label : '');
+      if(isDownload && kIsWeb){
+        final blob = html.Blob([await pdf.save()]);
+        final url = html.Url.createObjectUrlFromBlob(blob);
+        final anchor = html.document.createElement('a') as html.AnchorElement
+          ..href = url
+          ..style.display = 'none'
+          ..download = '$fileName.pdf';
+        html.document.body?.children.add(anchor);
+        anchor.click();
+        html.document.body?.children.remove(anchor);
+        html.Url.revokeObjectUrl(url);
+      }else {
+        /// Enable loader
+        Loaders.showLoadingDialog(context, label: '');
 
-      Uint8List data = await pdf.save();
+        Uint8List data = await pdf.save();
 
-      /// Uploading file to S3 bucket
-      var file = CustomFile(data, fileName, 'pdf');
-      var response = await CoreRepository().uploadFiles(
-          <CustomFile>[file], APIConstants.API_MODULE_NAME);
+        /// Uploading file to S3 bucket
+        var file = CustomFile(data, fileName, 'pdf');
+        var response = await CoreRepository().uploadFiles(
+            <CustomFile>[file], APIConstants.API_MODULE_NAME);
 
-      if(response.isNotEmpty){
-        var commonProvider = Provider.of<CommonProvider>(context, listen: false);
-        var res = await CoreRepository().fetchFiles([response.first.fileStoreId!]);
-        if(res != null && res.isNotEmpty) {
-          var url = res.first.url ?? '';
-          if (url.contains(',')) {
-            url = url.split(',').first;
+        if (response.isNotEmpty) {
+          var commonProvider = Provider.of<CommonProvider>(
+              context, listen: false);
+          var res = await CoreRepository().fetchFiles(
+              [response.first.fileStoreId!]);
+          if (res != null && res.isNotEmpty) {
+            if (isDownload) {
+              CoreRepository().fileDownload(context, res.first.url ?? '');
+            } else {
+              var url = res.first.url ?? '';
+              if (url.contains(',')) {
+                url = url
+                    .split(',')
+                    .first;
+              }
+              response.first.url = url;
+
+              commonProvider.shareonwatsapp(
+                  response.first, null,
+                  localizedText);
+            }
           }
-          response.first.url = url;
-
-          commonProvider.shareonwatsapp(
-              response.first, null,
-              localizedText);
         }
+        navigatorKey.currentState?.pop();
       }
-      navigatorKey.currentState?.pop();
     }catch(e,s){
       navigatorKey.currentState?.pop();
       ErrorHandler().allExceptionsHandler(context, e, s);

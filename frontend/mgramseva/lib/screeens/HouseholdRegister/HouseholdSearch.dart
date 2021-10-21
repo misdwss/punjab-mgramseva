@@ -1,5 +1,3 @@
-
-
 import 'package:buttons_tabbar/buttons_tabbar.dart';
 import 'package:flutter/material.dart';
 import 'package:mgramseva/model/connection/water_connection.dart';
@@ -7,8 +5,10 @@ import 'package:mgramseva/providers/household_register_provider.dart';
 import 'package:mgramseva/screeens/HouseholdRegister/HouseholdList.dart';
 import 'package:mgramseva/utils/Constants/I18KeyConstants.dart';
 import 'package:mgramseva/utils/Locilization/application_localizations.dart';
+import 'package:mgramseva/utils/models.dart';
 import 'package:mgramseva/widgets/TextFieldBuilder.dart';
 import 'package:provider/provider.dart';
+
 
 class HouseholdSearch extends StatefulWidget {
 
@@ -23,7 +23,7 @@ class _HouseholdSearchState extends State<HouseholdSearch> with SingleTickerProv
     Provider.of<HouseholdRegisterProvider>(context, listen: false)
       ..limit = 10
       ..offset = 1
-      ..sortBy = null;
+      ..sortBy = SortBy('connectionNumber', false);
     WidgetsBinding.instance?.addPostFrameCallback((_) => afterViewBuild());
     super.initState();
   }
@@ -35,14 +35,15 @@ class _HouseholdSearchState extends State<HouseholdSearch> with SingleTickerProv
       householdRegisterProvider
         ..waterConnectionsDetails?.waterConnection = <WaterConnection>[]
         ..waterConnectionsDetails?.totalCount = null;
-
   }
+
 
   @override
   Widget build(BuildContext context) {
     var householdRegisterProvider = Provider.of<HouseholdRegisterProvider>(context, listen: false);
     return  Column(
         children: [
+          SizedBox(height: 10,),
           BuildTextField(
             '',
             householdRegisterProvider.searchController,
@@ -56,6 +57,7 @@ class _HouseholdSearchState extends State<HouseholdSearch> with SingleTickerProv
             placeHolder: i18.dashboard.SEARCH_NAME_CONNECTION,
             onChange: (val) => householdRegisterProvider.onSearch(val, context),
           ),
+          SizedBox(height: 10,),
           Expanded(
             child: _buildTabView(),
           )
@@ -96,7 +98,9 @@ class _HouseholdSearchState extends State<HouseholdSearch> with SingleTickerProv
                 ),
                 SizedBox(height: 20,),
                 TextButton.icon(
-                  onPressed: () => {},
+                  onPressed: () {
+                    householdRegisterProvider.createPdfForAllConnections(context, true);
+                  },
                   icon: Icon(Icons.download_sharp),
                   label: Text('${ApplicationLocalizations.of(context).translate(i18.common.DOWNLOAD)} '
                       '(${householdRegisterProvider.getDownloadList()} '

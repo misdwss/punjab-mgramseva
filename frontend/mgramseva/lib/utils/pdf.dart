@@ -11,12 +11,12 @@ import 'global_variables.dart';
 
 class PdfUtils {
 
-  static pw.Widget buildAppBar(BuildContext context, pw.ImageProvider image, pw.Font icons) {
+  static pw.Widget buildAppBar(BuildContext context, pw.ImageProvider image, pw.Font icons, pw.Font font) {
     var commonProvider = Provider.of<CommonProvider>(
         navigatorKey.currentContext!,
         listen: false);
 
-    var style = pw.TextStyle(fontSize: 14, color: PdfColor.fromHex('#FFFFFF'));
+    var style = pw.TextStyle(fontSize: 14, font: font, color: PdfColor.fromHex('#FFFFFF'));
 
     return pw.Container(
         padding: pw.EdgeInsets.symmetric(vertical: 8, horizontal: 8),
@@ -25,10 +25,14 @@ class PdfUtils {
         child: pw.Row(
             mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
             children: [
-              pw.Icon(pw.IconData(0xe800), color: PdfColor.fromHex('#FFFFFF'), font: icons),
-              pw.SizedBox(width: 2),
-              pw.Image(image,
-                width: 90),
+              pw.Wrap(
+                  crossAxisAlignment: pw.WrapCrossAlignment.center,
+                  children : [
+                    pw.Icon(pw.IconData(0xe800), color: PdfColor.fromHex('#FFFFFF'), font: icons),
+                    pw.SizedBox(width: 2),
+                    pw.Image(image,
+                        width: 90),
+                  ]),
               pw.Wrap(
                 spacing: 3,
                 children: [
@@ -40,7 +44,7 @@ class PdfUtils {
                   pw.Text(
                       ApplicationLocalizations.of(context).translate(
                           commonProvider
-                                  .userDetails?.selectedtenant?.city?.code ??
+                              .userDetails?.selectedtenant?.city?.code ??
                               ''),
                       style: style)
                 ],
@@ -53,20 +57,20 @@ class PdfUtils {
     Provider.of<LanguageProvider>(navigatorKey.currentContext!, listen: false);
 
     return await networkImage(
-        /*languageProvider.stateInfo?.logoUrlWhite ?? */'https://mgramseva-qa.egov.org.in/mgramseva-dev-assets/logo/imagewhite.png');
+      /*languageProvider.stateInfo?.logoUrlWhite ?? */'https://mgramseva-qa.egov.org.in/mgramseva-dev-assets/logo/imagewhite.png');
   }
 
-    static Future<pw.ImageProvider> get powerdByDigit async => await networkImage(
-        'https://s3.ap-south-1.amazonaws.com/egov-qa-assets/digit-footer.png');
+  static Future<pw.ImageProvider> get powerdByDigit async => await networkImage(
+      'https://s3.ap-south-1.amazonaws.com/egov-qa-assets/digit-footer.png');
 
-    static pw.Widget pdfFooter(pw.ImageProvider image){
-      return pw.Container(
-          margin: pw.EdgeInsets.only(top: 10),
-          alignment: pw.Alignment.center,
-          child: pw.SizedBox(
-              width: 100,
-              child: pw.Image(image)
-          )
-      );
-    }
+  static pw.Widget pdfFooter(pw.ImageProvider image){
+    return pw.Container(
+        margin: pw.EdgeInsets.only(top: 10),
+        alignment: pw.Alignment.center,
+        child: pw.SizedBox(
+            width: 100,
+            child: pw.Image(image)
+        )
+    );
   }
+}

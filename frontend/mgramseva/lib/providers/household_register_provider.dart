@@ -1,17 +1,28 @@
 import 'dart:async';
-
+import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:mgramseva/model/connection/water_connection.dart';
 import 'package:mgramseva/model/connection/water_connections.dart';
 import 'package:mgramseva/providers/common_provider.dart';
 import 'package:mgramseva/repository/search_connection_repo.dart';
 import 'package:mgramseva/routers/Routers.dart';
+import 'package:mgramseva/screeens/HouseholdRegister/household_pdf.dart';
 import 'package:mgramseva/utils/Constants/I18KeyConstants.dart';
 import 'package:mgramseva/utils/Locilization/application_localizations.dart';
+import 'package:mgramseva/utils/date_formats.dart';
 import 'package:mgramseva/utils/error_logging.dart';
 import 'package:mgramseva/utils/global_variables.dart';
+import 'package:mgramseva/utils/loaders.dart';
 import 'package:mgramseva/utils/models.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
+import 'package:pdf/pdf.dart';
+import 'package:pdf/widgets.dart' as pw;
+import 'language.dart';
+import 'package:flutter/services.dart' show ByteData, rootBundle;
+import 'package:universal_html/html.dart' as html;
 
 class HouseholdRegisterProvider with ChangeNotifier {
   var streamController = StreamController.broadcast();
@@ -155,10 +166,10 @@ class HouseholdRegisterProvider with ChangeNotifier {
         sortBy != null && sortBy!.key == 'connectionNumber'
             ? sortBy!.isAscending
             : null,
-        apiKey: 'connectionNumber ',
+        apiKey: 'connectionNumber',
         callBack: onSort),
     TableHeader(i18.common.NAME,
-        isSortingRequired: true,
+        isSortingRequired: false,
         isAscendingOrder: sortBy != null && sortBy!.key == 'name'
             ? sortBy!.isAscending
             : null,
@@ -255,6 +266,67 @@ class HouseholdRegisterProvider with ChangeNotifier {
 
       fetchHouseholdDetails(
           context, localLimit ?? limit, localOffSet ?? 1, isSearch);
+  }
+
+  void createPdfForAllConnections(BuildContext context, bool isDownload) async {
+    var commonProvider = Provider.of<CommonProvider>(
+        navigatorKey.currentContext!,
+        listen: false);
+    WaterConnections? waterConnectionsDetails;
+
+    var query = {
+      'tenantId': commonProvider.userDetails?.selectedtenant?.code,
+      'offset': "0",
+      'toDate':
+      '${DateTime(DateTime.now().year, DateTime.now().month).millisecondsSinceEpoch}',
+      'isCollectionCount': 'true',
+    };
+
+    if(selectedTab != 'all'){
+      query.addAll({
+        'isBillPaid' : (selectedTab == 'PAID') ? 'true' : 'false'
+      });
+    }
+
+    if (sortBy != null) {
+      query.addAll({
+        'sortOrder': sortBy!.isAscending ? 'ASC' : 'DESC',
+        'sortBy': sortBy!.key
+      });
+    }
+
+    if (searchController.text.trim().isNotEmpty) {
+      query.addAll({
+        'connectionNumber': searchController.text.trim(),
+        // 'name' : searchController.text.trim(),
+        'freeSearch': 'true',
+      });
+    }
+
+    query.removeWhere((key, value) => (value is String && value.trim().isEmpty));
+
+    Loaders.showLoadingDialog(context);
+    try {
+      waterConnectionsDetails = await SearchConnectionRepository().getconnection(query);
+
+      Navigator.pop(context);
+    }catch(e,s){
+      Navigator.pop(context);
+      ErrorHandler().allExceptionsHandler(context, e, s);
+      return;
+    }
+
+    if(waterConnectionsDetails.waterConnection == null || waterConnectionsDetails.waterConnection!.isEmpty) return;
+
+    var headerList = [i18.common.CONNECTION_ID, i18.common.NAME, i18.householdRegister.PENDING_COLLECTIONS];
+
+    var tableData = waterConnectionsDetails.waterConnection?.map<List<String>>((connection) => [
+      '${connection.connectionNo ?? ''} ${connection.connectionType == 'Metered' ? '- M' : ''}',
+      '${connection.connectionHolders?.first.name ?? ''}',
+      '${connection.additionalDetails?.collectionPendingAmount != null ? '₹ ${connection.additionalDetails?.collectionPendingAmount}' : '-'}',
+    ]).toList() ?? [];
+
+    HouseholdPdfCreator(context,  headerList.map<String>((e) => '${ApplicationLocalizations.of(navigatorKey.currentContext!).translate(e)}').toList(), tableData, isDownload).pdfPreview();
   }
 
   bool removeOverLay(_overlayEntry) {
