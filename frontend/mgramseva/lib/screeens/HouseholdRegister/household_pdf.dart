@@ -77,7 +77,6 @@ class HouseholdPdfCreator {
                     height: 20
                 ),
                 _buildTable(ttf),
-                PdfUtils.pdfFooter(digitLogo)
               ];
             }));
 

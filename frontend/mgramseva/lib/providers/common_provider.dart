@@ -275,10 +275,8 @@ class CommonProvider with ChangeNotifier {
     if (store.url == null) return;
     late html.AnchorElement anchorElement;
     try {
-      print(mobileNumber);
       var res = await CoreRepository().urlShotner(store.url as String);
       if (kIsWeb) {
-        print(mobileNumber);
         if(mobileNumber == null){
           anchorElement = new html.AnchorElement(
               href: "https://wa.me/send?text=" +
@@ -293,7 +291,6 @@ class CommonProvider with ChangeNotifier {
         anchorElement.click();
       } else {
         var link ;
-        print(mobileNumber);
         if(mobileNumber == null) {
           final FlutterShareMe flutterShareMe = FlutterShareMe();
           flutterShareMe.shareToWhatsApp(msg: input.toString().replaceFirst('<link>', res!));
