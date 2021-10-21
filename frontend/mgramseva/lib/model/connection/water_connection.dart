@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:mgramseva/model/connection/property.dart';
+import 'package:mgramseva/model/mdms/sub_category_type.dart';
 import 'package:mgramseva/utils/date_formats.dart';
 
 part 'water_connection.g.dart';
@@ -75,6 +76,14 @@ class WaterConnection {
   var meterInstallationDateCtrl = TextEditingController();
 
   @JsonKey(ignore: true)
+  var categoryCtrl = new TextEditingController();
+
+  @JsonKey(ignore: true)
+  var subCategoryCtrl = new TextEditingController();
+  @JsonKey(ignore: true)
+  var addharCtrl = new TextEditingController();
+
+  @JsonKey(ignore: true)
   var ServiceTypeCtrl = TextEditingController();
 
   @JsonKey(ignore: true)
@@ -113,6 +122,9 @@ class WaterConnection {
     OldConnectionCtrl.text = oldConnectionNo ?? "";
     meterIdCtrl.text = meterId ?? "";
     arrearsCtrl.text = arrears.toString();
+    categoryCtrl.text = additionalDetails?.category ?? "";
+    subCategoryCtrl.text = additionalDetails?.subCategory ?? "";
+    addharCtrl.text = additionalDetails?.aadharNumber ?? "";
 
     previousReadingDateCtrl.text = previousReadingDate == null
         ? DateFormats.timeStampToDate(meterInstallationDate)
@@ -158,6 +170,13 @@ class AdditionalDetails {
   @JsonKey(name: "locality")
   String? locality;
 
+  @JsonKey(name: "category")
+  String? category;
+  @JsonKey(name: "subCategory")
+  String? subCategory;
+  @JsonKey(name: "aadharNumber")
+  String? aadharNumber;
+
   @JsonKey(name: "propertyType")
   String? propertyType;
 
@@ -172,7 +191,6 @@ class AdditionalDetails {
 
   @JsonKey(name: "collectionPendingAmount")
   String? collectionPendingAmount;
-
 
   @JsonKey(ignore: true)
   var initialMeterReadingCtrl = TextEditingController();

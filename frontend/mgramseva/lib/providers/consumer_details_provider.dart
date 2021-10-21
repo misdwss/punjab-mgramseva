@@ -6,8 +6,10 @@ import 'package:mgramseva/model/connection/tenant_boundary.dart';
 import 'package:mgramseva/model/connection/water_connection.dart';
 import 'package:mgramseva/model/connection/water_connections.dart';
 import 'package:mgramseva/model/localization/language.dart';
+import 'package:mgramseva/model/mdms/category_type.dart';
 import 'package:mgramseva/model/mdms/connection_type.dart';
 import 'package:mgramseva/model/mdms/property_type.dart';
+import 'package:mgramseva/model/mdms/sub_category_type.dart';
 import 'package:mgramseva/providers/common_provider.dart';
 import 'package:mgramseva/repository/consumer_details_repo.dart';
 import 'package:mgramseva/repository/core_repo.dart';
@@ -35,6 +37,7 @@ class ConsumerProvider with ChangeNotifier {
   int activeindex = 0;
   late WaterConnection waterconnection;
   var boundaryList = <Boundary>[];
+  var categoryList = [];
   var selectedcycle;
   var selectedbill;
   late Property property;
@@ -217,12 +220,21 @@ class ConsumerProvider with ChangeNotifier {
           "initialMeterReading": waterconnection.previousReading,
           "propertyType": property.propertyType,
           "meterReading": waterconnection.previousReading,
+          "category": waterconnection.categoryCtrl.text,
+          "subCategory": waterconnection.subCategoryCtrl.text,
+          "aadharNumber": waterconnection.addharCtrl.text
         });
       } else {
         waterconnection.additionalDetails!.locality =
             property.address.locality!.code;
         waterconnection.additionalDetails!.initialMeterReading =
             waterconnection.previousReading;
+        waterconnection.additionalDetails!.category =
+            waterconnection.categoryCtrl.text;
+        waterconnection.additionalDetails!.subCategory =
+            waterconnection.subCategoryCtrl.text;
+        waterconnection.additionalDetails!.aadharNumber =
+            waterconnection.addharCtrl.text;
         waterconnection.additionalDetails!.street = property.address.street;
         waterconnection.additionalDetails!.doorNo = property.address.doorNo;
         waterconnection.additionalDetails!.meterReading =
@@ -362,6 +374,16 @@ class ConsumerProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  void onChangeOfCategory(val) {
+    waterconnection.additionalDetails?.category = val;
+    notifyListeners();
+  }
+
+  void onChangeOfSubCategory(val) {
+    waterconnection.additionalDetails?.subCategory = val;
+    notifyListeners();
+  }
+
   onChangeOfPropertyType(val) {
     property.propertyType = val;
     notifyListeners();
@@ -373,6 +395,34 @@ class ConsumerProvider with ChangeNotifier {
         return DropdownMenuItem(
           value: value,
           child: new Text(value.code!),
+        );
+      }).toList();
+    }
+    return <DropdownMenuItem<Object>>[];
+  }
+
+  List<DropdownMenuItem<Object>> getCategoryList() {
+    if (languageList?.mdmsRes?.category != null) {
+      return (languageList?.mdmsRes?.category?.categoryList ?? <CategoryType>[])
+          .map((value) {
+        return DropdownMenuItem(
+          value: value.code,
+          child: new Text((value.code!)),
+        );
+      }).toList();
+    }
+    return <DropdownMenuItem<Object>>[];
+  }
+
+  List<DropdownMenuItem<Object>> getSubCategoryList() {
+    print(languageList?.mdmsRes?.subCategory!.subcategoryList!.first.code);
+    if (languageList?.mdmsRes?.subCategory != null) {
+      return (languageList?.mdmsRes?.subCategory?.subcategoryList ??
+              <SubCategoryType>[])
+          .map((value) {
+        return DropdownMenuItem(
+          value: value.code,
+          child: new Text((value.code!)),
         );
       }).toList();
     }
