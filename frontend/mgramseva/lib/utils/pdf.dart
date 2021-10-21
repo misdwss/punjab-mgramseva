@@ -11,7 +11,7 @@ import 'global_variables.dart';
 
 class PdfUtils {
 
-  static pw.Widget buildAppBar(BuildContext context, pw.ImageProvider image) {
+  static pw.Widget buildAppBar(BuildContext context, pw.ImageProvider image, pw.Font icons) {
     var commonProvider = Provider.of<CommonProvider>(
         navigatorKey.currentContext!,
         listen: false);
@@ -25,6 +25,8 @@ class PdfUtils {
         child: pw.Row(
             mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
             children: [
+              pw.Icon(pw.IconData(0xe800), color: PdfColor.fromHex('#FFFFFF'), font: icons),
+              pw.SizedBox(width: 2),
               pw.Image(image,
                 width: 90),
               pw.Wrap(

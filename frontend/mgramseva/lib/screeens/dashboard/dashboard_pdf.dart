@@ -38,6 +38,7 @@ class DashboardPdfCreator {
     final mgramSevaLogo = await PdfUtils.mgramSevaLogo;
     final digitLogo = await PdfUtils.powerdByDigit;
 
+    var icons =  pw.Font.ttf(await rootBundle.load('assets/icons/fonts/PdfIcons.ttf'));
 
     pdf.addPage(
         pw.MultiPage(
@@ -45,8 +46,8 @@ class DashboardPdfCreator {
         footer: (_) => PdfUtils.pdfFooter(digitLogo),
         build: (pw.Context context) {
           return [
-            PdfUtils.buildAppBar(buildContext, mgramSevaLogo),
-            _buildDashboardView(buildContext, feedBack),
+            PdfUtils.buildAppBar(buildContext, mgramSevaLogo, icons),
+            _buildDashboardView(buildContext, feedBack, icons),
             _buildGridView(gridList, buildContext),
             pw.Container(
               margin: pw.EdgeInsets.only(top: 14, bottom: 3),
@@ -150,7 +151,7 @@ class DashboardPdfCreator {
     ]);
   }
 
-  pw.Widget _buildDashboardView(BuildContext context, Map feedBack) {
+  pw.Widget _buildDashboardView(BuildContext context, Map feedBack, pw.Font icons) {
     var dashBoardProvider = Provider.of<DashBoardProvider>(navigatorKey.currentContext!, listen: false);
 
     return pw.Container(
@@ -169,11 +170,11 @@ class DashboardPdfCreator {
                     pw.Text(DateFormats.getMonthAndYear(dashBoardProvider.selectedMonth, context),
                         style: pw.TextStyle(color: PdfColor.fromHex('#F47738')))
                   ])),
-         if(feedBack.isNotEmpty) _buildRatingView(context, feedBack)
+         if(feedBack.isNotEmpty) _buildRatingView(context, feedBack, icons)
         ]));
   }
 
-  pw.Widget _buildRatingView(BuildContext context, Map feedBack) {
+  pw.Widget _buildRatingView(BuildContext context, Map feedBack, pw.Font icons) {
     Map feedBackDetails = Map.from(feedBack);
     feedBackDetails.remove('count');
     return pw.Container(
@@ -211,7 +212,9 @@ class DashboardPdfCreator {
                                 fontWeight: pw.FontWeight.bold,
                               ),
                             ),
-                            // pw.Icon(pw.IconData.),
+                            pw.Icon(pw.IconData(0xe801),
+                                color: PdfColor.fromHex('#F47738'),
+                                font: icons),
                           ],
                         ),
                         pw.Expanded(
