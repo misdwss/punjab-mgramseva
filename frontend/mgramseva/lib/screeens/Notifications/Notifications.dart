@@ -91,7 +91,7 @@ class _NotificationScreen extends State<NotificationScreen> {
                     alignment: Alignment.bottomRight,
                     child: Consumer<NotificationScreenProvider>(
                         builder: (_, notificationProvider, child) {
-                      var totalCount = (200);
+                      var totalCount = (200) ?? 0;
                       return Visibility(
                           visible: totalCount > 0,
                           child: Pagination(
