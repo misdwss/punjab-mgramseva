@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 
 enum RequestType { GET, PUT, POST, DELETE }
@@ -15,7 +17,7 @@ enum MDMSType { BusinessService, ConsumerType, TaxHeadCode }
 
 enum DashBoardType { collections, Expenditure }
 
-enum DateType {YTD, MONTH, YEAR, LABEL}
+enum DateType {YTD, MONTH, YEAR}
 
 class KeyValue {
   String label;
@@ -31,12 +33,12 @@ class HomeItem {
   final Map<String, dynamic> arguments;
 
   const HomeItem(
-    this.label,
-    this.walkThroughMsg,
-    this.iconData,
-    this.link,
-    this.arguments,
-  );
+      this.label,
+      this.walkThroughMsg,
+      this.iconData,
+      this.link,
+      this.arguments,
+      );
 }
 
 class SearchResult {
@@ -60,9 +62,9 @@ class TableHeader {
   String? apiKey;
   TableHeader(this.label,
       {this.callBack,
-      this.isSortingRequired,
-      this.isAscendingOrder,
-      this.apiKey});
+        this.isSortingRequired,
+        this.isAscendingOrder,
+        this.apiKey});
 }
 
 class TableDataRow {
@@ -90,6 +92,15 @@ class DatePeriod {
   final DateType dateType;
   final String? label;
   DatePeriod(this.startDate, this.endDate, this.dateType, [this.label]);
+
+  @override
+  bool operator ==(otherDate) {
+    return (otherDate is DatePeriod)
+        && otherDate.startDate == startDate
+        && otherDate.endDate == endDate
+        && otherDate.dateType == dateType
+        && otherDate.label == label;
+  }
 }
 
 class Legend {
@@ -97,4 +108,20 @@ class Legend {
   final Color color;
 
   Legend(this.label, this.color);
+}
+
+
+class CustomFile {
+  final Uint8List bytes;
+  final String name;
+  final String extension;
+
+  CustomFile(this.bytes, this.name, this.extension);
+}
+
+class YearWithMonths {
+  final List<DatePeriod> monthList;
+  final DatePeriod year;
+  bool isExpanded = false;
+  YearWithMonths(this.monthList, this.year);
 }

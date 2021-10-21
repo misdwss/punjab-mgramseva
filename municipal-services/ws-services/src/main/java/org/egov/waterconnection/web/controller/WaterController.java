@@ -6,15 +6,19 @@ import javax.validation.Valid;
 
 import org.egov.waterconnection.constants.WCConstants;
 import org.egov.waterconnection.repository.WaterDaoImpl;
+
 import org.egov.waterconnection.service.SchedulerService;
 import org.egov.waterconnection.service.WaterService;
 import org.egov.waterconnection.util.ResponseInfoFactory;
 import org.egov.waterconnection.web.models.FeedbackRequest;
 import org.egov.waterconnection.web.models.FeedbackResponse;
-import org.egov.waterconnection.web.models.FeedbackSearchCriteria;
+
 import org.egov.waterconnection.web.models.LastMonthSummary;
 import org.egov.waterconnection.web.models.LastMonthSummaryResponse;
+
 import org.egov.waterconnection.web.models.RequestInfoWrapper;
+import org.egov.waterconnection.web.models.RevenueDashboard;
+import org.egov.waterconnection.web.models.RevenueDashboardResponse;
 import org.egov.waterconnection.web.models.SearchCriteria;
 import org.egov.waterconnection.web.models.WaterConnection;
 import org.egov.waterconnection.web.models.WaterConnectionRequest;
@@ -109,7 +113,19 @@ public class WaterController {
 
 		return new ResponseEntity<>(feedbackResponse, HttpStatus.OK);
 	}
+	@PostMapping("/_revenueDashboard")
+	public ResponseEntity<RevenueDashboardResponse> _expenseDashboard(
+			@RequestBody @Valid final RequestInfoWrapper requestInfoWrapper,
+			@Valid @ModelAttribute SearchCriteria criteria) {
+		RevenueDashboard dashboardData = waterService.getRevenueDashboardData(criteria,
+				requestInfoWrapper.getRequestInfo());
 
+		RevenueDashboardResponse response = RevenueDashboardResponse.builder().RevenueDashboard(dashboardData)
+				.responseInfo(responseInfoFactory.createResponseInfoFromRequestInfo(requestInfoWrapper.getRequestInfo(),
+						true))
+				.build();
+		return new ResponseEntity<>(response, HttpStatus.OK);
+	}
 	
 	@PostMapping("/_schedulerpendingcollection")
 	public void schedulerpendingcollection(@Valid @RequestBody RequestInfoWrapper requestInfoWrapper) {

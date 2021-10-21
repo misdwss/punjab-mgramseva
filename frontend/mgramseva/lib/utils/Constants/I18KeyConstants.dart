@@ -67,6 +67,7 @@ class Common {
   String get NOTIFICATIONS => 'NOTIFICATIONS';
   String get BACK => 'BACK';
   String get DEAR => 'DEAR';
+  String get VIEW_ALL => 'VIEW_ALL';
 
   /// File Picker
   String get TEMPORARY_FILES_REMOVED => 'TEMPORARY_FILES_REMOVED';
@@ -527,6 +528,18 @@ class _DashBoard {
   String get SUMMARY_REPORT => 'SUMMARY_REPORT';
 
   String get USER_GAVE_FEEDBACK => 'USER_GAVE_FEEDBACK';
+  String get ANNUAL_SHARE_MSG_WEB => 'ANNUAL_SHARE_MSG_WEB';
+  String get ANNUAL_SHARE_MSG_MOBILE => 'ANNUAL_SHARE_MSG_MOBILE';
+
+  String get DASHBOARD_DEMAND => 'dashboard_demand';
+  String get DASHBOARD_PENDING_COLLECTION => 'dashboard_pendingCollection';
+  String get DASHBOARD_ACTUAL_COLLECTION => 'dashboard_actualCollection';
+
+  String get DASHBOARD_TOTAL_EXPENDITURE => 'dashboard_totalExpenditure';
+  String get DASHBOARD_AMOUNT_UNPAID => 'dashboard_amountUnpaid';
+  String get DASHBOARD_AMOUNT_PAID => 'dashboard_amountPaid';
+
+  String get YEAR_TOOL_TIP_MESSAGE => 'YEAR_TOOL_TIP_MESSAGE';
 }
 
 class _ExpenseWalkThroughMsg {

@@ -123,7 +123,8 @@ public class SearchCriteria {
 	public enum SortBy {
 		connectionNumber,
 		name,
-		collectionAmount
+		collectionAmount,
+		collectionPendingAmount
 	}
 
 	public boolean isEmpty() {

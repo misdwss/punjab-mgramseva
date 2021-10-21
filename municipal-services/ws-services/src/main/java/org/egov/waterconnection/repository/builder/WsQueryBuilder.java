@@ -91,6 +91,7 @@ public class WsQueryBuilder {
 	  
 	public static final String ACTUALCOLLECTION =" select sum(py.totalAmountPaid) FROM egcl_payment py INNER JOIN egcl_paymentdetail pyd ON pyd.paymentid = py.id where pyd.businessservice='WS' ";
 
+
 	/**
 	 * 
 	 * @param criteria
@@ -252,7 +253,7 @@ public class WsQueryBuilder {
 			paidOrPendingQuery.append(query).append("{orderby}").append(") ").append("select count(*) OVER() AS full_count, * from td where ");
 		
 			if(criteria.getIsBillPaid()) {
-				paidOrPendingQuery.append(" pendingamount = ? ");
+				paidOrPendingQuery.append(" pendingamount <= ? ").append(" or pendingamount is null");
 				preparedStatement.add(0);
 			}else {
 				paidOrPendingQuery.append(" pendingamount > ? ");
@@ -325,10 +326,14 @@ public class WsQueryBuilder {
 
 		if (criteria.getOffset() != null)
 			offset = criteria.getOffset();
-
-		finalQuery = finalQuery.replace("{pagination}", " offset ?  limit ?  ");
-		preparedStmtList.add(offset);
-		preparedStmtList.add(limit + offset);
+		
+		if (limit == -1) {
+			finalQuery = finalQuery.replace("{pagination}", "");
+		} else {
+			finalQuery = finalQuery.replace("{pagination}", " offset ?  limit ?  ");
+			preparedStmtList.add(offset);
+			preparedStmtList.add(limit + offset);
+		}
 		return finalQuery;
 	}
 	
@@ -347,13 +352,15 @@ public class WsQueryBuilder {
 		else if (criteria.getSortBy() == SearchCriteria.SortBy.collectionAmount)
 			builder.append(" ORDER BY collectionamount ");
 		
+		else if(criteria.getSortBy() == SearchCriteria.SortBy.collectionPendingAmount)
+			builder.append(" ORDER BY pendingamount ");
 
 		if (criteria.getSortOrder() == SearchCriteria.SortOrder.ASC)
 			builder.append(" ASC ");
 		else
 			builder.append(" DESC ");
 
-		if (criteria.getSortBy() == SearchCriteria.SortBy.collectionAmount)
+		if (criteria.getSortBy() == SearchCriteria.SortBy.collectionAmount || criteria.getSortBy() == SearchCriteria.SortBy.collectionPendingAmount)
 			builder.append(" NULLS LAST ");
 		
 		return builder.toString();

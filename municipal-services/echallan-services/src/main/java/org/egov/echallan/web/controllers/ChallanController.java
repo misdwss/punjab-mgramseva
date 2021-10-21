@@ -20,6 +20,8 @@ import org.egov.echallan.repository.rowmapper.ChallanRowMapper;
 import org.egov.echallan.service.ChallanService;
 import org.egov.echallan.service.SchedulerService;
 import org.egov.echallan.util.ResponseInfoFactory;
+import org.egov.echallan.web.models.ExpenseDashboard;
+import org.egov.echallan.web.models.ExpenseDashboardResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -114,6 +116,21 @@ public class ChallanController {
 				.build();
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
+	
+	@PostMapping("/_expenseDashboard")
+	public ResponseEntity<ExpenseDashboardResponse> _expenseDashboard(
+			@RequestBody @Valid final RequestInfoWrapper requestInfoWrapper,
+			@Valid @ModelAttribute SearchCriteria criteria) {
+		ExpenseDashboard dashboardData = challanService.getExpenseDashboardData(criteria,
+				requestInfoWrapper.getRequestInfo());
+
+		ExpenseDashboardResponse response = ExpenseDashboardResponse.builder().ExpenseDashboard(dashboardData)
+				.responseInfo(responseInfoFactory.createResponseInfoFromRequestInfo(requestInfoWrapper.getRequestInfo(),
+						true))
+				.build();
+		return new ResponseEntity<>(response, HttpStatus.OK);
+	}
+	
 	
 
 }

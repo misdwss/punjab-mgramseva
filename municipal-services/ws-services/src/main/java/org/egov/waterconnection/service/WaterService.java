@@ -8,7 +8,11 @@ import org.egov.common.contract.request.RequestInfo;
 import org.egov.waterconnection.web.models.Feedback;
 import org.egov.waterconnection.web.models.FeedbackRequest;
 import org.egov.waterconnection.web.models.FeedbackSearchCriteria;
+
 import org.egov.waterconnection.web.models.LastMonthSummary;
+
+import org.egov.waterconnection.web.models.RevenueDashboard;
+
 import org.egov.waterconnection.web.models.SearchCriteria;
 import org.egov.waterconnection.web.models.WaterConnection;
 import org.egov.waterconnection.web.models.WaterConnectionRequest;
@@ -30,5 +34,8 @@ public interface WaterService {
 	Object getFeedback( FeedbackSearchCriteria feedBackSearchCriteria) throws JsonMappingException, JsonProcessingException;
 
 	LastMonthSummary getLastMonthSummary(@Valid SearchCriteria criteria, RequestInfo requestInfo);
+
+	RevenueDashboard getRevenueDashboardData(@Valid SearchCriteria criteria, RequestInfo requestInfo);
+
 
 }
