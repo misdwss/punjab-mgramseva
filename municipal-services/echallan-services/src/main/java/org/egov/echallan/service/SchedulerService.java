@@ -404,7 +404,7 @@ public class SchedulerService {
 								MARK_PAID_BILL_SMS, tenantId);
 
 						HashMap<String, String> gpwscMap = util.getLocalizationMessage(requestInfo,
-								MARK_PAID_BILL_SMS, tenantId);
+								tenantId, tenantId);
 
 						mobileNumberIdMap.entrySet().stream().forEach(map -> {
 							if (messageMap != null && !StringUtils.isEmpty(messageMap.get(NotificationUtil.MSG_KEY))) {
