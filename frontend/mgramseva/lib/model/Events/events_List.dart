@@ -7,6 +7,9 @@ class EventsList {
   @JsonKey(name: "events")
   List<Events>? events;
 
+  @JsonKey(name: "totalCount")
+  String? totalCount;
+
   EventsList();
   factory EventsList.fromJson(Map<String, dynamic> json) =>
       _$EventsListFromJson(json);
