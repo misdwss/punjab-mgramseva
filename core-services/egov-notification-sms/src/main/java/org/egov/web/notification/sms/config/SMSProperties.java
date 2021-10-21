@@ -14,7 +14,7 @@ public class SMSProperties {
     @Value("${sms.provider.class}")
     public String gatewayToUse;
 
-    @Value("${sms.provider.requestType}")
+    @Value("${sms.provider.requesttype}")
     public String requestType;
 
     @Value("${sms.provider.contentType:application/x-www-form-urlencoded}")
