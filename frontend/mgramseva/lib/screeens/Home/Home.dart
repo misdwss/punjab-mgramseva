@@ -160,13 +160,15 @@ class _HomeState extends State<Home> {
                         .join(',')
                         .toString(),
                   });
-              }
-              catch (e, s) {
-                ErrorHandler().allExceptionsHandler(navigatorKey.currentContext!, e);
+              } catch (e, s) {
+                ErrorHandler()
+                    .allExceptionsHandler(navigatorKey.currentContext!, e);
               }
             }
             return userProvider.userDetails?.selectedtenant?.code != null
-                ? NotificationsList(close: true,)
+                ? NotificationsList(
+                    close: true,
+                  )
                 : Text("");
           })),
     );

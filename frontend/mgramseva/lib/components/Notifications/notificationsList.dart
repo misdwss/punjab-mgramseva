@@ -11,8 +11,7 @@ import 'package:provider/provider.dart';
 
 class NotificationsList extends StatefulWidget {
   final bool close;
-  const NotificationsList({Key? key, required this.close})
-      : super(key: key);
+  const NotificationsList({Key? key, required this.close}) : super(key: key);
   @override
   State<StatefulWidget> createState() {
     return NotificationsListState();
@@ -38,10 +37,16 @@ class NotificationsListState extends State<NotificationsList> {
               var item = events[i];
               callBack() {
                 Provider.of<NotificationProvider>(context, listen: false)
-              ..updateNotify(item, events);
+                  ..updateNotify(item, events);
               }
+
               return Notifications(item, callBack, widget.close);
-            })
+            }),
+        (events.length > 0)
+            ? Center(
+                child: ButtonLink(i18.common.VIEW_ALL,
+                    () => Navigator.pushNamed(context, Routes.NOTIFICATIONS)))
+            : Text(""),
       ]);
     });
   }
