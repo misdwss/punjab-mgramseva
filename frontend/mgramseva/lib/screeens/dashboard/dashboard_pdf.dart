@@ -13,13 +13,12 @@ import 'package:mgramseva/utils/Locilization/application_localizations.dart';
 import 'package:mgramseva/utils/date_formats.dart';
 import 'package:mgramseva/utils/global_variables.dart';
 import 'package:mgramseva/utils/models.dart';
+import 'package:mgramseva/utils/pdf.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:pdf/pdf.dart';
 import 'package:provider/provider.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:universal_html/html.dart' as html;
-
-import 'pdf_view.dart';
 
 class DashboardPdfCreator {
 
@@ -36,15 +35,17 @@ class DashboardPdfCreator {
     final ttf = await Provider.of<CommonProvider>(buildContext,
         listen: false).getPdfFontFamily();
 
+    final mgramSevaLogo = await PdfUtils.mgramSevaLogo;
+    final digitLogo = await PdfUtils.powerdByDigit;
+
+
     pdf.addPage(
         pw.MultiPage(
         pageFormat: PdfPageFormat.a4,
-        theme: pw.ThemeData(
-
-        ),
+        footer: (_) => PdfUtils.pdfFooter(digitLogo),
         build: (pw.Context context) {
           return [
-            _buildAppBar(buildContext),
+            PdfUtils.buildAppBar(buildContext, mgramSevaLogo),
             _buildDashboardView(buildContext, feedBack),
             _buildGridView(gridList, buildContext),
             pw.Container(
@@ -56,70 +57,34 @@ class DashboardPdfCreator {
               )
               )
             ),
-            _buildTable(ttf)
+            _buildTable(ttf),
+            PdfUtils.pdfFooter(digitLogo)
           ];
         }));
 
-    Provider.of<CommonProvider>(buildContext, listen: false).sharePdfOnWhatsApp(buildContext, pdf, 'expenditure', '<link>');
+    // Provider.of<CommonProvider>(buildContext, listen: false).sharePdfOnWhatsApp(buildContext, pdf, 'expenditure', '<link>');
 
-    // if (kIsWeb) {
-    //   final blob = html.Blob([await pdf.save()]);
-    //   final url = html.Url.createObjectUrlFromBlob(blob);
-    //   final anchor = html.document.createElement('a') as html.AnchorElement
-    //     ..href = url
-    //     ..style.display = 'none'
-    //     ..download = 'dashboard.pdf';
-    //   html.document.body?.children.add(anchor);
-    //   anchor.click();
-    //   html.document.body?.children.remove(anchor);
-    //   html.Url.revokeObjectUrl(url);
-    // } else {
-    //   final Directory directory = await getApplicationDocumentsDirectory();
-    //   final file = File('${directory.path}/example.pdf');
-    //   await file.writeAsBytes(await pdf.save());
-    //   Navigator.pushReplacement(buildContext,
-    //       MaterialPageRoute(builder: (_) => PdfPreview(path: file.path)));
-    // }
+    if (kIsWeb) {
+      final blob = html.Blob([await pdf.save()]);
+      final url = html.Url.createObjectUrlFromBlob(blob);
+      final anchor = html.document.createElement('a') as html.AnchorElement
+        ..href = url
+        ..style.display = 'none'
+        ..download = 'dashboard.pdf';
+      html.document.body?.children.add(anchor);
+      anchor.click();
+      html.document.body?.children.remove(anchor);
+      html.Url.revokeObjectUrl(url);
+    } else {
+      final Directory directory = await getApplicationDocumentsDirectory();
+      final file = File('${directory.path}/example.pdf');
+      await file.writeAsBytes(await pdf.save());
+      // Navigator.pushReplacement(buildContext,
+      //     MaterialPageRoute(builder: (_) => PdfPreview(path: file.path)));
+    }
   }
 
-  pw.Widget _buildAppBar(BuildContext context) {
-    var commonProvider = Provider.of<CommonProvider>(
-        navigatorKey.currentContext!,
-        listen: false);
 
-    var style = pw.TextStyle(
-      fontSize: 14,
-      color: PdfColor.fromHex('#FFFFFF')
-    );
-
-    return pw.Container(
-      padding: pw.EdgeInsets.symmetric(vertical: 8, horizontal: 8),
-      margin: pw.EdgeInsets.only(bottom: 5),
-      decoration: pw.BoxDecoration(
-        color: PdfColor.fromHex('#0B4B66')
-      ),
-      child: pw.Row(
-        mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
-        children: [
-          pw.Text('sdfsdfds'),
-          pw.Wrap(
-            spacing: 3,
-            children: [
-              pw.Text(ApplicationLocalizations.of(context)
-                  .translate(commonProvider
-                  .userDetails?.selectedtenant?.code ?? ''),
-              style: style
-              ),
-              pw.Text(ApplicationLocalizations.of(context)
-                  .translate(commonProvider.userDetails?.selectedtenant?.city?.code ?? ''),
-              style: style
-              )
-            ],
-          )
-        ]
-      )
-    );
-  }
 
   pw.Widget _buildGridView(List<Metric> gridList, BuildContext context) {
     var dashBoardProvider = Provider.of<DashBoardProvider>(navigatorKey.currentContext!, listen: false);
