@@ -411,13 +411,6 @@ public class WaterServiceImpl implements WaterService {
 		LocalDateTime previousMonthEndDateTime = LocalDateTime.of(prviousMonthEnd.getYear(), prviousMonthEnd.getMonth(),
 				prviousMonthEnd.getDayOfMonth(), 23, 59, 59);
 
-		// actual payments
-		Integer previousMonthExpensePayments = repository.getPreviousMonthExpensePayments(tenantId,
-				((Long) previousMonthStartDateTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()),
-				((Long) previousMonthEndDateTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()));
-		if (null != previousMonthExpensePayments)
-			lastMonthSummary.setPreviousMonthCollection(previousMonthExpensePayments.toString());
-
 		//pending ws collectioni
 		Integer cumulativePendingCollection = repository.getTotalPendingCollection(tenantId);
 		if (null != cumulativePendingCollection )

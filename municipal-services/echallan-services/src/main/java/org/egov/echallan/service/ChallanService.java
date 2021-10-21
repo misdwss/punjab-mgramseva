@@ -192,25 +192,6 @@ public class ChallanService {
 		if (null != cumulativePendingExpense )
 			lastMonthSummary.setCumulativePendingExpense(cumulativePendingExpense.toString());
 
-		//pending ws collectioni
-		Integer cumulativePendingCollection = repository.getTotalPendingCollection(tenantId);
-		if (null != cumulativePendingExpense )
-			lastMonthSummary.setCumulativePendingCollection(cumulativePendingCollection.toString());
-
-		// ws demands in period
-		Integer newDemand = repository.getNewDemand(tenantId,
-				((Long) previousMonthStartDateTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()),
-				((Long) previousMonthEndDateTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()));
-		if (null != newDemand )
-			lastMonthSummary.setNewDemand(newDemand.toString());
-
-		// actuall ws collection
-		Integer actualCollection = repository.getActualCollection(tenantId,
-				((Long) previousMonthStartDateTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()),
-				((Long) previousMonthEndDateTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()));
-		if (null != actualCollection )
-			lastMonthSummary.setActualCollection(actualCollection.toString());
-
 		lastMonthSummary.setPreviousMonthYear(getMonthYear());
 		
 		return lastMonthSummary;

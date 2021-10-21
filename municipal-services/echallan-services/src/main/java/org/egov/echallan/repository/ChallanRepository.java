@@ -204,20 +204,6 @@ public class ChallanRepository {
 		return jdbcTemplate.queryForList(query.toString(), String.class);
 	}
 
-
-
-	public List<String> getPendingCollection(String tenantId, String startDate, String endDate) {
-		StringBuilder query = new StringBuilder(queryBuilder.PENDINGCOLLECTION);
-		query.append(" and demand.tenantid = '").append(tenantId).append("'")
-		.append( " and taxperiodfrom  >= ").append( startDate)  
-		.append(" and  taxperiodto <= " ).append(endDate);
-		log.info("Active pending collection query : " + query);
-		return jdbcTemplate.queryForList(query.toString(), String.class);
-		
-	}
-
-
-
 	public List<Map<String, Object>> getTodayCollection(String tenantId, String startDate, String endDate, String mode) {
 		StringBuilder query = new StringBuilder();
 		if(mode.equalsIgnoreCase("CASH")) {
@@ -245,28 +231,5 @@ public class ChallanRepository {
 		return jdbcTemplate.queryForObject(query.toString(), Integer.class);
 	}
 
-	public Integer getTotalPendingCollection(String tenantId) {
-		StringBuilder query = new StringBuilder(queryBuilder.PENDINGCOLLECTION);
-		query.append(" and CONN.tenantid = '").append(tenantId).append("'");
-		return jdbcTemplate.queryForObject(query.toString(), Integer.class);
-
-	}
-
-	public Integer getNewDemand(String tenantId, Long startDate, Long endDate) {
-		StringBuilder query = new StringBuilder(queryBuilder.NEWDEMAND);
-		query.append(" and dmd.taxPeriodFrom  >= ").append(startDate).append(" and dmd.taxPeriodTo <= ").append(endDate)
-				.append(" and dmd.tenantId = '").append(tenantId).append("'");
-		return jdbcTemplate.queryForObject(query.toString(), Integer.class);
-
-	}
-
-	public Integer getActualCollection(String tenantId, Long startDate, Long endDate) {
-		StringBuilder query = new StringBuilder(queryBuilder.ACTUALCOLLECTION);
-		query.append(" and py.transactionDate  >= ").append(startDate).append(" and py.transactionDate <= ")
-				.append(endDate).append(" and py.tenantId = '").append(tenantId).append("'");
-		return jdbcTemplate.queryForObject(query.toString(), Integer.class);
-
-	}
-	
     
 }

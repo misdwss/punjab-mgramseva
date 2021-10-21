@@ -81,8 +81,6 @@ public class WsQueryBuilder {
 
 	private static final String TENANTIDS = "SELECT distinct(tenantid) FROM eg_ws_connection conn";
 
-	public static final String PREVIOUSMONTHEXPPAYMENT = "SELECT SUM(PAYMT.TOTALAMOUNTPAID) FROM EGCL_PAYMENT PAYMT JOIN EGCL_PAYMENTDETAIL PAYMTDTL ON (PAYMTDTL.PAYMENTID = PAYMT.ID) WHERE PAYMTDTL.BUSINESSSERVICE like '%EXPENSE%' ";
-
 	public static final String PREVIOUSMONTHEXPENSE = " select sum(billdtl.totalamount) from eg_echallan challan, egbs_billdetail_v1 billdtl, egbs_bill_v1 bill  where challan.challanno= billdtl.consumercode  and billdtl.billid = bill.id and challan.isbillpaid ='true'  ";
 
 	public static final String PREVIOUSDAYCASHCOLLECTION = "select  count(*), sum(totalamountpaid) from egcl_payment where paymentmode='CASH' ";

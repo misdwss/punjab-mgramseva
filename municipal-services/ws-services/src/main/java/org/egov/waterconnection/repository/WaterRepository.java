@@ -40,19 +40,6 @@ public class WaterRepository {
 	}
 
 
-	public Integer getPreviousMonthExpensePayments(String tenantId, Long startDate, Long endDate) {
-		StringBuilder query = new StringBuilder(WsQueryBuilder.PREVIOUSMONTHEXPPAYMENT);
-		
-		//previous month start date startDate
-		// previous month end date endDate
-		
-		query.append( " and PAYMTDTL.receiptdate  >= ").append( startDate)  
-		.append(" and  PAYMTDTL.receiptdate <= " ).append(endDate); 
-		log.info("Previous month expense paid query : " + query);
-		return jdbcTemplate.queryForObject(query.toString(), Integer.class);
-	}
-
-
 	public List<String> getPreviousMonthExpenseExpenses(String tenantId, String startDate, String endDate) {
 		StringBuilder query = new StringBuilder(queryBuilder.PREVIOUSMONTHEXPENSE);
 

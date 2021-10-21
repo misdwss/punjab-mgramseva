@@ -116,11 +116,6 @@ public class WaterController {
 		schedulerService.sendPendingCollectionEvent(requestInfoWrapper.getRequestInfo());
 	}
 
-	@PostMapping("/_schedulermonthsummary")
-	public void schedulermonthsummary(@Valid @RequestBody RequestInfoWrapper requestInfoWrapper) {
-		schedulerService.sendMonthSummaryEvent(requestInfoWrapper.getRequestInfo());
-	}
-
 	@PostMapping("/_schedulergeneratedemand")
 	public void schedulergeneratedemand(@Valid @RequestBody RequestInfoWrapper requestInfoWrapper) {
 		schedulerService.sendGenerateDemandEvent(requestInfoWrapper.getRequestInfo());
