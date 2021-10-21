@@ -6,11 +6,16 @@ import javax.validation.Valid;
 
 import org.egov.waterconnection.constants.WCConstants;
 import org.egov.waterconnection.repository.WaterDaoImpl;
+
+import org.egov.waterconnection.service.SchedulerService;
 import org.egov.waterconnection.service.WaterService;
 import org.egov.waterconnection.util.ResponseInfoFactory;
 import org.egov.waterconnection.web.models.FeedbackRequest;
 import org.egov.waterconnection.web.models.FeedbackResponse;
-import org.egov.waterconnection.web.models.FeedbackSearchCriteria;
+
+import org.egov.waterconnection.web.models.LastMonthSummary;
+import org.egov.waterconnection.web.models.LastMonthSummaryResponse;
+
 import org.egov.waterconnection.web.models.RequestInfoWrapper;
 import org.egov.waterconnection.web.models.RevenueDashboard;
 import org.egov.waterconnection.web.models.RevenueDashboardResponse;
@@ -50,6 +55,9 @@ public class WaterController {
 
 	@Autowired
 	private WaterDaoImpl waterDaoImpl;
+	
+	@Autowired
+	private SchedulerService schedulerService;
 
 	@RequestMapping(value = "/_create", method = RequestMethod.POST, produces = "application/json")
 	public ResponseEntity<WaterConnectionResponse> createWaterConnection(
@@ -119,5 +127,33 @@ public class WaterController {
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 	
+	@PostMapping("/_schedulerpendingcollection")
+	public void schedulerpendingcollection(@Valid @RequestBody RequestInfoWrapper requestInfoWrapper) {
+		schedulerService.sendPendingCollectionEvent(requestInfoWrapper.getRequestInfo());
+	}
 
+	@PostMapping("/_schedulergeneratedemand")
+	public void schedulergeneratedemand(@Valid @RequestBody RequestInfoWrapper requestInfoWrapper) {
+		schedulerService.sendGenerateDemandEvent(requestInfoWrapper.getRequestInfo());
+	}
+	
+	@PostMapping("/_schedulerTodaysCollection")
+	public void schedulerTodaysCollection(@Valid @RequestBody RequestInfoWrapper requestInfoWrapper) {
+		schedulerService.sendTodaysCollection(requestInfoWrapper.getRequestInfo());
+	}
+	
+	
+	@PostMapping("/_lastMonthSummary")
+	public ResponseEntity<LastMonthSummaryResponse> lastMonthSummary(
+			@RequestBody @Valid final RequestInfoWrapper requestInfoWrapper,
+			@Valid @ModelAttribute SearchCriteria criteria) {
+		LastMonthSummary lastMonthSummary = waterService.getLastMonthSummary(criteria,
+				requestInfoWrapper.getRequestInfo());
+
+		LastMonthSummaryResponse response = LastMonthSummaryResponse.builder().LastMonthSummary(lastMonthSummary)
+				.responseInfo(responseInfoFactory.createResponseInfoFromRequestInfo(requestInfoWrapper.getRequestInfo(),
+						true))
+				.build();
+		return new ResponseEntity<>(response, HttpStatus.OK);
+	}
 }

@@ -86,10 +86,6 @@ public class ChallanController {
 		return new ResponseEntity<>(response, HttpStatus.OK);
 		}
 
-	@PostMapping("/_schedulerpendingcollection")
-	public void schedulerpendingcollection(@Valid @RequestBody RequestInfoWrapper requestInfoWrapper) {
-		schedulerService.sendPendingCollectionEvent(requestInfoWrapper.getRequestInfo());
-	}
 
 	@PostMapping("/_schedulermonthsummary")
 	public void schedulermonthsummary(@Valid @RequestBody RequestInfoWrapper requestInfoWrapper) {
@@ -106,15 +102,6 @@ public class ChallanController {
 		schedulerService.sendMarkExpensebillEvent(requestInfoWrapper.getRequestInfo());
 	}
 
-	@PostMapping("/_schedulergeneratedemand")
-	public void schedulergeneratedemand(@Valid @RequestBody RequestInfoWrapper requestInfoWrapper) {
-		schedulerService.sendGenerateDemandEvent(requestInfoWrapper.getRequestInfo());
-	}
-	
-	@PostMapping("/_schedulerTodaysCollection")
-	public void schedulerTodaysCollection(@Valid @RequestBody RequestInfoWrapper requestInfoWrapper) {
-		schedulerService.sendTodaysCollection(requestInfoWrapper.getRequestInfo());
-	}
 	 
 	@PostMapping("/_lastMonthSummary")
 	public ResponseEntity<LastMonthSummaryResponse> lastMonthSummary(

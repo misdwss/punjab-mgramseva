@@ -3,8 +3,15 @@ package org.egov.waterconnection.service;
 import static org.egov.waterconnection.constants.WCConstants.APPROVE_CONNECTION;
 
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.Month;
+import java.time.YearMonth;
+import java.time.ZoneId;
+import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -23,6 +30,7 @@ import org.egov.waterconnection.constants.WCConstants;
 import org.egov.waterconnection.producer.WaterConnectionProducer;
 import org.egov.waterconnection.repository.WaterDao;
 import org.egov.waterconnection.repository.WaterDaoImpl;
+import org.egov.waterconnection.repository.WaterRepository;
 import org.egov.waterconnection.util.WaterServicesUtil;
 import org.egov.waterconnection.validator.ActionValidator;
 import org.egov.waterconnection.validator.MDMSValidator;
@@ -34,6 +42,7 @@ import org.egov.waterconnection.web.models.CheckList;
 import org.egov.waterconnection.web.models.Feedback;
 import org.egov.waterconnection.web.models.FeedbackRequest;
 import org.egov.waterconnection.web.models.FeedbackSearchCriteria;
+import org.egov.waterconnection.web.models.LastMonthSummary;
 import org.egov.waterconnection.web.models.Property;
 import org.egov.waterconnection.web.models.RevenueDashboard;
 import org.egov.waterconnection.web.models.SearchCriteria;
@@ -101,6 +110,9 @@ public class WaterServiceImpl implements WaterService {
 
 	@Autowired
 	private WaterConnectionProducer waterConnectionProducer;
+
+	@Autowired
+	private WaterRepository repository;
 
 	/**
 	 * 
@@ -344,11 +356,11 @@ public class WaterServiceImpl implements WaterService {
 		return data;
 	}
 
-	private Map<String, Integer>  getFeedBackRatingsAvarage(List<Feedback> feedbackList)
+	private Map<String, Integer> getFeedBackRatingsAvarage(List<Feedback> feedbackList)
 			throws JsonMappingException, JsonProcessingException {
 
 		Map<Object, Double> feedbackGroupByCode = null;
-		Map<String,Integer> returnMap= new HashMap<String,Integer>();
+		Map<String, Integer> returnMap = new HashMap<String, Integer>();
 		// TODO Auto-generated method stub
 		List<CheckList> checkList = new ArrayList<CheckList>();
 		ObjectMapper mapper = new ObjectMapper();
@@ -373,14 +385,78 @@ public class WaterServiceImpl implements WaterService {
 			feedbackGroupByCode = checkList.stream()
 					.collect(Collectors.groupingBy(e -> e.getCode(), Collectors.averagingInt(CheckList::getValue)));
 		}
-		if(!CollectionUtils.isEmpty(feedbackGroupByCode)) {
-			for (Map.Entry<Object,Double> entry : feedbackGroupByCode.entrySet()) {
+		if (!CollectionUtils.isEmpty(feedbackGroupByCode)) {
+			for (Map.Entry<Object, Double> entry : feedbackGroupByCode.entrySet()) {
 				returnMap.put(entry.getKey().toString(), entry.getValue().intValue());
 			}
 			returnMap.put("count", feedbackList.size());
 		}
-		
+
 		return returnMap;
+	}
+
+	public LastMonthSummary getLastMonthSummary(SearchCriteria criteria, RequestInfo requestInfo) {
+
+		LastMonthSummary lastMonthSummary = new LastMonthSummary();
+		String tenantId = criteria.getTenantId();
+		LocalDate currentMonthDate = LocalDate.now();
+		if (criteria.getCurrentDate() != null) {
+			Calendar currentDate = Calendar.getInstance();
+			currentDate.setTimeInMillis(criteria.getCurrentDate());
+			currentMonthDate = LocalDate.of(currentDate.get(Calendar.YEAR), currentDate.get(Calendar.MONTH) + 1,
+					currentDate.get(Calendar.DAY_OF_MONTH));
+		}
+		LocalDate prviousMonthStart = currentMonthDate.minusMonths(1).with(TemporalAdjusters.firstDayOfMonth());
+		LocalDate prviousMonthEnd = currentMonthDate.minusMonths(1).with(TemporalAdjusters.lastDayOfMonth());
+
+		LocalDateTime previousMonthStartDateTime = LocalDateTime.of(prviousMonthStart.getYear(),
+				prviousMonthStart.getMonth(), prviousMonthStart.getDayOfMonth(), 0, 0, 0);
+		LocalDateTime previousMonthEndDateTime = LocalDateTime.of(prviousMonthEnd.getYear(), prviousMonthEnd.getMonth(),
+				prviousMonthEnd.getDayOfMonth(), 23, 59, 59);
+
+		// pending ws collectioni
+		Integer cumulativePendingCollection = repository.getTotalPendingCollection(tenantId);
+		if (null != cumulativePendingCollection)
+			lastMonthSummary.setCumulativePendingCollection(cumulativePendingCollection.toString());
+
+		// ws demands in period
+		Integer newDemand = repository.getNewDemand(tenantId,
+				((Long) previousMonthStartDateTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()),
+				((Long) previousMonthEndDateTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()));
+		if (null != newDemand)
+			lastMonthSummary.setNewDemand(newDemand.toString());
+
+		// actuall ws collection
+		Integer actualCollection = repository.getActualCollection(tenantId,
+				((Long) previousMonthStartDateTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()),
+				((Long) previousMonthEndDateTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()));
+		if (null != actualCollection)
+			lastMonthSummary.setActualCollection(actualCollection.toString());
+
+		lastMonthSummary.setPreviousMonthYear(getMonthYear());
+
+		return lastMonthSummary;
+
+	}
+
+	public String getMonthYear() {
+		LocalDateTime localDateTime = LocalDateTime.now();
+		int currentMonth = localDateTime.getMonthValue();
+		String monthYear;
+		if (currentMonth >= Month.APRIL.getValue()) {
+			monthYear = YearMonth.now().getYear() + "-";
+			monthYear = monthYear
+					+ (Integer.toString(YearMonth.now().getYear() + 1).substring(2, monthYear.length() - 1));
+		} else {
+			monthYear = YearMonth.now().getYear() - 1 + "-";
+			monthYear = monthYear + (Integer.toString(YearMonth.now().getYear()).substring(2, monthYear.length() - 1));
+
+		}
+		localDateTime.minusMonths(1);
+		StringBuilder monthYearBuilder = new StringBuilder(localDateTime.getMonth().toString()).append(" ")
+				.append(monthYear);
+
+		return monthYearBuilder.toString();
 	}
 
 	@Override
@@ -401,7 +477,7 @@ public class WaterServiceImpl implements WaterService {
 		}
 
 		return dashboardData;
+
 	}
-	
-	
+
 }
