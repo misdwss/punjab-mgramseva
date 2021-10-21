@@ -3,7 +3,7 @@ kind: CronJob
 metadata:
   name: fortnightevening
 spec:
-  schedule: "0 18 15 * *"
+  schedule: "30 12 * * *"
   jobTemplate:
     spec:
       template:
