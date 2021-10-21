@@ -28,14 +28,10 @@ class PdfUtils {
         child: pw.Row(
             mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
             children: [
-              pw.Wrap(
-                  crossAxisAlignment: pw.WrapCrossAlignment.center,
-                  children: [
-                    pw.Icon(pw.IconData(0xe800),
-                        color: PdfColor.fromHex('#FFFFFF'), font: icons),
-                    pw.SizedBox(width: 2),
-                    pw.Image(image, width: 90),
-                  ]),
+              pw.Icon(pw.IconData(0xe800),
+                  color: PdfColor.fromHex('#FFFFFF'), font: icons),
+              pw.SizedBox(width: 2),
+              pw.Image(image, width: 90),
               pw.Wrap(
                 spacing: 3,
                 children: [

@@ -61,6 +61,7 @@ dependencies:
   pdf: ^3.6.5
   printing: ^5.6.6
   flutter_share_me: ^1.2.0
+  flutter_pdfview: ^1.2.1
 
 dev_dependencies:
   flutter_launcher_icons: "^0.9.2"
@@ -119,9 +120,9 @@ flutter:
     - family: Hindhi
       fonts:
         - asset: assets/fonts/Roboto/Hind-Regular.ttf
-    - family: Punjabi
+    - family: Raavi
       fonts:
-        - asset: assets/fonts/Roboto/punjabi.ttf
+        - asset: assets/fonts/Roboto/raavi.ttf
     - family: PdfIcons
       fonts:
         - asset: assets/icons/fonts/PdfIcons.ttf
