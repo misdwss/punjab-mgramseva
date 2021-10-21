@@ -32,6 +32,8 @@ class DashboardPdfCreator {
 
   pdfPreview() async {
     var pdf = pw.Document();
+    var dashBoardProvider = Provider.of<DashBoardProvider>(navigatorKey.currentContext!, listen: false);
+
     final ttf = await Provider.of<CommonProvider>(buildContext,
         listen: false).getPdfFontFamily();
 
@@ -46,12 +48,14 @@ class DashboardPdfCreator {
         footer: (_) => PdfUtils.pdfFooter(digitLogo),
         build: (pw.Context context) {
           return [
-            PdfUtils.buildAppBar(buildContext, mgramSevaLogo, icons),
-            _buildDashboardView(buildContext, feedBack, icons),
+            PdfUtils.buildAppBar(buildContext, mgramSevaLogo, icons, ttf),
+            _buildDashboardView(buildContext, feedBack, icons, ttf),
             _buildGridView(gridList, buildContext),
             pw.Container(
               margin: pw.EdgeInsets.only(top: 14, bottom: 3),
-              child: pw.Text('Expenditure All Records',
+              child: pw.Text(
+                  '${ApplicationLocalizations.of(buildContext).translate(dashBoardProvider.selectedDashboardType == DashBoardType.Expenditure ?
+                  i18.dashboard.EXPENDITURE_ALL_RECORDS :  i18.dashboard.CONSUMER_ALL_RECORDS)}',
               style: pw.TextStyle(
                 fontSize: 14,
                 fontWeight: pw.FontWeight.bold
@@ -62,8 +66,11 @@ class DashboardPdfCreator {
             PdfUtils.pdfFooter(digitLogo)
           ];
         }));
+    
+    var localizedText = '${ApplicationLocalizations.of(buildContext).translate(i18.dashboard.MONTHLY_REPORT_MESSAGE)}';
+    localizedText = localizedText.replaceAll('<Month-Year>', DateFormats.getMonthAndYear(dashBoardProvider.selectedMonth, buildContext));
 
-    // Provider.of<CommonProvider>(buildContext, listen: false).sharePdfOnWhatsApp(buildContext, pdf, 'expenditure', '<link>');
+    Provider.of<CommonProvider>(buildContext, listen: false).sharePdfOnWhatsApp(buildContext, pdf, 'dashboard', localizedText);
 
     if (kIsWeb) {
       final blob = html.Blob([await pdf.save()]);
@@ -151,7 +158,7 @@ class DashboardPdfCreator {
     ]);
   }
 
-  pw.Widget _buildDashboardView(BuildContext context, Map feedBack, pw.Font icons) {
+  pw.Widget _buildDashboardView(BuildContext context, Map feedBack, pw.Font icons, pw.Font font) {
     var dashBoardProvider = Provider.of<DashBoardProvider>(navigatorKey.currentContext!, listen: false);
 
     return pw.Container(
@@ -170,14 +177,22 @@ class DashboardPdfCreator {
                     pw.Text(DateFormats.getMonthAndYear(dashBoardProvider.selectedMonth, context),
                         style: pw.TextStyle(color: PdfColor.fromHex('#F47738')))
                   ])),
-         if(feedBack.isNotEmpty) _buildRatingView(context, feedBack, icons)
+         if(feedBack.isNotEmpty) _buildRatingView(context, feedBack, icons, font)
         ]));
   }
 
-  pw.Widget _buildRatingView(BuildContext context, Map feedBack, pw.Font icons) {
+  pw.Widget _buildRatingView(BuildContext context, Map feedBack, pw.Font icons, pw.Font font) {
+    var dashBoardProvider = Provider.of<DashBoardProvider>(navigatorKey.currentContext!, listen: false);
     Map feedBackDetails = Map.from(feedBack);
     feedBackDetails.remove('count');
-    return pw.Container(
+
+    var localizationLabel =  '${ApplicationLocalizations.of(context).translate(i18.dashboard.USER_GAVE_FEEDBACK)}';
+    localizationLabel = localizationLabel.replaceAll('<n>', (feedBack['count'] ?? 0).toString());
+    localizationLabel = localizationLabel.replaceAll('<date>', DateFormats.getMonthAndYear(dashBoardProvider.selectedMonth, context)).toString();
+    
+    return pw.Wrap(
+        children : [
+          pw.Container(
         height: 60,
         child: pw.GridView(
           crossAxisCount: 3,
@@ -229,22 +244,21 @@ class DashboardPdfCreator {
                       ]),
                 )),
           ).toList(),
-        ));
+        )),
+          pw.SizedBox(height: 10),
+          pw.Text("$localizationLabel",
+            textAlign: pw.TextAlign.left,
+            style: pw.TextStyle(
+                fontSize: 12,
+                color: PdfColor.fromHex('#0B0C0C'),
+                font: font
+            ),
+          ),
+          pw.SizedBox(height: 10)
+    ]);
   }
 
   pw.Table _buildTable(pw.Font ttf){
-   // return pw.Table(
-   //    children: tableData.map((e) => pw.TableRow(
-   //      children: e.map((text) => pw.Container(
-   //        child: pw.Text('${text}',
-   //           style : pw.TextStyle(
-   //                font: ttf,
-   //                fontSize: 12
-   //            )
-   //        )
-   //      )).toList()
-   //    )).toList()
-   //  );
     return pw.Table.fromTextArray(
             headers: headers,
             headerStyle:

@@ -540,6 +540,9 @@ class _DashBoard {
   String get DASHBOARD_AMOUNT_PAID => 'dashboard_amountPaid';
 
   String get YEAR_TOOL_TIP_MESSAGE => 'YEAR_TOOL_TIP_MESSAGE';
+  String get MONTHLY_REPORT_MESSAGE => 'MONTHLY_REPORT_MESSAGE';
+  String get EXPENDITURE_ALL_RECORDS => 'EXPENDITURE_ALL_RECORDS';
+  String get CONSUMER_ALL_RECORDS => 'CONSUMER_ALL_RECORDS';
 }
 
 class _ExpenseWalkThroughMsg {
