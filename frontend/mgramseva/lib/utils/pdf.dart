@@ -65,7 +65,7 @@ class PdfUtils {
 
     static pw.Widget pdfFooter(pw.ImageProvider image){
       return pw.Container(
-          margin: pw.EdgeInsets.only(top: 10),
+          margin: pw.EdgeInsets.only(top: 10, bottom: 10),
           alignment: pw.Alignment.center,
           child: pw.SizedBox(
               width: 100,

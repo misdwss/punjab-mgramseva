@@ -564,16 +564,33 @@ class DashBoardProvider with ChangeNotifier {
         listen: false);
     ExpensesDetailsWithPagination? expenseDashboardDetails;
 
-    Map<String, dynamic> query ={
+    var query = {
       'tenantId': commonProvider.userDetails?.selectedtenant?.code,
       'offset': '0',
       'fromDate':
       '${selectedMonth.startDate.millisecondsSinceEpoch}',
       'toDate':
       '${selectedMonth.endDate.millisecondsSinceEpoch}',
+      'vendorName': searchController.text.trim(),
+      'challanNo': searchController.text.trim(),
+      'freeSearch': 'true',
       'status': ["ACTIVE", "PAID"],
       'isBillCount': 'true'
     };
+
+    if (sortBy != null) {
+      query.addAll({
+        'sortOrder': sortBy!.isAscending ? 'ASC' : 'DESC',
+        'sortBy': sortBy!.key
+      });
+    }
+
+    if(selectedTab != 'all'){
+      query['isBillPaid'] = ((selectedTab == 'ACTIVE') ? 'false' : 'true');
+    }
+
+    query
+        .removeWhere((key, value) => (value is String && value.trim().isEmpty));
 
     Loaders.showLoadingDialog(context);
     try {
@@ -614,8 +631,27 @@ class DashBoardProvider with ChangeNotifier {
       'toDate':
       '${selectedMonth.endDate.millisecondsSinceEpoch}',
       'iscollectionAmount': 'true',
-      // 'isPropertyCount': 'true',
+      'isPropertyCount': 'true',
     };
+
+    if(selectedTab != 'all'){
+      query['propertyType'] = selectedTab;
+    };
+
+    if (sortBy != null) {
+      query.addAll({
+        'sortOrder': sortBy!.isAscending ? 'ASC' : 'DESC',
+        'sortBy': sortBy!.key
+      });
+    }
+
+    if (searchController.text.trim().isNotEmpty) {
+      query.addAll({
+        'connectionNumber': searchController.text.trim(),
+        // 'name' : searchController.text.trim(),
+        'freeSearch': 'true',
+      });
+    }
 
 
     Loaders.showLoadingDialog(context);
