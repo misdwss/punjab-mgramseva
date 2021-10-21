@@ -3,7 +3,7 @@ kind: CronJob
 metadata:
   name: failedbulkdemand
 spec:
-  schedule: "0 9 5 * *"
+  schedule: "30 3 5 * *"
   jobTemplate:
     spec:
       template:
