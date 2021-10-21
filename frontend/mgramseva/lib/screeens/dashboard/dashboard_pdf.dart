@@ -32,30 +32,10 @@ class DashboardPdfCreator {
   DashboardPdfCreator(this.buildContext, this.headers, this.tableData, this.gridList, this.feedBack);
 
   pdfPreview() async {
-    var language = Provider.of<LanguageProvider>(navigatorKey.currentContext!,
-        listen: false);
     var pdf = pw.Document();
-    ByteData data1 =
-        await rootBundle.load('assets/fonts/Roboto/Roboto-Regular.ttf');
-    // ByteData  data2 = await rootBundle.load('assets/fonts/Roboto/Hind-Regular.ttf');
-    // ByteData  data3 = await rootBundle.load('assets/fonts/Roboto/raavi.ttf');
+    final ttf = await Provider.of<CommonProvider>(buildContext,
+        listen: false).getPdfFontFamily();
 
-    font() {
-      //   if(language.selectedLanguage!.value == 'en_IN')
-      //   {
-      return pw.Font.ttf(data1);
-      //   }
-      // else if(language.selectedLanguage!.value == 'hi_IN')
-      // {
-      //   return pw.Font.ttf(data2);
-      // }
-      // else
-      // {
-      //   return pw.Font.ttf(data3);
-      // }
-    }
-
-    final ttf = font();
     pdf.addPage(
         pw.MultiPage(
         pageFormat: PdfPageFormat.a4,
@@ -79,24 +59,27 @@ class DashboardPdfCreator {
             _buildTable(ttf)
           ];
         }));
-    if (kIsWeb) {
-      final blob = html.Blob([await pdf.save()]);
-      final url = html.Url.createObjectUrlFromBlob(blob);
-      final anchor = html.document.createElement('a') as html.AnchorElement
-        ..href = url
-        ..style.display = 'none'
-        ..download = 'dashboard.pdf';
-      html.document.body?.children.add(anchor);
-      anchor.click();
-      html.document.body?.children.remove(anchor);
-      html.Url.revokeObjectUrl(url);
-    } else {
-      final Directory directory = await getApplicationDocumentsDirectory();
-      final file = File('${directory.path}/example.pdf');
-      await file.writeAsBytes(await pdf.save());
-      Navigator.pushReplacement(buildContext,
-          MaterialPageRoute(builder: (_) => PdfPreview(path: file.path)));
-    }
+
+    Provider.of<CommonProvider>(buildContext, listen: false).sharePdfOnWhatsApp(buildContext, pdf, 'expenditure', '<link>');
+
+    // if (kIsWeb) {
+    //   final blob = html.Blob([await pdf.save()]);
+    //   final url = html.Url.createObjectUrlFromBlob(blob);
+    //   final anchor = html.document.createElement('a') as html.AnchorElement
+    //     ..href = url
+    //     ..style.display = 'none'
+    //     ..download = 'dashboard.pdf';
+    //   html.document.body?.children.add(anchor);
+    //   anchor.click();
+    //   html.document.body?.children.remove(anchor);
+    //   html.Url.revokeObjectUrl(url);
+    // } else {
+    //   final Directory directory = await getApplicationDocumentsDirectory();
+    //   final file = File('${directory.path}/example.pdf');
+    //   await file.writeAsBytes(await pdf.save());
+    //   Navigator.pushReplacement(buildContext,
+    //       MaterialPageRoute(builder: (_) => PdfPreview(path: file.path)));
+    // }
   }
 
   pw.Widget _buildAppBar(BuildContext context) {
