@@ -3,6 +3,7 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_share_me/flutter_share_me.dart';
 import 'package:mgramseva/model/bill/bill_payments.dart';
 import 'package:mgramseva/model/file/file_store.dart';
 import 'package:mgramseva/model/localization/language.dart';
@@ -294,8 +295,9 @@ class CommonProvider with ChangeNotifier {
         var link ;
         print(mobileNumber);
         if(mobileNumber == null) {
-          link = "https://wa.me/send?text=" +
-              input.toString().replaceFirst('<link>', res!);
+          final FlutterShareMe flutterShareMe = FlutterShareMe();
+          flutterShareMe.shareToWhatsApp(msg: input.toString().replaceFirst('<link>', res!));
+          return;
         }
         else{
          link = "https://wa.me/+91$mobileNumber?text=" +
