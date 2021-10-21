@@ -248,6 +248,15 @@ class _ConsumerDetailsState extends State<ConsumerDetails> {
                                 consumerProvider.consmerWalkthrougList[3].key,
                           ),
 
+                          BuildTextField(
+                            i18.consumer.CONSUMER_AADHAR_NUMBER,
+                            consumerProvider.waterconnection.addharCtrl,
+                            maxLength: 12,
+                            inputFormatter: [
+                              FilteringTextInputFormatter.allow(RegExp("[0-9]"))
+                            ],
+                          ),
+
                           //Consumer Old Connection Field
                           Consumer<ConsumerProvider>(
                             builder: (_, consumerProvider, child) =>
@@ -259,11 +268,45 @@ class _ConsumerDetailsState extends State<ConsumerDetails> {
                                   consumerProvider.consmerWalkthrougList[4].key,
                             ),
                           ),
+                          Consumer<ConsumerProvider>(
+                            builder: (_, consumerProvider, child) =>
+                                SelectFieldBuilder(
+                                    i18.consumer.CONSUMER_CATEGORY,
+                                    consumerProvider.waterconnection
+                                        .additionalDetails?.category,
+                                    '',
+                                    '',
+                                    consumerProvider.onChangeOfCategory,
+                                    consumerProvider.getCategoryList(),
+                                    false,
+                                    // contextkey: consumerProvider
+                                    //     .consmerWalkthrougList[6].key,
+                                    controller: consumerProvider
+                                        .waterconnection.categoryCtrl),
+                          ),
+
+                          Consumer<ConsumerProvider>(
+                            builder: (_, consumerProvider, child) =>
+                                SelectFieldBuilder(
+                                    i18.consumer.CONSUMER_SUBCATEGORY,
+                                    consumerProvider.waterconnection
+                                        .additionalDetails?.subCategory,
+                                    '',
+                                    '',
+                                    consumerProvider.onChangeOfSubCategory,
+                                    consumerProvider.getSubCategoryList(),
+                                    false,
+                                    // contextkey: consumerProvider
+                                    //     .consmerWalkthrougList[6].key,
+                                    controller: consumerProvider
+                                        .waterconnection.subCategoryCtrl),
+                          ),
                           //Consumer Door Number Field
                           BuildTextField(
                             i18.consumer.DOOR_NO,
                             property.address.doorNumberCtrl,
                           ),
+
                           //Consumer Street Field
                           BuildTextField(
                             i18.consumer.STREET_NUM_NAME,
@@ -292,6 +335,7 @@ class _ConsumerDetailsState extends State<ConsumerDetails> {
                                           contextkey: consumerProvider
                                               .consmerWalkthrougList[5].key)
                                       : Container()),
+
                           //Consumer Property Type Field
                           Consumer<ConsumerProvider>(
                             builder: (_, consumerProvider, child) =>
