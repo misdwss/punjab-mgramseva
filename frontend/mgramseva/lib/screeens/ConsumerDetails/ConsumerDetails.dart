@@ -251,7 +251,7 @@ class _ConsumerDetailsState extends State<ConsumerDetails> {
                           BuildTextField(
                             i18.consumer.CONSUMER_AADHAR_NUMBER,
                             consumerProvider.waterconnection.addharCtrl,
-                            maxLength: 12,
+                            maxLength: 16,
                             inputFormatter: [
                               FilteringTextInputFormatter.allow(RegExp("[0-9]"))
                             ],
