@@ -197,7 +197,7 @@ public class NotificationUtil {
 		Map<String, Object> request = new HashMap<>();
 		request.put("RequestInfo", requestInfo);
 		try {
-			result = restTemplate.postForObject(uri.toString(), request, Map.class);
+			result = serviceRequestRepository.fetchResult(uri, request);
 			Configuration suppressExceptionConfiguration = Configuration.defaultConfiguration()
 					.addOptions(Option.SUPPRESS_EXCEPTIONS);
 			ReadContext jsonData = JsonPath.using(suppressExceptionConfiguration).parse(result);
