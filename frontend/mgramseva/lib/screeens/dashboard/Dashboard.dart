@@ -261,7 +261,14 @@ class _Dashboard extends State<Dashboard> with SingleTickerProviderStateMixin {
     var dashBoardProvider =
     Provider.of<DashBoardProvider>(context, listen: false);
 
-    if(dashBoardProvider.selectedMonth.dateType == DateType.MONTH) return;
+    if(dashBoardProvider.selectedMonth.dateType == DateType.MONTH){
+      if(dashBoardProvider.selectedDashboardType == DashBoardType.Expenditure) {
+        dashBoardProvider.createPdfForExpenditure(context);
+      }else{
+        dashBoardProvider.createPdfForCollection(context);
+      }
+      return;
+    };
 
     final FlutterShareMe flutterShareMe = FlutterShareMe();
     var fileName = 'annualdashboard';
