@@ -13,8 +13,7 @@ import 'package:provider/provider.dart';
 
 class NotificationsList extends StatefulWidget {
   final bool close;
-  final bool view;
-  const NotificationsList({Key? key, required this.close, required this.view})
+  const NotificationsList({Key? key, required this.close})
       : super(key: key);
   @override
   State<StatefulWidget> createState() {
@@ -35,7 +34,7 @@ class NotificationsListState extends State<NotificationsList> {
                 " (" +
                 events.length.toString() +
                 ")"),
-              (events.length > 0 && widget.view)? Center(
+              (events.length > 0)? Center(
                   child: ButtonLink(i18.common.VIEW_ALL, () => Navigator.pushNamed(context, Routes.NOTIFICATIONS))) : Text(""),
             ])
             : Text(""),
@@ -51,7 +50,7 @@ class NotificationsListState extends State<NotificationsList> {
               }
               return Notifications(item, callBack, widget.close);
             }),
-        (events.length > 0 && widget.view)? Center(
+        (events.length > 0)? Center(
             child: ButtonLink(i18.common.VIEW_ALL, () => Navigator.pushNamed(context, Routes.NOTIFICATIONS))) : Text(""),
       ]);
     });
