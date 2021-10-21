@@ -12,7 +12,7 @@ import org.egov.waterconnection.service.WaterService;
 import org.egov.waterconnection.util.ResponseInfoFactory;
 import org.egov.waterconnection.web.models.FeedbackRequest;
 import org.egov.waterconnection.web.models.FeedbackResponse;
-
+import org.egov.waterconnection.web.models.FeedbackSearchCriteria;
 import org.egov.waterconnection.web.models.LastMonthSummary;
 import org.egov.waterconnection.web.models.LastMonthSummaryResponse;
 
