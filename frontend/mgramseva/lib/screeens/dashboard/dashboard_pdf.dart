@@ -60,7 +60,7 @@ class DashboardPdfCreator {
     pdf.addPage(
         pw.MultiPage(
         pageFormat: PdfPageFormat.a4,
-        margin: pw.EdgeInsets.symmetric(horizontal: 16),
+        margin: pw.EdgeInsets.symmetric(horizontal: 16, vertical: 25),
         footer: (_) => PdfUtils.pdfFooter(digitLogo),
         build: (pw.Context context) {
           return [
