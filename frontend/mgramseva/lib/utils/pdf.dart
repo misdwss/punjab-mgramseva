@@ -72,5 +72,6 @@ class PdfUtils {
             child: pw.Image(image)
         )
     );
+
   }
 }

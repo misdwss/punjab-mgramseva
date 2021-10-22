@@ -32,6 +32,8 @@ class DashboardPdfCreator {
 
   pdfPreview() async {
     var pdf = pw.Document();
+    var dashBoardProvider = Provider.of<DashBoardProvider>(navigatorKey.currentContext!, listen: false);
+
     final ttf = await Provider.of<CommonProvider>(buildContext,
         listen: false).getPdfFontFamily();
 
@@ -40,59 +42,69 @@ class DashboardPdfCreator {
 
     var icons =  pw.Font.ttf(await rootBundle.load('assets/icons/fonts/PdfIcons.ttf'));
 
+    String billDescription = '';
+    String recordsCount = '${ApplicationLocalizations.of(buildContext).translate(i18.dashboard.NUMBER_OF_RECORDS)}';
+    recordsCount = recordsCount.replaceAll('<n>', '${tableData.length}');
+
+    if(dashBoardProvider.selectedDashboardType == DashBoardType.Expenditure){
+      billDescription = '${ApplicationLocalizations.of(buildContext).translate(i18.dashboard.EXPENDITURE_DESC)}';
+      billDescription = billDescription.replaceAll('<Pending Or Paid>', '${ApplicationLocalizations.of(buildContext).translate(dashBoardProvider.selectedTab)}');
+      billDescription = billDescription.replaceAll('<text>', '${dashBoardProvider.searchController.text.trim().isEmpty ? '-' : dashBoardProvider.searchController.text.trim()}');
+      billDescription = billDescription.replaceAll('<Time period>', DateFormats.getMonthAndYear(dashBoardProvider.selectedMonth, buildContext));
+    }else{
+      billDescription = '${ApplicationLocalizations.of(buildContext).translate(i18.dashboard.COLLECTION_DESC)}';
+      billDescription = billDescription.replaceAll('<Residential or Commercial>', '${ApplicationLocalizations.of(buildContext).translate(dashBoardProvider.selectedTab)}');
+      billDescription = billDescription.replaceAll('<text>', '${dashBoardProvider.searchController.text.trim().isEmpty ? '-' : dashBoardProvider.searchController.text.trim()}');
+    }
+
     pdf.addPage(
         pw.MultiPage(
         pageFormat: PdfPageFormat.a4,
+        margin: pw.EdgeInsets.symmetric(horizontal: 16, vertical: 25),
         footer: (_) => PdfUtils.pdfFooter(digitLogo),
         build: (pw.Context context) {
           return [
-            PdfUtils.buildAppBar(buildContext, mgramSevaLogo, icons),
-            _buildDashboardView(buildContext, feedBack, icons),
-            _buildGridView(gridList, buildContext),
+            PdfUtils.buildAppBar(buildContext, mgramSevaLogo, icons, ttf),
+            _buildDashboardView(buildContext, feedBack, icons, ttf),
+            _buildGridView(gridList, buildContext, ttf),
             pw.Container(
               margin: pw.EdgeInsets.only(top: 14, bottom: 3),
-              child: pw.Text('Expenditure All Records',
+              child: pw.Text(
+                  '${ApplicationLocalizations.of(buildContext).translate(dashBoardProvider.selectedDashboardType == DashBoardType.Expenditure ?
+                  i18.dashboard.EXPENDITURE_BILLS :  i18.dashboard.CONSUMER_RECORDS)}',
               style: pw.TextStyle(
-                fontSize: 14,
-                fontWeight: pw.FontWeight.bold
+                fontSize: 18,
+                fontWeight: pw.FontWeight.bold,
+                font: ttf
               )
               )
             ),
+            pw.Padding(
+                padding : pw.EdgeInsets.only(top: 8, bottom: 20),
+                child : pw.Text( billDescription , style: pw.TextStyle(font: ttf, fontStyle: pw.FontStyle.italic, fontSize: 10, color: PdfColor.fromHex('#474747'),),)),
+            pw.Container(
+              alignment: pw.Alignment.centerRight,
+                padding : pw.EdgeInsets.only(bottom: 10),
+              child: pw.Text(recordsCount , style: pw.TextStyle(font: ttf, fontWeight: pw.FontWeight.bold, fontSize: 10),)
+            ),
             _buildTable(ttf),
-            PdfUtils.pdfFooter(digitLogo)
           ];
         }));
+    
+    var localizedText = '${ApplicationLocalizations.of(buildContext).translate(i18.dashboard.MONTHLY_REPORT_MESSAGE)}';
+    localizedText = localizedText.replaceAll('<Month-Year>', DateFormats.getMonthAndYear(dashBoardProvider.selectedMonth, buildContext));
 
-    // Provider.of<CommonProvider>(buildContext, listen: false).sharePdfOnWhatsApp(buildContext, pdf, 'expenditure', '<link>');
-
-    if (kIsWeb) {
-      final blob = html.Blob([await pdf.save()]);
-      final url = html.Url.createObjectUrlFromBlob(blob);
-      final anchor = html.document.createElement('a') as html.AnchorElement
-        ..href = url
-        ..style.display = 'none'
-        ..download = 'dashboard.pdf';
-      html.document.body?.children.add(anchor);
-      anchor.click();
-      html.document.body?.children.remove(anchor);
-      html.Url.revokeObjectUrl(url);
-    } else {
-      final Directory directory = await getApplicationDocumentsDirectory();
-      final file = File('${directory.path}/example.pdf');
-      await file.writeAsBytes(await pdf.save());
-      // Navigator.pushReplacement(buildContext,
-      //     MaterialPageRoute(builder: (_) => PdfPreview(path: file.path)));
-    }
+    Provider.of<CommonProvider>(buildContext, listen: false).sharePdfOnWhatsApp(buildContext, pdf, 'dashboard', localizedText);
   }
 
 
 
-  pw.Widget _buildGridView(List<Metric> gridList, BuildContext context) {
+  pw.Widget _buildGridView(List<Metric> gridList, BuildContext context, pw.Font font) {
     var dashBoardProvider = Provider.of<DashBoardProvider>(navigatorKey.currentContext!, listen: false);
 
     var crossAxisCount = 3;
     var incrementer = 3;
-    return pw.Column(
+    return gridList.isEmpty ? pw.Container() : pw.Column(
         crossAxisAlignment: pw.CrossAxisAlignment.start,
         children: [
         pw.Container(
@@ -104,7 +116,7 @@ class DashboardPdfCreator {
               padding: pw.EdgeInsets.symmetric(vertical: 5, horizontal: 10),
               margin: pw.EdgeInsets.only(top: 8, bottom: 3),
               child:
-                  pw.Text('${ApplicationLocalizations.of(context).translate('${dashBoardProvider.selectedDashboardType == DashBoardType.Expenditure ? i18.dashboard.EXPENDITURE : i18.dashboard.COLLECTIONS}')}', style: pw.TextStyle(fontSize: 16, fontWeight: pw.FontWeight.bold))),
+                  pw.Text('${ApplicationLocalizations.of(context).translate('${dashBoardProvider.selectedDashboardType == DashBoardType.Expenditure ? i18.dashboard.EXPENDITURE : i18.dashboard.COLLECTIONS}')}', style: pw.TextStyle(fontSize: 14, font: font, fontWeight: pw.FontWeight.bold))),
       pw.Container(
           height: 60,
           color: PdfColor.fromHex('#fafafa'),
@@ -135,7 +147,8 @@ class DashboardPdfCreator {
                             '${item.type == 'amount' ? '₹' : ''}${ApplicationLocalizations.of(context).translate('${item.label}')}',
                             textAlign: pw.TextAlign.center,
                             style: pw.TextStyle(
-                              fontSize: 16,
+                              fontSize: 12,
+                              font: font,
                               fontWeight: pw.FontWeight.bold,
                             ),
                           ),
@@ -144,20 +157,19 @@ class DashboardPdfCreator {
                             ApplicationLocalizations.of(context)
                                 .translate('${item.value}'),
                             textAlign: pw.TextAlign.center,
-                            style: pw.TextStyle(fontSize: 14),
+                            style: pw.TextStyle(fontSize: 12, font: font),
                           )
                         ]));
               })))
     ]);
   }
 
-  pw.Widget _buildDashboardView(BuildContext context, Map feedBack, pw.Font icons) {
+  pw.Widget _buildDashboardView(BuildContext context, Map feedBack, pw.Font icons, pw.Font font) {
     var dashBoardProvider = Provider.of<DashBoardProvider>(navigatorKey.currentContext!, listen: false);
 
     return pw.Container(
         color: PdfColor.fromHex('#fafafa'),
         padding: pw.EdgeInsets.symmetric(vertical: 3, horizontal: 8),
-        margin: pw.EdgeInsets.symmetric(vertical: 3),
         child: pw.Column(mainAxisSize: pw.MainAxisSize.min, children: [
           pw.Padding(
               padding: pw.EdgeInsets.symmetric(vertical: 8),
@@ -166,18 +178,28 @@ class DashboardPdfCreator {
                   children: [
                     pw.Text( '${ApplicationLocalizations.of(context).translate(i18.dashboard.DASHBOARD)}',
                         style: pw.TextStyle(
-                            fontSize: 16, fontWeight: pw.FontWeight.bold)),
+                            fontSize: 32, font: font, fontWeight: pw.FontWeight.bold)),
                     pw.Text(DateFormats.getMonthAndYear(dashBoardProvider.selectedMonth, context),
-                        style: pw.TextStyle(color: PdfColor.fromHex('#F47738')))
+                        style: pw.TextStyle(font : font, fontSize: 12, color: PdfColor.fromHex('#F47738')))
                   ])),
-         if(feedBack.isNotEmpty) _buildRatingView(context, feedBack, icons)
+         if(feedBack.isNotEmpty) _buildRatingView(context, feedBack, icons, font)
         ]));
   }
 
-  pw.Widget _buildRatingView(BuildContext context, Map feedBack, pw.Font icons) {
+  pw.Widget _buildRatingView(BuildContext context, Map feedBack, pw.Font icons, pw.Font font) {
+    var dashBoardProvider = Provider.of<DashBoardProvider>(navigatorKey.currentContext!, listen: false);
     Map feedBackDetails = Map.from(feedBack);
     feedBackDetails.remove('count');
-    return pw.Container(
+
+    var localizationLabel =  '${ApplicationLocalizations.of(context).translate(i18.dashboard.USER_GAVE_FEEDBACK)}';
+    localizationLabel = localizationLabel.replaceAll('<n>', (feedBack['count'] ?? 0).toString());
+    localizationLabel = localizationLabel.replaceAll('<date>', DateFormats.getMonthAndYear(dashBoardProvider.selectedMonth, context)).toString();
+    
+    return pw.Padding(
+        padding: pw.EdgeInsets.symmetric(horizontal : 10),
+        child : pw.Wrap(
+        children : [
+          pw.Container(
         height: 60,
         child: pw.GridView(
           crossAxisCount: 3,
@@ -208,7 +230,8 @@ class DashboardPdfCreator {
                               feedBackDetails.values.toList()[index].toString(),
                               textAlign: pw.TextAlign.center,
                               style: pw.TextStyle(
-                                fontSize: 14,
+                                fontSize: 16,
+                                font: font,
                                 fontWeight: pw.FontWeight.bold,
                               ),
                             ),
@@ -223,35 +246,40 @@ class DashboardPdfCreator {
                             child: pw.Text(
                               '${ApplicationLocalizations.of(context).translate('DASHBOARD_${feedBackDetails.keys.toList()[index].toString()}')}',
                               textAlign: pw.TextAlign.center,
+                              style: pw.TextStyle(
+                                font: font,
+                                fontSize: 12
+                              )
                             ),
                           ),
                         )
                       ]),
                 )),
           ).toList(),
-        ));
+        )),
+        pw.Padding(
+            padding: pw.EdgeInsets.only(top: 10, bottom: 5),
+            child : pw.Text("$localizationLabel",
+            textAlign: pw.TextAlign.left,
+            style: pw.TextStyle(
+                fontSize: 12,
+                color: PdfColor.fromHex('#0B0C0C'),
+                font: font
+            ),
+          ))
+    ]));
   }
 
   pw.Table _buildTable(pw.Font ttf){
-   // return pw.Table(
-   //    children: tableData.map((e) => pw.TableRow(
-   //      children: e.map((text) => pw.Container(
-   //        child: pw.Text('${text}',
-   //           style : pw.TextStyle(
-   //                font: ttf,
-   //                fontSize: 12
-   //            )
-   //        )
-   //      )).toList()
-   //    )).toList()
-   //  );
     return pw.Table.fromTextArray(
             headers: headers,
             headerStyle:
             pw.TextStyle(font: ttf, fontWeight: pw.FontWeight.bold),
+            cellPadding: pw.EdgeInsets.symmetric(vertical: 10),
             cellStyle: pw.TextStyle(
               font: ttf,
-              fontSize: 12
+              fontSize: 12,
+              fontWeight: pw.FontWeight.normal,
             ),
             cellAlignment: pw.Alignment.center,
             data: tableData,
