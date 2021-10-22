@@ -6,10 +6,12 @@ import 'package:mgramseva/model/connection/water_connections.dart';
 import 'package:mgramseva/providers/common_provider.dart';
 import 'package:mgramseva/repository/search_connection_repo.dart';
 import 'package:mgramseva/routers/Routers.dart';
+import 'package:mgramseva/screeens/HouseholdRegister/household_pdf.dart';
 import 'package:mgramseva/utils/Constants/I18KeyConstants.dart';
 import 'package:mgramseva/utils/Locilization/application_localizations.dart';
 import 'package:mgramseva/utils/error_logging.dart';
 import 'package:mgramseva/utils/global_variables.dart';
+import 'package:mgramseva/utils/loaders.dart';
 import 'package:mgramseva/utils/models.dart';
 import 'package:provider/provider.dart';
 
@@ -23,7 +25,7 @@ class HouseholdRegisterProvider with ChangeNotifier {
   WaterConnections? waterConnectionsDetails;
   WaterConnection? waterConnection;
   String selectedTab = 'all';
-  Map<String, int> collectionCountHolder= {};
+  Map<String, int> collectionCountHolder = {};
   Timer? debounce;
   bool isLoaderEnabled = false;
   @override
@@ -59,14 +61,12 @@ class HouseholdRegisterProvider with ChangeNotifier {
       'offset': '${offset - 1}',
       'limit': '$limit',
       'toDate':
-      '${DateTime(DateTime.now().year, DateTime.now().month).millisecondsSinceEpoch}',
+          '${DateTime(DateTime.now().year, DateTime.now().month).millisecondsSinceEpoch}',
       'isCollectionCount': 'true',
     };
 
-    if(selectedTab != 'all'){
-      query.addAll({
-        'isBillPaid' : (selectedTab == 'PAID') ? 'true' : 'false'
-      });
+    if (selectedTab != 'all') {
+      query.addAll({'isBillPaid': (selectedTab == 'PAID') ? 'true' : 'false'});
     }
 
     if (sortBy != null) {
@@ -84,7 +84,8 @@ class HouseholdRegisterProvider with ChangeNotifier {
       });
     }
 
-    query.removeWhere((key, value) => (value is String && value.trim().isEmpty));
+    query
+        .removeWhere((key, value) => (value is String && value.trim().isEmpty));
     streamController.add(null);
 
     isLoaderEnabled = true;
@@ -93,23 +94,27 @@ class HouseholdRegisterProvider with ChangeNotifier {
       var response = await SearchConnectionRepository().getconnection(query);
 
       var searchResponse;
-      if(isSearch && selectedTab != 'all'){
+      if (isSearch && selectedTab != 'all') {
         query.remove('isBillPaid');
-        searchResponse = await SearchConnectionRepository().getconnection(query);
+        searchResponse =
+            await SearchConnectionRepository().getconnection(query);
       }
 
       isLoaderEnabled = false;
 
-
       if (response != null) {
-        if(selectedTab == 'all'){
+        if (selectedTab == 'all') {
           collectionCountHolder['all'] = response.totalCount ?? 0;
-          collectionCountHolder['PAID'] = response.collectionDataCount?.collectionPaid ?? 0;
-          collectionCountHolder['PENDING'] = response.collectionDataCount?.collectionPending ?? 0;
-        }else if(searchResponse != null){
+          collectionCountHolder['PAID'] =
+              response.collectionDataCount?.collectionPaid ?? 0;
+          collectionCountHolder['PENDING'] =
+              response.collectionDataCount?.collectionPending ?? 0;
+        } else if (searchResponse != null) {
           collectionCountHolder['all'] = searchResponse.totalCount ?? 0;
-          collectionCountHolder['PAID'] = searchResponse.collectionDataCount?.collectionPaid ?? 0;
-          collectionCountHolder['PENDING'] = searchResponse.collectionDataCount?.collectionPending ?? 0;
+          collectionCountHolder['PAID'] =
+              searchResponse.collectionDataCount?.collectionPaid ?? 0;
+          collectionCountHolder['PENDING'] =
+              searchResponse.collectionDataCount?.collectionPending ?? 0;
         }
 
         if (waterConnectionsDetails == null) {
@@ -124,11 +129,11 @@ class HouseholdRegisterProvider with ChangeNotifier {
         streamController.add(waterConnectionsDetails!.waterConnection!.isEmpty
             ? <WaterConnection>[]
             : waterConnectionsDetails?.waterConnection?.sublist(
-            offSet - 1,
-            ((offset + limit - 1) >
-                (waterConnectionsDetails?.totalCount ?? 0))
-                ? (waterConnectionsDetails!.totalCount!)
-                : (offset + limit) - 1));
+                offSet - 1,
+                ((offset + limit - 1) >
+                        (waterConnectionsDetails?.totalCount ?? 0))
+                    ? (waterConnectionsDetails!.totalCount!)
+                    : (offset + limit) - 1));
       }
     } catch (e, s) {
       isLoaderEnabled = false;
@@ -138,48 +143,46 @@ class HouseholdRegisterProvider with ChangeNotifier {
     }
   }
 
-  List<Tab> getCollectionsTabList(
-      BuildContext context) {
+  List<Tab> getCollectionsTabList(BuildContext context) {
     var list = [i18.dashboard.ALL, i18.dashboard.PAID, i18.dashboard.PENDING];
     return List.generate(
         list.length,
-            (index) => Tab(
+        (index) => Tab(
             text:
-            '${ApplicationLocalizations.of(context).translate(list[index])} (${getCollectionsCount(index)})'));
+                '${ApplicationLocalizations.of(context).translate(list[index])} (${getCollectionsCount(index)})'));
   }
 
   List<TableHeader> get collectionHeaderList => [
-    TableHeader(i18.common.CONNECTION_ID,
-        isSortingRequired: true,
-        isAscendingOrder:
-        sortBy != null && sortBy!.key == 'connectionNumber'
-            ? sortBy!.isAscending
-            : null,
-        apiKey: 'connectionNumber ',
-        callBack: onSort),
-    TableHeader(i18.common.NAME,
-        isSortingRequired: true,
-        isAscendingOrder: sortBy != null && sortBy!.key == 'name'
-            ? sortBy!.isAscending
-            : null,
-        apiKey: 'name',
-        callBack: onSort),
-    TableHeader(i18.householdRegister.PENDING_COLLECTIONS,
-        isSortingRequired: true,
-        isAscendingOrder:
-        sortBy != null && sortBy!.key == 'collectionPendingAmount'
-            ? sortBy!.isAscending
-            : null,
-        apiKey: 'collectionPendingAmount',
-        callBack: onSort),
-  ];
-
+        TableHeader(i18.common.CONNECTION_ID,
+            isSortingRequired: true,
+            isAscendingOrder:
+                sortBy != null && sortBy!.key == 'connectionNumber'
+                    ? sortBy!.isAscending
+                    : null,
+            apiKey: 'connectionNumber ',
+            callBack: onSort),
+        TableHeader(i18.common.NAME,
+            isSortingRequired: true,
+            isAscendingOrder: sortBy != null && sortBy!.key == 'name'
+                ? sortBy!.isAscending
+                : null,
+            apiKey: 'name',
+            callBack: onSort),
+        TableHeader(i18.householdRegister.PENDING_COLLECTIONS,
+            isSortingRequired: true,
+            isAscendingOrder:
+                sortBy != null && sortBy!.key == 'collectionPendingAmount'
+                    ? sortBy!.isAscending
+                    : null,
+            apiKey: 'collectionPendingAmount',
+            callBack: onSort),
+      ];
 
   List<TableDataRow> getCollectionsData(int index, List<WaterConnection> list) {
     return list.map((e) => getCollectionRow(e)).toList();
   }
 
-  getDownloadList(){
+  getDownloadList() {
     return collectionCountHolder[selectedTab] ?? 0;
   }
 
@@ -195,6 +198,7 @@ class HouseholdRegisterProvider with ChangeNotifier {
         return 0;
     }
   }
+
   String? truncateWithEllipsis(String? myString) {
     return (myString!.length <= 20)
         ? myString
@@ -202,7 +206,8 @@ class HouseholdRegisterProvider with ChangeNotifier {
   }
 
   TableDataRow getCollectionRow(WaterConnection connection) {
-    String? name = truncateWithEllipsis(connection.connectionHolders?.first.name);
+    String? name =
+        truncateWithEllipsis(connection.connectionHolders?.first.name);
     return TableDataRow([
       TableData(
           '${connection.connectionNo?.split('/').first ?? ''}/...${connection.connectionNo?.split('/').last ?? ''} ${connection.connectionType == 'Metered' ? '- M' : ''}',
@@ -213,7 +218,6 @@ class HouseholdRegisterProvider with ChangeNotifier {
           '${connection.additionalDetails?.collectionPendingAmount != null ? '₹ ${connection.additionalDetails?.collectionPendingAmount}' : '-'}'),
     ]);
   }
-
 
   onClickOfCollectionNo(TableData tableData) {
     var waterConnection = waterConnectionsDetails?.waterConnection
@@ -232,10 +236,8 @@ class HouseholdRegisterProvider with ChangeNotifier {
     }
     sortBy = SortBy(header.apiKey ?? '', header.isAscendingOrder!);
     notifyListeners();
-      fetchHouseholdDetails(
-          navigatorKey.currentContext!, limit, 1, true);
+    fetchHouseholdDetails(navigatorKey.currentContext!, limit, 1, true);
   }
-
 
   void onSearch(String val, BuildContext context) {
     if (debounce?.isActive ?? false) debounce?.cancel();
@@ -244,21 +246,18 @@ class HouseholdRegisterProvider with ChangeNotifier {
     });
   }
 
-
   void onChangeOfPageLimit(PaginationResponse response, BuildContext context) {
     fetchDetails(context, response.limit, response.offset);
   }
 
   fetchDetails(BuildContext context,
       [int? localLimit, int? localOffSet, bool isSearch = false]) {
-    if(isLoaderEnabled) return;
+    if (isLoaderEnabled) return;
 
-      fetchHouseholdDetails(
-          context, localLimit ?? limit, localOffSet ?? 1, isSearch);
+    fetchHouseholdDetails(
+        context, localLimit ?? limit, localOffSet ?? 1, isSearch);
   }
 
-<<<<<<< HEAD
-=======
   void createPdfForAllConnections(BuildContext context, bool isDownload) async {
     var commonProvider = Provider.of<CommonProvider>(
         navigatorKey.currentContext!,
@@ -269,14 +268,12 @@ class HouseholdRegisterProvider with ChangeNotifier {
       'tenantId': commonProvider.userDetails?.selectedtenant?.code,
       'limit': '-1',
       'toDate':
-      '${DateTime(DateTime.now().year, DateTime.now().month).millisecondsSinceEpoch}',
+          '${DateTime(DateTime.now().year, DateTime.now().month).millisecondsSinceEpoch}',
       'isCollectionCount': 'true',
     };
 
-    if(selectedTab != 'all'){
-      query.addAll({
-        'isBillPaid' : (selectedTab == 'PAID') ? 'true' : 'false'
-      });
+    if (selectedTab != 'all') {
+      query.addAll({'isBillPaid': (selectedTab == 'PAID') ? 'true' : 'false'});
     }
 
     if (sortBy != null) {
@@ -294,33 +291,50 @@ class HouseholdRegisterProvider with ChangeNotifier {
       });
     }
 
-    query.removeWhere((key, value) => (value is String && value.trim().isEmpty));
+    query
+        .removeWhere((key, value) => (value is String && value.trim().isEmpty));
 
     Loaders.showLoadingDialog(context);
     try {
-      waterConnectionsDetails = await SearchConnectionRepository().getconnection(query);
+      waterConnectionsDetails =
+          await SearchConnectionRepository().getconnection(query);
 
       Navigator.pop(context);
-    }catch(e,s){
+    } catch (e, s) {
       Navigator.pop(context);
       ErrorHandler().allExceptionsHandler(context, e, s);
       return;
     }
 
-    if(waterConnectionsDetails.waterConnection == null || waterConnectionsDetails.waterConnection!.isEmpty) return;
+    if (waterConnectionsDetails.waterConnection == null ||
+        waterConnectionsDetails.waterConnection!.isEmpty) return;
 
-    var headerList = [i18.common.CONNECTION_ID, i18.common.NAME, i18.householdRegister.PENDING_COLLECTIONS];
+    var headerList = [
+      i18.common.CONNECTION_ID,
+      i18.common.NAME,
+      i18.householdRegister.PENDING_COLLECTIONS
+    ];
 
-    var tableData = waterConnectionsDetails.waterConnection?.map<List<String>>((connection) => [
-      '${connection.connectionNo ?? ''} ${connection.connectionType == 'Metered' ? '- M' : ''}',
-      '${connection.connectionHolders?.first.name ?? ''}',
-      '${connection.additionalDetails?.collectionPendingAmount != null ? '₹ ${connection.additionalDetails?.collectionPendingAmount}' : '-'}',
-    ]).toList() ?? [];
+    var tableData = waterConnectionsDetails.waterConnection
+            ?.map<List<String>>((connection) => [
+                  '${connection.connectionNo ?? ''} ${connection.connectionType == 'Metered' ? '- M' : ''}',
+                  '${connection.connectionHolders?.first.name ?? ''}',
+                  '${connection.additionalDetails?.collectionPendingAmount != null ? '₹ ${connection.additionalDetails?.collectionPendingAmount}' : '-'}',
+                ])
+            .toList() ??
+        [];
 
-    HouseholdPdfCreator(context,  headerList.map<String>((e) => '${ApplicationLocalizations.of(navigatorKey.currentContext!).translate(e)}').toList(), tableData, isDownload).pdfPreview();
+    HouseholdPdfCreator(
+            context,
+            headerList
+                .map<String>((e) =>
+                    '${ApplicationLocalizations.of(navigatorKey.currentContext!).translate(e)}')
+                .toList(),
+            tableData,
+            isDownload)
+        .pdfPreview();
   }
 
->>>>>>> c94b9a68 (IFIX-165)
   bool removeOverLay(_overlayEntry) {
     try {
       if (_overlayEntry == null) return false;
