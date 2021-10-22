@@ -158,7 +158,7 @@ class HouseholdRegisterProvider with ChangeNotifier {
         apiKey: 'connectionNumber ',
         callBack: onSort),
     TableHeader(i18.common.NAME,
-        isSortingRequired: true,
+        isSortingRequired: false,
         isAscendingOrder: sortBy != null && sortBy!.key == 'name'
             ? sortBy!.isAscending
             : null,
