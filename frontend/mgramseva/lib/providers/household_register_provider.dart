@@ -276,7 +276,7 @@ class HouseholdRegisterProvider with ChangeNotifier {
 
     var query = {
       'tenantId': commonProvider.userDetails?.selectedtenant?.code,
-      'offset': "0",
+      'limit': '-1',
       'toDate':
       '${DateTime(DateTime.now().year, DateTime.now().month).millisecondsSinceEpoch}',
       'isCollectionCount': 'true',

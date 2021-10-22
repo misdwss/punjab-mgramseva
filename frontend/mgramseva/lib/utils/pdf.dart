@@ -57,7 +57,7 @@ class PdfUtils {
     Provider.of<LanguageProvider>(navigatorKey.currentContext!, listen: false);
 
     return await networkImage(
-      /*languageProvider.stateInfo?.logoUrlWhite ?? */'https://mgramseva-qa.egov.org.in/mgramseva-dev-assets/logo/imagewhite.png');
+      languageProvider.stateInfo?.logoUrlWhite ?? '');
   }
 
   static Future<pw.ImageProvider> get powerdByDigit async => await networkImage(
