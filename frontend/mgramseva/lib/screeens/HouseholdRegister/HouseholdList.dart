@@ -6,6 +6,7 @@ import 'package:mgramseva/providers/household_register_provider.dart';
 import 'package:mgramseva/utils/Locilization/application_localizations.dart';
 import 'package:mgramseva/utils/common_widgets.dart';
 import 'package:mgramseva/utils/loaders.dart';
+import 'package:mgramseva/utils/models.dart';
 import 'package:mgramseva/utils/notifyers.dart';
 import 'package:provider/provider.dart';
 import 'package:mgramseva/utils/Constants/I18KeyConstants.dart';
@@ -30,7 +31,7 @@ class _HouseholdListState extends State<HouseholdList> {
     var householdProvider = Provider.of<HouseholdRegisterProvider>(context, listen: false)
       ..limit = 10
       ..offset = 1
-      ..sortBy = null;
+      ..sortBy = SortBy('connectionNumber', false);
 
       householdProvider
         ..waterConnectionsDetails?.waterConnection = <WaterConnection>[]
@@ -86,7 +87,8 @@ class _HouseholdListState extends State<HouseholdList> {
             (headerList: householdProvider.collectionHeaderList,
             tableData:  tableData,
             leftColumnWidth: width,
-            rightColumnWidth: width * 2,
+            rightColumnWidth: width * 2 ,
+
           );
         }
     );

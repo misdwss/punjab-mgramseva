@@ -26,13 +26,13 @@ class PdfUtils {
             mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
             children: [
               pw.Wrap(
-                crossAxisAlignment: pw.WrapCrossAlignment.center,
-              children : [
-                pw.Icon(pw.IconData(0xe800), color: PdfColor.fromHex('#FFFFFF'), font: icons),
-              pw.SizedBox(width: 2),
-              pw.Image(image,
-                width: 90),
-              ]),
+                  crossAxisAlignment: pw.WrapCrossAlignment.center,
+                  children : [
+                    pw.Icon(pw.IconData(0xe800), color: PdfColor.fromHex('#FFFFFF'), font: icons),
+                    pw.SizedBox(width: 2),
+                    pw.Image(image,
+                        width: 90),
+                  ]),
               pw.Wrap(
                 spacing: 3,
                 children: [
@@ -44,7 +44,7 @@ class PdfUtils {
                   pw.Text(
                       ApplicationLocalizations.of(context).translate(
                           commonProvider
-                                  .userDetails?.selectedtenant?.city?.code ??
+                              .userDetails?.selectedtenant?.city?.code ??
                               ''),
                       style: style)
                 ],
@@ -57,20 +57,21 @@ class PdfUtils {
     Provider.of<LanguageProvider>(navigatorKey.currentContext!, listen: false);
 
     return await networkImage(
-        /*languageProvider.stateInfo?.logoUrlWhite ?? */'https://mgramseva-qa.egov.org.in/mgramseva-dev-assets/logo/imagewhite.png');
+      languageProvider.stateInfo?.logoUrlWhite ?? '');
   }
 
-    static Future<pw.ImageProvider> get powerdByDigit async => await networkImage(
-        'https://s3.ap-south-1.amazonaws.com/egov-qa-assets/digit-footer.png');
+  static Future<pw.ImageProvider> get powerdByDigit async => await networkImage(
+      'https://s3.ap-south-1.amazonaws.com/egov-qa-assets/digit-footer.png');
 
-    static pw.Widget pdfFooter(pw.ImageProvider image){
-      return pw.Container(
-          margin: pw.EdgeInsets.only(top: 10, bottom: 10),
-          alignment: pw.Alignment.center,
-          child: pw.SizedBox(
-              width: 100,
-              child: pw.Image(image)
-          )
-      );
-    }
+  static pw.Widget pdfFooter(pw.ImageProvider image){
+    return pw.Container(
+        margin: pw.EdgeInsets.only(top: 10),
+        alignment: pw.Alignment.center,
+        child: pw.SizedBox(
+            width: 100,
+            child: pw.Image(image)
+        )
+    );
+
   }
+}
