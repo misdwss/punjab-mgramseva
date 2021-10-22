@@ -43,7 +43,7 @@ class _HouseholdSearchState extends State<HouseholdSearch> with SingleTickerProv
     var householdRegisterProvider = Provider.of<HouseholdRegisterProvider>(context, listen: false);
     return  Column(
         children: [
-          SizedBox(height: 10,),
+          SizedBox(height: 20,),
           BuildTextField(
             '',
             householdRegisterProvider.searchController,
@@ -57,7 +57,7 @@ class _HouseholdSearchState extends State<HouseholdSearch> with SingleTickerProv
             placeHolder: i18.dashboard.SEARCH_NAME_CONNECTION,
             onChange: (val) => householdRegisterProvider.onSearch(val, context),
           ),
-          SizedBox(height: 10,),
+          SizedBox(height: 20,),
           Expanded(
             child: _buildTabView(),
           )

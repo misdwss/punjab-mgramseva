@@ -220,6 +220,9 @@ public class SchedulerService {
 						HashMap<String, String> messageMap = util.getLocalizationMessage(requestInfo,
 								NEW_EXPENDITURE_SMS, tenantId);
 
+						HashMap<String, String> gpwscMap = util.getLocalizationMessage(requestInfo,
+								tenantId, tenantId);
+
 						String addExpense = config.getUiAppHost() + config.getExpenditureLink();
 						System.out.println("ADD Expense Link :: " + addExpense);
 						for (UserInfo userInfo : userDetailResponse.getUser())
@@ -233,7 +236,10 @@ public class SchedulerService {
 								String message = messageMap.get(NotificationUtil.MSG_KEY);
 
 								message = message.replace("{NEW_EXP_LINK}", getShortenedUrl(addExpense));
-								message = message.replace("{GPWSC}", tenantId);
+								message = message.replace("{GPWSC}",  (gpwscMap != null
+										&& !StringUtils.isEmpty(gpwscMap.get(NotificationUtil.MSG_KEY)))
+										? gpwscMap.get(NotificationUtil.MSG_KEY)
+										: tenantId);
 								System.out.println("New Expenditure SMS :: " + message);
 
 								SMSRequest smsRequest = SMSRequest.builder().mobileNumber(map.getKey()).message(message)
@@ -397,12 +403,18 @@ public class SchedulerService {
 						HashMap<String, String> messageMap = util.getLocalizationMessage(requestInfo,
 								MARK_PAID_BILL_SMS, tenantId);
 
+						HashMap<String, String> gpwscMap = util.getLocalizationMessage(requestInfo,
+								tenantId, tenantId);
+
 						mobileNumberIdMap.entrySet().stream().forEach(map -> {
 							if (messageMap != null && !StringUtils.isEmpty(messageMap.get(NotificationUtil.MSG_KEY))) {
 								String message = messageMap.get(NotificationUtil.MSG_KEY);
 								message = message.replace("{EXP_MRK_LINK}", getShortenedUrl(addExpense));
 
-								message = message.replace("{GPWSC}", tenantId); // TODO Replace
+								message = message.replace("{GPWSC}", (gpwscMap != null
+										&& !StringUtils.isEmpty(gpwscMap.get(NotificationUtil.MSG_KEY)))
+										? gpwscMap.get(NotificationUtil.MSG_KEY)
+										: tenantId); // TODO Replace
 								// <GPWSC> with
 								// value.
 								System.out.println("Mark expense bills SMS::" + message);
@@ -498,6 +510,8 @@ public class SchedulerService {
 					if (config.getIsSMSEnabled()) {
 						HashMap<String, String> messageMap = util.getLocalizationMessage(requestInfo,
 								MONTHLY_SUMMARY_SMS, tenantId);
+						HashMap<String, String> gpwscMap = util.getLocalizationMessage(requestInfo, tenantId, tenantId);
+
 						UserDetailResponse userDetailResponse = userService.getUserByRoleCodes(requestInfo, tenantId,
 								Arrays.asList("EXPENSE_PROCESSING"));
 
@@ -516,7 +530,10 @@ public class SchedulerService {
 								String message = formatMonthSummaryMessage(requestInfo, tenantId,
 										messageMap.get(NotificationUtil.MSG_KEY));
 								message = message.replace("{LINK}", getShortenedUrl(revenueLink));
-								message = message.replace("{GPWSC}", tenantId); // TODO Replace
+								message = message.replace("{GPWSC}", (gpwscMap != null
+										&& !StringUtils.isEmpty(gpwscMap.get(NotificationUtil.MSG_KEY)))
+										? gpwscMap.get(NotificationUtil.MSG_KEY)
+										: tenantId); // TODO Replace
 								// <GPWSC> with
 								// value
 								message = message.replace("{user}", uuidUsername);

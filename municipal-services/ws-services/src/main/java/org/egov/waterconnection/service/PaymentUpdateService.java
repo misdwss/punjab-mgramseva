@@ -409,10 +409,15 @@ public class PaymentUpdateService {
 				link = waterServiceUtil.getShortnerURL(link);
 				message = message.replace("{RECEIPT_LINK}",link);
 			}
-			
+			RequestInfo requestInfo = new RequestInfo();
+			HashMap<String, String> gpwscMap = notificationUtil.getLocalizationMessage(requestInfo, paymentDetail.getTenantId(), paymentDetail.getTenantId());
+
 			if (message.contains("{GPWSC}")){
 				
-				message = message.replace("{GPWSC}","GPWSC");
+				message = message.replace("{GPWSC}",(gpwscMap != null
+						&& !StringUtils.isEmpty(gpwscMap.get(NotificationUtil.MSG_KEY)))
+						? gpwscMap.get(NotificationUtil.MSG_KEY)
+						: paymentDetail.getTenantId());
 			}
 			
 			if (message.contains("{SURVEY_LINK}")){

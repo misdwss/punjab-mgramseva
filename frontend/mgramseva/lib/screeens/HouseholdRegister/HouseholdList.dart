@@ -88,6 +88,7 @@ class _HouseholdListState extends State<HouseholdList> {
             tableData:  tableData,
             leftColumnWidth: width,
             rightColumnWidth: width * 2 ,
+
           );
         }
     );
