@@ -94,7 +94,7 @@ class DashboardPdfCreator {
     var localizedText = '${ApplicationLocalizations.of(buildContext).translate(i18.dashboard.MONTHLY_REPORT_MESSAGE)}';
     localizedText = localizedText.replaceAll('<Month-Year>', DateFormats.getMonthAndYear(dashBoardProvider.selectedMonth, buildContext));
 
-    Provider.of<CommonProvider>(buildContext, listen: false).sharePdfOnWhatsApp(buildContext, pdf, 'dashboard', localizedText, isDownload: true);
+    Provider.of<CommonProvider>(buildContext, listen: false).sharePdfOnWhatsApp(buildContext, pdf, 'dashboard', localizedText);
   }
 
 
