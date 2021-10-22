@@ -48,7 +48,7 @@ class DashboardPdfCreator {
 
     if(dashBoardProvider.selectedDashboardType == DashBoardType.Expenditure){
       billDescription = '${ApplicationLocalizations.of(buildContext).translate(i18.dashboard.EXPENDITURE_DESC)}';
-      billDescription = billDescription.replaceAll('<Pending Or Paid>', '${dashBoardProvider.selectedTab}');
+      billDescription = billDescription.replaceAll('<Pending Or Paid>', '${ApplicationLocalizations.of(buildContext).translate(dashBoardProvider.selectedTab)}');
       billDescription = billDescription.replaceAll('<text>', '${dashBoardProvider.searchController.text.trim().isEmpty ? '-' : dashBoardProvider.searchController.text.trim()}');
       billDescription = billDescription.replaceAll('<Time period>', DateFormats.getMonthAndYear(dashBoardProvider.selectedMonth, buildContext));
     }else{
