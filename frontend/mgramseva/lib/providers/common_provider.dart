@@ -437,7 +437,7 @@ class CommonProvider with ChangeNotifier {
       case 'hi_IN' :
         return pw.Font.ttf(await rootBundle.load('assets/fonts/Roboto/Hind-Regular.ttf'));
       default :
-        return pw.Font.ttf(await rootBundle.load('assets/fonts/Roboto/raavi.ttf'));
+        return pw.Font.ttf(await rootBundle.load('assets/fonts/Roboto/punjabi.ttf'));
     }
   }
 }
