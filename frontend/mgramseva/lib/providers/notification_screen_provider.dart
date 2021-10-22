@@ -18,62 +18,54 @@ class NotificationScreenProvider with ChangeNotifier {
   int offset = 1;
   int limit = 10;
   List<Events> notifications = [];
+  var totalCount = 0;
 
   ///Notification Screen
   void getNotifications(int offSet, int limit) async {
-    var totalCount = 200;
     this.limit = limit;
     this.offset = offSet;
     notifyListeners();
     var commonProvider = Provider.of<CommonProvider>(
         navigatorKey.currentContext!,
         listen: false);
+    if (notifications != null && notifications.length > 0) {
+      final jsonList = notifications.map((item) => jsonEncode(item)).toList();
+      final uniqueJsonList = jsonList.toSet().toList();
+      var result = new EventsList.fromJson(
+          {"events": uniqueJsonList.map((item) => jsonDecode(item)).toList()});
+      if (((offSet + limit) > totalCount ? totalCount : (offSet + limit)) <=
+          (notifications.length)) {
+        streamController.add(result.events!.sublist(
+            offSet - 1,
+            ((offset + limit) - 1) > totalCount
+                ? totalCount
+                : (offset + limit) - 1));
+        return;
+      }
+      enableNotification = true;
+    }
     try {
       var notifications1 = await CoreRepository().fetchNotifications({
-        "tenantId": commonProvider.userDetails?.selectedtenant?.code!,
-        "eventType": "SYSTEMGENERATED",
-        "recepients": commonProvider.userDetails?.userRequest?.uuid,
-        "status": "READ,ACTIVE",
-        "offset": '${offset - 1}',
-        "limit": '$limit'
-      });
-      var notifications2 = await CoreRepository().fetchNotifications({
         "tenantId": commonProvider.userDetails?.selectedtenant?.code!,
         "eventType": "SYSTEMGENERATED",
         "roles": commonProvider.userDetails?.userRequest?.roles!
             .map((e) => e.code.toString())
             .join(',')
             .toString(),
+        "recepients": commonProvider.userDetails?.userRequest?.uuid,
         "status": "READ,ACTIVE",
         "offset": '${offset - 1}',
         "limit": '$limit'
       });
-      notifications
-        ..addAll(notifications2!.events!)
-        ..addAll(notifications1!.events!);
-      if (notifications != null && notifications.length > 0) {
-        final jsonList = notifications.map((item) => jsonEncode(item)).toList();
-        final uniqueJsonList = jsonList.toSet().toList();
-        var result = new EventsList.fromJson({
-          "events": uniqueJsonList.map((item) => jsonDecode(item)).toList()
-        });
-        if (((offSet + limit) > totalCount ? totalCount : (offSet + limit)) <=
-            (200)) {
-          streamController.add(result.events!.sublist(
-              offSet - 1,
-              ((offset + limit) - 1) > totalCount
-                  ? totalCount
-                  : (offset + limit) - 1));
-          return;
-        }
-        enableNotification = true;
-      } else {
-        streamController.add(notifications.sublist(
-            offSet - 1,
-            ((offset + limit) - 1) > totalCount
-                ? totalCount
-                : (offset + limit) - 1));
-      }
+      notifications..addAll(notifications1!.events!);
+      totalCount = notifications1.totalCount ?? 0;
+      notifyListeners();
+
+      streamController.add(notifications.sublist(
+          offSet - 1,
+          ((offset + limit) - 1) > totalCount
+              ? totalCount
+              : (offset + limit) - 1));
     } catch (e) {
       print(e);
     }
