@@ -86,7 +86,7 @@ class _HouseholdListState extends State<HouseholdList> {
             (headerList: householdProvider.collectionHeaderList,
             tableData:  tableData,
             leftColumnWidth: width,
-            rightColumnWidth: width * 3,
+            rightColumnWidth: width * 2,
           );
         }
     );
