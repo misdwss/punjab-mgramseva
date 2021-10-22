@@ -1,25 +1,16 @@
-import 'dart:io';
-
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:mgramseva/model/common/metric.dart';
 import 'package:mgramseva/providers/common_provider.dart';
-import 'package:mgramseva/providers/dashboard_provider.dart';
 import 'package:mgramseva/providers/household_register_provider.dart';
-import 'package:mgramseva/providers/language.dart';
 import 'package:mgramseva/utils/Constants/I18KeyConstants.dart';
 import 'package:mgramseva/utils/Locilization/application_localizations.dart';
 import 'package:mgramseva/utils/date_formats.dart';
 import 'package:mgramseva/utils/global_variables.dart';
-import 'package:mgramseva/utils/models.dart';
 import 'package:mgramseva/utils/pdf.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:pdf/pdf.dart';
 import 'package:provider/provider.dart';
 import 'package:pdf/widgets.dart' as pw;
-import 'package:universal_html/html.dart' as html;
 
 class HouseholdPdfCreator {
 
@@ -71,7 +62,7 @@ class HouseholdPdfCreator {
                         pw.Text('${ApplicationLocalizations.of(navigatorKey.currentContext!).translate(i18.householdRegister.AS_OF_DATE)} $date', style: pw.TextStyle(font: ttf, fontSize: 12)),
                         pw.SizedBox(height: 20),
                         pw.Text('${ApplicationLocalizations.of(navigatorKey.currentContext!).translate(
-                            i18.householdRegister.CONSUMER_RECORDS)} (${householdProvider.selectedTab})' , style: pw.TextStyle(font: ttf, fontSize: 18, fontWeight: pw.FontWeight.bold)),
+                            i18.householdRegister.CONSUMER_RECORDS)} (${ApplicationLocalizations.of(navigatorKey.currentContext!).translate(householdProvider.selectedTab)})' , style: pw.TextStyle(font: ttf, fontSize: 18, fontWeight: pw.FontWeight.bold)),
                         pw.SizedBox(height: 10),
                         pw.Text( localizedText , style: pw.TextStyle(font: ttf, fontStyle: pw.FontStyle.italic, fontSize: 10, color: PdfColor.fromHex('#474747'),),),
                         pw.SizedBox(height: 10),
