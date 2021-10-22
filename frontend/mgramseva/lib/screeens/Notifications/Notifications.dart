@@ -8,6 +8,7 @@ import 'package:mgramseva/utils/loaders.dart';
 import 'package:mgramseva/utils/notifyers.dart';
 import 'package:mgramseva/widgets/DrawerWrapper.dart';
 import 'package:mgramseva/widgets/FormWrapper.dart';
+import 'package:mgramseva/widgets/HomeBack.dart';
 import 'package:mgramseva/widgets/ListLabelText.dart';
 import 'package:mgramseva/widgets/Notifications.dart';
 import 'package:mgramseva/widgets/SideBar.dart';
@@ -69,6 +70,7 @@ class _NotificationScreen extends State<NotificationScreen> {
                 child: Container(
                     child: Column(
                   children: [
+                    HomeBack(),
                     StreamBuilder(
                       stream: notificationProvider.streamController.stream,
                           builder: (context, AsyncSnapshot snapshot) {
@@ -95,7 +97,7 @@ class _NotificationScreen extends State<NotificationScreen> {
                 child: Consumer<NotificationScreenProvider>(
                     builder: (_, notificationProvider, child) {
                       var totalCount =
-                          ( 200) ?? 0;
+                          200 ?? 0;
                       return Visibility(
                           visible: totalCount > 0,
                           child: Pagination(

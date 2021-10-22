@@ -11,7 +11,7 @@ EventsList _$EventsListFromJson(Map<String, dynamic> json) {
     ..events = (json['events'] as List<dynamic>?)
         ?.map((e) => Events.fromJson(e as Map<String, dynamic>))
         .toList()
-    ..totalCount = json['totalCount'] as String?;
+    ..totalCount = json['totalCount'] as int?;
 }
 
 Map<String, dynamic> _$EventsListToJson(EventsList instance) =>
