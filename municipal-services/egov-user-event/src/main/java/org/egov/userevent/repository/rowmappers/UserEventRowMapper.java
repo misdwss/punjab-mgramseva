@@ -27,6 +27,16 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class UserEventRowMapper implements ResultSetExtractor <List<Event>> {
 
+	private int full_count=0;
+
+	public int getFull_count() {
+		return full_count;
+	}
+
+	public void setFull_count(int full_count) {
+		this.full_count = full_count;
+	}
+	
 	@Override
 	public List<Event> extractData(ResultSet resultSet) throws SQLException, DataAccessException {
 		List<Event> events = new ArrayList<>();
@@ -42,6 +52,9 @@ public class UserEventRowMapper implements ResultSetExtractor <List<Event>> {
 					.referenceId(resultSet.getString("referenceid"))
 					.postedBy(resultSet.getString("postedby"))
 					.status(Status.valueOf(resultSet.getString("status"))).build();
+			
+					 this.setFull_count(resultSet.getInt("full_count"));
+					
 			try {
 				PGobject obj = (PGobject) resultSet.getObject("eventdetails");
 				if(null != obj) {
