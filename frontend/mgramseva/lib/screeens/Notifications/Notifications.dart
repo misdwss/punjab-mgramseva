@@ -97,7 +97,7 @@ class _NotificationScreen extends State<NotificationScreen> {
                 child: Consumer<NotificationScreenProvider>(
                     builder: (_, notificationProvider, child) {
                       var totalCount =
-                          200 ?? 0;
+                          notificationProvider.totalCount ;
                       return Visibility(
                           visible: totalCount > 0,
                           child: Pagination(
