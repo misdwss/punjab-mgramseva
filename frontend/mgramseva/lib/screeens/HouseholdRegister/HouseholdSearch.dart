@@ -6,7 +6,6 @@ import 'package:mgramseva/model/connection/water_connection.dart';
 import 'package:mgramseva/providers/household_register_provider.dart';
 import 'package:mgramseva/screeens/HouseholdRegister/HouseholdList.dart';
 import 'package:mgramseva/utils/Constants/I18KeyConstants.dart';
-import 'package:mgramseva/utils/Locilization/application_localizations.dart';
 import 'package:mgramseva/widgets/TextFieldBuilder.dart';
 import 'package:provider/provider.dart';
 
@@ -43,6 +42,7 @@ class _HouseholdSearchState extends State<HouseholdSearch> with SingleTickerProv
     var householdRegisterProvider = Provider.of<HouseholdRegisterProvider>(context, listen: false);
     return  Column(
         children: [
+          SizedBox(height: 20,),
           BuildTextField(
             '',
             householdRegisterProvider.searchController,
@@ -56,6 +56,7 @@ class _HouseholdSearchState extends State<HouseholdSearch> with SingleTickerProv
             placeHolder: i18.dashboard.SEARCH_NAME_CONNECTION,
             onChange: (val) => householdRegisterProvider.onSearch(val, context),
           ),
+          SizedBox(height: 20,),
           Expanded(
             child: _buildTabView(),
           )
@@ -95,20 +96,6 @@ class _HouseholdSearchState extends State<HouseholdSearch> with SingleTickerProv
                   ),
                 ),
                 SizedBox(height: 20,),
-                TextButton.icon(
-                  onPressed: () => {},
-                  icon: Icon(Icons.download_sharp),
-                  label: Text('${ApplicationLocalizations.of(context).translate(i18.common.DOWNLOAD)} '
-                      '(${householdRegisterProvider.getDownloadList()} '
-                      '${ApplicationLocalizations.of(context).translate(i18.householdRegister.RECORDS)})',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w400,
-                    ),
-                    textAlign: TextAlign.left,
-                  ),
-                ),
-                SizedBox(height: 10,),
                 Expanded(
                   child: Consumer<HouseholdRegisterProvider>(
                     builder: (_, householdRegisterProvider, child) =>
