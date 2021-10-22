@@ -33,7 +33,7 @@ class HouseholdPdfCreator {
     String recordsCount = '${ApplicationLocalizations.of(buildContext).translate(i18.householdRegister.NO_OF_RECORDS)}';
     recordsCount = recordsCount.replaceAll('<n>', '${tableData.length}');
     var localizedText = ApplicationLocalizations.of(navigatorKey.currentContext!).translate(i18.householdRegister.PDF_SUB_TEXT_BELOW_LIST);
-    localizedText = localizedText.replaceFirst('<selectedTab>', householdProvider.selectedTab);
+    localizedText = localizedText.replaceFirst('<selectedTab>', ApplicationLocalizations.of(navigatorKey.currentContext!).translate(householdProvider.selectedTab));
     localizedText = localizedText.replaceFirst('<search>', '${householdProvider.searchController.text.trim().isEmpty ? '-' : householdProvider.searchController.text.trim()}');
     localizedText = localizedText.replaceFirst('<date>', date);
 

@@ -257,6 +257,70 @@ class HouseholdRegisterProvider with ChangeNotifier {
           context, localLimit ?? limit, localOffSet ?? 1, isSearch);
   }
 
+<<<<<<< HEAD
+=======
+  void createPdfForAllConnections(BuildContext context, bool isDownload) async {
+    var commonProvider = Provider.of<CommonProvider>(
+        navigatorKey.currentContext!,
+        listen: false);
+    WaterConnections? waterConnectionsDetails;
+
+    var query = {
+      'tenantId': commonProvider.userDetails?.selectedtenant?.code,
+      'limit': '-1',
+      'toDate':
+      '${DateTime(DateTime.now().year, DateTime.now().month).millisecondsSinceEpoch}',
+      'isCollectionCount': 'true',
+    };
+
+    if(selectedTab != 'all'){
+      query.addAll({
+        'isBillPaid' : (selectedTab == 'PAID') ? 'true' : 'false'
+      });
+    }
+
+    if (sortBy != null) {
+      query.addAll({
+        'sortOrder': sortBy!.isAscending ? 'ASC' : 'DESC',
+        'sortBy': sortBy!.key
+      });
+    }
+
+    if (searchController.text.trim().isNotEmpty) {
+      query.addAll({
+        'connectionNumber': searchController.text.trim(),
+        // 'name' : searchController.text.trim(),
+        'freeSearch': 'true',
+      });
+    }
+
+    query.removeWhere((key, value) => (value is String && value.trim().isEmpty));
+
+    Loaders.showLoadingDialog(context);
+    try {
+      waterConnectionsDetails = await SearchConnectionRepository().getconnection(query);
+
+      Navigator.pop(context);
+    }catch(e,s){
+      Navigator.pop(context);
+      ErrorHandler().allExceptionsHandler(context, e, s);
+      return;
+    }
+
+    if(waterConnectionsDetails.waterConnection == null || waterConnectionsDetails.waterConnection!.isEmpty) return;
+
+    var headerList = [i18.common.CONNECTION_ID, i18.common.NAME, i18.householdRegister.PENDING_COLLECTIONS];
+
+    var tableData = waterConnectionsDetails.waterConnection?.map<List<String>>((connection) => [
+      '${connection.connectionNo ?? ''} ${connection.connectionType == 'Metered' ? '- M' : ''}',
+      '${connection.connectionHolders?.first.name ?? ''}',
+      '${connection.additionalDetails?.collectionPendingAmount != null ? '₹ ${connection.additionalDetails?.collectionPendingAmount}' : '-'}',
+    ]).toList() ?? [];
+
+    HouseholdPdfCreator(context,  headerList.map<String>((e) => '${ApplicationLocalizations.of(navigatorKey.currentContext!).translate(e)}').toList(), tableData, isDownload).pdfPreview();
+  }
+
+>>>>>>> c94b9a68 (IFIX-165)
   bool removeOverLay(_overlayEntry) {
     try {
       if (_overlayEntry == null) return false;
