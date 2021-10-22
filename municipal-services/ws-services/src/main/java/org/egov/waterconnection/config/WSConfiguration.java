@@ -215,5 +215,49 @@ public class WSConfiguration {
 	
 	@Value("${egov.mgramseva.ui.path}")
 	private String webUiPath;
+	
+
+    @Value("${egov.url.shortner.host}")
+    private String urlShortnerHost;
+    @Value("${egov.url.shortner.endpoint}")
+    private String urlShortnerEndpoint;
+
+	
+
+	@Value("${egov.month.revenue.dashboard.link}")
+	private String monthRevenueDashboardLink;
+	
+	@Value("${egov.month.dashboard.link}")
+	private String monthDashboardLink;
+	
+	
+	@Value("${egov.demand.generation.link}")
+	private String demanGenerationLink;
+	
+	
+	@Value("${egov.day.collection.link}")
+	private String dayCollectionLink;
+	
+	
+// adding Event notification paths.
+	
+	@Value("${egov.pending.collection.link}")
+	private String pendingCollectionLink;
+	
+	@Value("${egov.monthly.summary.link}")
+	private String monthlySummary;
+
+	@Value("${egov.bilk.demand.failed.link}")
+	private String bulkDemandFailedLink;
+
+	@Value("${egov.today.collection.link}")
+	private String todayCollectionLink;
+	
+    //MDMS
+    @Value("${egov.mdms.host}")
+    private String mdmsHost;
+
+    @Value("${egov.mdms.search.endpoint}")
+    private String mdmsEndPoint;
 
 }

@@ -67,6 +67,7 @@ class Common {
   String get NOTIFICATIONS => 'NOTIFICATIONS';
   String get BACK => 'BACK';
   String get DEAR => 'DEAR';
+  String get VIEW_ALL => 'VIEW_ALL';
 
   /// File Picker
   String get TEMPORARY_FILES_REMOVED => 'TEMPORARY_FILES_REMOVED';
@@ -311,6 +312,9 @@ class CreateConsumer {
   String get CONSUMER_EDIT_DETAILS_SUB_LABEL =>
       'CONSUMER_DETAILS_EDIT_SUB_LABEL';
   String get GP_NAME => 'CONSUMER_GP_NAME';
+  String get CONSUMER_AADHAR_NUMBER => 'CONSUMER_AADHAR_NUMBER';
+  String get CONSUMER_CATEGORY => 'CONSUMER_CATEGORY';
+  String get CONSUMER_SUBCATEGORY => 'CONSUMER_SUBCATEGORY';
   String get ARREARS => 'CONSUMER_ARREARS';
   String get CONSUMER_CONNECTION_ID => 'CONSUMER_CONNECTION_ID';
   String get SERVICE_TYPE => 'CONSUMER_SERVICE_TYPE';
@@ -486,7 +490,10 @@ class _ConsumerWalkThroughMsg {
   String get CONSUMER_GENDER_MSG => 'CONSUMER_GENDER_MSG';
   String get CONSUMER_FATHER_MSG => 'CONSUMER_FATHER_MSG';
   String get CONSUMER_MOBILE_MSG => 'CONSUMER_MOBILE_MSG';
+  String get CONSUMER_AADHAR_MSG => 'CONSUMER_AADHAR_MSG';
   String get CONSUMER_OLD_ID_MSG => 'CONSUMER_OLD_ID_MSG';
+  String get CONSUMER_CATRGORY_MSG => 'CONSUMER_CATRGORY_MSG';
+  String get CONSUMER_SUB_CATRGORY_MSG => 'CONSUMER_SUB_CATRGORY_MSG';
   String get CONSUMER_WARD_MSG => 'CONSUMER_WARD_MSG';
   String get CONSUMER_PROPERTY_TYPE_MSG => 'CONSUMER_PROPERTY_TYPE_MSG';
   String get CONSUMER_SERVICE_TYPE_MSG => 'CONSUMER_SERVICE_TYPE_MSG';
@@ -511,11 +518,14 @@ class _DashBoard {
   String get BILL_ID_VENDOR => 'BILL_ID_VENDOR';
   String get NO_RECORDS_MSG => 'NO_RECORDS_MSG';
 
-  String get REVENUE_EXPENDITURE_TREND => 'REVENUE_EXPENDITURE_TREND'; /// Revenue and Expenditure Trend
+  String get REVENUE_EXPENDITURE_TREND => 'REVENUE_EXPENDITURE_TREND';
+
+  /// Revenue and Expenditure Trend
   String get STACKED_BAR => 'STACKED_BAR';
   String get TREND_LINE => 'TREND_LINE';
   String get REVENUE => 'REVENUE'; //Revenue
-  String get REVENUE_NOTE => 'REVENUE_NOTE'; //Click on individual cells to see details of collections and expenditure for the selected month.
+  String get REVENUE_NOTE =>
+      'REVENUE_NOTE'; //Click on individual cells to see details of collections and expenditure for the selected month.
 
   /// table labels
   String get SURPLUS_DEFICIT => 'SURPLUS_DEFICIT';
@@ -529,6 +539,16 @@ class _DashBoard {
   String get USER_GAVE_FEEDBACK => 'USER_GAVE_FEEDBACK';
   String get ANNUAL_SHARE_MSG_WEB => 'ANNUAL_SHARE_MSG_WEB';
   String get ANNUAL_SHARE_MSG_MOBILE => 'ANNUAL_SHARE_MSG_MOBILE';
+
+  String get DASHBOARD_DEMAND => 'dashboard_demand';
+  String get DASHBOARD_PENDING_COLLECTION => 'dashboard_pendingCollection';
+  String get DASHBOARD_ACTUAL_COLLECTION => 'dashboard_actualCollection';
+
+  String get DASHBOARD_TOTAL_EXPENDITURE => 'dashboard_totalExpenditure';
+  String get DASHBOARD_AMOUNT_UNPAID => 'dashboard_amountUnpaid';
+  String get DASHBOARD_AMOUNT_PAID => 'dashboard_amountPaid';
+
+  String get YEAR_TOOL_TIP_MESSAGE => 'YEAR_TOOL_TIP_MESSAGE';
 }
 
 class _ExpenseWalkThroughMsg {
@@ -556,7 +576,7 @@ class _POSTPAYMENTFEEDBACK {
       'FEEDBACK_RESPONSE_SUBMITTED_SUCCESSFULLY';
 }
 
-class HouseholdRegistry{
+class HouseholdRegistry {
   const HouseholdRegistry();
 
   String get HOUSEHOLD_REGISTER_LABEL => 'HOUSEHOLD_REGISTER_LABEL';

@@ -71,11 +71,19 @@ class _Dashboard extends State<Dashboard> with SingleTickerProviderStateMixin {
     dashBoardProvider.selectedMonth = CommonMethods.getFinancialYearList().first.monthList.first;
     dashBoardProvider.scrollController = ScrollController();
     dashBoardProvider.debounce = null;
+    dashBoardProvider.userFeedBackInformation = null;
     _tabController = new TabController(vsync: this, length: 2, initialIndex: widget.initialTabIndex);
     _tabController.addListener(() {
       FocusScope.of(context).unfocus();
       dashBoardProvider.debounce = null;
     });
+    WidgetsBinding.instance?.addPostFrameCallback((_) => afterViewBuild());
+  }
+
+  afterViewBuild(){
+    var dashBoardProvider =
+    Provider.of<DashBoardProvider>(context, listen: false);
+    dashBoardProvider.fetchUserFeedbackDetails(context);
   }
 
   @override
@@ -154,13 +162,6 @@ class _Dashboard extends State<Dashboard> with SingleTickerProviderStateMixin {
                                         ],
                                       ),
                                     ),
-                                    Visibility(
-                                        visible: dashBoardProvider.selectedMonth.dateType == DateType.MONTH,
-                                        child: Padding(
-                                          padding: const EdgeInsets.only(top: 5),
-                                          child: GridViewBuilder(gridList: [], physics: NeverScrollableScrollPhysics()),
-                                        )
-                                    )
                                   ])),
                               _buildViewBasedOnTheSelection(dashBoardProvider)
                             ])),
@@ -260,7 +261,14 @@ class _Dashboard extends State<Dashboard> with SingleTickerProviderStateMixin {
     var dashBoardProvider =
     Provider.of<DashBoardProvider>(context, listen: false);
 
-    if(dashBoardProvider.selectedMonth.dateType == DateType.MONTH) return;
+    if(dashBoardProvider.selectedMonth.dateType == DateType.MONTH){
+      if(dashBoardProvider.selectedDashboardType == DashBoardType.Expenditure) {
+        dashBoardProvider.createPdfForExpenditure(context);
+      }else{
+        dashBoardProvider.createPdfForCollection(context);
+      }
+      return;
+    };
 
     final FlutterShareMe flutterShareMe = FlutterShareMe();
     var fileName = 'annualdashboard';
