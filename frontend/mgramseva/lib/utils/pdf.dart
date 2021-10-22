@@ -11,12 +11,12 @@ import 'global_variables.dart';
 
 class PdfUtils {
 
-  static pw.Widget buildAppBar(BuildContext context, pw.ImageProvider image, pw.Font icons) {
+  static pw.Widget buildAppBar(BuildContext context, pw.ImageProvider image, pw.Font icons, pw.Font font) {
     var commonProvider = Provider.of<CommonProvider>(
         navigatorKey.currentContext!,
         listen: false);
 
-    var style = pw.TextStyle(fontSize: 14, color: PdfColor.fromHex('#FFFFFF'));
+    var style = pw.TextStyle(fontSize: 14, font: font, color: PdfColor.fromHex('#FFFFFF'));
 
     return pw.Container(
         padding: pw.EdgeInsets.symmetric(vertical: 8, horizontal: 8),
@@ -25,10 +25,14 @@ class PdfUtils {
         child: pw.Row(
             mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
             children: [
-              pw.Icon(pw.IconData(0xe800), color: PdfColor.fromHex('#FFFFFF'), font: icons),
+              pw.Wrap(
+                crossAxisAlignment: pw.WrapCrossAlignment.center,
+              children : [
+                pw.Icon(pw.IconData(0xe800), color: PdfColor.fromHex('#FFFFFF'), font: icons),
               pw.SizedBox(width: 2),
               pw.Image(image,
                 width: 90),
+              ]),
               pw.Wrap(
                 spacing: 3,
                 children: [
@@ -61,7 +65,7 @@ class PdfUtils {
 
     static pw.Widget pdfFooter(pw.ImageProvider image){
       return pw.Container(
-          margin: pw.EdgeInsets.only(top: 10),
+          margin: pw.EdgeInsets.only(top: 10, bottom: 10),
           alignment: pw.Alignment.center,
           child: pw.SizedBox(
               width: 100,
