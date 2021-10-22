@@ -1,6 +1,8 @@
 import 'dart:async';
-
+import 'dart:typed_data';
+import 'package:pdf/widgets.dart' as pw;
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:mgramseva/model/bill/bill_payments.dart';
 import 'package:mgramseva/model/file/file_store.dart';
 import 'package:mgramseva/model/localization/language.dart';
@@ -18,6 +20,7 @@ import 'package:mgramseva/utils/constants.dart';
 import 'package:mgramseva/utils/date_formats.dart';
 import 'package:mgramseva/utils/error_logging.dart';
 import 'package:mgramseva/utils/global_variables.dart';
+import 'package:mgramseva/utils/loaders.dart';
 import 'package:mgramseva/utils/models.dart';
 import 'package:mgramseva/utils/notifyers.dart';
 import 'package:provider/provider.dart';
@@ -268,39 +271,16 @@ class CommonProvider with ChangeNotifier {
   void shareonwatsapp(FileStore store, mobileNumber, input) async {
     if (store.url == null) return;
     try {
-      print(mobileNumber);
       var res = await CoreRepository().urlShotner(store.url as String);
       if (kIsWeb) {
-<<<<<<< HEAD
         html.AnchorElement anchorElement = new html.AnchorElement(
             href: "https://wa.me/+91$mobileNumber?text=" +
                 input.toString().replaceFirst('<link>', res!));
-=======
-        print(mobileNumber);
-        if(mobileNumber == null){
-          anchorElement = new html.AnchorElement(
-              href: "https://wa.me/send?text=" +
-                  input.toString().replaceFirst('<link>', res!));
-        }else{
-           anchorElement = new html.AnchorElement(
-              href: "https://wa.me/+91$mobileNumber?text=" +
-                  input.toString().replaceFirst('<link>', res!));
-        }
-
->>>>>>> 44daf230 (IFIX-578)
         anchorElement.target = "_blank";
         anchorElement.click();
       } else {
-        var link ;
-        print(mobileNumber);
-        if(mobileNumber == null) {
-          link = "https://wa.me/send?text=" +
-              input.toString().replaceFirst('<link>', res!);
-        }
-        else{
-         link = "https://wa.me/+91$mobileNumber?text=" +
+        var link = "https://wa.me/+91$mobileNumber?text=" +
             input.toString().replaceFirst('<link>', res!);
-        }
         await canLaunch(link)
             ? launch(link)
             : ErrorHandler.logError('failed to launch the url ${link}');
@@ -398,14 +378,12 @@ class CommonProvider with ChangeNotifier {
       return '';
     }
   }
-<<<<<<< HEAD
-=======
 
-
-  Future<void> sharePdfOnWhatsApp(BuildContext context, pw.Document pdf, String fileName, String localizedText, {bool isDownload = false}) async {
+  Future<void> sharePdfOnWhatsApp(BuildContext context, pw.Document pdf,
+      String fileName, String localizedText,
+      {bool isDownload = false}) async {
     try {
-
-      if(isDownload && kIsWeb){
+      if (isDownload && kIsWeb) {
         final blob = html.Blob([await pdf.save()]);
         final url = html.Url.createObjectUrlFromBlob(blob);
         final anchor = html.document.createElement('a') as html.AnchorElement
@@ -416,7 +394,7 @@ class CommonProvider with ChangeNotifier {
         anchor.click();
         html.document.body?.children.remove(anchor);
         html.Url.revokeObjectUrl(url);
-      }else {
+      } else {
         /// Enable loader
         Loaders.showLoadingDialog(context, label: '');
 
@@ -424,53 +402,51 @@ class CommonProvider with ChangeNotifier {
 
         /// Uploading file to S3 bucket
         var file = CustomFile(data, fileName, 'pdf');
-        var response = await CoreRepository().uploadFiles(
-            <CustomFile>[file], APIConstants.API_MODULE_NAME);
+        var response = await CoreRepository()
+            .uploadFiles(<CustomFile>[file], APIConstants.API_MODULE_NAME);
 
         if (response.isNotEmpty) {
-          var commonProvider = Provider.of<CommonProvider>(
-              context, listen: false);
-          var res = await CoreRepository().fetchFiles(
-              [response.first.fileStoreId!]);
+          var commonProvider =
+              Provider.of<CommonProvider>(context, listen: false);
+          var res =
+              await CoreRepository().fetchFiles([response.first.fileStoreId!]);
           if (res != null && res.isNotEmpty) {
             if (isDownload) {
               CoreRepository().fileDownload(context, res.first.url ?? '');
             } else {
               var url = res.first.url ?? '';
               if (url.contains(',')) {
-                url = url
-                    .split(',')
-                    .first;
+                url = url.split(',').first;
               }
               response.first.url = url;
 
               commonProvider.shareonwatsapp(
-                  response.first, null,
-                  localizedText);
+                  response.first, null, localizedText);
             }
           }
         }
         navigatorKey.currentState?.pop();
       }
-    }catch(e,s){
+    } catch (e, s) {
       navigatorKey.currentState?.pop();
       ErrorHandler().allExceptionsHandler(context, e, s);
     }
   }
 
-
   Future<pw.Font> getPdfFontFamily() async {
     var language = Provider.of<LanguageProvider>(navigatorKey.currentContext!,
         listen: false);
 
-    switch(language.selectedLanguage!.value){
-      case 'en_IN' :
-        return pw.Font.ttf(await rootBundle.load('assets/fonts/Roboto/Roboto-Regular.ttf'));
-      case 'hi_IN' :
-        return pw.Font.ttf(await rootBundle.load('assets/fonts/Roboto/Hind-Regular.ttf'));
-      default :
-        return pw.Font.ttf(await rootBundle.load('assets/fonts/Roboto/raavi.ttf'));
+    switch (language.selectedLanguage!.value) {
+      case 'en_IN':
+        return pw.Font.ttf(
+            await rootBundle.load('assets/fonts/Roboto/Roboto-Regular.ttf'));
+      case 'hi_IN':
+        return pw.Font.ttf(
+            await rootBundle.load('assets/fonts/Roboto/Hind-Regular.ttf'));
+      default:
+        return pw.Font.ttf(
+            await rootBundle.load('assets/fonts/Roboto/punjabi.ttf'));
     }
   }
->>>>>>> 44daf230 (IFIX-578)
 }

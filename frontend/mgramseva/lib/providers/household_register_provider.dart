@@ -1,8 +1,6 @@
 import 'dart:async';
-import 'dart:io';
-import 'package:flutter/foundation.dart';
+
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:mgramseva/model/connection/water_connection.dart';
 import 'package:mgramseva/model/connection/water_connections.dart';
 import 'package:mgramseva/providers/common_provider.dart';
@@ -11,18 +9,11 @@ import 'package:mgramseva/routers/Routers.dart';
 import 'package:mgramseva/screeens/HouseholdRegister/household_pdf.dart';
 import 'package:mgramseva/utils/Constants/I18KeyConstants.dart';
 import 'package:mgramseva/utils/Locilization/application_localizations.dart';
-import 'package:mgramseva/utils/date_formats.dart';
 import 'package:mgramseva/utils/error_logging.dart';
 import 'package:mgramseva/utils/global_variables.dart';
 import 'package:mgramseva/utils/loaders.dart';
 import 'package:mgramseva/utils/models.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
-import 'package:pdf/pdf.dart';
-import 'package:pdf/widgets.dart' as pw;
-import 'language.dart';
-import 'package:flutter/services.dart' show ByteData, rootBundle;
-import 'package:universal_html/html.dart' as html;
 
 class HouseholdRegisterProvider with ChangeNotifier {
   var streamController = StreamController.broadcast();
@@ -162,7 +153,6 @@ class HouseholdRegisterProvider with ChangeNotifier {
   }
 
   List<TableHeader> get collectionHeaderList => [
-<<<<<<< HEAD
         TableHeader(i18.common.CONNECTION_ID,
             isSortingRequired: true,
             isAscendingOrder:
@@ -187,33 +177,6 @@ class HouseholdRegisterProvider with ChangeNotifier {
             apiKey: 'collectionPendingAmount',
             callBack: onSort),
       ];
-=======
-    TableHeader(i18.common.CONNECTION_ID,
-        isSortingRequired: true,
-        isAscendingOrder:
-        sortBy != null && sortBy!.key == 'connectionNumber'
-            ? sortBy!.isAscending
-            : null,
-        apiKey: 'connectionNumber',
-        callBack: onSort),
-    TableHeader(i18.common.NAME,
-        isSortingRequired: false,
-        isAscendingOrder: sortBy != null && sortBy!.key == 'name'
-            ? sortBy!.isAscending
-            : null,
-        apiKey: 'name',
-        callBack: onSort),
-    TableHeader(i18.householdRegister.PENDING_COLLECTIONS,
-        isSortingRequired: true,
-        isAscendingOrder:
-        sortBy != null && sortBy!.key == 'collectionPendingAmount'
-            ? sortBy!.isAscending
-            : null,
-        apiKey: 'collectionPendingAmount',
-        callBack: onSort),
-  ];
-
->>>>>>> 44daf230 (IFIX-578)
 
   List<TableDataRow> getCollectionsData(int index, List<WaterConnection> list) {
     return list.map((e) => getCollectionRow(e)).toList();
@@ -370,67 +333,6 @@ class HouseholdRegisterProvider with ChangeNotifier {
             tableData,
             isDownload)
         .pdfPreview();
-  }
-
-  void createPdfForAllConnections(BuildContext context, bool isDownload) async {
-    var commonProvider = Provider.of<CommonProvider>(
-        navigatorKey.currentContext!,
-        listen: false);
-    WaterConnections? waterConnectionsDetails;
-
-    var query = {
-      'tenantId': commonProvider.userDetails?.selectedtenant?.code,
-      'offset': "0",
-      'toDate':
-      '${DateTime(DateTime.now().year, DateTime.now().month).millisecondsSinceEpoch}',
-      'isCollectionCount': 'true',
-    };
-
-    if(selectedTab != 'all'){
-      query.addAll({
-        'isBillPaid' : (selectedTab == 'PAID') ? 'true' : 'false'
-      });
-    }
-
-    if (sortBy != null) {
-      query.addAll({
-        'sortOrder': sortBy!.isAscending ? 'ASC' : 'DESC',
-        'sortBy': sortBy!.key
-      });
-    }
-
-    if (searchController.text.trim().isNotEmpty) {
-      query.addAll({
-        'connectionNumber': searchController.text.trim(),
-        // 'name' : searchController.text.trim(),
-        'freeSearch': 'true',
-      });
-    }
-
-    query.removeWhere((key, value) => (value is String && value.trim().isEmpty));
-
-    Loaders.showLoadingDialog(context);
-    try {
-      waterConnectionsDetails = await SearchConnectionRepository().getconnection(query);
-
-      Navigator.pop(context);
-    }catch(e,s){
-      Navigator.pop(context);
-      ErrorHandler().allExceptionsHandler(context, e, s);
-      return;
-    }
-
-    if(waterConnectionsDetails.waterConnection == null || waterConnectionsDetails.waterConnection!.isEmpty) return;
-
-    var headerList = [i18.common.CONNECTION_ID, i18.common.NAME, i18.householdRegister.PENDING_COLLECTIONS];
-
-    var tableData = waterConnectionsDetails.waterConnection?.map<List<String>>((connection) => [
-      '${connection.connectionNo ?? ''} ${connection.connectionType == 'Metered' ? '- M' : ''}',
-      '${connection.connectionHolders?.first.name ?? ''}',
-      '${connection.additionalDetails?.collectionPendingAmount != null ? '₹ ${connection.additionalDetails?.collectionPendingAmount}' : '-'}',
-    ]).toList() ?? [];
-
-    HouseholdPdfCreator(context,  headerList.map<String>((e) => '${ApplicationLocalizations.of(navigatorKey.currentContext!).translate(e)}').toList(), tableData, isDownload).pdfPreview();
   }
 
   bool removeOverLay(_overlayEntry) {

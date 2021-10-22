@@ -1,7 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_share_me/flutter_share_me.dart';
 import 'package:mgramseva/components/HouseholdRegister/HouseholdCard.dart';
 import 'package:mgramseva/providers/common_provider.dart';
 import 'package:mgramseva/providers/household_register_provider.dart';
@@ -21,7 +20,8 @@ import 'HouseholdSearch.dart';
 class HouseholdRegister extends StatefulWidget {
   final int initialTabIndex;
 
-  const HouseholdRegister({Key? key, this.initialTabIndex = 0}) : super(key: key);
+  const HouseholdRegister({Key? key, this.initialTabIndex = 0})
+      : super(key: key);
 
   @override
   State<StatefulWidget> createState() {
@@ -29,7 +29,8 @@ class HouseholdRegister extends StatefulWidget {
   }
 }
 
-class _HouseholdRegister extends State<HouseholdRegister> with SingleTickerProviderStateMixin {
+class _HouseholdRegister extends State<HouseholdRegister>
+    with SingleTickerProviderStateMixin {
   OverlayState? overlayState;
   OverlayEntry? _overlayEntry;
   GlobalKey key = GlobalKey();
@@ -38,7 +39,7 @@ class _HouseholdRegister extends State<HouseholdRegister> with SingleTickerProvi
   void initState() {
     super.initState();
     var householdRegisterProvider =
-    Provider.of<HouseholdRegisterProvider>(context, listen: false);
+        Provider.of<HouseholdRegisterProvider>(context, listen: false);
     //householdRegisterProvider.selectedDate = DateTime(DateTime.now().year, DateTime.now().month);
     householdRegisterProvider.debounce = null;
   }
@@ -46,11 +47,12 @@ class _HouseholdRegister extends State<HouseholdRegister> with SingleTickerProvi
   @override
   Widget build(BuildContext context) {
     var householdRegisterProvider =
-    Provider.of<HouseholdRegisterProvider>(context, listen: false);
+        Provider.of<HouseholdRegisterProvider>(context, listen: false);
 
     return WillPopScope(
       onWillPop: () async {
-        if (householdRegisterProvider.removeOverLay(_overlayEntry)) return false;
+        if (householdRegisterProvider.removeOverLay(_overlayEntry))
+          return false;
         return true;
       },
       child: GestureDetector(
@@ -66,7 +68,7 @@ class _HouseholdRegister extends State<HouseholdRegister> with SingleTickerProvi
               margin: constraints.maxWidth < 760
                   ? null
                   : EdgeInsets.symmetric(
-                  horizontal: MediaQuery.of(context).size.width / 25),
+                      horizontal: MediaQuery.of(context).size.width / 25),
               child: Stack(children: [
                 SingleChildScrollView(
                   child: Container(
@@ -76,17 +78,12 @@ class _HouseholdRegister extends State<HouseholdRegister> with SingleTickerProvi
                       child: CustomScrollView(slivers: [
                         SliverList(
                             delegate: SliverChildListDelegate([
-                              Row(
-                                mainAxisAlignment : MainAxisAlignment.spaceBetween,
-                                children: [
-                                  HomeBack(),
-                                  _buildShare
-                                ],
-                              ),
-                              Container(
-                                  key: key,
-                                  child: HouseholdCard()),
-                            ])),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [HomeBack(), _buildShare],
+                          ),
+                          Container(key: key, child: HouseholdCard()),
+                        ])),
                         SliverFillRemaining(
                             hasScrollBody: true,
                             fillOverscroll: true,
@@ -97,17 +94,21 @@ class _HouseholdRegister extends State<HouseholdRegister> with SingleTickerProvi
                     alignment: Alignment.bottomRight,
                     child: Consumer<HouseholdRegisterProvider>(
                         builder: (_, householdRegisterProvider, child) {
-                          var totalCount =
-                              ( householdRegisterProvider.waterConnectionsDetails?.totalCount) ?? 0;
-                          return Visibility(
-                              visible: totalCount > 0,
-                              child: Pagination(
-                                  limit: householdRegisterProvider.limit,
-                                  offSet: householdRegisterProvider.offset,
-                                  callBack: (pageResponse) => householdRegisterProvider
-                                      .onChangeOfPageLimit(pageResponse, context),
-                                  totalCount: totalCount, isDisabled: householdRegisterProvider.isLoaderEnabled));
-                        }))
+                      var totalCount = (householdRegisterProvider
+                              .waterConnectionsDetails?.totalCount) ??
+                          0;
+                      return Visibility(
+                          visible: totalCount > 0,
+                          child: Pagination(
+                              limit: householdRegisterProvider.limit,
+                              offSet: householdRegisterProvider.offset,
+                              callBack: (pageResponse) =>
+                                  householdRegisterProvider.onChangeOfPageLimit(
+                                      pageResponse, context),
+                              totalCount: totalCount,
+                              isDisabled:
+                                  householdRegisterProvider.isLoaderEnabled));
+                    }))
               ]),
             ),
           ),
@@ -119,9 +120,8 @@ class _HouseholdRegister extends State<HouseholdRegister> with SingleTickerProvi
   Widget get _buildShare => TextButton.icon(
       onPressed: () {
         Provider.of<HouseholdRegisterProvider>(context, listen: false)
-            ..createPdfForAllConnections(context, false);
+          ..createPdfForAllConnections(context, false);
       },
       icon: Image.asset('assets/png/whats_app.png'),
       label: Text(i18.common.SHARE));
-
 }
