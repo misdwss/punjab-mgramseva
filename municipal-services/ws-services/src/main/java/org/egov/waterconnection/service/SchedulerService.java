@@ -127,6 +127,8 @@ public class SchedulerService {
 					if (config.getIsSMSEnabled()) {
 						HashMap<String, String> messageMap = util.getLocalizationMessage(requestInfo,
 								PENDING_COLLECTION_SMS, tenantId);
+						HashMap<String, String> gpwscMap = util.getLocalizationMessage(requestInfo, tenantId, tenantId);
+
 						UserDetailResponse userDetailResponse = userService.getUserByRoleCodes(requestInfo, tenantId,
 								Arrays.asList("GP_ADMIN"));
 
@@ -141,11 +143,16 @@ public class SchedulerService {
 							}
 						mobileNumberIdMap.entrySet().stream().forEach(map -> {
 							if (messageMap != null && !StringUtils.isEmpty(messageMap.get(NotificationUtil.MSG_KEY))) {
+
 								String uuidUsername = map.getValue();
 								String message = formatPendingCollectionMessage(requestInfo, tenantId,
 										messageMap.get(NotificationUtil.MSG_KEY));
 								message = message.replace("{PENDING_COL_LINK}", getShortenedUrl(penColLink));
-								message = message.replace("{GPWSC}", tenantId);
+								message = message.replace("{GPWSC}",
+										(gpwscMap != null
+												&& !StringUtils.isEmpty(gpwscMap.get(NotificationUtil.MSG_KEY)))
+														? gpwscMap.get(NotificationUtil.MSG_KEY)
+														: tenantId);
 								message = message.replace("{ownername}", uuidUsername);
 								DateFormat format = new SimpleDateFormat("dd/MM/yyyy");
 								Date today = new Date();
@@ -378,6 +385,8 @@ public class SchedulerService {
 						List<String> messages = new ArrayList<String>();
 						HashMap<String, String> messageMap = util.getLocalizationMessage(requestInfo,
 								TODAY_CASH_COLLECTION_SMS, tenantId);
+						HashMap<String, String> gpwscMap = util.getLocalizationMessage(requestInfo, tenantId, tenantId);
+
 						String mode = "cash";
 						String message = formatTodayCollectionMessage(requestInfo, tenantId,
 								messageMap.get(NotificationUtil.MSG_KEY), mode);
@@ -406,7 +415,10 @@ public class SchedulerService {
 
 								messages.forEach(msg -> {
 									msg = msg.replace("{ownername}", uuidUsername);
-									msg = msg.replace("{GPWSC}", tenantId);
+									msg = msg.replace("{GPWSC}", (gpwscMap != null
+											&& !StringUtils.isEmpty(gpwscMap.get(NotificationUtil.MSG_KEY)))
+											? gpwscMap.get(NotificationUtil.MSG_KEY)
+											: tenantId);
 									DateFormat format = new SimpleDateFormat("dd/MM/yyyy");
 									Date today = new Date();
 									String formattedDate = format.format(today);
