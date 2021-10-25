@@ -34,7 +34,7 @@ class NotificationScreenProvider with ChangeNotifier {
       var result = new EventsList.fromJson(
           {"events": uniqueJsonList.map((item) => jsonDecode(item)).toList()});
       if (((offSet + limit) > totalCount ? totalCount : (offSet + limit)) <=
-          (notifications.length)) {
+          (result.events!.length)) {
         streamController.add(result.events!.sublist(
             offSet - 1,
             ((offset + limit) - 1) > totalCount
@@ -48,20 +48,37 @@ class NotificationScreenProvider with ChangeNotifier {
       var notifications1 = await CoreRepository().fetchNotifications({
         "tenantId": commonProvider.userDetails?.selectedtenant?.code!,
         "eventType": "SYSTEMGENERATED",
-        "roles": commonProvider.userDetails?.userRequest?.roles!
-            .map((e) => e.code.toString())
-            .join(',')
-            .toString(),
         "recepients": commonProvider.userDetails?.userRequest?.uuid,
         "status": "READ,ACTIVE",
         "offset": '${offset - 1}',
         "limit": '$limit'
       });
-      notifications..addAll(notifications1!.events!);
-      totalCount = notifications1.totalCount ?? 0;
+      var notifications2 = await CoreRepository().fetchNotifications({
+        "tenantId": commonProvider.userDetails?.selectedtenant?.code!,
+        "eventType": "SYSTEMGENERATED",
+        "roles": commonProvider.userDetails?.userRequest?.roles!
+            .map((e) => e.code.toString())
+            .join(',')
+            .toString(),
+        "status": "READ,ACTIVE",
+        "offset": '${offset - 1}',
+        "limit": '$limit'
+      });
+      notifications
+        ..addAll(notifications2!.events!)
+        ..addAll(notifications1!.events!);
+      totalCount = (notifications1.totalCount!.toInt() >
+                  notifications2.totalCount!.toInt()
+              ? notifications1.totalCount
+              : notifications2.totalCount) ??
+          0;
       notifyListeners();
 
-      streamController.add(notifications.sublist(
+      final list = notifications.map((item) => jsonEncode(item)).toList();
+      final uniqueList = list.toSet().toList();
+      var res = new EventsList.fromJson(
+          {"events": uniqueList.map((item) => jsonDecode(item)).toList()});
+      streamController.add(res.events!.sublist(
           offSet - 1,
           ((offset + limit) - 1) > totalCount
               ? totalCount
