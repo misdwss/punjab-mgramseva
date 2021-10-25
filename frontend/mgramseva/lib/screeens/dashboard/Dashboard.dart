@@ -126,7 +126,7 @@ class _Dashboard extends State<Dashboard> with SingleTickerProviderStateMixin {
                                     Row(
                                       mainAxisAlignment : MainAxisAlignment.spaceBetween,
                                       children: [
-                                        HomeBack(),
+                                        HomeBack(callback: onClickOfBackButton),
                                         _buildShare
                                       ],
                                     ),
@@ -341,6 +341,11 @@ class _Dashboard extends State<Dashboard> with SingleTickerProviderStateMixin {
       });
       ErrorHandler().allExceptionsHandler(context, onError,s);
     });
+  }
+
+  void onClickOfBackButton(){
+    CustomOVerlay.removeOverLay();
+    Navigator.pop(context);
   }
 
 }
