@@ -104,7 +104,7 @@ class _IndividualTabState extends State<IndividualTab> {
             (headerList: expenseList is List<ExpensesDetailsModel> ? dashBoardProvider.expenseHeaderList : dashBoardProvider.collectionHeaderList,
             tableData:  tableData,
             leftColumnWidth: width,
-            rightColumnWidth: expenseList is List<ExpensesDetailsModel> ? width * 5 : width * 3,
+            rightColumnWidth: expenseList is List<ExpensesDetailsModel> ? width * 4 : width * 2,
           );
         }
     );
