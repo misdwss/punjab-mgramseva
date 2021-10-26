@@ -4,7 +4,7 @@ import 'package:mgramseva/utils/Constants/I18KeyConstants.dart';
 import 'package:mgramseva/utils/Locilization/application_localizations.dart';
 
 class Notifications extends StatefulWidget {
-  final  event;
+  final event;
   final VoidCallback? callback;
   final bool close;
   Notifications(this.event, this.callback, this.close);
@@ -134,7 +134,6 @@ class _NotificationsState extends State<Notifications> {
               Visibility(
                   visible: widget.close,
                   child: Align(
-<<<<<<< HEAD
                       alignment: Alignment.topRight,
                       child: Container(
                           child: IconButton(
@@ -145,17 +144,6 @@ class _NotificationsState extends State<Notifications> {
                         ),
                         onPressed: widget.callback,
                       )))),
-=======
-                  alignment: Alignment.topRight,
-                  child: Container(
-                      child: IconButton(
-                      icon: Icon(Icons.close ,
-                      color: Theme.of(context).primaryColorLight,
-                      size: 20.0,),
-                     onPressed: widget.callback,
-                   )))
-              ),
->>>>>>> 44c41786 (IFIX-609)
             ],
           )),
     );

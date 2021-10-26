@@ -95,12 +95,13 @@ class _NotificationScreen extends State<NotificationScreen> {
                       return Visibility(
                           visible: totalCount > 0,
                           child: Pagination(
-                            limit: notificationProvider.limit,
-                            offSet: notificationProvider.offset,
-                            callBack: (pageResponse) => notificationProvider
-                                .onChangeOfPageLimit(pageResponse),
-                            totalCount: totalCount,
-                          ));
+                              limit: notificationProvider.limit,
+                              offSet: notificationProvider.offset,
+                              callBack: (pageResponse) => notificationProvider
+                                  .onChangeOfPageLimit(pageResponse),
+                              totalCount: totalCount,
+                              isDisabled:
+                                  notificationProvider.enableNotification));
                     })),
               ]))),
         ));
