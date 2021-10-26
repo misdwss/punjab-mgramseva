@@ -187,6 +187,8 @@ public class WSCalculationConstant {
 	
 	public static final String  USREVENTS_EVENT_TYPE = "SYSTEMGENERATED";
 	
+	public static final String  USREVENTS_EVENT_NAME = "WATER BILL GENERATION";
+	
 	public static final String  MONTHLY_DEMAND_GENERATED = "MONTHLY_DEMAND_GENERATED";
 	
 	public static final String  USREVENTS_EVENT_POSTEDBY = "SYSTEM-WS";
