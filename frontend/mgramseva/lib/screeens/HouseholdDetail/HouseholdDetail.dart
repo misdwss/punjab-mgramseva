@@ -41,6 +41,7 @@ class _HouseholdDetailState extends State<HouseholdDetail> {
 
   afterViewBuild() {
     Provider.of<HouseHoldProvider>(context, listen: false)
+      ..isVisible = false
       ..fetchDemand(widget.waterconnection, widget.id);
   }
 
