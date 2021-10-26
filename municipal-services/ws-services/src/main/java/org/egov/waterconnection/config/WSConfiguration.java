@@ -259,5 +259,25 @@ public class WSConfiguration {
 
     @Value("${egov.mdms.search.endpoint}")
     private String mdmsEndPoint;
+    
+    // ES Config
 
+    @Value("${elasticsearch.host}")
+    private String esHost;
+
+    @Value("${waterservice.es.index}")
+    private String esWSIndex;
+
+    @Value("${elasticsearch.search.endpoint}")
+    private String esSearchEndpoint;
+
+    @Value("${ws.search.name.fuziness}")
+    private String nameFuziness;
+    
+    @Value("${ws.search.mobileNo.fuziness}")
+    private String MobileNoFuziness;
+
+    @Value("${ws.fuzzy.searh.is.wildcard}")
+    private Boolean isSearchWildcardBased;
+    
 }

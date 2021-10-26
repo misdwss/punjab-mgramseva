@@ -156,4 +156,14 @@ public class WaterController {
 				.build();
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
+	
+	 @PostMapping("/fuzzy/_search")
+	    public ResponseEntity<WaterConnectionResponse> fuzzySearch(@Valid @RequestBody RequestInfoWrapper requestInfoWrapper,
+	                                                      @Valid @ModelAttribute SearchCriteria criteria) {
+
+		 WaterConnectionResponse response = waterService.getWCListFuzzySearch(criteria, requestInfoWrapper.getRequestInfo()); 
+		 response.setResponseInfo(
+					responseInfoFactory.createResponseInfoFromRequestInfo(requestInfoWrapper.getRequestInfo(), true));
+			return new ResponseEntity<>(response, HttpStatus.OK);
+	    }
 }

@@ -9,9 +9,11 @@ import java.util.stream.Collectors;
 
 import javax.validation.Valid;
 
+import org.apache.commons.lang3.StringUtils;
 import org.egov.common.contract.request.RequestInfo;
 import org.egov.common.contract.request.Role;
 import org.egov.common.contract.request.User;
+import org.egov.tracer.model.CustomException;
 import org.egov.waterconnection.config.WSConfiguration;
 import org.egov.waterconnection.constants.WCConstants;
 import org.egov.waterconnection.producer.WaterConnectionProducer;
@@ -30,6 +32,7 @@ import org.egov.waterconnection.web.models.WaterConnectionResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.SingleColumnRowMapper;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.CollectionUtils;
 
@@ -261,6 +264,21 @@ public class WaterDaoImpl implements WaterDao {
 		.append(" and  taxperiodto <= " ).append(criteria.getToDate());
 		log.info("Active pending collection query : " + query);
 		return jdbcTemplate.queryForObject(query.toString(), Integer.class);
+		
+	}
+
+	@Override
+	public List<String> getWCListFuzzySearch(SearchCriteria criteria) {
+		List<Object> preparedStatementList = new ArrayList<>();
+
+		String query = wsQueryBuilder.getIds(criteria, preparedStatementList);
+		
+		try {
+			return jdbcTemplate.query(query, preparedStatementList.toArray(), new SingleColumnRowMapper<>());
+		}catch (Exception e) {
+			log.error("error while getting ids from db: "+e.getMessage());
+			throw new CustomException("EG_WC_QUERY_EXCEPTION", "error while getting ids from db");
+		}
 		
 	}
 }

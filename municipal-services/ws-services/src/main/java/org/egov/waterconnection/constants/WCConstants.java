@@ -275,6 +275,8 @@ public class WCConstants {
 	public static final String SUBCATEGORY_KEY = "subCategory";
 	public static final String MDMS_WC_MIS_CATEGORY="Category";
 	public static final String MDMS_WC_MIS_SUBCATEGORY="SubCategory";
-
+	
+	 // Fuzzy Search
+    public static final String ES_DATA_PATH = "$..Data";
 
 }
