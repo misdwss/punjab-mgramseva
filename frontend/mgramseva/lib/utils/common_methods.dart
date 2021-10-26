@@ -59,6 +59,23 @@ class CommonMethods {
     return yearWithMonths;
   }
 
+  static List<DatePeriod> getMonthsOfFinancialYear(){
+    var monthList = <DateTime>[];
+    if(DateTime.now().month >= 4){
+      for(int i = 4; i <= DateTime.now().month; i++){
+        monthList.add(DateTime(DateTime.now().year, i));
+      }
+    }else {
+      for(int i = 4; i <= 12; i++){
+        monthList.add(DateTime(DateTime.now().year - 1, i));
+      }
+      for(int i = 1; i <= DateTime.now().month; i++){
+        monthList.add(DateTime(DateTime.now().year, i));
+      }
+    }
+    return monthList.map((e) => DatePeriod(DateTime(e.year, e.month, 1), DateTime(e.year, e.month + 1, 0), DateType.MONTH)).toList().reversed.toList();
+  }
+
   String truncateWithEllipsis(int cutoff, String myString) {
     return (myString.length <= cutoff)
         ? myString
