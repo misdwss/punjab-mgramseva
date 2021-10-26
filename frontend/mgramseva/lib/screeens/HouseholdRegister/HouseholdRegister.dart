@@ -1,21 +1,16 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_share_me/flutter_share_me.dart';
 import 'package:mgramseva/components/HouseholdRegister/HouseholdCard.dart';
-import 'package:mgramseva/providers/common_provider.dart';
 import 'package:mgramseva/providers/household_register_provider.dart';
-import 'package:mgramseva/repository/core_repo.dart';
 import 'package:mgramseva/utils/Constants/I18KeyConstants.dart';
-import 'package:mgramseva/utils/global_variables.dart';
-import 'package:mgramseva/utils/loaders.dart';
+import 'package:mgramseva/utils/Locilization/application_localizations.dart';
 import 'package:mgramseva/widgets/DrawerWrapper.dart';
 import 'package:mgramseva/widgets/HomeBack.dart';
 import 'package:mgramseva/widgets/SideBar.dart';
 import 'package:provider/provider.dart';
 import '../../widgets/customAppbar.dart';
 import 'package:mgramseva/widgets/pagination.dart';
-import 'package:mgramseva/utils/models.dart';
 import 'HouseholdSearch.dart';
 
 class HouseholdRegister extends StatefulWidget {
@@ -122,6 +117,6 @@ class _HouseholdRegister extends State<HouseholdRegister> with SingleTickerProvi
             ..createPdfForAllConnections(context, false);
       },
       icon: Image.asset('assets/png/whats_app.png'),
-      label: Text(i18.common.SHARE));
+      label: Text(ApplicationLocalizations.of(context).translate(i18.common.SHARE)));
 
 }
