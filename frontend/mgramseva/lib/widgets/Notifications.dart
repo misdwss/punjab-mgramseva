@@ -118,7 +118,8 @@ class _NotificationsState extends State<Notifications> {
                   child: Container(
                       child: IconButton(
                       icon: Icon(Icons.close ,
-                      color: Theme.of(context).primaryColorLight,),
+                      color: Theme.of(context).primaryColorLight,
+                      size: 20.0,),
                      onPressed: widget.callback,
                    )))
               ),

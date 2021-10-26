@@ -105,7 +105,7 @@ class _NotificationScreen extends State<NotificationScreen> {
                             offSet: notificationProvider.offset,
                             callBack: (pageResponse) => notificationProvider
                                 .onChangeOfPageLimit(pageResponse),
-                            totalCount: totalCount, ));
+                            totalCount: totalCount, isDisabled: notificationProvider.enableNotification));
                     })
             ),
           ])
