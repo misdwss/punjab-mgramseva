@@ -42,7 +42,7 @@ class _HouseholdSearchState extends State<HouseholdSearch>
         Provider.of<HouseholdRegisterProvider>(context, listen: false);
     return Column(children: [
       SizedBox(
-        height: 10,
+        height: 20,
       ),
       BuildTextField(
         '',
@@ -95,7 +95,7 @@ class _HouseholdSearchState extends State<HouseholdSearch>
                   tabs: tabList),
             ),
             SizedBox(
-              height: 20,
+              height: 15,
             ),
             TextButton.icon(
               onPressed: () {

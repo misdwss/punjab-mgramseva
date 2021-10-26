@@ -42,8 +42,11 @@ class NotificationScreenProvider with ChangeNotifier {
                 : (offset + limit) - 1));
         return;
       }
-      enableNotification = true;
     }
+    streamController.add(null);
+
+    enableNotification = true;
+    notifyListeners();
     try {
       var notifications1 = await CoreRepository().fetchNotifications({
         "tenantId": commonProvider.userDetails?.selectedtenant?.code!,
@@ -57,8 +60,16 @@ class NotificationScreenProvider with ChangeNotifier {
         "offset": '${offset - 1}',
         "limit": '$limit'
       });
+<<<<<<< HEAD
       notifications..addAll(notifications1!.events!);
       totalCount = notifications1.totalCount ?? 0;
+=======
+      notifications
+        ..addAll(notifications2!.events!)
+        ..addAll(notifications1!.events!);
+      enableNotification = false;
+      totalCount = (notifications1.totalCount!.toInt() > notifications2.totalCount!.toInt() ?  notifications1.totalCount : notifications2.totalCount) ?? 0;
+>>>>>>> 44c41786 (IFIX-609)
       notifyListeners();
 
       streamController.add(notifications.sublist(
@@ -72,6 +83,7 @@ class NotificationScreenProvider with ChangeNotifier {
   }
 
   void onChangeOfPageLimit(PaginationResponse response) {
+    if(enableNotification) return;
     try {
       getNotifications(response.offset, response.limit);
     } catch (e, s) {
