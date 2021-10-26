@@ -84,7 +84,11 @@ public class SchedulerService {
 	private ServiceRequestRepository serviceRequestRepository;
 
 	public static final String USREVENTS_EVENT_TYPE = "SYSTEMGENERATED";
-	public static final String USREVENTS_EVENT_NAME = "Challan";
+	
+	public static final String MONTHLY_DEMAND_FAILED = "MONTHLY_DEMAND_FAILED";
+	public static final String PENDING_COLLECTION_USEREVENT = "PENDING_COLLECTION_USEREVENT";
+	public static final String TODAY_COLLECTION = "TODAY_COLLECTION";
+	
 	public static final String USREVENTS_EVENT_POSTEDBY = "SYSTEM-CHALLAN";
 
 	private static final String PENDING_COLLECTION_EVENT = "PENDING_COLLECTION_EN_REMINDER";
@@ -283,7 +287,7 @@ public class SchedulerService {
 		events.add(Event.builder().tenantId(tenantId)
 				.description(
 						formatPendingCollectionMessage(requestInfo, tenantId, messageMap.get(NotificationUtil.MSG_KEY)))
-				.eventType(USREVENTS_EVENT_TYPE).name(USREVENTS_EVENT_NAME).postedBy(USREVENTS_EVENT_POSTEDBY)
+				.eventType(USREVENTS_EVENT_TYPE).name(PENDING_COLLECTION_USEREVENT).postedBy(USREVENTS_EVENT_POSTEDBY)
 				.recepient(getRecepient(requestInfo, tenantId)).source(Source.WEBAPP)
 				.recepient(getRecepient(requestInfo, tenantId)).eventDetails(null).actions(action).build());
 
@@ -347,7 +351,7 @@ public class SchedulerService {
 		message = message.replace("{BILLING_CYCLE}", LocalDate.now().getMonth().toString());
 		System.out.println("Demand Genaration Failed::" + messageMap);
 		events.add(Event.builder().tenantId(tenantId).description(message).eventType(USREVENTS_EVENT_TYPE)
-				.name(USREVENTS_EVENT_NAME).postedBy(USREVENTS_EVENT_POSTEDBY)
+				.name(MONTHLY_DEMAND_FAILED).postedBy(USREVENTS_EVENT_POSTEDBY)
 				.recepient(getRecepient(requestInfo, tenantId)).source(Source.WEBAPP).eventDetails(null).actions(action)
 				.build());
 
@@ -463,7 +467,7 @@ public class SchedulerService {
 //		messages.add(onlineMessage);
 		for (String msg : messages) {
 			events.add(Event.builder().tenantId(tenantId).description(msg).eventType(USREVENTS_EVENT_TYPE)
-					.name(USREVENTS_EVENT_NAME).postedBy(USREVENTS_EVENT_POSTEDBY)
+					.name(TODAY_COLLECTION).postedBy(USREVENTS_EVENT_POSTEDBY)
 					.recepient(getRecepient(requestInfo, tenantId)).source(Source.WEBAPP).eventDetails(null)
 					.actions(action).build());
 		}

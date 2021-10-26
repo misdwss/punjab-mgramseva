@@ -98,6 +98,15 @@ public class SchedulerService {
 	private static final String TODAY_CASH_COLLECTION_SMS = "TODAY_COLLECTION_FROM_CASH";
 	private static final String TODAY_ONLINE_COLLECTION_SMS = "TODAY_COLLECTION_FROM_ONLINE";
 
+
+
+	private static final String EXPENSE_PAYMENT = "EXPENSE_PAYMENT";
+
+	private static final String MONTHLY_SUMMARY = "MONTHLY_SUMMARY";
+
+	private static final String NEW_EXPENSE_ENTRY = "NEW_EXPENSE_ENTRY";
+	
+	
 	@Autowired
 	public SchedulerService(ChallanRepository repository, CommonUtils utils,
 			ServiceRequestRepository serviceRequestRepository) {
@@ -167,7 +176,7 @@ public class SchedulerService {
 					tenantId);
 			System.out.println("Final Message ::" + messageMap.get(NotificationUtil.MSG_KEY));
 			events.add(Event.builder().tenantId(tenantId).description(messageMap.get(NotificationUtil.MSG_KEY))
-					.eventType(USREVENTS_EVENT_TYPE).name(USREVENTS_EVENT_NAME).postedBy(USREVENTS_EVENT_POSTEDBY)
+					.eventType(USREVENTS_EVENT_TYPE).name(NEW_EXPENSE_ENTRY).postedBy(USREVENTS_EVENT_POSTEDBY)
 					.recepient(getRecepient(requestInfo, tenantId)).source(Source.WEBAPP).eventDetails(null)
 					.actions(action).build());
 		}
@@ -337,7 +346,7 @@ public class SchedulerService {
 		HashMap<String, String> messageMap = util.getLocalizationMessage(requestInfo, MARK_PAID_BILL_EVENT, tenantId);
 		events.add(Event.builder().tenantId(tenantId)
 				.description(formatMarkExpenseMessage(tenantId, messageMap.get(NotificationUtil.MSG_KEY)))
-				.eventType(USREVENTS_EVENT_TYPE).name(USREVENTS_EVENT_NAME).postedBy(USREVENTS_EVENT_POSTEDBY)
+				.eventType(USREVENTS_EVENT_TYPE).name(EXPENSE_PAYMENT).postedBy(USREVENTS_EVENT_POSTEDBY)
 				.recepient(getRecepient(requestInfo, tenantId)).source(Source.WEBAPP).eventDetails(null).actions(action)
 				.build());
 
@@ -443,7 +452,7 @@ public class SchedulerService {
 		HashMap<String, String> messageMap = util.getLocalizationMessage(requestInfo, MONTHLY_SUMMARY_EVENT, tenantId);
 		events.add(Event.builder().tenantId(tenantId)
 				.description(formatMonthSummaryMessage(requestInfo, tenantId, messageMap.get(NotificationUtil.MSG_KEY)))
-				.eventType(USREVENTS_EVENT_TYPE).name(USREVENTS_EVENT_NAME).postedBy(USREVENTS_EVENT_POSTEDBY)
+				.eventType(USREVENTS_EVENT_TYPE).name(MONTHLY_SUMMARY).postedBy(USREVENTS_EVENT_POSTEDBY)
 				.recepient(getRecepient(requestInfo, tenantId)).source(Source.WEBAPP).eventDetails(null).actions(action)
 				.build());
 

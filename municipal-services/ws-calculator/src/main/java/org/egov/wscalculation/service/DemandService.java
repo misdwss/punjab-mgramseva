@@ -888,7 +888,7 @@ public class DemandService {
 
 		System.out.println("Bulk Event msg:: " + message);
 		events.add(Event.builder().tenantId(bulkDemand.getTenantId()).description(message)
-				.eventType(WSCalculationConstant.USREVENTS_EVENT_TYPE).name(WSCalculationConstant.USREVENTS_EVENT_NAME)
+				.eventType(WSCalculationConstant.USREVENTS_EVENT_TYPE).name(WSCalculationConstant.MONTHLY_DEMAND_GENERATED)
 				.postedBy(WSCalculationConstant.USREVENTS_EVENT_POSTEDBY)
 				.recepient(getRecepient(bulkDemand.getRequestInfo(), bulkDemand.getTenantId())).source(Source.WEBAPP)
 				.eventDetails(null).actions(action).build());
