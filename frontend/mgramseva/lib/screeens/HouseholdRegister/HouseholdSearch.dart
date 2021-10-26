@@ -57,7 +57,7 @@ class _HouseholdSearchState extends State<HouseholdSearch> with SingleTickerProv
             placeHolder: i18.dashboard.SEARCH_NAME_CONNECTION,
             onChange: (val) => householdRegisterProvider.onSearch(val, context),
           ),
-          SizedBox(height: 20,),
+          SizedBox(height: 10,),
           Expanded(
             child: _buildTabView(),
           )
@@ -96,7 +96,7 @@ class _HouseholdSearchState extends State<HouseholdSearch> with SingleTickerProv
                       tabs: tabList
                   ),
                 ),
-                SizedBox(height: 20,),
+                SizedBox(height: 15,),
                 TextButton.icon(
                   onPressed: () {
                     householdRegisterProvider.createPdfForAllConnections(context, true);
