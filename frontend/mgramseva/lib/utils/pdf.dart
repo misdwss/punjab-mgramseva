@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:mgramseva/Env/app_config.dart';
 import 'package:mgramseva/providers/common_provider.dart';
 import 'package:mgramseva/providers/language.dart';
+import 'package:mgramseva/utils/constants.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
@@ -61,7 +63,7 @@ class PdfUtils {
   }
 
   static Future<pw.ImageProvider> get powerdByDigit async => await networkImage(
-      'https://s3.ap-south-1.amazonaws.com/egov-qa-assets/digit-footer.png');
+      "$apiBaseUrl${Constants.DIGIT_FOOTER_ENDPOINT}");
 
   static pw.Widget pdfFooter(pw.ImageProvider image){
     return pw.Container(

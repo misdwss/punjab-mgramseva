@@ -8,6 +8,8 @@ import 'package:mgramseva/utils/models.dart';
 class Constants {
   static const int PAGINATION_LIMIT = 75;
 
+  static const String DIGIT_FOOTER_ENDPOINT = 'mgramseva-dev-assets/logo/digit-footer.png';
+
   static const String LOGIN_KEY = 'login_key';
   static const String LANGUAGE_KEY = 'language_key';
   static const String STATES_KEY = 'states_key';
