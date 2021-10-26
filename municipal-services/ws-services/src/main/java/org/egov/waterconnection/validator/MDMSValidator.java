@@ -297,20 +297,18 @@ public class MDMSValidator {
 		
 		HashMap<String, Object> addDetail = mapper.convertValue(
 				waterConnectionRequest.getWaterConnection().getAdditionalDetails(), HashMap.class);
-		if (StringUtils.isEmpty(addDetail)
-				|| addDetail.getOrDefault(WCConstants.AADHAR_KEY, null) == null) {
-			errorMap.put("MANDATORY_AADHAR_NUMBER", "AADHAR NUMBER MANDATORY");
-		} else {
+		if (!StringUtils.isEmpty(addDetail)
+				&& addDetail.getOrDefault(WCConstants.AADHAR_KEY, null) != null) {
+			
 			String aadharNumber = String.valueOf(addDetail.get(WCConstants.AADHAR_KEY));
 			if ( aadharNumber.length() != 16) {
 				errorMap.put("INVALID_AADHAR_NUMBER", "Aadhar Number should be 16 Digits.");
 			}
 		}
 		
-		if (StringUtils.isEmpty(addDetail)
-				|| addDetail.getOrDefault(WCConstants.CATEGORY_KEY, null) == null) {
-			errorMap.put("MANDATORY_CATEGORY", "Category is mandatory.");
-		} else {
+		if (!StringUtils.isEmpty(addDetail)
+				&& addDetail.getOrDefault(WCConstants.CATEGORY_KEY, null) != null) {
+			
 			String category = String.valueOf(addDetail.get(WCConstants.CATEGORY_KEY));
 			List categoryCodes = codes.get(WCConstants.MDMS_WC_MIS_CATEGORY);
 			if ( !categoryCodes.isEmpty() && !categoryCodes.contains(category)) {
@@ -318,10 +316,9 @@ public class MDMSValidator {
 			}
 		}
 		
-		if (StringUtils.isEmpty(addDetail)
-				|| addDetail.getOrDefault(WCConstants.SUBCATEGORY_KEY, null) == null) {
-			errorMap.put("MANDATORY_SUBCATEGORY", "SubCategory is mandatory.");
-		} else {
+		if (!StringUtils.isEmpty(addDetail)
+				&& addDetail.getOrDefault(WCConstants.SUBCATEGORY_KEY, null) != null) {
+			
 			String category = String.valueOf(addDetail.get(WCConstants.SUBCATEGORY_KEY));
 			List categoryCodes = codes.get(WCConstants.MDMS_WC_MIS_SUBCATEGORY);
 			if ( !categoryCodes.isEmpty() && !categoryCodes.contains(category)) {
