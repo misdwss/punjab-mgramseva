@@ -123,7 +123,7 @@ class _NotificationScreen extends State<NotificationScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               ListLabelText(ApplicationLocalizations.of(context)
-                  .translate(i18.common.NOTIFICATIONS) +
+                  .translate(i18.common.ALL_NOTIFICATIONS) +
                   " (" +
                   events.length.toString() +
                   ")"),
