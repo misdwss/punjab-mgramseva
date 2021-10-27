@@ -18,6 +18,7 @@ import 'package:mgramseva/widgets/ListLabelText.dart';
 import 'package:mgramseva/widgets/TextFieldBuilder.dart';
 import 'package:mgramseva/widgets/footer.dart';
 import 'package:mgramseva/widgets/grid_view.dart';
+import 'package:mgramseva/widgets/tab_button.dart';
 import 'package:provider/provider.dart';
 
 class SearchExpenseDashboard extends StatefulWidget {
@@ -32,33 +33,7 @@ class _SearchExpenseDashboardState extends State<SearchExpenseDashboard> with Si
 
   @override
   void initState() {
-    var dashBoardProvider = Provider.of<DashBoardProvider>(context, listen: false)
-    ..limit = 10
-    ..offset = 1
-    ..sortBy = null
-    ..selectedDashboardType = widget.dashBoardType
-    ..metricInformation = null;
-    WidgetsBinding.instance?.addPostFrameCallback((_) => afterViewBuild());
     super.initState();
-  }
-
-  afterViewBuild() {
-    var dashBoardProvider = Provider.of<DashBoardProvider>(context, listen: false);
-    dashBoardProvider.searchController.clear();
-    dashBoardProvider.fetchData();
-    dashBoardProvider.fetchDashboardMetricInformation(context, widget.dashBoardType == DashBoardType.Expenditure ? true : false);
-    dashBoardProvider.selectedTab = 'all';
-    if(widget.dashBoardType == DashBoardType.Expenditure) {
-
-      dashBoardProvider
-        ..sortBy = SortBy('challanno', false)
-        ..expenseDashboardDetails?.expenseDetailList = <ExpensesDetailsModel>[]
-        ..expenseDashboardDetails?.totalCount = null;
-    }else{
-      dashBoardProvider
-        ..waterConnectionsDetails?.waterConnection = <WaterConnection>[]
-        ..waterConnectionsDetails?.totalCount = null;
-    }
   }
 
   @override
@@ -86,79 +61,50 @@ class _SearchExpenseDashboardState extends State<SearchExpenseDashboard> with Si
             placeHolder: widget.dashBoardType == DashBoardType.collections ? i18.dashboard.SEARCH_NAME_CONNECTION : i18.dashboard.SEARCH_BY_BILL_OR_VENDOR,
             onChange: (val) => dashBoardProvider.onSearch(val, context),
           ),
-          Expanded(
-            child: StreamBuilder(
-                stream: dashBoardProvider.initialStreamController.stream,
-                builder: (context, AsyncSnapshot snapshot) {
-                  if (snapshot.hasData) {
-                    if(snapshot.data is String){
-                      return CommonWidgets.buildEmptyMessage(snapshot.data, context);
-                    }
-                    return _buildTabView();
-                  } else if (snapshot.hasError) {
-                    return Notifiers.networkErrorPage(context, () => {});
-                  } else {
-                    switch (snapshot.connectionState) {
-                      case ConnectionState.waiting:
-                        return Loaders.CircularLoader();
-                      case ConnectionState.active:
-                        return Loaders.CircularLoader();
-                      default:
-                        return Container();
-                    }
+          StreamBuilder(
+              stream: dashBoardProvider.initialStreamController.stream,
+              builder: (context, AsyncSnapshot snapshot) {
+                if (snapshot.hasData) {
+                  if(snapshot.data is String){
+                    return CommonWidgets.buildEmptyMessage(snapshot.data, context);
                   }
-                }),
-          )
+                  return _buildTabView();
+                } else if (snapshot.hasError) {
+                  return Notifiers.networkErrorPage(context, () => {});
+                } else {
+                  switch (snapshot.connectionState) {
+                    case ConnectionState.waiting:
+                      return Loaders.CircularLoader();
+                    case ConnectionState.active:
+                      return Loaders.CircularLoader();
+                    default:
+                      return Container();
+                  }
+                }
+              }),
+          Footer()
         ]
     );
   }
 
   Widget _buildTabView() {
-    var dashBoardProvider = Provider.of<DashBoardProvider>(context, listen: false);
     return Consumer<DashBoardProvider>(
       builder: (_, dashBoardProvider, child)
     {
       var tabList = dashBoardProvider.selectedDashboardType == DashBoardType.Expenditure ? dashBoardProvider.getExpenseTabList(context) : dashBoardProvider.getCollectionsTabList(context);
 
-      return DefaultTabController(
-        length: tabList.length,
-        // initialIndex: ,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 8),
-              child: ButtonsTabBar(
-                // controller: _tabController,
-                  backgroundColor: Colors.white,
-                  unselectedBackgroundColor: Color.fromRGBO(244, 119, 56, 0.12),
-                  contentPadding: EdgeInsets.symmetric(
-                      horizontal: 10, vertical: 3),
-                  buttonMargin: EdgeInsets.symmetric(horizontal: 5),
-                  labelStyle: TextStyle(color: Theme
-                      .of(context)
-                      .primaryColor, fontWeight: FontWeight.bold),
-                  unselectedLabelStyle: TextStyle(
-                      color: Theme
-                          .of(context)
-                          .primaryColor, fontWeight: FontWeight.w400),
-                  radius: 25,
-                  tabs: tabList
-              ),
-            ),
-            Expanded(
-              child: Consumer<DashBoardProvider>(
-                builder: (_, dashBoardProvider, child) =>
-                    TabBarView(
-                        physics: NeverScrollableScrollPhysics(),
-                        // controller: _tabController,
-                        children: List.generate(tabList.length, (index) =>
-                            IndividualTab(index: index))
-                    ),
-              ),
-            ),
-          ],
-        ),
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+         SingleChildScrollView(
+           scrollDirection: Axis.horizontal,
+           child: Row(
+             crossAxisAlignment: CrossAxisAlignment.start,
+             children: List.generate(tabList.length, (index) => TabButton(tabList[index] ?? '', isSelected: dashBoardProvider.isTabSelected(index), onPressed: () => dashBoardProvider.onChangeOfChildTab(context, index)))
+           ),
+         ),
+          IndividualTab()
+        ],
       );
       });
   }

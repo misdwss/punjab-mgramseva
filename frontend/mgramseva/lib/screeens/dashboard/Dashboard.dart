@@ -29,6 +29,7 @@ import 'package:mgramseva/widgets/SideBar.dart';
 import 'package:mgramseva/widgets/custom_overlay/show_overlay.dart';
 import 'package:mgramseva/widgets/grid_view.dart';
 import 'package:mgramseva/components/Dashboard/nested_date_picker.dart';
+import 'package:mgramseva/widgets/tab_button.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:screenshot/screenshot.dart';
@@ -135,32 +136,7 @@ class _Dashboard extends State<Dashboard> with SingleTickerProviderStateMixin {
                                         child: DashboardCard(onTapOfMonthPicker)),
                                     Visibility(
                                       visible: !(dashBoardProvider.selectedMonth.dateType != DateType.MONTH),
-                                      child: TabBar(
-                                        labelColor: Theme.of(context).primaryColor,
-                                        unselectedLabelColor: Colors.black,
-                                        labelStyle: TextStyle(
-                                            fontWeight: FontWeight.bold, fontSize: 16),
-                                        indicatorSize: TabBarIndicatorSize.tab,
-                                        controller: _tabController,
-                                        indicator: BoxDecoration(
-                                          color: Colors.white,
-                                          border: Border(
-                                            bottom: BorderSide(
-                                                width: 2,
-                                                color: Theme.of(context).primaryColor),
-                                          ),
-                                        ),
-                                        tabs: [
-                                          Tab(
-                                            text: ApplicationLocalizations.of(context)
-                                                .translate(i18.dashboard.COLLECTIONS),
-                                          ),
-                                          Tab(
-                                            text: ApplicationLocalizations.of(context)
-                                                .translate(i18.dashboard.EXPENDITURE),
-                                          ),
-                                        ],
-                                      ),
+                                      child: _buildMainTabs(),
                                     ),
                                   ])),
                               _buildViewBasedOnTheSelection(dashBoardProvider)
@@ -224,19 +200,22 @@ class _Dashboard extends State<Dashboard> with SingleTickerProviderStateMixin {
             ]
         )
     ) :
-    SliverFillRemaining(
-        hasScrollBody: true,
-        fillOverscroll: true,
-        child: TabBarView(
-          physics: NeverScrollableScrollPhysics(),
-          controller: _tabController,
-          children: [
-            SearchExpenseDashboard(
-                dashBoardType: DashBoardType.collections),
-            SearchExpenseDashboard(
-                dashBoardType: DashBoardType.Expenditure)
-          ],
-        )
+    SliverToBoxAdapter(
+        child: SearchExpenseDashboard(
+            dashBoardType: dashBoardProvider.selectedDashboardType)
+    );
+  }
+
+  Widget _buildMainTabs(){
+    var dashBoardProvider = Provider.of<DashBoardProvider>(context, listen: false);
+
+    return Container(
+      child: Wrap(
+        children: [
+          TabButton(i18.dashboard.COLLECTIONS, isMainTab: true, isSelected: dashBoardProvider.selectedDashboardType == DashBoardType.collections, onPressed: () =>dashBoardProvider.onChangeOfMainTab(context, DashBoardType.collections)),
+          TabButton(i18.dashboard.EXPENDITURE, isMainTab: true, isSelected: dashBoardProvider.selectedDashboardType == DashBoardType.Expenditure, onPressed: () =>dashBoardProvider.onChangeOfMainTab(context, DashBoardType.Expenditure)),
+        ],
+      ),
     );
   }
 
