@@ -33,8 +33,9 @@ class NotificationProvider with ChangeNotifier {
       } else {
         streamController.add(res);
       }
-    } catch (e) {
-      print(e);
+    } catch (e, s) {
+      ErrorHandler().allExceptionsHandler(navigatorKey.currentContext!, e, s);
+      streamController.addError('error');
     }
   }
 
@@ -53,7 +54,8 @@ class NotificationProvider with ChangeNotifier {
       }
     }
     catch (e, s) {
-      ErrorHandler().allExceptionsHandler(navigatorKey.currentContext!, e);
+      ErrorHandler().allExceptionsHandler(navigatorKey.currentContext!, e, s);
+      streamController.addError('error');
     }
   }
 
