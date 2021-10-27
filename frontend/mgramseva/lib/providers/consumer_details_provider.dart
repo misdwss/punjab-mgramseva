@@ -230,11 +230,11 @@ class ConsumerProvider with ChangeNotifier {
         waterconnection.additionalDetails!.initialMeterReading =
             waterconnection.previousReading;
         waterconnection.additionalDetails!.category =
-            waterconnection.categoryCtrl.text;
+            waterconnection.categoryCtrl.text.trim().isEmpty ? null : waterconnection.categoryCtrl.text.trim();
         waterconnection.additionalDetails!.subCategory =
-            waterconnection.subCategoryCtrl.text;
+            waterconnection.subCategoryCtrl.text.trim().isEmpty ? null : waterconnection.subCategoryCtrl.text.trim();
         waterconnection.additionalDetails!.aadharNumber =
-            waterconnection.addharCtrl.text;
+            waterconnection.addharCtrl.text.trim().isEmpty ? null : waterconnection.addharCtrl.text.trim();
         waterconnection.additionalDetails!.street = property.address.street;
         waterconnection.additionalDetails!.doorNo = property.address.doorNo;
         waterconnection.additionalDetails!.meterReading =
