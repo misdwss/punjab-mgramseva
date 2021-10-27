@@ -158,15 +158,11 @@ public class ChallanQueryBuilder {
 				preparedStmtList.add(criteria.getExpenseType());
 			}
 
-			if (criteria.getFromDate() != null) {
+			if (criteria.getFromDate() != null && criteria.getToDate() != null) {
 				addClauseIfRequired(preparedStmtList, builder);
-				builder.append("  challan.createdTime >= ? ");
+				builder.append(
+						" challan.taxperiodto between " + criteria.getFromDate() + "and" + criteria.getToDate());
 				preparedStmtList.add(criteria.getFromDate());
-			}
-			if (criteria.getToDate() != null) {
-				addClauseIfRequired(preparedStmtList, builder);
-				builder.append("  challan.createdTime <= ? ");
-				preparedStmtList.add(criteria.getToDate());
 			}
 			if (criteria.getIsBillPaid() != null) {
 				addClauseIfRequired(preparedStmtList, builder);

@@ -240,10 +240,9 @@ public class WaterDaoImpl implements WaterDao {
 
 	public Integer getTotalDemandAmount(@Valid SearchCriteria criteria) {
 		StringBuilder query = new StringBuilder(wsQueryBuilder.NEWDEMAND);
-		query.append(" and dmd.taxPeriodFrom  >= ").append(criteria.getFromDate()).append(" and dmd.taxPeriodTo <= ").append(criteria.getToDate())
+		query.append(" dmd.taxperiodto between " + criteria.getFromDate() + "and" + criteria.getToDate())
 				.append(" and dmd.tenantId = '").append(criteria.getTenantId()).append("'");
 		return jdbcTemplate.queryForObject(query.toString(), Integer.class);
-
 	}
 
 	public Integer getActualCollectionAmount(@Valid SearchCriteria criteria) {
@@ -256,11 +255,10 @@ public class WaterDaoImpl implements WaterDao {
 
 	public Integer getPendingCollectionAmount(@Valid SearchCriteria criteria) {
 		StringBuilder query = new StringBuilder(wsQueryBuilder.PENDINGCOLLECTION);
-		query.append(" and demand.tenantid = '").append(criteria.getTenantId()).append("'")
-		.append( " and taxperiodfrom  >= ").append( criteria.getFromDate())  
-		.append(" and  taxperiodto <= " ).append(criteria.getToDate());
+		query.append(" demand.taxperiodto between " + criteria.getFromDate() + "and" + criteria.getToDate())
+				.append(" and demand.tenantId = '").append(criteria.getTenantId()).append("'");
 		log.info("Active pending collection query : " + query);
 		return jdbcTemplate.queryForObject(query.toString(), Integer.class);
-		
+
 	}
 }

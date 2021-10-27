@@ -235,28 +235,26 @@ public class ChallanRepository {
 
 	public Integer getTotalExpense(@Valid SearchCriteria criteria) {
 		StringBuilder query = new StringBuilder(queryBuilder.NEWEXPDEMAND);
-		query.append(" and dmd.taxPeriodFrom  >= ").append( criteria.getFromDate()).append(" and dmd.taxPeriodTo <= ").append(criteria.getToDate())
+		query.append(" dmd.taxperiodto between " + criteria.getFromDate() + "and" + criteria.getToDate())
 				.append(" and dmd.tenantId = '").append(criteria.getTenantId()).append("'");
 		return jdbcTemplate.queryForObject(query.toString(), Integer.class);
 	}
 
-
 	public Integer getPaidAmountDetails(@Valid SearchCriteria criteria) {
 		StringBuilder query = new StringBuilder(queryBuilder.ACTUALEXPCOLLECTION);
-		query.append(" and py.transactionDate  >= ").append(criteria.getFromDate()).append(" and py.transactionDate <= ")
-				.append(criteria.getToDate()).append(" and py.tenantId = '").append(criteria.getTenantId()).append("'");
+		query.append(" and py.transactionDate  >= ").append(criteria.getFromDate())
+				.append(" and py.transactionDate <= ").append(criteria.getToDate()).append(" and py.tenantId = '")
+				.append(criteria.getTenantId()).append("'");
 		return jdbcTemplate.queryForObject(query.toString(), Integer.class);
 
 	}
+
 	public Integer getPendingAmount(@Valid SearchCriteria criteria) {
 		StringBuilder query = new StringBuilder(queryBuilder.PENDINGEXPCOLL);
-		query.append(" and dmd.tenantid = '").append(criteria.getTenantId()).append("'")
-		.append( " and taxperiodfrom  >= ").append( criteria.getFromDate())  
-		.append(" and  taxperiodto <= " ).append(criteria.getToDate());
+		query.append(" dmd.taxperiodto between " + criteria.getFromDate() + "and" + criteria.getToDate())
+				.append(" and dmd.tenantId = '").append(criteria.getTenantId()).append("'");
 		log.info("Active pending collection query : " + query);
 		return jdbcTemplate.queryForObject(query.toString(), Integer.class);
-		
 	}
-
     
 }
