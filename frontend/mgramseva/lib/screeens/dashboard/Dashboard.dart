@@ -73,6 +73,7 @@ class _Dashboard extends State<Dashboard> with SingleTickerProviderStateMixin {
     dashBoardProvider.scrollController = ScrollController();
     dashBoardProvider.debounce = null;
     dashBoardProvider.userFeedBackInformation = null;
+    dashBoardProvider.selectedDashboardType = DashBoardType.collections;
     _tabController = new TabController(vsync: this, length: 2, initialIndex: widget.initialTabIndex);
     _tabController.addListener(() {
       FocusScope.of(context).unfocus();
@@ -84,6 +85,7 @@ class _Dashboard extends State<Dashboard> with SingleTickerProviderStateMixin {
   afterViewBuild(){
     var dashBoardProvider =
     Provider.of<DashBoardProvider>(context, listen: false);
+    dashBoardProvider.onChangeOfMainTab(context, dashBoardProvider.selectedDashboardType);
     dashBoardProvider.fetchUserFeedbackDetails(context);
   }
 
