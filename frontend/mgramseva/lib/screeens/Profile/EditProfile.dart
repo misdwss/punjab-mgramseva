@@ -45,7 +45,6 @@ class _EditProfileState extends State<EditProfile> {
 
   saveInputandedit(context, profileDetails, User profile) async {
     var userProvider = Provider.of<UserProfileProvider>(context, listen: false);
-
     if (userProvider.formKey.currentState!.validate()) {
       var editProfileProvider =
           Provider.of<UserEditProfileProvider>(context, listen: false);
@@ -116,11 +115,6 @@ class _EditProfileState extends State<EditProfile> {
                     pattern:
                         r'^$|^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$',
                   ),
-                  BottomButtonBar(
-                    i18.common.SAVE,
-                    () => saveInputandedit(
-                        context, profileDetails.getText(), profileDetails),
-                  ),
                   SizedBox(
                     height: 20,
                   )
@@ -174,6 +168,11 @@ class _EditProfileState extends State<EditProfile> {
                   }),
               Footer()
             ])),
+      ),
+      bottomNavigationBar: BottomButtonBar(
+        i18.common.SAVE,
+            () => saveInputandedit(
+            context, userProvider.profileDetails.getText(), userProvider.profileDetails),
       ),
     );
   }
