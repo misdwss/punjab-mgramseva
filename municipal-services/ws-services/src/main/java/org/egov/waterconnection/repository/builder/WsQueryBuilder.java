@@ -91,6 +91,17 @@ public class WsQueryBuilder {
 	  
 	public static final String ACTUALCOLLECTION =" select sum(py.totalAmountPaid) FROM egcl_payment py INNER JOIN egcl_paymentdetail pyd ON pyd.paymentid = py.id where pyd.businessservice='WS' ";
 
+	public static final String ID_QUERY = "select conn.id FROM eg_ws_connection conn "
+			+  INNER_JOIN_STRING 
+			+" eg_ws_service wc ON wc.connection_id = conn.id"
+			+  LEFT_OUTER_JOIN_STRING
+			+ "eg_ws_applicationdocument document ON document.wsid = conn.id" 
+			+  LEFT_OUTER_JOIN_STRING
+			+ "eg_ws_plumberinfo plumber ON plumber.wsid = conn.id"
+		    +  LEFT_OUTER_JOIN_STRING
+		    + "eg_ws_connectionholder connectionholder ON connectionholder.connectionid = conn.id"
+			+  LEFT_OUTER_JOIN_STRING
+			+ "eg_ws_roadcuttinginfo roadcuttingInfo ON roadcuttingInfo.wsid = conn.id" ;
 
 	/**
 	 * 
@@ -264,6 +275,73 @@ public class WsQueryBuilder {
 		
 		return query;
 	}	
+	
+	public StringBuilder applyFiltersForFuzzySearch(StringBuilder query, List<Object> preparedStatement, SearchCriteria criteria) {
+		if (!StringUtils.isEmpty(criteria.getTenantId())) {
+			addClauseIfRequired(preparedStatement, query);
+			if(criteria.getTenantId().equalsIgnoreCase(config.getStateLevelTenantId())){
+				query.append(" conn.tenantid LIKE ? ");
+				preparedStatement.add('%' + criteria.getTenantId() + '%');
+			}
+			else{
+				query.append(" conn.tenantid = ? ");
+				preparedStatement.add(criteria.getTenantId());
+			}
+		}
+		
+		if (!CollectionUtils.isEmpty(criteria.getIds())) {
+			addClauseIfRequired(preparedStatement, query);
+			query.append(" conn.id in (").append(createQuery(criteria.getIds())).append(" )");
+			addToPreparedStatement(preparedStatement, criteria.getIds());
+		}	
+		if (!StringUtils.isEmpty(criteria.getStatus())) {
+			addClauseIfRequired(preparedStatement, query);
+			query.append(" conn.status = ? ");
+			preparedStatement.add(criteria.getStatus());
+		}
+		if (!StringUtils.isEmpty(criteria.getApplicationNumber())) {
+			addClauseIfRequired(preparedStatement, query);
+			query.append(" conn.applicationno = ? ");
+			preparedStatement.add(criteria.getApplicationNumber());
+		}
+		if (!StringUtils.isEmpty(criteria.getApplicationStatus())) {
+			addClauseIfRequired(preparedStatement, query);
+			query.append(" conn.applicationStatus = ? ");
+			preparedStatement.add(criteria.getApplicationStatus());
+		}
+		if (criteria.getFromDate() != null) {
+			addClauseIfRequired(preparedStatement, query);
+			query.append("  conn.createdTime >= ? ");
+			preparedStatement.add(criteria.getFromDate());
+		}
+		if (criteria.getToDate() != null) {
+			addClauseIfRequired(preparedStatement, query);
+			query.append("  conn.createdTime <= ? ");
+			preparedStatement.add(criteria.getToDate());
+		}
+		if(!StringUtils.isEmpty(criteria.getApplicationType())) {
+			addClauseIfRequired(preparedStatement, query);
+			query.append(" conn.applicationType = ? ");
+			preparedStatement.add(criteria.getApplicationType());
+		}
+		if(!StringUtils.isEmpty(criteria.getPropertyType())) {
+			addClauseIfRequired(preparedStatement, query);
+			query.append(" conn.additionaldetails->>'propertyType' = ? ");
+			preparedStatement.add(criteria.getPropertyType());
+		}
+		if(!StringUtils.isEmpty(criteria.getSearchType())
+				&& criteria.getSearchType().equalsIgnoreCase(SEARCH_TYPE_CONNECTION)){
+			addClauseIfRequired(preparedStatement, query);
+			query.append(" conn.isoldapplication = ? ");
+			preparedStatement.add(Boolean.FALSE);
+		}
+		if (!StringUtils.isEmpty(criteria.getLocality())) {
+			addClauseIfRequired(preparedStatement, query);
+			query.append(" conn.locality = ? ");
+			preparedStatement.add(criteria.getLocality());
+		}
+		return query;
+	}
 	
 	
 
@@ -440,4 +518,18 @@ public class WsQueryBuilder {
 	public String getDistinctTenantIds() {
 		return TENANTIDS;
 	}
+	
+	public String getIds(SearchCriteria criteria, List<Object> preparedStatementList) {
+		
+		if (criteria.isEmpty())
+			throw new CustomException("EG_WC_SEARCH_CRITERIA_EMPTY_ERROR", "criteria should not be null");
+			
+		StringBuilder query = new StringBuilder(ID_QUERY);
+		
+		query = applyFiltersForFuzzySearch(query, preparedStatementList, criteria);
+		
+		return query.toString();
+	}
+	
+	
 }
