@@ -15,6 +15,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -28,6 +29,7 @@ import org.egov.tracer.model.CustomException;
 import org.egov.waterconnection.config.WSConfiguration;
 import org.egov.waterconnection.constants.WCConstants;
 import org.egov.waterconnection.producer.WaterConnectionProducer;
+import org.egov.waterconnection.repository.ElasticSearchRepository;
 import org.egov.waterconnection.repository.WaterDao;
 import org.egov.waterconnection.repository.WaterDaoImpl;
 import org.egov.waterconnection.repository.WaterRepository;
@@ -62,6 +64,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.jayway.jsonpath.JsonPath;
 
 @Component
 public class WaterServiceImpl implements WaterService {
@@ -113,6 +116,9 @@ public class WaterServiceImpl implements WaterService {
 
 	@Autowired
 	private WaterRepository repository;
+	
+	@Autowired
+	private ElasticSearchRepository elasticSearchRepository;
 
 	/**
 	 * 
@@ -480,4 +486,38 @@ public class WaterServiceImpl implements WaterService {
 
 	}
 
+	@Override
+	public WaterConnectionResponse getWCListFuzzySearch(SearchCriteria criteria, RequestInfo requestInfo) {
+		 
+		List<String> idsfromDB = waterDao.getWCListFuzzySearch(criteria);
+		
+		 if(CollectionUtils.isEmpty(idsfromDB))
+			 WaterConnectionResponse.builder().waterConnection(new LinkedList<>());
+
+	     validateFuzzySearchCriteria(criteria);
+		
+		 Object esResponse = elasticSearchRepository.fuzzySearchProperties(criteria, idsfromDB);
+		
+		 List<Map<String, Object>> data = wsDataResponse(esResponse);
+		 
+		 return WaterConnectionResponse.builder().waterConnectionData(data).totalCount(data.size()).build();
+	}
+	
+	private void validateFuzzySearchCriteria(SearchCriteria criteria){
+
+        if(org.apache.commons.lang3.StringUtils.isBlank(criteria.getName()) && org.apache.commons.lang3.StringUtils.isBlank(criteria.getMobileNumber()))
+            throw new CustomException("EG_WC_SEARCH_ERROR"," No criteria given for the WC search");
+    }
+	
+	private List<Map<String, Object>> wsDataResponse(Object esResponse) {
+
+	        List<Map<String, Object>> data;
+	        try {
+	            data = JsonPath.read(esResponse, WCConstants.ES_DATA_PATH);
+	        } catch (Exception e) {
+	            throw new CustomException("PARSING_ERROR", "Failed to extract data from es response");
+	        }
+
+	        return data;
+	    }
 }
