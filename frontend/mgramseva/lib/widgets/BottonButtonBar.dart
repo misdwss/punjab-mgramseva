@@ -5,7 +5,7 @@ import 'package:mgramseva/utils/common_styles.dart';
 
 class BottomButtonBar extends StatelessWidget {
   final String label;
-  final VoidCallback? callBack;
+  final Function()? callBack;
   BottomButtonBar(this.label, this.callBack);
   @override
   Widget build(BuildContext context) {
@@ -43,10 +43,13 @@ class BottomButtonBar extends StatelessWidget {
   Widget _buildButton(context) {
     print(ApplicationLocalizations.of(context).translate(this.label));
     return ElevatedButton(
+      style: ElevatedButton.styleFrom(
+          primary: callBack == null ? Color.fromRGBO(244, 119, 56, 0.7) : null
+      ),
       child: Text(
         ApplicationLocalizations.of(context).translate(this.label),
       ),
-      onPressed: callBack,
+      onPressed: () => callBack != null ? callBack!() : null,
     );
   }
 }

@@ -4,7 +4,6 @@ import 'package:mgramseva/routers/Routers.dart';
 import 'package:mgramseva/utils/Locilization/application_localizations.dart';
 import 'package:mgramseva/utils/date_formats.dart';
 import 'package:mgramseva/utils/models.dart';
-import 'package:mgramseva/widgets/BaseAppBar.dart';
 import 'package:mgramseva/widgets/DrawerWrapper.dart';
 import 'package:mgramseva/widgets/HomeBack.dart';
 import 'package:mgramseva/widgets/LabelText.dart';
@@ -48,7 +47,7 @@ class ExpenseResults extends StatelessWidget {
                                   '${ApplicationLocalizations.of(context).translate(i18.expense.FOLLOWING_EXPENDITURE_BILL_MATCH)}',
                             ),
                             TextSpan(
-                                text: '\t${searchResult.label()}',
+                                text: ' ${searchResult.label()}',
                                 style: TextStyle(
                                     fontWeight: FontWeight.bold,
                                     fontStyle: FontStyle.italic,
