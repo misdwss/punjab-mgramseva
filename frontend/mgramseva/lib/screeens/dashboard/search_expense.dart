@@ -23,17 +23,23 @@ import 'package:provider/provider.dart';
 
 class SearchExpenseDashboard extends StatefulWidget {
   final DashBoardType dashBoardType;
-  const SearchExpenseDashboard({Key? key, required this.dashBoardType}) : super(key: key);
+   SearchExpenseDashboard({Key? key, required this.dashBoardType}) : super(key: key);
 
   @override
   _SearchExpenseDashboardState createState() => _SearchExpenseDashboardState();
 }
 
-class _SearchExpenseDashboardState extends State<SearchExpenseDashboard> with SingleTickerProviderStateMixin {
+class _SearchExpenseDashboardState extends State<SearchExpenseDashboard> {
 
   @override
   void initState() {
+    WidgetsBinding.instance?.addPostFrameCallback((_) => afterViewBuild());
     super.initState();
+  }
+
+  afterViewBuild(){
+    var dashBoardProvider = Provider.of<DashBoardProvider>(context, listen: false);
+    dashBoardProvider.onChangeOfMainTab(context, widget.dashBoardType);
   }
 
   @override
@@ -100,7 +106,7 @@ class _SearchExpenseDashboardState extends State<SearchExpenseDashboard> with Si
            scrollDirection: Axis.horizontal,
            child: Row(
              crossAxisAlignment: CrossAxisAlignment.start,
-               children: List.generate(tabList.length, (index) => Padding(padding: EdgeInsets.only(top: 16.0, right: 8.0, bottom: 16.0), child: TabButton(tabList[index] ?? '', isSelected: dashBoardProvider.isTabSelected(index), onPressed: () => dashBoardProvider.onChangeOfChildTab(context, index))))           ),
+               children: List.generate(tabList.length, (index) => Padding(padding: EdgeInsets.only(top: 16.0, right: 8.0, bottom: 16.0), child: TabButton(tabList[index], isSelected: dashBoardProvider.isTabSelected(index), onPressed: () => dashBoardProvider.onChangeOfChildTab(context, index))))           ),
          ),
           IndividualTab()
         ],

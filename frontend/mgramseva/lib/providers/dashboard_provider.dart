@@ -13,6 +13,7 @@ import 'package:mgramseva/repository/expenses_repo.dart';
 import 'package:mgramseva/repository/search_connection_repo.dart';
 import 'package:mgramseva/routers/Routers.dart';
 import 'package:mgramseva/screeens/dashboard/dashboard_pdf.dart';
+import 'package:mgramseva/screeens/dashboard/search_expense.dart';
 import 'package:mgramseva/services/MDMS.dart';
 import 'package:mgramseva/utils/Constants/I18KeyConstants.dart';
 import 'package:mgramseva/utils/Locilization/application_localizations.dart';
@@ -56,10 +57,14 @@ class DashBoardProvider with ChangeNotifier {
 
 
   onChangeOfMainTab(BuildContext context, DashBoardType dashBoardType) {
+    FocusScope.of(context).unfocus();
+    debounce = null;
+
     limit = 10;
     offset = 1;
     sortBy = null;
     selectedDashboardType = dashBoardType;
+    notifyListeners();
     metricInformation = null;
     searchController.clear();
     fetchData();
