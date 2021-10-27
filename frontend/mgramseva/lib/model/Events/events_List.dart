@@ -8,7 +8,7 @@ class EventsList {
   List<Events>? events;
 
   @JsonKey(name: "totalCount")
-  String? totalCount;
+  int? totalCount;
 
   EventsList();
   factory EventsList.fromJson(Map<String, dynamic> json) =>
