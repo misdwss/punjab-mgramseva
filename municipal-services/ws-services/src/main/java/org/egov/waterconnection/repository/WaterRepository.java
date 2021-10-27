@@ -75,8 +75,6 @@ public class WaterRepository {
 		StringBuilder query = new StringBuilder(queryBuilder.NEWDEMAND);
 		query.append(" and dmd.taxperiodto between " + startDate + " and " + endDate)
 		.append(" and dmd.tenantId = '").append(tenantId).append("'");
-		query.append(" and dmd.taxPeriodFrom  >= ").append(startDate).append(" and dmd.taxPeriodTo <= ").append(endDate)
-				.append(" and dmd.tenantId = '").append(tenantId).append("'");
 		return jdbcTemplate.queryForObject(query.toString(), Integer.class);
 
 	}
