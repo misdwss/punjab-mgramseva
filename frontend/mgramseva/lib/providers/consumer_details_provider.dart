@@ -220,9 +220,9 @@ class ConsumerProvider with ChangeNotifier {
           "initialMeterReading": waterconnection.previousReading,
           "propertyType": property.propertyType,
           "meterReading": waterconnection.previousReading,
-          "category": waterconnection.categoryCtrl.text,
-          "subCategory": waterconnection.subCategoryCtrl.text,
-          "aadharNumber": waterconnection.addharCtrl.text
+          "category": waterconnection.categoryCtrl.text.trim().isEmpty ? null : waterconnection.categoryCtrl.text.trim(),
+          "subCategory": waterconnection.subCategoryCtrl.text.trim().isEmpty ? null : waterconnection.subCategoryCtrl.text.trim(),
+          "aadharNumber": waterconnection.addharCtrl.text.trim().isEmpty ? null : waterconnection.addharCtrl.text.trim()
         });
       } else {
         waterconnection.additionalDetails!.locality =
