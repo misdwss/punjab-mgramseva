@@ -77,7 +77,7 @@ public class WsQueryBuilder {
 
 	public static final String COLLECTION_DATA_COUNT = "SELECT (select sum(dd.taxamount) - sum(dd.collectionamount) as pendingamount from egbs_demand_v1 d join egbs_demanddetail_v1 dd on d.id = dd.demandid group by d.consumercode, d.status having d.status = 'ACTIVE' and d.consumercode = conn.connectionno ) as pendingamount FROM eg_ws_connection conn INNER JOIN eg_ws_service wc ON wc.connection_id = conn.id";
 
-	public static final String PENDINGCOLLECTION = "SELECT SUM(DEMANDDTL.TAXAMOUNT) FROM EGBS_DEMANDDETAIL_V1 DEMANDDTL JOIN EGBS_DEMAND_V1 DEMAND ON(DEMANDDTL.DEMANDID = DEMAND.ID) JOIN EG_WS_CONNECTION CONN ON(DEMAND.CONSUMERCODE = CONN.CONNECTIONNO) WHERE DEMANDDTL.COLLECTIONAMOUNT <= 0";
+	public static final String PENDINGCOLLECTION = "SELECT SUM(DMDL.TAXAMOUNT) FROM EGBS_DEMAND_V1 DMD INNER JOIN EGBS_DEMANDDETAIL_V1 DMDL ON DMD.ID=DMDL.DEMANDID AND DMD.TENANTID=DMDL.TENANTID WHERE DMD.BUSINESSSERVICE = 'WS' ";
 
 	private static final String TENANTIDS = "SELECT distinct(tenantid) FROM eg_ws_connection conn";
 

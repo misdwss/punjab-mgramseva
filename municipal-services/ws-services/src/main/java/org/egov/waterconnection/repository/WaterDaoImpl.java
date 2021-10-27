@@ -258,8 +258,8 @@ public class WaterDaoImpl implements WaterDao {
 
 	public Integer getPendingCollectionAmount(@Valid SearchCriteria criteria) {
 		StringBuilder query = new StringBuilder(wsQueryBuilder.PENDINGCOLLECTION);
-		query.append(" demand.taxperiodto between " + criteria.getFromDate() + "and" + criteria.getToDate())
-				.append(" and demand.tenantId = '").append(criteria.getTenantId()).append("'");
+		query.append(" dmd.taxperiodto between " + criteria.getFromDate() + "and" + criteria.getToDate())
+				.append(" and dmd.tenantId = '").append(criteria.getTenantId()).append("'");
 		log.info("Active pending collection query : " + query);
 		return jdbcTemplate.queryForObject(query.toString(), Integer.class);
 
