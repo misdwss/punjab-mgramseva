@@ -262,22 +262,22 @@ public class WSConfiguration {
     
     // ES Config
 
-    @Value("${elasticsearch.host}")
+    @Value("${egov.es.host}")
     private String esHost;
 
-    @Value("${waterservice.es.index}")
+    @Value("${egov.waterservice.es.index}")
     private String esWSIndex;
 
-    @Value("${elasticsearch.search.endpoint}")
+    @Value("${egov.es.search.endpoint}")
     private String esSearchEndpoint;
 
-    @Value("${ws.search.name.fuziness}")
+    @Value("${egov.ws.search.name.fuziness}")
     private String nameFuziness;
     
-    @Value("${ws.search.mobileNo.fuziness}")
+    @Value("${egov.ws.search.mobileNo.fuziness}")
     private String MobileNoFuziness;
 
-    @Value("${ws.fuzzy.searh.is.wildcard}")
+    @Value("${egov.ws.fuzzy.searh.is.wildcard}")
     private Boolean isSearchWildcardBased;
     
 }
