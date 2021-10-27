@@ -66,13 +66,15 @@ public class WaterRepository {
 	
 	public Integer getTotalPendingCollection(String tenantId) {
 		StringBuilder query = new StringBuilder(queryBuilder.PENDINGCOLLECTION);
-		query.append(" and CONN.tenantid = '").append(tenantId).append("'");
+		query.append(" and dmd.tenantid = '").append(tenantId).append("'");
 		return jdbcTemplate.queryForObject(query.toString(), Integer.class);
 
 	}
 
 	public Integer getNewDemand(String tenantId, Long startDate, Long endDate) {
 		StringBuilder query = new StringBuilder(queryBuilder.NEWDEMAND);
+		query.append(" and dmd.taxperiodto between " + startDate + " and " + endDate)
+		.append(" and dmd.tenantId = '").append(tenantId).append("'");
 		query.append(" and dmd.taxPeriodFrom  >= ").append(startDate).append(" and dmd.taxPeriodTo <= ").append(endDate)
 				.append(" and dmd.tenantId = '").append(tenantId).append("'");
 		return jdbcTemplate.queryForObject(query.toString(), Integer.class);

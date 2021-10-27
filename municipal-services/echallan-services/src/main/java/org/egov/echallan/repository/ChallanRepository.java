@@ -235,7 +235,7 @@ public class ChallanRepository {
 
 	public Integer getTotalExpense(@Valid SearchCriteria criteria) {
 		StringBuilder query = new StringBuilder(queryBuilder.NEWEXPDEMAND);
-		query.append(" dmd.taxperiodto between " + criteria.getFromDate() + "and" + criteria.getToDate())
+		query.append(" and dmd.taxperiodto between " + criteria.getFromDate() + " and " + criteria.getToDate())
 				.append(" and dmd.tenantId = '").append(criteria.getTenantId()).append("'");
 		return jdbcTemplate.queryForObject(query.toString(), Integer.class);
 	}
@@ -251,7 +251,7 @@ public class ChallanRepository {
 
 	public Integer getPendingAmount(@Valid SearchCriteria criteria) {
 		StringBuilder query = new StringBuilder(queryBuilder.PENDINGEXPCOLL);
-		query.append(" dmd.taxperiodto between " + criteria.getFromDate() + "and" + criteria.getToDate())
+		query.append(" and dmd.taxperiodto between " + criteria.getFromDate() + " and " + criteria.getToDate())
 				.append(" and dmd.tenantId = '").append(criteria.getTenantId()).append("'");
 		log.info("Active pending collection query : " + query);
 		return jdbcTemplate.queryForObject(query.toString(), Integer.class);
