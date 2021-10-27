@@ -100,8 +100,7 @@ class _SearchExpenseDashboardState extends State<SearchExpenseDashboard> with Si
            scrollDirection: Axis.horizontal,
            child: Row(
              crossAxisAlignment: CrossAxisAlignment.start,
-             children: List.generate(tabList.length, (index) => TabButton(tabList[index] ?? '', isSelected: dashBoardProvider.isTabSelected(index), onPressed: () => dashBoardProvider.onChangeOfChildTab(context, index)))
-           ),
+               children: List.generate(tabList.length, (index) => Padding(padding: EdgeInsets.only(top: 16.0, right: 8.0, bottom: 16.0), child: TabButton(tabList[index] ?? '', isSelected: dashBoardProvider.isTabSelected(index), onPressed: () => dashBoardProvider.onChangeOfChildTab(context, index))))           ),
          ),
           IndividualTab()
         ],

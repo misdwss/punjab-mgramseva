@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mgramseva/utils/Locilization/application_localizations.dart';
 
 
 class TabButton extends StatelessWidget {
@@ -23,13 +24,12 @@ class TabButton extends StatelessWidget {
             borderRadius: BorderRadius.circular(0.0)
         ) :  BoxDecoration(
             color: (isSelected ?? false) ? Colors.white : Color.fromRGBO(244, 119, 56, 0.12),
-            shape: BoxShape.rectangle,
-            borderRadius: BorderRadius.circular(16.0)
+            borderRadius: BorderRadius.circular(18.0)
         ),
-        padding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 10.0),
-        child: Text(buttonLabel,
+        padding: EdgeInsets.symmetric(vertical: 12.0, horizontal: 12.0),
+        child: Text(ApplicationLocalizations.of(context).translate( buttonLabel),
           style: TextStyle(color: (isMainTab ?? false) && !(isSelected ?? false) ? Theme.of(context).primaryColorDark :
-          Theme.of(context).primaryColor, fontSize: 16, fontWeight: FontWeight.w700),
+          Theme.of(context).primaryColor, fontSize: (isMainTab ?? false) ? 16 : 14, fontWeight: FontWeight.w700),
           textAlign: TextAlign.center,),
       ),
     );
