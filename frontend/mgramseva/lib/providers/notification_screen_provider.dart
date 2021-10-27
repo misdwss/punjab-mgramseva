@@ -87,8 +87,9 @@ class NotificationScreenProvider with ChangeNotifier {
           ((offset + limit) - 1) > totalCount
               ? totalCount
               : (offset + limit) - 1));
-    } catch (e) {
-      print(e);
+    } catch (e, s) {
+      ErrorHandler().allExceptionsHandler(navigatorKey.currentContext!, e, s);
+      streamController.addError('error');
     }
   }
 
@@ -97,7 +98,8 @@ class NotificationScreenProvider with ChangeNotifier {
     try {
       getNotifications(response.offset, response.limit);
     } catch (e, s) {
-      ErrorHandler().allExceptionsHandler(navigatorKey.currentContext!, e);
+      ErrorHandler().allExceptionsHandler(navigatorKey.currentContext!, e, s);
+      streamController.addError('error');
     }
   }
 
