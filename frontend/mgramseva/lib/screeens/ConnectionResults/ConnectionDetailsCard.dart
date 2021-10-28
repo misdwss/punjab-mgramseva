@@ -142,13 +142,13 @@ class SearchConnectionDetailCard extends StatelessWidget {
                                     ? waterconnections
                                         .waterConnectionData![index].oldConnectionNo
                                     : ApplicationLocalizations.of(context)
-                                        .translate("NA")) : (waterconnections.waterConnection![index]
+                                        .translate(i18.common.NA)) : (waterconnections.waterConnection![index]
                                     .oldConnectionNo !=
                                     ""
                                     ? waterconnections
                                     .waterConnection![index].oldConnectionNo
                                     : ApplicationLocalizations.of(context)
-                                    .translate("NA")),
+                                    .translate(i18.common.NA)),
                                 context,
                                 constraints),
                             _getDetailtext(
@@ -161,13 +161,13 @@ class SearchConnectionDetailCard extends StatelessWidget {
                                     ? waterconnections.waterConnectionData![index]
                                         .connectionHolders!.first.name
                                     : ApplicationLocalizations.of(context)
-                                        .translate("NA") ) : (waterconnections.waterConnection![index]
+                                        .translate(i18.common.NA) ) : (waterconnections.waterConnection![index]
                                     .connectionHolders !=
                                     null
                                     ? waterconnections.waterConnection![index]
                                     .connectionHolders!.first.name
                                     : ApplicationLocalizations.of(context)
-                                    .translate("NA")),
+                                    .translate(i18.common.NA)),
                                 context,
                                 constraints),
                             _getDetailtext(
@@ -180,13 +180,13 @@ class SearchConnectionDetailCard extends StatelessWidget {
                                     ? '+91 - ' +
                                         '${waterconnections.waterConnectionData![index].connectionHolders!.first.mobileNumber}'
                                     : ApplicationLocalizations.of(context)
-                                        .translate("NA")) : (waterconnections.waterConnection![index]
+                                        .translate(i18.common.NA)) : (waterconnections.waterConnection![index]
                                     .connectionHolders !=
                                     null
                                     ? '+91 - ' +
                                     '${waterconnections.waterConnection![index].connectionHolders!.first.mobileNumber}'
                                     : ApplicationLocalizations.of(context)
-                                    .translate("NA")),
+                                    .translate(i18.common.NA)),
                                 context,
                                 constraints),
                             _getDetailtext(
