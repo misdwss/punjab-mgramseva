@@ -412,6 +412,7 @@ public class WsQueryBuilder {
 			preparedStmtList.add(offset);
 			preparedStmtList.add(limit + offset);
 		}
+		System.out.println("Final Query ::" + finalQuery);
 		return finalQuery;
 	}
 	
