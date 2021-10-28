@@ -184,6 +184,9 @@ class Common {
   String get NOTE => 'NOTE';
   String get MONTH => 'MONTH';
   String get YTD => 'YTD';
+
+  String get INVALID_SELECTED_INPUT => 'INVALID_SELECTED_INPUT';
+  String get NA => 'NA';
 }
 
 class Password {

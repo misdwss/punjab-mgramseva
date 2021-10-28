@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mgramseva/providers/language.dart';
+import 'package:mgramseva/utils/Constants/I18KeyConstants.dart';
 import 'package:mgramseva/utils/Locilization/application_localizations.dart';
 import 'package:provider/provider.dart';
 
@@ -145,7 +146,12 @@ class _SearchSelectFieldState extends State<SearchSelectField> {
           onChanged: (value) => filerobjects(value),
           focusNode: this._focusNode,
           validator: (value) {
-            if (widget.options
+            if((value ?? '').trim().isEmpty && !widget.isRequired){
+              return null;
+            }else if(value!.isEmpty && widget.isRequired){
+              return ApplicationLocalizations.of(context).translate(
+                  widget.requiredMessage ?? '${widget.labelText}_REQUIRED');
+            } else if (widget.options
                 .where((element) =>
                     ApplicationLocalizations.of(context)
                         .translate((element.child as Text).data.toString())
@@ -154,9 +160,9 @@ class _SearchSelectFieldState extends State<SearchSelectField> {
                 .toList()
                 .isEmpty) {
               return ApplicationLocalizations.of(context).translate(
-                  widget.requiredMessage ?? '${widget.labelText}_REQUIRED');
+                  widget.requiredMessage ?? '${i18.common.INVALID_SELECTED_INPUT}');
             }
-            if (value!.trim().isEmpty && widget.isRequired) {
+            if (value.trim().isEmpty && widget.isRequired) {
               return ApplicationLocalizations.of(context).translate(
                   widget.requiredMessage ?? '${widget.labelText}_REQUIRED');
             }

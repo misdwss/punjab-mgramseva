@@ -126,11 +126,11 @@ class HouseConnectionDetailCard extends StatelessWidget {
                               child: Wrap(
                                 children: [
                                   _getLabeltext(
-                                      i18.consumer.CONSUMER_CATEGORY, waterconnection?.additionalDetails?.category ?? '-',
+                                      i18.consumer.CONSUMER_CATEGORY, waterconnection?.additionalDetails?.category ?? i18.common.NA,
                                       context,
                                       ),
                                   _getLabeltext(
-                                      i18.consumer.CONSUMER_SUBCATEGORY,  waterconnection?.additionalDetails?.subCategory ?? '-',
+                                      i18.consumer.CONSUMER_SUBCATEGORY,  waterconnection?.additionalDetails?.subCategory ?? i18.common.NA,
                                       context,
                                       )
                                 ],
