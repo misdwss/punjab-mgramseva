@@ -101,7 +101,11 @@ public class WsQueryBuilder {
 		    +  LEFT_OUTER_JOIN_STRING
 		    + "eg_ws_connectionholder connectionholder ON connectionholder.connectionid = conn.id"
 			+  LEFT_OUTER_JOIN_STRING
-			+ "eg_ws_roadcuttinginfo roadcuttingInfo ON roadcuttingInfo.wsid = conn.id" ;
+			+ "eg_ws_roadcuttinginfo roadcuttingInfo ON roadcuttingInfo.wsid = conn.id" 
+			+  LEFT_OUTER_JOIN_STRING
+			+  "egbs_demand_v1 dmd ON dmd.consumercode = conn.connectionno" ;
+	
+	
 
 	/**
 	 * 
@@ -228,15 +232,10 @@ public class WsQueryBuilder {
 			query.append(" conn.applicationStatus = ? ");
 			preparedStatement.add(criteria.getApplicationStatus());
 		}
-		if (criteria.getFromDate() != null) {
+		if (criteria.getFromDate() != null && criteria.getToDate() != null) {
 			addClauseIfRequired(preparedStatement, query);
-			query.append("  conn.createdTime >= ? ");
+			query.append("  dmd.taxperiodto between " + criteria.getFromDate() +  " AND " +criteria.getToDate());
 			preparedStatement.add(criteria.getFromDate());
-		}
-		if (criteria.getToDate() != null) {
-			addClauseIfRequired(preparedStatement, query);
-			query.append("  conn.createdTime <= ? ");
-			preparedStatement.add(criteria.getToDate());
 		}
 		if(!StringUtils.isEmpty(criteria.getApplicationType())) {
 			addClauseIfRequired(preparedStatement, query);
