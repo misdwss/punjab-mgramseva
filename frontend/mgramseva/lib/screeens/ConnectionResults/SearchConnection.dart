@@ -74,7 +74,7 @@ class _SearchConsumerConnectionState extends State<SearchConsumerConnection> {
                                     .searchconnection.mobileCtrl,
                                 prefixText: '+91 - ',
                                 textInputType: TextInputType.number,
-                                maxLength: 10,
+                                /*maxLength: 10,
                                 pattern: (searchConnectionProvider
                                                 .searchconnection
                                                 .controllers[0] ==
@@ -86,7 +86,7 @@ class _SearchConsumerConnectionState extends State<SearchConsumerConnection> {
                                     ? (r'^(?:[+0]9)?[0-9]{10}$')
                                     : '',
                                 message: i18.validators
-                                    .MOBILE_NUMBER_SHOULD_BE_10_DIGIT,
+                                    .MOBILE_NUMBER_SHOULD_BE_10_DIGIT,*/
                                 inputFormatter: [
                                   FilteringTextInputFormatter.allow(
                                       RegExp("[0-9]"))
@@ -191,7 +191,9 @@ class _SearchConsumerConnectionState extends State<SearchConsumerConnection> {
       bottomNavigationBar: BottomButtonBar(
           i18.searchWaterConnection.SEARCH_CONNECTION_BUTTON,
           () => searchConnectionProvider.validatesearchConnectionDetails(
-              context, widget.arguments)),
+              context, widget.arguments, (searchConnectionProvider.searchconnection.controllers[1] == false) ||
+              (searchConnectionProvider.searchconnection.controllers[0] == false)
+              ? true : false)),
     );
   }
 }
