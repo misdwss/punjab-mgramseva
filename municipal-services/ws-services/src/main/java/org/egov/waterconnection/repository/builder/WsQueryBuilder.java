@@ -235,7 +235,6 @@ public class WsQueryBuilder {
 		if (criteria.getFromDate() != null && criteria.getToDate() != null) {
 			addClauseIfRequired(preparedStatement, query);
 			query.append("  dmd.taxperiodto between " + criteria.getFromDate() +  " AND " +criteria.getToDate());
-			preparedStatement.add(criteria.getFromDate());
 		}
 		if(!StringUtils.isEmpty(criteria.getApplicationType())) {
 			addClauseIfRequired(preparedStatement, query);
