@@ -13,6 +13,7 @@ import 'package:mgramseva/repository/expenses_repo.dart';
 import 'package:mgramseva/repository/search_connection_repo.dart';
 import 'package:mgramseva/routers/Routers.dart';
 import 'package:mgramseva/screeens/dashboard/dashboard_pdf.dart';
+import 'package:mgramseva/screeens/dashboard/search_expense.dart';
 import 'package:mgramseva/services/MDMS.dart';
 import 'package:mgramseva/utils/Constants/I18KeyConstants.dart';
 import 'package:mgramseva/utils/Locilization/application_localizations.dart';
@@ -55,6 +56,65 @@ class DashBoardProvider with ChangeNotifier {
   }
 
 
+  onChangeOfMainTab(BuildContext context, DashBoardType dashBoardType) {
+    FocusScope.of(context).unfocus();
+    debounce = null;
+
+    limit = 10;
+    offset = 1;
+    sortBy = null;
+    selectedDashboardType = dashBoardType;
+    notifyListeners();
+    metricInformation = null;
+    searchController.clear();
+    fetchData();
+    fetchDashboardMetricInformation(context, dashBoardType == DashBoardType.Expenditure ? true : false);
+    selectedTab = 'all';
+    if(dashBoardType == DashBoardType.Expenditure) {
+        sortBy = SortBy('challanno', false);
+        expenseDashboardDetails?.expenseDetailList = <ExpensesDetailsModel>[];
+        expenseDashboardDetails?.totalCount = null;
+    }else{
+      waterConnectionsDetails?.waterConnection = <WaterConnection>[];
+      waterConnectionsDetails?.totalCount = null;
+    }
+  }
+
+  onChangeOfChildTab(BuildContext context, int index){
+    // var dashBoardProvider = Provider.of<DashBoardProvider>(context, listen: false)
+      limit = 10;
+      offset = 1;
+      sortBy = null;
+    if(selectedDashboardType ==  DashBoardType.Expenditure){
+
+
+        sortBy = SortBy('challanno', false);
+        expenseDashboardDetails?.expenseDetailList = <ExpensesDetailsModel>[];
+        expenseDashboardDetails?.totalCount = null;
+
+      if(index == 0) {
+        selectedTab = 'all';
+      }else if(index == 1){
+        selectedTab = 'paid';
+      }else{
+        selectedTab = 'pending';
+      }
+
+      fetchExpenseDashBoardDetails(
+          context, limit, offset, true);
+    }else{
+
+        waterConnectionsDetails?.waterConnection = <WaterConnection>[];
+        waterConnectionsDetails?.totalCount = null;
+
+      if(index == 0) {
+        selectedTab = 'all';
+      }else {
+        selectedTab = propertyTaxList[index].code ?? '';
+      }
+      fetchCollectionsDashBoardDetails(context, limit, offset, true);
+    }
+  }
 
   fetchData() async {
     var commonProvider = Provider.of<CommonProvider>(navigatorKey.currentContext!, listen: false);
@@ -76,6 +136,7 @@ class DashBoardProvider with ChangeNotifier {
       await Future.delayed(Duration(seconds: 1));
     }
     initialStreamController.add([]);
+    onChangeOfChildTab(navigatorKey.currentContext!, 0);
   }
 
   Future<void> fetchExpenseDashBoardDetails(
@@ -123,7 +184,7 @@ class DashBoardProvider with ChangeNotifier {
     }
 
     if(selectedTab != 'all'){
-      query['isBillPaid'] = ((selectedTab == 'ACTIVE') ? 'false' : 'true');
+      query['isBillPaid'] = ((selectedTab == 'pending') ? 'false' : 'true');
     };
 
     query
@@ -292,23 +353,30 @@ class DashBoardProvider with ChangeNotifier {
     }
   }
 
-  List<Tab> getExpenseTabList(
+  List<String> getExpenseTabList(
       BuildContext context) {
     var list = [i18.dashboard.ALL, i18.dashboard.PAID, i18.dashboard.PENDING];
     return List.generate(
         list.length,
-            (index) => Tab(
-            text:
-            '${ApplicationLocalizations.of(context).translate(list[index])} (${getExpenseCount(index)})'));
+            (index) =>
+            '${ApplicationLocalizations.of(context).translate(list[index])} (${getExpenseCount(index)})');
   }
 
-  List<Tab> getCollectionsTabList(
+  List<String> getCollectionsTabList(
       BuildContext context) {
     return List.generate(
         propertyTaxList.length,
-            (index) => Tab(
-            text:
-            '${ApplicationLocalizations.of(context).translate(propertyTaxList[index].code ?? '')} (${getCollectionsCount(index)})'));
+            (index) => '${ApplicationLocalizations.of(context).translate(propertyTaxList[index].code ?? '')} (${getCollectionsCount(index)})');
+  }
+
+  bool isTabSelected(int index){
+    if(selectedTab == 'all' && index == 0) return true;
+    if(selectedDashboardType == DashBoardType.collections){
+      return selectedTab == propertyTaxList[index].code;
+    }else{
+      if((selectedTab == 'pending' && index == 2) || (selectedTab == 'paid' && index == 1)) return true;
+    }
+    return false;
   }
 
   List<TableHeader> get expenseHeaderList => [
@@ -375,8 +443,7 @@ class DashBoardProvider with ChangeNotifier {
         callBack: onExpenseSort),
   ];
 
-  List<TableDataRow> getExpenseData(
-      int index, List<ExpensesDetailsModel> list) {
+  List<TableDataRow> getExpenseData(List<ExpensesDetailsModel> list) {
     return list.map((e) => getExpenseRow(e)).toList();
   }
 
@@ -395,7 +462,7 @@ class DashBoardProvider with ChangeNotifier {
     }
   }
 
-  List<TableDataRow> getCollectionsData(int index, List<WaterConnection> list) {
+  List<TableDataRow> getCollectionsData(List<WaterConnection> list) {
     return list.map((e) => getCollectionRow(e)).toList();
   }
 

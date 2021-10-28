@@ -30,7 +30,6 @@ class PdfUtils {
               pw.Wrap(
                   crossAxisAlignment: pw.WrapCrossAlignment.center,
                   children : [
-                    pw.Icon(pw.IconData(0xe800), color: PdfColor.fromHex('#FFFFFF'), font: icons),
                     pw.SizedBox(width: 2),
                     pw.Image(image,
                         width: 90),
