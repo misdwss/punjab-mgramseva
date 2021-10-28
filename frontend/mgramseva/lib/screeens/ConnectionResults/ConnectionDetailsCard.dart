@@ -12,9 +12,9 @@ import 'package:provider/provider.dart';
 class SearchConnectionDetailCard extends StatelessWidget {
   final WaterConnections waterconnections;
   final Map arguments;
-  final bool? isNameSearch;
+  final bool? isPhoneNameSearch;
   SearchConnectionDetailCard(this.waterconnections, this.arguments,
-      {this.isNameSearch});
+      {this.isPhoneNameSearch});
   _getDetailtext(label, value, context, constraints) {
     return constraints.maxWidth > 720
         ? (Row(
@@ -66,7 +66,7 @@ class SearchConnectionDetailCard extends StatelessWidget {
       return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Padding(
             padding: EdgeInsets.only(left: 15),
-            child: isNameSearch == true ? Text(
+            child: isPhoneNameSearch == true ? Text(
               waterconnections.waterConnectionData!.length.toString() != null
                   ? waterconnections.waterConnectionData!.length.toString() +
                       " " +
@@ -116,7 +116,7 @@ class SearchConnectionDetailCard extends StatelessWidget {
         Expanded(
           child: ListView.builder(
               padding: const EdgeInsets.all(0),
-              itemCount: isNameSearch == true ? waterconnections.waterConnectionData!.length : waterconnections.waterConnection!.length,
+              itemCount: isPhoneNameSearch == true ? waterconnections.waterConnectionData!.length : waterconnections.waterConnection!.length,
               itemBuilder: (BuildContext context, int index) {
                 return Card(
                     child: Padding(
@@ -128,7 +128,7 @@ class SearchConnectionDetailCard extends StatelessWidget {
                                 ApplicationLocalizations.of(context).translate(
                                     i18.searchWaterConnection
                                         .NEW_CONNECTION_ID),
-                                isNameSearch == true ? waterconnections
+                                isPhoneNameSearch == true ? waterconnections
                                     .waterConnectionData![index].connectionNo : waterconnections.waterConnection![index].connectionNo,
                                 context,
                                 constraints),
@@ -136,7 +136,7 @@ class SearchConnectionDetailCard extends StatelessWidget {
                                 ApplicationLocalizations.of(context).translate(
                                     i18.searchWaterConnection
                                         .OLD_CONNECTION_ID),
-                                isNameSearch == true ? (waterconnections.waterConnectionData![index]
+                                isPhoneNameSearch == true ? (waterconnections.waterConnectionData![index]
                                             .oldConnectionNo !=
                                         ""
                                     ? waterconnections
@@ -155,7 +155,7 @@ class SearchConnectionDetailCard extends StatelessWidget {
                                 ApplicationLocalizations.of(context).translate(
                                     i18.searchWaterConnection
                                         .RESULTS_CONSUMER_NAME),
-                                isNameSearch == true ? (waterconnections.waterConnectionData![index]
+                                isPhoneNameSearch == true ? (waterconnections.waterConnectionData![index]
                                             .connectionHolders !=
                                         null
                                     ? waterconnections.waterConnectionData![index]
@@ -174,7 +174,7 @@ class SearchConnectionDetailCard extends StatelessWidget {
                                 ApplicationLocalizations.of(context).translate(
                                     i18.searchWaterConnection
                                         .RESULTS_PHONE_NUM),
-                                isNameSearch == true ? (waterconnections.waterConnectionData![index]
+                                isPhoneNameSearch == true ? (waterconnections.waterConnectionData![index]
                                             .connectionHolders !=
                                         null
                                     ? '+91 - ' +
@@ -192,7 +192,7 @@ class SearchConnectionDetailCard extends StatelessWidget {
                             _getDetailtext(
                                 ApplicationLocalizations.of(context).translate(
                                     i18.searchWaterConnection.RESULTS_ADDRESS),
-                                isNameSearch == true ? ((waterconnections.waterConnectionData![index]
+                                isPhoneNameSearch == true ? ((waterconnections.waterConnectionData![index]
                                                 .additionalDetails!.doorNo !=
                                             null
                                         ? waterconnections
@@ -284,7 +284,7 @@ class SearchConnectionDetailCard extends StatelessWidget {
                                                 ? Routes.HOUSEHOLD_DETAILS
                                                 : Routes.CONSUMER_UPDATE),
                                         arguments: {
-                                          "waterconnections": isNameSearch == true ? waterconnections
+                                          "waterconnections": isPhoneNameSearch == true ? waterconnections
                                               .waterConnectionData![index] : waterconnections
                                               .waterConnection![index],
                                           "mode": arguments['Mode']
