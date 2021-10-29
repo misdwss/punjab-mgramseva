@@ -90,8 +90,7 @@ public class WsQueryBuilder {
 			+ "eg_ws_applicationdocument document ON document.wsid = conn.id" + LEFT_OUTER_JOIN_STRING
 			+ "eg_ws_plumberinfo plumber ON plumber.wsid = conn.id" + LEFT_OUTER_JOIN_STRING
 			+ "eg_ws_connectionholder connectionholder ON connectionholder.connectionid = conn.id"
-			+ LEFT_OUTER_JOIN_STRING + "eg_ws_roadcuttinginfo roadcuttingInfo ON roadcuttingInfo.wsid = conn.id"
-			+ LEFT_OUTER_JOIN_STRING + "egbs_demand_v1 dmd ON dmd.consumercode = conn.connectionno";
+			+ LEFT_OUTER_JOIN_STRING + "eg_ws_roadcuttinginfo roadcuttingInfo ON roadcuttingInfo.wsid = conn.id";
 
 	/**
 	 * 
@@ -325,101 +324,6 @@ public class WsQueryBuilder {
 			query.append(" conn.locality = ? ");
 			preparedStatement.add(criteria.getLocality());
 		}
-		return query;
-	}
-
-	public StringBuilder applyFiltersForPropertyCount(StringBuilder query, List<Object> preparedStatement,
-			SearchCriteria criteria) {
-		if (!StringUtils.isEmpty(criteria.getTenantId())) {
-			addClauseIfRequired(preparedStatement, query);
-			if (criteria.getTenantId().equalsIgnoreCase(config.getStateLevelTenantId())) {
-				query.append(" conn.tenantid LIKE ? ");
-				preparedStatement.add('%' + criteria.getTenantId() + '%');
-			} else {
-				query.append(" conn.tenantid = ? ");
-				preparedStatement.add(criteria.getTenantId());
-			}
-		}
-
-		if (!CollectionUtils.isEmpty(criteria.getIds())) {
-			addClauseIfRequired(preparedStatement, query);
-			query.append(" conn.id in (").append(createQuery(criteria.getIds())).append(" )");
-			addToPreparedStatement(preparedStatement, criteria.getIds());
-		}
-		if (!StringUtils.isEmpty(criteria.getOldConnectionNumber())) {
-			addClauseIfRequired(preparedStatement, query);
-			query.append(" conn.oldconnectionno = ? ");
-			preparedStatement.add(criteria.getOldConnectionNumber());
-		}
-
-		if (!StringUtils.isEmpty(criteria.getConnectionNumber())) {
-			addClauseIfRequired(preparedStatement, query);
-			query.append(" conn.connectionno ~*  ? ");
-			preparedStatement.add(criteria.getConnectionNumber());
-		}
-
-		if (!StringUtils.isEmpty(criteria.getStatus())) {
-			addClauseIfRequired(preparedStatement, query);
-			query.append(" conn.status = ? ");
-			preparedStatement.add(criteria.getStatus());
-		}
-		if (!StringUtils.isEmpty(criteria.getApplicationNumber())) {
-			addClauseIfRequired(preparedStatement, query);
-			query.append(" conn.applicationno = ? ");
-			preparedStatement.add(criteria.getApplicationNumber());
-		}
-		if (!StringUtils.isEmpty(criteria.getApplicationStatus())) {
-			addClauseIfRequired(preparedStatement, query);
-			query.append(" conn.applicationStatus = ? ");
-			preparedStatement.add(criteria.getApplicationStatus());
-		}
-		if (criteria.getFromDate() != null) {
-			addClauseIfRequired(preparedStatement, query);
-			query.append("  conn.createdTime >= ? ");
-			preparedStatement.add(criteria.getFromDate());
-		}
-		if (criteria.getToDate() != null) {
-			addClauseIfRequired(preparedStatement, query);
-			query.append("  conn.createdTime <= ? ");
-			preparedStatement.add(criteria.getToDate());
-		}
-		if (!StringUtils.isEmpty(criteria.getApplicationType())) {
-			addClauseIfRequired(preparedStatement, query);
-			query.append(" conn.applicationType = ? ");
-			preparedStatement.add(criteria.getApplicationType());
-		}
-		if (!StringUtils.isEmpty(criteria.getPropertyType())) {
-			addClauseIfRequired(preparedStatement, query);
-			query.append(" conn.additionaldetails->>'propertyType' = ? ");
-			preparedStatement.add(criteria.getPropertyType());
-		}
-		if (!StringUtils.isEmpty(criteria.getSearchType())
-				&& criteria.getSearchType().equalsIgnoreCase(SEARCH_TYPE_CONNECTION)) {
-			addClauseIfRequired(preparedStatement, query);
-			query.append(" conn.isoldapplication = ? ");
-			preparedStatement.add(Boolean.FALSE);
-		}
-		if (!StringUtils.isEmpty(criteria.getLocality())) {
-			addClauseIfRequired(preparedStatement, query);
-			query.append(" conn.locality = ? ");
-			preparedStatement.add(criteria.getLocality());
-		}
-		if ((criteria.getIsCollectionCount() && criteria.getIsBillPaid() != null)
-				&& criteria.getIsCollectionDataCount() == false) {
-			StringBuilder paidOrPendingQuery = new StringBuilder("with td as (");
-			paidOrPendingQuery.append(query).append("{orderby}").append(") ")
-					.append("select count(*) OVER() AS full_count, * from td where ");
-
-			if (criteria.getIsBillPaid()) {
-				paidOrPendingQuery.append(" pendingamount <= ? ").append(" or pendingamount is null");
-				preparedStatement.add(0);
-			} else {
-				paidOrPendingQuery.append(" pendingamount > ? ");
-				preparedStatement.add(0);
-			}
-			query = paidOrPendingQuery.append("{pagination}");
-		}
-
 		return query;
 	}
 
