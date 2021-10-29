@@ -363,7 +363,7 @@ public class WsQueryBuilder {
 		Integer offset = config.getDefaultOffset();
 		String finalQuery = null;
 
-		if (criteria.getIsBillPaid() != null && criteria.getIsCollectionCount()) {
+		if(criteria.getIsBillPaid() != null && (criteria.getIsCollectionCount() != null && criteria.getIsCollectionCount())) {
 			finalQuery = query;
 		} else {
 			finalQuery = PAGINATION_WRAPPER.replace("{}", query);
