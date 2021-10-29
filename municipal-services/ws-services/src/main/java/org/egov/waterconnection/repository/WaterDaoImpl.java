@@ -101,7 +101,9 @@ public class WaterDaoImpl implements WaterDao {
 		    if(criteria.getIsBillPaid() != null)
 		    	flag = criteria.getIsBillPaid();
 		}
-
+		
+		log.info("in TEST 1-------------");
+		
 		Boolean isOpenSearch = isSearchOpen(requestInfo.getUserInfo());
 		WaterConnectionResponse connectionResponse = new WaterConnectionResponse();
 		if (isOpenSearch) {
@@ -110,7 +112,11 @@ public class WaterDaoImpl implements WaterDao {
 					.totalCount(openWaterRowMapper.getFull_count()).build();
 		} else {
 
+			log.info("in TEST 2---------------");
+			
 			waterConnectionList = jdbcTemplate.query(query, preparedStatement.toArray(), waterRowMapper);
+			
+			log.info("wcList----------: "+waterConnectionList);
 			Map<String, Object> counter = new HashMap();
 			if (criteria.getIsPropertyCount()!= null && criteria.getIsPropertyCount()) {
 				List<Object> preparedStmnt = new ArrayList<>();
@@ -128,6 +134,7 @@ public class WaterDaoImpl implements WaterDao {
 			collectionDataCount =  getCollectionDataCounter(countData, flag);
 			connectionResponse = WaterConnectionResponse.builder().waterConnection(waterConnectionList)
 					.totalCount(waterRowMapper.getFull_count()).collectionDataCount(collectionDataCount).propertyCount(counter).build();
+			log.info("finish-----------");
 		}
 		return connectionResponse;
 	}
