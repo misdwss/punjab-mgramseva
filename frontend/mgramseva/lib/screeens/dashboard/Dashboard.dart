@@ -116,6 +116,7 @@ class _Dashboard extends State<Dashboard> with SingleTickerProviderStateMixin {
                       height: (dashBoardProvider.selectedMonth.dateType != DateType.MONTH)  ?  constraints.maxHeight : constraints.maxHeight - 50,
                       child: CustomScrollView(
                           controller : dashBoardProvider.scrollController,
+                          scrollBehavior:  ScrollConfiguration.of(context).copyWith(scrollbars: false),
                           slivers: [
                             SliverList(
                                 delegate: SliverChildListDelegate([
