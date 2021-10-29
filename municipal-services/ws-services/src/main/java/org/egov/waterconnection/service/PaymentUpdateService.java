@@ -204,27 +204,22 @@ public class PaymentUpdateService {
 					log.info("payment details--------");
 					SearchCriteria criteria = new SearchCriteria();
 					if (WCConstants.WATER_SERVICE_BUSINESS_ID.equals(paymentDetail.getBusinessService())) {
-						log.info("in if -----------");
 						criteria = SearchCriteria.builder()
 								.tenantId(paymentRequest.getPayment().getTenantId())
 								.connectionNumber(paymentDetail.getBill().getConsumerCode()).build();
 					} else {
-						log.info("in else----------");
 						criteria = SearchCriteria.builder()
 								.tenantId(paymentRequest.getPayment().getTenantId())
 								.applicationNumber(paymentDetail.getBill().getConsumerCode()).build();
 					}
-					log.info("after if else------");
 					List<WaterConnection> waterConnections;
 					WaterConnectionResponse response = waterService.search(criteria,
 							paymentRequest.getRequestInfo());
-					log.info("response---------: "+response);
 					waterConnections = response.getWaterConnection();
 					if (CollectionUtils.isEmpty(waterConnections)) {
 						throw new CustomException("INVALID_RECEIPT",
 								"No waterConnection found for the consumerCode " + paymentDetail.getBill().getConsumerCode());
 					}
-					log.info("after if else 1 -----");
 					Collections.sort(waterConnections, Comparator.comparing(wc -> wc.getAuditDetails().getLastModifiedTime()));
 					long count = waterConnections.stream().count();
 					Optional<WaterConnection> connections = Optional.of(waterConnections.stream().skip(count - 1).findFirst().get());
@@ -232,7 +227,6 @@ public class PaymentUpdateService {
 							.waterConnection(connections.get()).requestInfo(paymentRequest.getRequestInfo())
 							.build();
 					sendPaymentNotification(waterConnectionRequest, paymentDetail,paymentRequest.getPayment().getId());
-					log.info("after if else 1-----");
 				}
 			}
 		} catch (Exception ex) {

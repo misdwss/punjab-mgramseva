@@ -80,34 +80,27 @@ public class WaterDaoImpl implements WaterDao {
 	@Override
 	public WaterConnectionResponse getWaterConnectionList(SearchCriteria criteria, RequestInfo requestInfo) {
 		
-		log.info("in getWaterConnectionList() -----------");
-		
 		List<WaterConnection> waterConnectionList = new ArrayList<>();
 		List<Object> preparedStatement = new ArrayList<>();
 		Map<String, Long> collectionDataCount = null;
 		List<Map<String, Object>> countData = null;
 		Boolean flag = null;
 		
-		log.info("before query------: "+criteria);
-		String query = wsQueryBuilder.getSearchQueryString(criteria, preparedStatement, requestInfo);
 
-		log.info("after query-----------");
-		
+		String query = wsQueryBuilder.getSearchQueryString(criteria, preparedStatement, requestInfo);
 		if (query == null)
 			return null;
 		
-//		if(criteria.getIsCollectionCount()) {
-//			List<Object> preparedStmntforCollectionDataCount = new ArrayList<>();
-//			StringBuilder collectionDataCountQuery = new StringBuilder(wsQueryBuilder.COLLECTION_DATA_COUNT);
-//			criteria.setIsCollectionDataCount(Boolean.TRUE);
-//			collectionDataCountQuery = wsQueryBuilder.applyFilters(collectionDataCountQuery, preparedStmntforCollectionDataCount, criteria);
-//			collectionDataCountQuery.append(" ORDER BY wc.appCreatedDate  DESC");
-//		    countData = jdbcTemplate.queryForList(collectionDataCountQuery.toString(), preparedStmntforCollectionDataCount.toArray());
-//		    if(criteria.getIsBillPaid() != null)
-//		    	flag = criteria.getIsBillPaid();
-//		}
-		
-		log.info("in TEST 1-------------");
+		if(criteria.getIsCollectionCount() != null && criteria.getIsCollectionCount()) {
+			List<Object> preparedStmntforCollectionDataCount = new ArrayList<>();
+			StringBuilder collectionDataCountQuery = new StringBuilder(wsQueryBuilder.COLLECTION_DATA_COUNT);
+			criteria.setIsCollectionDataCount(Boolean.TRUE);
+			collectionDataCountQuery = wsQueryBuilder.applyFilters(collectionDataCountQuery, preparedStmntforCollectionDataCount, criteria);
+			collectionDataCountQuery.append(" ORDER BY wc.appCreatedDate  DESC");
+		    countData = jdbcTemplate.queryForList(collectionDataCountQuery.toString(), preparedStmntforCollectionDataCount.toArray());
+		    if(criteria.getIsBillPaid() != null)
+		    	flag = criteria.getIsBillPaid();
+		}
 		
 		Boolean isOpenSearch = isSearchOpen(requestInfo.getUserInfo());
 		WaterConnectionResponse connectionResponse = new WaterConnectionResponse();
@@ -116,12 +109,7 @@ public class WaterDaoImpl implements WaterDao {
 			connectionResponse = WaterConnectionResponse.builder().waterConnection(waterConnectionList)
 					.totalCount(openWaterRowMapper.getFull_count()).build();
 		} else {
-
-			log.info("in TEST 2---------------");
-			
 			waterConnectionList = jdbcTemplate.query(query, preparedStatement.toArray(), waterRowMapper);
-			
-			log.info("wcList----------: "+waterConnectionList);
 			Map<String, Object> counter = new HashMap();
 			if (criteria.getIsPropertyCount()!= null && criteria.getIsPropertyCount()) {
 				List<Object> preparedStmnt = new ArrayList<>();
@@ -139,7 +127,6 @@ public class WaterDaoImpl implements WaterDao {
 			collectionDataCount =  getCollectionDataCounter(countData, flag);
 			connectionResponse = WaterConnectionResponse.builder().waterConnection(waterConnectionList)
 					.totalCount(waterRowMapper.getFull_count()).collectionDataCount(collectionDataCount).propertyCount(counter).build();
-			log.info("finish-----------");
 		}
 		return connectionResponse;
 	}

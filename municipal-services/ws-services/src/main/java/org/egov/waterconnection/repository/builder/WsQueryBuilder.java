@@ -118,13 +118,9 @@ public class WsQueryBuilder {
 	 */
 	public String getSearchQueryString(SearchCriteria criteria, List<Object> preparedStatement,
 			RequestInfo requestInfo) {
-		log.info("aaaaaaaaaaaa---------: "+criteria);
-		
 		if (criteria.isEmpty())
 				return null;
 		StringBuilder query = new StringBuilder(WATER_SEARCH_QUERY);
-		
-		log.info("AAAAAAAAa-------------");
 		
 		boolean propertyIdsPresent = false;
 
@@ -132,7 +128,6 @@ public class WsQueryBuilder {
 		String propertyIdQuery = " (conn.property_id in (";
 
 		if (!StringUtils.isEmpty(criteria.getMobileNumber()) || !StringUtils.isEmpty(criteria.getPropertyId())) {
-			log.info("bbbb- if -----------");
 			List<Property> propertyList = waterServicesUtil.propertySearchOnCriteria(criteria, requestInfo);
 			propertyList.forEach(property -> propertyIds.add(property.getPropertyId()));
 			criteria.setPropertyIds(propertyIds);
@@ -148,7 +143,6 @@ public class WsQueryBuilder {
 		
 		Set<String> uuids = null;
 		if(!StringUtils.isEmpty(criteria.getMobileNumber()) || !StringUtils.isEmpty(criteria.getName())) {
-			log.info("ccccccccco - if----------------");
 			uuids = userService.getUUIDForUsers(criteria.getMobileNumber(), criteria.getName(), criteria.getTenantId(), requestInfo);
 			boolean userIdsPresent = false;
 			criteria.setUserIds(uuids);
@@ -186,16 +180,12 @@ public class WsQueryBuilder {
 				preparedStatement.add(criteria.getPropertyId());
 			}
 		}
-		log.info("applying filter-------------------");
 		query = applyFilters(query, preparedStatement, criteria);
-		log.info("applying pagination---------------");
 //		query.append(ORDER_BY_CLAUSE);
 		return addPaginationWrapper(query.toString(), preparedStatement, criteria);
 	}
 	
 	public StringBuilder applyFilters(StringBuilder query, List<Object> preparedStatement, SearchCriteria criteria) {
-		
-		log.info("in filter 1------------");
 		
 		if (!StringUtils.isEmpty(criteria.getTenantId())) {
 			addClauseIfRequired(preparedStatement, query);
@@ -272,23 +262,22 @@ public class WsQueryBuilder {
 			query.append(" conn.locality = ? ");
 			preparedStatement.add(criteria.getLocality());
 		}
-		log.info("in filter 2 ------------");
-//		if((criteria.getIsCollectionCount() && criteria.getIsBillPaid() != null) && criteria.getIsCollectionDataCount() == false) {
-//			StringBuilder paidOrPendingQuery = new StringBuilder("with td as (");
-//			paidOrPendingQuery.append(query).append("{orderby}").append(") ").append("select count(*) OVER() AS full_count, * from td where ");
-//		
-//			if(criteria.getIsBillPaid()) {
-//				paidOrPendingQuery.append(" pendingamount <= ? ").append(" or pendingamount is null");
-//				preparedStatement.add(0);
-//			}else {
-//				paidOrPendingQuery.append(" pendingamount > ? ");
-//				preparedStatement.add(0);
-//			}
-//			query = paidOrPendingQuery.append("{pagination}");
-//		}
 		
-		log.info("in filter 3------------");
-		
+		if(criteria.getIsCollectionCount() != null && criteria.getIsCollectionDataCount() != null) {
+			if((criteria.getIsCollectionCount() && criteria.getIsBillPaid() != null) && criteria.getIsCollectionDataCount() == false) {
+				StringBuilder paidOrPendingQuery = new StringBuilder("with td as (");
+				paidOrPendingQuery.append(query).append("{orderby}").append(") ").append("select count(*) OVER() AS full_count, * from td where ");
+			
+				if(criteria.getIsBillPaid()) {
+					paidOrPendingQuery.append(" pendingamount <= ? ").append(" or pendingamount is null");
+					preparedStatement.add(0);
+				}else {
+					paidOrPendingQuery.append(" pendingamount > ? ");
+					preparedStatement.add(0);
+				}
+				query = paidOrPendingQuery.append("{pagination}");
+			}
+		}
 		return query;
 	}	
 	
@@ -400,7 +389,7 @@ public class WsQueryBuilder {
 		Integer offset = config.getDefaultOffset();
 		String finalQuery = null;
 		
-		if(criteria.getIsBillPaid() != null && criteria.getIsCollectionCount()) {
+		if(criteria.getIsBillPaid() != null && (criteria.getIsCollectionCount() != null && criteria.getIsCollectionCount())) {
 			finalQuery = query;
 		}else {
 			finalQuery = PAGINATION_WRAPPER.replace("{}",query);
