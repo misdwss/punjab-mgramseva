@@ -56,10 +56,12 @@ public class WsQueryBuilder {
 			+ "eg_ws_applicationdocument document ON document.wsid = conn.id" 
 			+  LEFT_OUTER_JOIN_STRING
 			+ "eg_ws_plumberinfo plumber ON plumber.wsid = conn.id"
-		    +  LEFT_OUTER_JOIN_STRING
-		    + "eg_ws_connectionholder connectionholder ON connectionholder.connectionid = conn.id"
+		        +  LEFT_OUTER_JOIN_STRING
+		  	+ "eg_ws_connectionholder connectionholder ON connectionholder.connectionid = conn.id"
 			+  LEFT_OUTER_JOIN_STRING
-			+ "eg_ws_roadcuttinginfo roadcuttingInfo ON roadcuttingInfo.wsid = conn.id" ;
+			+ "eg_ws_roadcuttinginfo roadcuttingInfo ON roadcuttingInfo.wsid = conn.id" 
+			+  LEFT_OUTER_JOIN_STRING
+			+  "egbs_demand_v1 dmd ON dmd.consumercode = conn.connectionno" ;
 
 	private static final String PAGINATION_WRAPPER = "{} {orderby} {pagination}";
 
