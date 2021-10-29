@@ -48,7 +48,7 @@ class SearchConnectionProvider with ChangeNotifier {
     return streamController.add(waterConnections);
   }
 
-  void validatesearchConnectionDetails(context, arguments, isPhoneNameSearch) async {
+  void validatesearchConnectionDetails(context, arguments, isNameSearch) async {
     FocusScope.of(context).unfocus();
     var commonProvider = Provider.of<CommonProvider>(
         navigatorKey.currentContext!,
@@ -60,7 +60,7 @@ class SearchConnectionProvider with ChangeNotifier {
         Loaders.showLoadingDialog(context);
         var inputJson = searchconnection.toJson();
         inputJson.removeWhere((key, value) => key == null || value == "");
-        var connectionresults = isPhoneNameSearch == true ? SearchConnectionRepository().getConnectionName({
+        var connectionresults = isNameSearch == true ? SearchConnectionRepository().getConnectionName({
           "tenantId": commonProvider.userDetails!.selectedtenant!.code,
           ...inputJson
         }) : SearchConnectionRepository().getconnection({
@@ -79,7 +79,7 @@ class SearchConnectionProvider with ChangeNotifier {
                         waterConnections = value,
                         Navigator.pushNamed(
                             context, Routes.SEARCH_CONSUMER_RESULT,
-                            arguments: {...inputJson, ...arguments, "isPhoneNameSearch" : isPhoneNameSearch })
+                            arguments: {...inputJson, ...arguments, "isNameSearch" : isNameSearch })
                       }
                     else
                       {

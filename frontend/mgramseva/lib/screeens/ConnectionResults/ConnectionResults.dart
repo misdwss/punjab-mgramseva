@@ -34,7 +34,7 @@ class _SearchConsumerResultState extends State<SearchConsumerResult> {
   }
 
   buildconsumerView(WaterConnections waterConnections) {
-    return SearchConnectionDetailCard(waterConnections, widget.arguments, isPhoneNameSearch: widget.arguments['isPhoneNameSearch'],);
+    return SearchConnectionDetailCard(waterConnections, widget.arguments, isNameSearch: widget.arguments['isNameSearch'],);
   }
 
   @override
