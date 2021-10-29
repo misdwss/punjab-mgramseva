@@ -96,16 +96,16 @@ public class WaterDaoImpl implements WaterDao {
 		if (query == null)
 			return null;
 		
-		if(criteria.getIsCollectionCount()) {
-			List<Object> preparedStmntforCollectionDataCount = new ArrayList<>();
-			StringBuilder collectionDataCountQuery = new StringBuilder(wsQueryBuilder.COLLECTION_DATA_COUNT);
-			criteria.setIsCollectionDataCount(Boolean.TRUE);
-			collectionDataCountQuery = wsQueryBuilder.applyFilters(collectionDataCountQuery, preparedStmntforCollectionDataCount, criteria);
-			collectionDataCountQuery.append(" ORDER BY wc.appCreatedDate  DESC");
-		    countData = jdbcTemplate.queryForList(collectionDataCountQuery.toString(), preparedStmntforCollectionDataCount.toArray());
-		    if(criteria.getIsBillPaid() != null)
-		    	flag = criteria.getIsBillPaid();
-		}
+//		if(criteria.getIsCollectionCount()) {
+//			List<Object> preparedStmntforCollectionDataCount = new ArrayList<>();
+//			StringBuilder collectionDataCountQuery = new StringBuilder(wsQueryBuilder.COLLECTION_DATA_COUNT);
+//			criteria.setIsCollectionDataCount(Boolean.TRUE);
+//			collectionDataCountQuery = wsQueryBuilder.applyFilters(collectionDataCountQuery, preparedStmntforCollectionDataCount, criteria);
+//			collectionDataCountQuery.append(" ORDER BY wc.appCreatedDate  DESC");
+//		    countData = jdbcTemplate.queryForList(collectionDataCountQuery.toString(), preparedStmntforCollectionDataCount.toArray());
+//		    if(criteria.getIsBillPaid() != null)
+//		    	flag = criteria.getIsBillPaid();
+//		}
 		
 		log.info("in TEST 1-------------");
 		
