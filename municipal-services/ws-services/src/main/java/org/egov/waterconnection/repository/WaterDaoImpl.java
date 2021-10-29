@@ -115,7 +115,7 @@ public class WaterDaoImpl implements WaterDao {
 			if (criteria.getIsPropertyCount()!= null && criteria.getIsPropertyCount()) {
 				List<Object> preparedStmnt = new ArrayList<>();
 				StringBuilder propertyQuery = new StringBuilder(wsQueryBuilder.PROPERTY_COUNT);
-				propertyQuery = wsQueryBuilder.applyFilters(propertyQuery, preparedStmnt, criteria);
+				propertyQuery = wsQueryBuilder.applyFiltersForPropertyCount(propertyQuery, preparedStmnt, criteria);
 				propertyQuery.append("GROUP BY additionaldetails->>'propertyType'");
 				List<Map<String, Object>> data = jdbcTemplate.queryForList(propertyQuery.toString(),
 						preparedStmnt.toArray());
