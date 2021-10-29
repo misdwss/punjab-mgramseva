@@ -19,10 +19,10 @@ public class RevenueDashboard {
 	@JsonProperty("demand")
 	private String demand = "0";
 
-	@JsonProperty("actualCollection")
-	private String actualCollection = "0";
-
 	@JsonProperty("pendingCollection")
 	private String pendingCollection = "0";
+
+	@JsonProperty("actualCollection")
+	private String actualCollection = "0";
 
 }
