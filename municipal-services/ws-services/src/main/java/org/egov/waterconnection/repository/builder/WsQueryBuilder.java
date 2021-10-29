@@ -19,6 +19,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @Component
 public class WsQueryBuilder {
 
@@ -115,9 +118,13 @@ public class WsQueryBuilder {
 	 */
 	public String getSearchQueryString(SearchCriteria criteria, List<Object> preparedStatement,
 			RequestInfo requestInfo) {
+		log.info("aaaaaaaaaaaa---------: "+criteria);
+		
 		if (criteria.isEmpty())
 				return null;
 		StringBuilder query = new StringBuilder(WATER_SEARCH_QUERY);
+		
+		log.info("AAAAAAAAa-------------");
 		
 		boolean propertyIdsPresent = false;
 
@@ -125,6 +132,7 @@ public class WsQueryBuilder {
 		String propertyIdQuery = " (conn.property_id in (";
 
 		if (!StringUtils.isEmpty(criteria.getMobileNumber()) || !StringUtils.isEmpty(criteria.getPropertyId())) {
+			log.info("bbbb- if -----------");
 			List<Property> propertyList = waterServicesUtil.propertySearchOnCriteria(criteria, requestInfo);
 			propertyList.forEach(property -> propertyIds.add(property.getPropertyId()));
 			criteria.setPropertyIds(propertyIds);
@@ -140,6 +148,7 @@ public class WsQueryBuilder {
 		
 		Set<String> uuids = null;
 		if(!StringUtils.isEmpty(criteria.getMobileNumber()) || !StringUtils.isEmpty(criteria.getName())) {
+			log.info("ccccccccco - if----------------");
 			uuids = userService.getUUIDForUsers(criteria.getMobileNumber(), criteria.getName(), criteria.getTenantId(), requestInfo);
 			boolean userIdsPresent = false;
 			criteria.setUserIds(uuids);
@@ -177,8 +186,9 @@ public class WsQueryBuilder {
 				preparedStatement.add(criteria.getPropertyId());
 			}
 		}
+		log.info("applying filter-------------------");
 		query = applyFilters(query, preparedStatement, criteria);
-		
+		log.info("applying pagination---------------");
 //		query.append(ORDER_BY_CLAUSE);
 		return addPaginationWrapper(query.toString(), preparedStatement, criteria);
 	}
