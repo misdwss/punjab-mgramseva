@@ -241,20 +241,20 @@ public class WsQueryBuilder {
 			query.append(" conn.locality = ? ");
 			preparedStatement.add(criteria.getLocality());
 		}
-		if ((criteria.getIsCollectionCount() && criteria.getIsBillPaid() != null)
-				&& criteria.getIsCollectionDataCount() == false) {
-			StringBuilder paidOrPendingQuery = new StringBuilder("with td as (");
-			paidOrPendingQuery.append(query).append("{orderby}").append(") ")
-					.append("select count(*) OVER() AS full_count, * from td where ");
-
-			if (criteria.getIsBillPaid()) {
-				paidOrPendingQuery.append(" pendingamount <= ? ").append(" or pendingamount is null");
-				preparedStatement.add(0);
-			} else {
-				paidOrPendingQuery.append(" pendingamount > ? ");
-				preparedStatement.add(0);
+		if(criteria.getIsCollectionCount() != null && criteria.getIsCollectionDataCount() != null) {
+			if((criteria.getIsCollectionCount() && criteria.getIsBillPaid() != null) && criteria.getIsCollectionDataCount() == false) {
+				StringBuilder paidOrPendingQuery = new StringBuilder("with td as (");
+				paidOrPendingQuery.append(query).append("{orderby}").append(") ").append("select count(*) OVER() AS full_count, * from td where ");
+			
+				if(criteria.getIsBillPaid()) {
+					paidOrPendingQuery.append(" pendingamount <= ? ").append(" or pendingamount is null");
+					preparedStatement.add(0);
+				}else {
+					paidOrPendingQuery.append(" pendingamount > ? ");
+					preparedStatement.add(0);
+				}
+				query = paidOrPendingQuery.append("{pagination}");
 			}
-			query = paidOrPendingQuery.append("{pagination}");
 		}
 
 		return query;
@@ -363,7 +363,7 @@ public class WsQueryBuilder {
 		Integer offset = config.getDefaultOffset();
 		String finalQuery = null;
 
-		if (criteria.getIsBillPaid() != null && criteria.getIsCollectionCount()) {
+		if(criteria.getIsBillPaid() != null && (criteria.getIsCollectionCount() != null && criteria.getIsCollectionCount())) {
 			finalQuery = query;
 		} else {
 			finalQuery = PAGINATION_WRAPPER.replace("{}", query);
