@@ -232,7 +232,7 @@ public class ChallanService {
 			dashboardData.setAmountPaid(paidAmount.toString());
 		}
 		Integer amountUnpaid = repository.getPendingAmount(criteria);
-		if (null != paidAmount) {
+		if (null != amountUnpaid) {
 			dashboardData.setAmountUnpaid(amountUnpaid.toString());
 		}
 
