@@ -51,6 +51,9 @@ class Url {
   static const String EGOV_LOCATIONS =
       'egov-location/location/v11/boundarys/_search';
 
+  ///Name Fuzzy Search for Connection search screen
+  static const String FETCH_CONNECTION_NAME = 'ws-services/wc/fuzzy/_search';
+
   /// Connection bill payment
   static const String COLLECT_PAYMENT = 'collection-services/payments/_create';
 

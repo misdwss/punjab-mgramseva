@@ -191,7 +191,8 @@ class _SearchConsumerConnectionState extends State<SearchConsumerConnection> {
       bottomNavigationBar: BottomButtonBar(
           i18.searchWaterConnection.SEARCH_CONNECTION_BUTTON,
           () => searchConnectionProvider.validatesearchConnectionDetails(
-              context, widget.arguments)),
+              context, widget.arguments, (searchConnectionProvider.searchconnection.controllers[1] == false)
+              ? true : false)),
     );
   }
 }
