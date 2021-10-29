@@ -66,6 +66,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.jayway.jsonpath.JsonPath;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @Component
 public class WaterServiceImpl implements WaterService {
 
@@ -171,9 +174,12 @@ public class WaterServiceImpl implements WaterService {
 	 * @return List of matching water connection
 	 */
 	public WaterConnectionResponse search(SearchCriteria criteria, RequestInfo requestInfo) {
+		log.info("getting waterconnecrtion-------");
 		WaterConnectionResponse waterConnection = getWaterConnectionsList(criteria, requestInfo);
+		log.info("got waterconnecrtion------- :"+waterConnection);
 		if (!StringUtils.isEmpty(criteria.getSearchType())
 				&& criteria.getSearchType().equals(WCConstants.SEARCH_TYPE_CONNECTION)) {
+			log.info("in search if-----");
 			waterConnection
 					.setWaterConnection(enrichmentService.filterConnections(waterConnection.getWaterConnection()));
 			if (criteria.getIsPropertyDetailsRequired()) {
@@ -182,8 +188,11 @@ public class WaterServiceImpl implements WaterService {
 
 			}
 		}
+		log.info("after search if-------");
 		waterConnectionValidator.validatePropertyForConnection(waterConnection.getWaterConnection());
+		log.info("after search validator---------");
 		enrichmentService.enrichConnectionHolderDeatils(waterConnection.getWaterConnection(), criteria, requestInfo);
+		log.info("after search enricher------------");
 		return waterConnection;
 	}
 

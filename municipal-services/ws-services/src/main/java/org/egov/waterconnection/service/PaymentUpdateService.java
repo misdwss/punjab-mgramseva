@@ -218,6 +218,7 @@ public class PaymentUpdateService {
 					List<WaterConnection> waterConnections;
 					WaterConnectionResponse response = waterService.search(criteria,
 							paymentRequest.getRequestInfo());
+					log.info("response---------: "+response);
 					waterConnections = response.getWaterConnection();
 					if (CollectionUtils.isEmpty(waterConnections)) {
 						throw new CustomException("INVALID_RECEIPT",
