@@ -65,14 +65,14 @@ class _NotificationsState extends State<Notifications> {
                               new Container(
                                   padding: EdgeInsets.all(4),
                                   width:
-                                      MediaQuery.of(context).size.width / 1.5,
+                                      MediaQuery.of(context).size.width / 1.4,
                                   child: Text(
                                     ApplicationLocalizations.of(context)
                                         .translate(widget.event?.description !=
                                                 null
                                             ? widget.event!.description!.trim()
                                             : ""),
-                                    maxLines: 4,
+                                    //maxLines: 4,
                                     style: TextStyle(
                                         fontSize: 14,
                                         fontWeight: FontWeight.w400,
