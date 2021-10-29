@@ -438,6 +438,7 @@ class GenerateBillDetails {
   String get PREVIOUS_METER_READING => 'PREVIOUS_METER_READING';
   String get PENDING_AMOUNT => 'PENDING_AMOUNT';
   String get DAYS_AGO => 'DAYS_AGO';
+  String get DAY_AGO => 'DAY_AGO';
   String get TODAY => 'TODAY';
   String get GENERATE_NEW_BTN_LABEL => 'GENERATE_NEW_BTN_LABEL';
   String get INFO => 'INFO';

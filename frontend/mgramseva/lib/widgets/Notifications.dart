@@ -96,10 +96,23 @@ class _NotificationsState extends State<Notifications> {
                                                 .inDays
                                                 .toString() +
                                             " " +
+                                        (DateTime.now()
+                                            .difference(DateTime
+                                            .fromMillisecondsSinceEpoch(
+                                            widget
+                                                .event!
+                                                .auditDetails!
+                                                .createdTime!))
+                                            .inDays
+                                            .toString() == '1' ?
+                                    ApplicationLocalizations.of(context)
+                                        .translate(i18
+                                        .generateBillDetails
+                                        .DAY_AGO):
                                             ApplicationLocalizations.of(context)
                                                 .translate(i18
                                                     .generateBillDetails
-                                                    .DAYS_AGO))
+                                                    .DAYS_AGO)))
                                         : ApplicationLocalizations.of(context)
                                             .translate(
                                                 i18.generateBillDetails.TODAY),
