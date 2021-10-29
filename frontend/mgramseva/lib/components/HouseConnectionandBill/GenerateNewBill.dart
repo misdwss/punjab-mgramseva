@@ -119,11 +119,20 @@ class _GenerateNewBillState extends State<GenerateNewBill> {
                                                             num))
                                                     .inDays
                                                     .toString() +
-                                                " " +
+                                                " " + (DateTime.now()
+                                            .difference(
+                                            DateTime.fromMillisecondsSinceEpoch(
+                                                num))
+                                            .inDays
+                                            .toString() == '1' ?
+                                        ApplicationLocalizations.of(context)
+                                            .translate(i18
+                                            .generateBillDetails
+                                            .DAY_AGO) :
                                                 ApplicationLocalizations.of(context)
                                                     .translate(i18
                                                         .generateBillDetails
-                                                        .DAYS_AGO),
+                                                        .DAYS_AGO)),
                                         style: TextStyle(
                                             color:
                                                 Theme.of(context).primaryColor),
@@ -239,7 +248,6 @@ class _GenerateNewBillState extends State<GenerateNewBill> {
     } else {
       return Text("");
     }
-    ;
   }
 
   void onClickOfCollectPayment(DemandList demandList, BuildContext context) {
