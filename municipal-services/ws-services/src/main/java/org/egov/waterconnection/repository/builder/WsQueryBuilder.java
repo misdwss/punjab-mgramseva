@@ -194,6 +194,9 @@ public class WsQueryBuilder {
 	}
 	
 	public StringBuilder applyFilters(StringBuilder query, List<Object> preparedStatement, SearchCriteria criteria) {
+		
+		log.info("in filter 1------------");
+		
 		if (!StringUtils.isEmpty(criteria.getTenantId())) {
 			addClauseIfRequired(preparedStatement, query);
 			if(criteria.getTenantId().equalsIgnoreCase(config.getStateLevelTenantId())){
@@ -269,19 +272,22 @@ public class WsQueryBuilder {
 			query.append(" conn.locality = ? ");
 			preparedStatement.add(criteria.getLocality());
 		}
-		if((criteria.getIsCollectionCount() && criteria.getIsBillPaid() != null) && criteria.getIsCollectionDataCount() == false) {
-			StringBuilder paidOrPendingQuery = new StringBuilder("with td as (");
-			paidOrPendingQuery.append(query).append("{orderby}").append(") ").append("select count(*) OVER() AS full_count, * from td where ");
+		log.info("in filter 2 ------------");
+//		if((criteria.getIsCollectionCount() && criteria.getIsBillPaid() != null) && criteria.getIsCollectionDataCount() == false) {
+//			StringBuilder paidOrPendingQuery = new StringBuilder("with td as (");
+//			paidOrPendingQuery.append(query).append("{orderby}").append(") ").append("select count(*) OVER() AS full_count, * from td where ");
+//		
+//			if(criteria.getIsBillPaid()) {
+//				paidOrPendingQuery.append(" pendingamount <= ? ").append(" or pendingamount is null");
+//				preparedStatement.add(0);
+//			}else {
+//				paidOrPendingQuery.append(" pendingamount > ? ");
+//				preparedStatement.add(0);
+//			}
+//			query = paidOrPendingQuery.append("{pagination}");
+//		}
 		
-			if(criteria.getIsBillPaid()) {
-				paidOrPendingQuery.append(" pendingamount <= ? ").append(" or pendingamount is null");
-				preparedStatement.add(0);
-			}else {
-				paidOrPendingQuery.append(" pendingamount > ? ");
-				preparedStatement.add(0);
-			}
-			query = paidOrPendingQuery.append("{pagination}");
-		}
+		log.info("in filter 3------------");
 		
 		return query;
 	}	

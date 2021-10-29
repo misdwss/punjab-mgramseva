@@ -79,15 +79,20 @@ public class WaterDaoImpl implements WaterDao {
 
 	@Override
 	public WaterConnectionResponse getWaterConnectionList(SearchCriteria criteria, RequestInfo requestInfo) {
-
+		
+		log.info("in getWaterConnectionList() -----------");
+		
 		List<WaterConnection> waterConnectionList = new ArrayList<>();
 		List<Object> preparedStatement = new ArrayList<>();
 		Map<String, Long> collectionDataCount = null;
 		List<Map<String, Object>> countData = null;
 		Boolean flag = null;
 		
+		log.info("before query------: "+criteria);
 		String query = wsQueryBuilder.getSearchQueryString(criteria, preparedStatement, requestInfo);
 
+		log.info("after query-----------");
+		
 		if (query == null)
 			return null;
 		
