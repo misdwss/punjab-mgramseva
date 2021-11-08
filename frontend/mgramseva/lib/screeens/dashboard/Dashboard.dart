@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_focus_watcher/flutter_focus_watcher.dart';
 import 'package:mgramseva/components/Dashboard/BillsTable.dart';
 import 'package:mgramseva/components/Dashboard/DashboardCard.dart';
 import 'package:mgramseva/model/common/metric.dart';
@@ -95,6 +96,7 @@ class _Dashboard extends State<Dashboard> with SingleTickerProviderStateMixin {
       },
       child: GestureDetector(
         onTap: () => CustomOVerlay.removeOverLay(),
+        child: FocusWatcher(
         child: Scaffold(
           appBar: CustomAppBar(),
           drawer: DrawerWrapper(
@@ -162,7 +164,7 @@ class _Dashboard extends State<Dashboard> with SingleTickerProviderStateMixin {
               ]),
             ),
           ),
-        ),
+        )),
       ),
     );
   }

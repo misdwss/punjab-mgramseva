@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_focus_watcher/flutter_focus_watcher.dart';
 import 'package:mgramseva/model/connection/property.dart';
 import 'package:mgramseva/model/connection/water_connection.dart';
 import 'package:mgramseva/providers/common_provider.dart';
@@ -520,37 +521,38 @@ class _ConsumerDetailsState extends State<ConsumerDetails> {
   @override
   Widget build(BuildContext context) {
     var userProvider = Provider.of<ConsumerProvider>(context, listen: false);
-    return Scaffold(
+    return FocusWatcher(
+        child: Scaffold(
       backgroundColor: Theme.of(context).backgroundColor,
-      appBar: CustomAppBar(),
-      drawer: DrawerWrapper(
-        Drawer(child: SideBar()),
-      ),
-      body: SingleChildScrollView(
-          child: Container(
-              child: Column(children: [
-        StreamBuilder(
-            stream: userProvider.streamController.stream,
-            builder: (context, AsyncSnapshot snapshot) {
-              if (snapshot.hasData) {
-                return buildconsumerView(snapshot.data);
-              } else if (snapshot.hasError) {
-                return Notifiers.networkErrorPage(context, () {});
-              } else {
-                switch (snapshot.connectionState) {
-                  case ConnectionState.waiting:
-                    return Loaders.CircularLoader();
-                  case ConnectionState.active:
-                    return Loaders.CircularLoader();
-                  default:
-                    return Container();
-                }
-              }
-            }),
-        Footer(),
+          appBar: CustomAppBar(),
+          drawer: DrawerWrapper(
+            Drawer(child: SideBar()),
+          ),
+          body: SingleChildScrollView(
+              child: Container(
+                  child: Column(children: [
+                    StreamBuilder(
+                    stream: userProvider.streamController.stream,
+                    builder: (context, AsyncSnapshot snapshot) {
+                      if (snapshot.hasData) {
+                        return buildconsumerView(snapshot.data);
+                      } else if (snapshot.hasError) {
+                        return Notifiers.networkErrorPage(context, () {});
+                      } else {
+                        switch (snapshot.connectionState) {
+                          case ConnectionState.waiting:
+                            return Loaders.CircularLoader();
+                          case ConnectionState.active:
+                            return Loaders.CircularLoader();
+                          default:
+                            return Container();
+                        }
+                      }
+                    }),
+                    Footer(),
       ]))),
-      bottomNavigationBar: BottomButtonBar(i18.common.SUBMIT,
+          bottomNavigationBar: BottomButtonBar(i18.common.SUBMIT,
           () => {userProvider.validateConsumerDetails(context)}),
-    );
+    ));
   }
 }

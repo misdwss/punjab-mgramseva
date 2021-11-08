@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_focus_watcher/flutter_focus_watcher.dart';
 import 'package:mgramseva/model/connection/search_connection.dart';
 import 'package:mgramseva/providers/search_connection_provider.dart';
 import 'package:mgramseva/widgets/customAppbar.dart';
@@ -40,21 +41,22 @@ class _SearchConsumerConnectionState extends State<SearchConsumerConnection> {
   Widget build(BuildContext context) {
     var searchConnectionProvider =
         Provider.of<SearchConnectionProvider>(context, listen: false);
-    return Scaffold(
+    return FocusWatcher(
+        child: Scaffold(
       backgroundColor: Theme.of(context).backgroundColor,
-      appBar: CustomAppBar(),
-      drawer: DrawerWrapper(
-        Drawer(child: SideBar()),
-      ),
-      body: SingleChildScrollView(
-          child: Column(children: [
-        FormWrapper(Consumer<SearchConnectionProvider>(
-          builder: (_, searchConnectionProvider, child) => Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                HomeBack(),
-                Card(
+          appBar: CustomAppBar(),
+          drawer: DrawerWrapper(
+            Drawer(child: SideBar()),
+          ),
+          body: SingleChildScrollView(
+            child: Column(children: [
+              FormWrapper(Consumer<SearchConnectionProvider>(
+                builder: (_, searchConnectionProvider, child) => Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  HomeBack(),
+                  Card(
                     child: Form(
                         key: searchConnectionProvider.formKey,
                         autovalidateMode:
@@ -193,6 +195,6 @@ class _SearchConsumerConnectionState extends State<SearchConsumerConnection> {
           () => searchConnectionProvider.validatesearchConnectionDetails(
               context, widget.arguments, (searchConnectionProvider.searchconnection.controllers[1] == false)
               ? true : false)),
-    );
+    ));
   }
 }

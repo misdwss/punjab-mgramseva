@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_focus_watcher/flutter_focus_watcher.dart';
 import 'package:mgramseva/model/common/fetch_bill.dart' as billDetails;
 import 'package:mgramseva/model/common/fetch_bill.dart';
 import 'package:mgramseva/providers/collect_payment.dart';
@@ -46,12 +47,13 @@ class _ConnectionPaymentViewState extends State<ConnectionPaymentView> {
     var consumerPaymentProvider =
         Provider.of<CollectPaymentProvider>(context, listen: false);
     FetchBill? fetchBill;
-    return Scaffold(
-      drawer: DrawerWrapper(
-        Drawer(child: SideBar()),
-      ),
-      appBar: CustomAppBar(),
-      body: StreamBuilder(
+    return FocusWatcher(
+        child: Scaffold(
+          drawer: DrawerWrapper(
+            Drawer(child: SideBar()),
+          ),
+          appBar: CustomAppBar(),
+          body: StreamBuilder(
           stream: consumerPaymentProvider.paymentStreamController.stream,
           builder: (context, AsyncSnapshot snapshot) {
             if (snapshot.hasData) {
@@ -83,7 +85,7 @@ class _ConnectionPaymentViewState extends State<ConnectionPaymentView> {
                 '${ApplicationLocalizations.of(context).translate(i18.common.COLLECT_PAYMENT)}',
                 () => paymentInfo(fetchBill!, context))),
       ),
-    );
+    ));
   }
 
   Widget _buildView(FetchBill fetchBill) {
@@ -179,7 +181,8 @@ class _ConnectionPaymentViewState extends State<ConnectionPaymentView> {
                   fetchBill, val, true),
               refTextRadioBtn: Constants.PAYMENT_AMOUNT.last.key,
               secondaryBox: fetchBill.paymentAmount == Constants.PAYMENT_AMOUNT.last.key ?
-              TextFormField(
+              ForceFocusWatcher(
+                  child: TextFormField(
                 style: TextStyle(
                     fontWeight: FontWeight.w400,
                     fontSize: 16,
@@ -201,7 +204,7 @@ class _ConnectionPaymentViewState extends State<ConnectionPaymentView> {
                       fontSize: 14,
                       fontWeight: FontWeight.w400),
                 ),
-              ) : null),
+              )) : null),
           RadioButtonFieldBuilder(
               context,
               i18.common.PAYMENT_METHOD,

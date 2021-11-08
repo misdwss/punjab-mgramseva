@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_focus_watcher/flutter_focus_watcher.dart';
 import 'package:mgramseva/model/bill/bill_generation_details/bill_generation_details.dart';
 import 'package:mgramseva/model/connection/water_connection.dart';
 import 'package:mgramseva/providers/bill_generation_details_provider.dart';
@@ -295,7 +296,8 @@ class _GenerateBillState extends State<GenerateBill> {
   Widget build(BuildContext context) {
     var billgenerateProvider =
         Provider.of<BillGenerationProvider>(context, listen: false);
-    return Scaffold(
+    return FocusWatcher(
+        child: Scaffold(
         backgroundColor: Theme.of(context).backgroundColor,
         appBar: BaseAppBar(
           Text(i18.common.MGRAM_SEVA),
@@ -330,6 +332,6 @@ class _GenerateBillState extends State<GenerateBill> {
         ]))),
         bottomNavigationBar: BottomButtonBar(
             '${widget.id == null ? i18.demandGenerate.GENERATE_DEMAND_BUTTON : i18.demandGenerate.GENERATE_BILL_BUTTON}',
-            () => {billgenerateProvider.onSubmit(context)}));
+            () => {billgenerateProvider.onSubmit(context)})));
   }
 }

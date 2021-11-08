@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_focus_watcher/flutter_focus_watcher.dart';
 import 'package:mgramseva/model/changePasswordDetails/changePassword_details.dart';
 import 'package:mgramseva/providers/common_provider.dart';
 import 'package:mgramseva/providers/changePassword_details_provider.dart';
@@ -128,7 +129,8 @@ class _ChangePasswordState extends State<ChangePassword> {
   Widget build(BuildContext context) {
     var changePasswordProvider =
         Provider.of<ChangePasswordProvider>(context, listen: false);
-    return Scaffold(
+    return FocusWatcher(
+        child: Scaffold(
         backgroundColor: Theme.of(context).backgroundColor,
         appBar: BaseAppBar(
           Text(i18.common.MGRAM_SEVA),
@@ -150,6 +152,6 @@ class _ChangePasswordState extends State<ChangePassword> {
             () => saveInputandchangepass(
                 context,
                 changePasswordProvider.changePasswordDetails.getText(),
-                changePasswordProvider.changePasswordDetails)));
+                changePasswordProvider.changePasswordDetails))));
   }
 }

@@ -131,11 +131,9 @@ class _MyAppState extends State<MyApp> {
         child: Consumer<LanguageProvider>(
             builder: (_, userProvider, child) =>  GestureDetector(
               onTap: () {
-                print('onTap called');
               FocusScopeNode currentFocus = FocusScope.of(context);
 
               if (!currentFocus.hasPrimaryFocus) {
-                print('has Primary focus called');
               currentFocus.unfocus();
               }
               },
