@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_focus_watcher/flutter_focus_watcher.dart';
 import 'package:mgramseva/providers/language.dart';
 import 'package:mgramseva/utils/Constants/I18KeyConstants.dart';
 import 'package:mgramseva/utils/Locilization/application_localizations.dart';
@@ -135,7 +136,8 @@ class _SearchSelectFieldState extends State<SearchSelectField> {
       }),
       CompositedTransformTarget(
         link: this._layerLink,
-        child: TextFormField(
+        child: ForceFocusWatcher(
+          child:TextFormField(
           style: TextStyle(
               fontWeight: FontWeight.w400,
               fontSize: 16,
@@ -178,7 +180,7 @@ class _SearchSelectFieldState extends State<SearchSelectField> {
             prefixIconConstraints: BoxConstraints(minWidth: 0, minHeight: 0),
           ),
         ),
-      )
+      ))
     ]);
   }
 }

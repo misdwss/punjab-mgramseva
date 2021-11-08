@@ -129,7 +129,15 @@ class _MyAppState extends State<MyApp> {
           ChangeNotifierProvider(create: (_) => NotificationScreenProvider()),
         ],
         child: Consumer<LanguageProvider>(
-            builder: (_, userProvider, child) => MaterialApp(
+            builder: (_, userProvider, child) =>  GestureDetector(
+              onTap: () {
+              FocusScopeNode currentFocus = FocusScope.of(context);
+
+              if (!currentFocus.hasPrimaryFocus) {
+              currentFocus.unfocus();
+              }
+              },
+              child:MaterialApp(
                   title: 'mGramSeva',
                   supportedLocales: [
                     Locale('en', 'IN'),
@@ -159,7 +167,7 @@ class _MyAppState extends State<MyApp> {
                   onGenerateRoute: router.generateRoute,
                   theme: theme,
                   // home: SelectLanguage((val) => setLocale(Locale(val, 'IN'))),
-                )));
+                ))));
   }
 }
 

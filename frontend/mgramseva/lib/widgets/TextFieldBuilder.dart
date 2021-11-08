@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_focus_watcher/flutter_focus_watcher.dart';
 import 'package:mgramseva/utils/Locilization/application_localizations.dart';
 import 'package:mgramseva/utils/common_widgets.dart';
 
@@ -72,7 +73,8 @@ class _BuildTextField extends State<BuildTextField> {
   @override
   Widget build(BuildContext context) {
     // TextForm
-    Widget textFormwidget = TextFormField(
+    Widget textFormwidget = ForceFocusWatcher(
+        child: TextFormField(
         style: TextStyle(
             fontWeight: FontWeight.w400,
             fontSize: 16,
@@ -149,7 +151,7 @@ class _BuildTextField extends State<BuildTextField> {
                   )),
           suffixIcon: widget.suffixIcon
         ),
-        onChanged: widget.onChange);
+        onChanged: widget.onChange));
 // Label Text
     Widget textLabelwidget =
         Wrap(direction: Axis.horizontal, children: <Widget>[

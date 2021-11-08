@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_focus_watcher/flutter_focus_watcher.dart';
 import 'package:mgramseva/components/HouseholdRegister/HouseholdCard.dart';
 import 'package:mgramseva/providers/household_register_provider.dart';
 import 'package:mgramseva/utils/Constants/I18KeyConstants.dart';
@@ -50,7 +51,8 @@ class _HouseholdRegister extends State<HouseholdRegister> with SingleTickerProvi
       },
       child: GestureDetector(
         onTap: () => householdRegisterProvider.removeOverLay(_overlayEntry),
-        child: Scaffold(
+        child: FocusWatcher(
+        child:Scaffold(
           appBar: CustomAppBar(),
           drawer: DrawerWrapper(
             Drawer(child: SideBar()),
@@ -106,7 +108,7 @@ class _HouseholdRegister extends State<HouseholdRegister> with SingleTickerProvi
               ]),
             ),
           ),
-        ),
+        )),
       ),
     );
   }

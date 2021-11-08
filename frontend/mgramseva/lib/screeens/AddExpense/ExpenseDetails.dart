@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_focus_watcher/flutter_focus_watcher.dart';
 import 'package:mgramseva/model/expensesDetails/expenses_details.dart';
 import 'package:mgramseva/providers/expenses_details_provider.dart';
 import 'package:mgramseva/screeens/AddExpense/AddExpenseWalkThrough/expenseWalkThrough.dart';
@@ -88,9 +89,10 @@ class _ExpenseDetailsState extends State<ExpenseDetails> {
   Widget build(BuildContext context) {
     var expensesDetailsProvider =
         Provider.of<ExpensesDetailsProvider>(context, listen: false);
-    return Scaffold(
-        appBar: CustomAppBar(),
-        drawer: DrawerWrapper(
+    return FocusWatcher(
+        child: Scaffold(
+         appBar: CustomAppBar(),
+         drawer: DrawerWrapper(
           Drawer(child: SideBar()),
         ),
         body: SingleChildScrollView(
@@ -140,7 +142,7 @@ class _ExpenseDetailsState extends State<ExpenseDetails> {
                   ? () => expensesDetailsProvider.validateExpensesDetails(
                       context, isUpdate)
                   : null),
-        ));
+        )));
   }
 
   saveInput(context) async {

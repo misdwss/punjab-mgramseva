@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_focus_watcher/flutter_focus_watcher.dart';
 
 import 'package:mgramseva/model/userProfile/user_profile.dart';
 import 'package:mgramseva/providers/user_edit_profile_provider.dart';
@@ -131,7 +132,7 @@ class _EditProfileState extends State<EditProfile> {
   Widget build(BuildContext context) {
     var userProvider = Provider.of<UserProfileProvider>(context, listen: false);
 
-    return Scaffold(
+    return FocusWatcher(child: Scaffold(
       backgroundColor: Theme.of(context).backgroundColor,
       appBar: BaseAppBar(
         Text(i18.common.MGRAM_SEVA),
@@ -174,7 +175,7 @@ class _EditProfileState extends State<EditProfile> {
             () => saveInputandedit(
             context, userProvider.profileDetails.getText(), userProvider.profileDetails),
       ),
-    );
+    ));
   }
 
   Map get query {

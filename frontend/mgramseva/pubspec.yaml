@@ -58,6 +58,8 @@ dependencies:
   flutter_share_me: ^1.2.0
   pdf: ^3.6.0
   printing: ^5.6.0
+  flutter_focus_watcher: ^2.0.0
+
 
 dev_dependencies:
   flutter_launcher_icons: "^0.9.2"
