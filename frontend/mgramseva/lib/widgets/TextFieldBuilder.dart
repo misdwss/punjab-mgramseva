@@ -35,6 +35,7 @@ class BuildTextField extends StatefulWidget {
   final AutovalidateMode? autoValidation;
   final bool? isFilled;
   final Widget? suffixIcon;
+  final Key? key;
 
   BuildTextField(this.labelText, this.controller,
       {this.input = '',
@@ -63,7 +64,8 @@ class BuildTextField extends StatefulWidget {
       this.isFilled,
       this.requiredMessage,
       this.autoValidation,
-      this.suffixIcon});
+      this.suffixIcon,
+      this.key});
 
   @override
   State<StatefulWidget> createState() => _BuildTextField();

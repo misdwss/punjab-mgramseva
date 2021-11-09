@@ -84,6 +84,7 @@ class _HomeState extends State<Home> {
         appBar: CustomAppBar(),
         drawer: DrawerWrapper(
           Drawer(child: SideBar()),
+          key: Key("SideBar"),
         ),
         body: SingleChildScrollView(
             child: LayoutBuilder(builder: (context, constraint) {

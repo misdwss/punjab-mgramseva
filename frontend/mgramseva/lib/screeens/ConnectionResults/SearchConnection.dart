@@ -97,6 +97,7 @@ class _SearchConsumerConnectionState extends State<SearchConsumerConnection> {
                                     .searchconnection.controllers[0],
                                 onChange: (value) => searchConnectionProvider
                                     .getdetails(value, 0),
+                                key: Key("phoneSearch"),
                               ),
                               Text(
                                 '\n${ApplicationLocalizations.of(context).translate(i18.common.OR)}',
@@ -117,6 +118,7 @@ class _SearchConsumerConnectionState extends State<SearchConsumerConnection> {
                                 hint: ApplicationLocalizations.of(context)
                                     .translate(
                                         i18.searchWaterConnection.NAME_HINT),
+                                key: Key("nameSearch"),
                               ),
                               Visibility(
                                   visible: !isVisible,
@@ -194,7 +196,8 @@ class _SearchConsumerConnectionState extends State<SearchConsumerConnection> {
           i18.searchWaterConnection.SEARCH_CONNECTION_BUTTON,
           () => searchConnectionProvider.validatesearchConnectionDetails(
               context, widget.arguments, (searchConnectionProvider.searchconnection.controllers[1] == false)
-              ? true : false)),
+              ? true : false),
+      key: Key("Search Connection"),),
     ));
   }
 }

@@ -49,6 +49,7 @@ class SideBar extends StatelessWidget {
           margin: EdgeInsets.all(0.0),
           padding: EdgeInsets.all(0.0)),
       ListTile(
+        key: Key("Home"),
         title: Text(
             ApplicationLocalizations.of(context).translate(i18.common.HOME)),
         leading: Icon(
@@ -100,6 +101,7 @@ class SideBar extends StatelessWidget {
           ),
           onTap: () => Navigator.pop(context)),
       ListTile(
+        key: Key("Edit Profile"),
           title: Text(ApplicationLocalizations.of(context)
               .translate(i18.common.EDIT_PROFILE)),
           leading: Icon(
@@ -108,6 +110,7 @@ class SideBar extends StatelessWidget {
           ),
           onTap: () => Navigator.pushNamed(context, Routes.EDIT_PROFILE)),
       ListTile(
+        key: Key("Change Password"),
           title: Text(ApplicationLocalizations.of(context)
               .translate(i18.password.CHANGE_PASSWORD)),
           leading: Icon(
@@ -116,6 +119,7 @@ class SideBar extends StatelessWidget {
           ),
           onTap: () => Navigator.pushNamed(context, Routes.CHANGE_PASSWORD)),
       ListTile(
+        key: Key("Logout"),
         title: Text(
             ApplicationLocalizations.of(context).translate(i18.common.LOGOUT)),
         leading: Icon(

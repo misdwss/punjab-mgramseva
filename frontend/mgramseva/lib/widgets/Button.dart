@@ -5,7 +5,8 @@ import 'package:mgramseva/utils/common_styles.dart';
 class Button extends StatelessWidget {
   final String label;
   final Function()? widgetfunction;
-  Button(this.label, this.widgetfunction);
+  final Key? key;
+  Button(this.label, this.widgetfunction, {this.key});
 
   @override
   Widget build(BuildContext context) {

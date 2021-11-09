@@ -93,7 +93,8 @@ class LanguageSelectMobileView extends StatelessWidget {
                     child: Consumer<LanguageProvider>(
                       builder: (_, languageProvider, child) => Button(
                           i18.common.CONTINUE,
-                          () => Navigator.pushNamed(context, Routes.LOGIN)),
+                          () => Navigator.pushNamed(context, Routes.LOGIN),
+                      key: Key("language selected"),),
                     ))
               ])))))),
       (new Positioned(

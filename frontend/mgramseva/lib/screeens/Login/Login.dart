@@ -94,6 +94,7 @@ class _LoginState extends State<Login> {
                   maxLength: 10,
                   validator: Validators.mobileNumberValidator,
                   textInputType: TextInputType.phone,
+                  key: Key("PhoneNum"),
                 ),
                 BuildTextField(
                   i18.login.LOGIN_PASSWORD,
@@ -102,6 +103,7 @@ class _LoginState extends State<Login> {
                   obscureText: !passwordVisible,
                   suffixIcon: buildPasswordVisibility(),
                   maxLines: 1,
+                  key: Key("Login Password"),
                 ),
                 GestureDetector(
                   onTap: () =>
@@ -121,7 +123,8 @@ class _LoginState extends State<Login> {
                 Padding(
                     padding: EdgeInsets.only(top: 15, bottom: 15, left: 8, right: 8),
                     child: Button(
-                        i18.common.CONTINUE, buttonStatus ? () => saveandLogin(context) : null)),
+                        i18.common.CONTINUE, buttonStatus ? () => saveandLogin(context) : null),
+                  key: Key("Login"),),
                 SizedBox(
                   height: 10,
                 )
