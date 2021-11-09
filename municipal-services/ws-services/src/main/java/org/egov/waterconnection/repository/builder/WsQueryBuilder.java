@@ -52,8 +52,7 @@ public class WsQueryBuilder {
 			+ LEFT_OUTER_JOIN_STRING + "eg_ws_applicationdocument document ON document.wsid = conn.id"
 			+ LEFT_OUTER_JOIN_STRING + "eg_ws_plumberinfo plumber ON plumber.wsid = conn.id" + LEFT_OUTER_JOIN_STRING
 			+ "eg_ws_connectionholder connectionholder ON connectionholder.connectionid = conn.id"
-			+ LEFT_OUTER_JOIN_STRING + "eg_ws_roadcuttinginfo roadcuttingInfo ON roadcuttingInfo.wsid = conn.id"
-			+ LEFT_OUTER_JOIN_STRING + "egbs_demand_v1 dmd ON dmd.consumercode = conn.connectionno";
+			+ LEFT_OUTER_JOIN_STRING + "eg_ws_roadcuttinginfo roadcuttingInfo ON roadcuttingInfo.wsid = conn.id";
 
 	private static final String PAGINATION_WRAPPER = "{} {orderby} {pagination}";
 
@@ -92,6 +91,8 @@ public class WsQueryBuilder {
 			+ "eg_ws_connectionholder connectionholder ON connectionholder.connectionid = conn.id"
 			+ LEFT_OUTER_JOIN_STRING + "eg_ws_roadcuttinginfo roadcuttingInfo ON roadcuttingInfo.wsid = conn.id";
 
+	public static final String DEMAND_DETAILS = "select d.consumercode from egbs_demand_v1 d join egbs_demanddetail_v1 dd on d.id = dd.demandid where d.status = 'ACTIVE' ";
+	
 	/**
 	 * 
 	 * @param criteria          The WaterCriteria
@@ -195,10 +196,18 @@ public class WsQueryBuilder {
 			preparedStatement.add(criteria.getOldConnectionNumber());
 		}
 
-		if (!StringUtils.isEmpty(criteria.getConnectionNumber())) {
+		if (!StringUtils.isEmpty(criteria.getConnectionNumber()) || !CollectionUtils.isEmpty(criteria.getConnectionNumberSet())) {
 			addClauseIfRequired(preparedStatement, query);
-			query.append(" conn.connectionno ~*  ? ");
-			preparedStatement.add(criteria.getConnectionNumber());
+			
+			if(!CollectionUtils.isEmpty(criteria.getConnectionNumberSet()) && criteria.getConnectionNumberSet().size() > 1 ){
+				query.append(" conn.connectionno in (").append(createQuery(criteria.getConnectionNumberSet())).append(" )");
+				addToPreparedStatement(preparedStatement, criteria.getConnectionNumberSet());
+			}else {
+				if(!StringUtils.isEmpty(criteria.getConnectionNumber())) {
+					query.append(" conn.connectionno ~*  ? ");
+					preparedStatement.add(criteria.getConnectionNumber());
+				}
+			}
 		}
 
 		if (!StringUtils.isEmpty(criteria.getStatus())) {
@@ -215,10 +224,6 @@ public class WsQueryBuilder {
 			addClauseIfRequired(preparedStatement, query);
 			query.append(" conn.applicationStatus = ? ");
 			preparedStatement.add(criteria.getApplicationStatus());
-		}
-		if (criteria.getFromDate() != null && criteria.getToDate() != null) {
-			addClauseIfRequired(preparedStatement, query);
-			query.append("  dmd.taxperiodto between " + criteria.getFromDate() + " AND " + criteria.getToDate());
 		}
 		if (!StringUtils.isEmpty(criteria.getApplicationType())) {
 			addClauseIfRequired(preparedStatement, query);
