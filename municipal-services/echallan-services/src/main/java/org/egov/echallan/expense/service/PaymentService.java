@@ -133,7 +133,7 @@ public class PaymentService {
 	}
 
 	public String searchPayment(ChallanRequest request) {
-		StringBuilder uri = new StringBuilder(config.getPaymentContextPath()).append("/" + request.getChallan().getBusinessService()).append(config.getPaymentSearchEndpoint())
+		StringBuilder uri = new StringBuilder(config.getPaymentContextPath()).append(config.getPaymentUpdateSearch()).append("/" + request.getChallan().getBusinessService()).append(config.getPaymentUpdateSearchEndpoint())
 				.append("?consumerCodes=").append(request.getChallan().getChallanNo()).append(" &tenantId=")
 				.append(request.getChallan().getTenantId());
 		RequestInfoWrapper requestInfoWrapper = RequestInfoWrapper.builder().requestInfo(request.getRequestInfo())
