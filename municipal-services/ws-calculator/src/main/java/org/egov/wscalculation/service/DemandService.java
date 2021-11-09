@@ -753,6 +753,7 @@ public class DemandService {
 			String messageString = localizationMessage.get(WSCalculationConstant.MSG_KEY);
 
 			System.out.println("Localization message::" + messageString);
+			demands.add(demand);
 			if (!StringUtils.isEmpty(messageString)) {
 				log.info("Demand Object" + demands.toString());
 
@@ -898,7 +899,7 @@ public class DemandService {
 					producer.push(config.getSmsNotifTopic(), smsRequest);
 				});
 			}
-			demands.add(demand);
+			
 		}
 
 		log.info("Updated Demand Details " + demands.toString());
