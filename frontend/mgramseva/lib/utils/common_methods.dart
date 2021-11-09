@@ -34,14 +34,14 @@ class CommonMethods {
         monthList.add(DateTime(yearDetails.year + 1, i));
       }
     }
-    return monthList.map((e) => DatePeriod(DateTime(e.year, e.month, 1), DateTime(e.year, e.month + 1, 0), DateType.MONTH)).toList().reversed.toList();
+    return monthList.map((e) => DatePeriod(DateTime(e.year, e.month, 1), DateTime(e.year, e.month + 1, 0, 23,59, 59), DateType.MONTH)).toList().reversed.toList();
   }
 
   static List<YearWithMonths> getFinancialYearList([int count = 5]){
     var yearWithMonths = <YearWithMonths>[];
 
     if(DateTime.now().month >= 4) {
-      var year = DatePeriod(DateTime(DateTime.now().year, 4) , DateTime(DateTime.now().year + 1), DateType.YTD);
+      var year = DatePeriod(DateTime(DateTime.now().year, 4) , DateTime(DateTime.now().year + 1, 4, 0, 23,59, 59), DateType.YTD);
       var monthList = getPastMonthUntilFinancialYear(DateTime.now().year);
       yearWithMonths.add(YearWithMonths(monthList, year));
     }else{
@@ -52,7 +52,7 @@ class CommonMethods {
 
     for(int i =0; i < count-1; i++){
       dynamic year = DateTime(DateTime.now().year - i);
-      year = DatePeriod(DateTime(year.year - 1, 4), DateTime(year.year, 3), DateType.YEAR);
+      year = DatePeriod(DateTime(year.year - 1, 4), DateTime(year.year, 4, 0, 23,59, 59), DateType.YEAR);
       var monthList = getPastMonthUntilFinancialYear(year.startDate.year);
       yearWithMonths.add(YearWithMonths(monthList, year));
     }
@@ -73,7 +73,7 @@ class CommonMethods {
         monthList.add(DateTime(DateTime.now().year, i));
       }
     }
-    return monthList.map((e) => DatePeriod(DateTime(e.year, e.month, 1), DateTime(e.year, e.month + 1, 0), DateType.MONTH)).toList().reversed.toList();
+    return monthList.map((e) => DatePeriod(DateTime(e.year, e.month, 1), DateTime(e.year, e.month + 1, 0, 23,59, 59), DateType.MONTH)).toList().reversed.toList();
   }
 
   String truncateWithEllipsis(int cutoff, String myString) {
