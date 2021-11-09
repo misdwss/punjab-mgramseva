@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.validation.Valid;
@@ -85,6 +86,17 @@ public class WaterDaoImpl implements WaterDao {
 		Map<String, Long> collectionDataCount = null;
 		List<Map<String, Object>> countData = null;
 		Boolean flag = null;
+		Set<String> consumerCodeSet = null;
+		
+		if(criteria.getFromDate() != null && criteria.getToDate() != null) {
+			StringBuilder demandDetailsQuery = new StringBuilder(wsQueryBuilder.DEMAND_DETAILS);
+			demandDetailsQuery.append(" and d.taxperiodto between " + criteria.getFromDate() + " AND " + criteria.getToDate());
+			List<String> consumerCodeList = jdbcTemplate.queryForList(demandDetailsQuery.toString(), String.class);
+			if(!CollectionUtils.isEmpty(consumerCodeList)) {
+				consumerCodeSet = consumerCodeList.stream().collect(Collectors.toSet());
+			}
+			criteria.setConnectionNumberSet(consumerCodeSet);
+		}
 		
 		String query = wsQueryBuilder.getSearchQueryString(criteria, preparedStatement, requestInfo);
 
