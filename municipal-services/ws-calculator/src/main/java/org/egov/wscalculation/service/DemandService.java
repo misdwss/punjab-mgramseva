@@ -752,7 +752,7 @@ public class DemandService {
 			actionLink = getShortenedUrl(actionLink);
 			String messageString = localizationMessage.get(WSCalculationConstant.MSG_KEY);
 
-			System.out.println("Localization message::" + messageString);
+			System.out.println("Localization message::" + messageString + demand);
 			demands.add(demand);
 			if (!StringUtils.isEmpty(messageString)) {
 				log.info("Demand Object" + demands.toString());
