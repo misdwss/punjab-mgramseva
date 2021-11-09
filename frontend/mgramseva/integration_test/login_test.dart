@@ -53,7 +53,7 @@ void main() {
       final searchConnectionBtn = find.byKey(Key("Search Connection"));
       await tester.enterText(nameSearch, 'Na');
       await tester.pumpAndSettle(Duration(milliseconds: 3000));
-      await tester.ensureVisible(login);
+      await tester.ensureVisible(searchConnectionBtn);
       await tester.tap(searchConnectionBtn);
       await tester.pumpAndSettle(Duration(milliseconds: 3000));
 
