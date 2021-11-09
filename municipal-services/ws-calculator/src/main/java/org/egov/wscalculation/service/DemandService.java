@@ -138,7 +138,7 @@ public class DemandService {
 	 *                     generated or updated
 	 */
 	public List<Demand> generateDemand(RequestInfo requestInfo, List<Calculation> calculations,
-			Map<String, Object> masterMap, boolean isForConnectionNo) {
+			Map<String, Object> masterMap, boolean isForConnectionNo, boolean isBulkDemand) {
 		@SuppressWarnings("unchecked")
 		Map<String, Object> financialYearMaster = (Map<String, Object>) masterMap
 				.get(WSCalculationConstant.BILLING_PERIOD);
@@ -180,7 +180,7 @@ public class DemandService {
 		}
 		List<Demand> createdDemands = new ArrayList<>();
 		if (!CollectionUtils.isEmpty(createCalculations))
-			createdDemands = createDemand(requestInfo, createCalculations, masterMap, isForConnectionNo);
+			createdDemands = createDemand(requestInfo, createCalculations, masterMap, isForConnectionNo, isBulkDemand);
 
 		if (!CollectionUtils.isEmpty(updateCalculations))
 			createdDemands = updateDemandForCalculation(requestInfo, updateCalculations, fromDate, toDate,
@@ -196,7 +196,7 @@ public class DemandService {
 	 * @return Returns list of demands
 	 */
 	private List<Demand> createDemand(RequestInfo requestInfo, List<Calculation> calculations,
-			Map<String, Object> masterMap, boolean isForConnectionNO) {
+			Map<String, Object> masterMap, boolean isForConnectionNO, boolean isBulkDemand) {
 		List<Demand> demands = new LinkedList<>();
 		List<SMSRequest> smsRequests = new LinkedList<>();
 		DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
@@ -235,6 +235,8 @@ public class DemandService {
 			BigDecimal minimumPayableAmount = configs.getMinimumPayableAmount();
 			String businessService = configs.getBusinessService();
 
+			billCycle = (Instant.ofEpochMilli(fromDate).atZone(ZoneId.systemDefault()).toLocalDate() + "-"
+					+ Instant.ofEpochMilli(toDate).atZone(ZoneId.systemDefault()).toLocalDate());
 			addRoundOffTaxHead(calculation.getTenantId(), demandDetails);
 
 			demands.add(Demand.builder().consumerCode(consumerCode).demandDetails(demandDetails).payer(owner)
@@ -270,8 +272,6 @@ public class DemandService {
 				if (billNumber.size() > 0) {
 					actionLink = actionLink.replace("$billNumber", billNumber.get(0));
 				}
-				billCycle = (Instant.ofEpochMilli(fromDate).atZone(ZoneId.systemDefault()).toLocalDate() + "-"
-						+ Instant.ofEpochMilli(toDate).atZone(ZoneId.systemDefault()).toLocalDate());
 				messageString = messageString.replace("{ownername}", owner.getName());
 				messageString = messageString.replace("{Period}", billCycle);
 				messageString = messageString.replace("{consumerno}", consumerCode);
@@ -285,6 +285,49 @@ public class DemandService {
 						.category(Category.TRANSACTION).build();
 				producer.push(config.getSmsNotifTopic(), sms);
 
+				
+					
+			}
+			if(isBulkDemand) {
+
+				// GP User message
+
+				HashMap<String, String> demandMessage = util.getLocalizationMessage(requestInfo,
+						WSCalculationConstant.mGram_Consumer_NewDemand, tenantId);
+
+				HashMap<String, String> gpwscMap = util.getLocalizationMessage(requestInfo,
+						tenantId, tenantId);
+				UserDetailResponse userDetailResponse = userService.getUserByRoleCodes(requestInfo,
+						Arrays.asList("COLLECTION_OPERATOR"), tenantId);
+				Map<String, String> mobileNumberIdMap = new LinkedHashMap<>();
+
+				String msgLink = config.getNotificationUrl() + config.getGpUserDemandLink();
+
+				for (OwnerInfo userInfo : userDetailResponse.getUser())
+					if (userInfo.getName() != null) {
+						mobileNumberIdMap.put(userInfo.getMobileNumber(), userInfo.getName());
+					} else {
+						mobileNumberIdMap.put(userInfo.getMobileNumber(), userInfo.getUserName());
+					}
+				mobileNumberIdMap.entrySet().stream().forEach(map -> {
+					String msg = demandMessage.get(WSCalculationConstant.MSG_KEY);
+					String billingCycle = (Instant.ofEpochMilli(fromDate).atZone(ZoneId.systemDefault()).toLocalDate() + "-"
+							+ Instant.ofEpochMilli(toDate).atZone(ZoneId.systemDefault()).toLocalDate());
+					msg = msg.replace("{ownername}", map.getValue());
+					msg = msg.replace("{villagename}",
+							(gpwscMap != null && !StringUtils.isEmpty(gpwscMap.get(WSCalculationConstant.MSG_KEY)))
+									? gpwscMap.get(WSCalculationConstant.MSG_KEY)
+									: tenantId);
+					msg = msg.replace("{billingcycle}", billingCycle);
+					msg = msg.replace("{LINK}", msgLink);
+
+					System.out.println("Demand GP USER SMS::" + msg);
+
+					SMSRequest smsRequest = SMSRequest.builder().mobileNumber(map.getKey()).message(msg)
+							.category(Category.TRANSACTION).build();
+
+					producer.push(config.getSmsNotifTopic(), smsRequest);
+				});
 			}
 		}
 		log.info("Demand Object" + demands.toString());

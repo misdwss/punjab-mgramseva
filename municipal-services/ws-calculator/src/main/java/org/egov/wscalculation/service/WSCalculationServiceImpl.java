@@ -99,7 +99,7 @@ public class WSCalculationServiceImpl implements WSCalculationService {
 			demandRepository.updateDemand(request.getRequestInfo(), searchResult);
 		}
 		demandService.generateDemand(request.getRequestInfo(), calculations, masterMap,
-				request.getIsconnectionCalculation());
+				request.getIsconnectionCalculation(), false);
 
 		unsetWaterConnection(calculations);
 		return calculations;
@@ -114,7 +114,7 @@ public class WSCalculationServiceImpl implements WSCalculationService {
 	 */
 	public List<Calculation> bulkDemandGeneration(CalculationReq request, Map<String, Object> masterMap) {
 		List<Calculation> calculations = getCalculations(request, masterMap);
-		demandService.generateDemand(request.getRequestInfo(), calculations, masterMap, true);
+		demandService.generateDemand(request.getRequestInfo(), calculations, masterMap, true, true);
 		return calculations;
 	}
 
