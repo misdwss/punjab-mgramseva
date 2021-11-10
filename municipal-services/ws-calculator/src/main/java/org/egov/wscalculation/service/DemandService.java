@@ -1066,6 +1066,7 @@ public class DemandService {
 			ActionItem item = ActionItem.builder().actionUrl(demandActionLink).build();
 			items.add(item);
 			Action action = Action.builder().actionUrls(items).build();
+			String billingCycle = fromDate + " - " + toDate;
 
 			List<Event> events = new ArrayList<>();
 
@@ -1078,13 +1079,13 @@ public class DemandService {
 						tenantId);
 				int size = connectionNos.size() + meteredConnectionNos.size();
 				message = messageMap.get(WSCalculationConstant.MSG_KEY);
-				message = message.replace("{billing cycle}", billCycle);
+				message = message.replace("{billing cycle}", billingCycle);
 				message = message.replace("{X}", String.valueOf(connectionNos.size()));
 				message = message.replace("{X/X+Y}", String.valueOf(connectionNos.size()) + "/" + String.valueOf(size));
 				message = message.replace("{Y}", String.valueOf(meteredConnectionNos.size()));
 				additionals.put("localizationCode", WSCalculationConstant.NEW_BULK_DEMAND_EVENT);
 				HashMap<String, String> attributes = new HashMap<String, String>();
-				attributes.put("{billing cycle}", billCycle);
+				attributes.put("{billing cycle}", billingCycle);
 				attributes.put("{X}", String.valueOf(connectionNos.size()));
 				attributes.put("{X/X+Y}", String.valueOf(connectionNos.size()) + "/" + String.valueOf(size));
 				attributes.put("{Y}", String.valueOf(meteredConnectionNos.size()));
@@ -1094,14 +1095,14 @@ public class DemandService {
 						tenantId);
 
 				message = messageMap.get(WSCalculationConstant.MSG_KEY);
-				message = message.replace("{billing cycle}", billCycle);
+				message = message.replace("{billing cycle}", billingCycle);
 				message = message.replace("{X}", String.valueOf(connectionNos.size()));
 				message = message.replace("{X/X}",
 						String.valueOf(connectionNos.size()) + "/" + String.valueOf(connectionNos.size()));
 
 				additionals.put("localizationCode", "NEW_BULK_DEMAND_EVENT");
 				HashMap<String, String> attributes = new HashMap<String, String>();
-				attributes.put("{billing cycle}", billCycle);
+				attributes.put("{billing cycle}", billingCycle);
 				attributes.put("{X}", String.valueOf(connectionNos.size()));
 				attributes.put("{X/X}",
 						String.valueOf(connectionNos.size()) + "/" + String.valueOf(connectionNos.size()));
@@ -1142,7 +1143,6 @@ public class DemandService {
 
 			String msgLink = config.getNotificationUrl() + config.getGpUserDemandLink();
 							
-			String billingCycle = fromDate + " - " + toDate;
 			for (OwnerInfo userInfo : userDetailResponse.getUser())
 				if (userInfo.getName() != null) {
 					mobileNumberIdMap.put(userInfo.getMobileNumber(), userInfo.getName());
