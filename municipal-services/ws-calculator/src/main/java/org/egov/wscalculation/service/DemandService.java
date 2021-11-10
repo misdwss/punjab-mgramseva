@@ -1,12 +1,15 @@
 package org.egov.wscalculation.service;
 
 import java.math.BigDecimal;
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.TemporalAdjusters;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -1044,10 +1047,17 @@ public class DemandService {
 			}
 
 			System.out.println("Event Messages to the users");
-			Map<String, Object> financialYearMaster = (Map<String, Object>) master
-					.get(WSCalculationConstant.BILLING_PERIOD);
-			Long fromDate = (Long) financialYearMaster.get(WSCalculationConstant.STARTING_DATE_APPLICABLES);
-			Long toDate = (Long) financialYearMaster.get(WSCalculationConstant.ENDING_DATE_APPLICABLES);
+			LocalDate firstDate = LocalDate.now().with(TemporalAdjusters.firstDayOfMonth());
+			LocalDate lastDate = LocalDate.now().with(TemporalAdjusters.lastDayOfMonth());
+			
+			    DateTimeFormatter formatters = DateTimeFormatter.ofPattern("d/MM/uuuu");
+			    String fromDate = firstDate.format(formatters);
+			    String toDate = lastDate.format(formatters);
+			
+//			Map<String, Object> financialYearMaster = (Map<String, Object>) master
+//					.get(WSCalculationConstant.BILLING_PERIOD);
+//			Long fromDate = (Long) financialYearMaster.get(WSCalculationConstant.STARTING_DATE_APPLICABLES);
+//			Long toDate = (Long) financialYearMaster.get(WSCalculationConstant.ENDING_DATE_APPLICABLES);
 
 			List<String> meteredConnectionNos = waterCalculatorDao.getConnectionsNoList(tenantId,
 					WSCalculationConstant.meteredConnectionType);
@@ -1089,7 +1099,7 @@ public class DemandService {
 				message = message.replace("{X/X}",
 						String.valueOf(connectionNos.size()) + "/" + String.valueOf(connectionNos.size()));
 
-				additionals.put("localizationCode", WSCalculationConstant.NEW_BULK_DEMAND_EVENT);
+				additionals.put("localizationCode", "NEW_BULK_DEMAND_EVENT");
 				HashMap<String, String> attributes = new HashMap<String, String>();
 				attributes.put("{billing cycle}", billCycle);
 				attributes.put("{X}", String.valueOf(connectionNos.size()));
@@ -1131,8 +1141,8 @@ public class DemandService {
 			Map<String, String> mobileNumberIdMap = new LinkedHashMap<>();
 
 			String msgLink = config.getNotificationUrl() + config.getGpUserDemandLink();
-			String billingCycle = (Instant.ofEpochMilli(fromDate).atZone(ZoneId.systemDefault()).toLocalDate() + "-"
-					+ Instant.ofEpochMilli(toDate).atZone(ZoneId.systemDefault()).toLocalDate());
+							
+			String billingCycle = fromDate + " - " + toDate;
 			for (OwnerInfo userInfo : userDetailResponse.getUser())
 				if (userInfo.getName() != null) {
 					mobileNumberIdMap.put(userInfo.getMobileNumber(), userInfo.getName());
