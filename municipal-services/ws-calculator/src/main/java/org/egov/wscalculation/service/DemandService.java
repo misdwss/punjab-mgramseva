@@ -279,7 +279,7 @@ public class DemandService {
 						.map(DemandDetail::getTaxAmount).reduce(BigDecimal.ZERO, BigDecimal::add).toString());
 				messageString = messageString.replace("{BILL_LINK}", getShortenedUrl(actionLink));
 
-				System.out.println("Demand genaratio Message::" + messageString);
+				System.out.println("Demand genaration Message1::" + messageString);
 
 				SMSRequest sms = SMSRequest.builder().mobileNumber(owner.getMobileNumber()).message(messageString)
 						.category(Category.TRANSACTION).build();
@@ -332,7 +332,7 @@ public class DemandService {
 					message = message.replace("{Y}", String.valueOf(meteredConnectionNos.size()));
 				}
 
-				System.out.println("Bulk Event msg:: " + message);
+				System.out.println("Bulk Event msg1:: " + message);
 				events.add(Event.builder().tenantId(tenantId).description(message)
 						.eventType(WSCalculationConstant.USREVENTS_EVENT_TYPE).name(WSCalculationConstant.MONTHLY_DEMAND_GENERATED)
 						.postedBy(WSCalculationConstant.USREVENTS_EVENT_POSTEDBY)
@@ -376,7 +376,7 @@ public class DemandService {
 					msg = msg.replace("{billingcycle}", billingCycle);
 					msg = msg.replace("{LINK}", msgLink);
 
-					System.out.println("Demand GP USER SMS::" + msg);
+					System.out.println("Demand GP USER SMS1::" + msg);
 
 					SMSRequest smsRequest = SMSRequest.builder().mobileNumber(map.getKey()).message(msg)
 							.category(Category.TRANSACTION).build();
@@ -749,11 +749,22 @@ public class DemandService {
 			} else {
 				actionLink = actionLink.replace("$key", "ws-bill-nm");
 			}
+			
+			demands.add(demand);
+			log.info("Demand Object" + demands.toString());
+			List<String> billNumber = fetchBill(demands, requestInfo);
+			log.info("Bill Number :: " + billNumber.toString());
+
+			if (billNumber.size() > 0) {
+				actionLink = actionLink.replace("$billNumber", billNumber.get(0));
+			}
 			actionLink = getShortenedUrl(actionLink);
 			String messageString = localizationMessage.get(WSCalculationConstant.MSG_KEY);
 
-			System.out.println("Localization message::" + messageString);
+			System.out.println("Localization message::" + messageString + demand);
+			
 			if (!StringUtils.isEmpty(messageString)) {
+				
 				billCycle = (Instant.ofEpochMilli(fromDate).atZone(ZoneId.systemDefault()).toLocalDate() + "-"
 						+ Instant.ofEpochMilli(toDate).atZone(ZoneId.systemDefault()).toLocalDate());
 				messageString = messageString.replace("{ownername}", owner.getName());
@@ -763,7 +774,7 @@ public class DemandService {
 						.map(DemandDetail::getTaxAmount).reduce(BigDecimal.ZERO, BigDecimal::add).toString());
 				messageString = messageString.replace("{BILL_LINK}", getShortenedUrl(actionLink));
 
-				System.out.println("Demand genaratio Message::" + messageString);
+				System.out.println("Demand genaration Message2::" + messageString);
 
 				SMSRequest sms = SMSRequest.builder().mobileNumber(owner.getMobileNumber()).message(messageString)
 						.category(Category.TRANSACTION).build();
@@ -838,7 +849,7 @@ public class DemandService {
 					message = message.replace("{Y}", String.valueOf(meteredConnectionNos.size()));
 				}
 
-				System.out.println("Bulk Event msg:: " + message);
+				System.out.println("Bulk Event msg2:: " + message);
 				events.add(Event.builder().tenantId(tenantId).description(message)
 						.eventType(WSCalculationConstant.USREVENTS_EVENT_TYPE).name(WSCalculationConstant.MONTHLY_DEMAND_GENERATED)
 						.postedBy(WSCalculationConstant.USREVENTS_EVENT_POSTEDBY)
@@ -882,7 +893,7 @@ public class DemandService {
 					msg = msg.replace("{billingcycle}", billingCycle);
 					msg = msg.replace("{LINK}", msgLink);
 
-					System.out.println("Demand GP USER SMS::" + msg);
+					System.out.println("Demand GP USER SMS2::" + msg);
 
 					SMSRequest smsRequest = SMSRequest.builder().mobileNumber(map.getKey()).message(msg)
 							.category(Category.TRANSACTION).build();
@@ -890,7 +901,7 @@ public class DemandService {
 					producer.push(config.getSmsNotifTopic(), smsRequest);
 				});
 			}
-			demands.add(demand);
+			
 		}
 
 		log.info("Updated Demand Details " + demands.toString());
@@ -1079,7 +1090,7 @@ public class DemandService {
 			message = message.replace("{Y}", String.valueOf(meteredConnectionNos.size()));
 		}
 
-		System.out.println("Bulk Event msg:: " + message);
+		System.out.println("Bulk Event msg3:: " + message);
 		events.add(Event.builder().tenantId(bulkDemand.getTenantId()).description(message)
 				.eventType(WSCalculationConstant.USREVENTS_EVENT_TYPE).name(WSCalculationConstant.MONTHLY_DEMAND_GENERATED)
 				.postedBy(WSCalculationConstant.USREVENTS_EVENT_POSTEDBY)
@@ -1121,7 +1132,7 @@ public class DemandService {
 			msg = msg.replace("{billingcycle}", billingPeriod);
 			msg = msg.replace("{LINK}", msgLink);
 
-			System.out.println("Demand GP USER SMS::" + msg);
+			System.out.println("Demand GP USER SMS3::" + msg);
 
 			SMSRequest smsRequest = SMSRequest.builder().mobileNumber(map.getKey()).message(msg)
 					.category(Category.TRANSACTION).build();
