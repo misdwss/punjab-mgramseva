@@ -31,7 +31,7 @@ public class WaterRepository {
 
 	public List<String> getPendingCollection(String tenantId, String startDate, String endDate) {
 		StringBuilder query = new StringBuilder(WsQueryBuilder.PENDINGCOLLECTION);
-		query.append(" and demand.tenantid = '").append(tenantId).append("'")
+		query.append(" and DMD.tenantid = '").append(tenantId).append("'")
 		.append( " and taxperiodfrom  >= ").append( startDate)  
 		.append(" and  taxperiodto <= " ).append(endDate);
 		log.info("Active pending collection query : " + query);
