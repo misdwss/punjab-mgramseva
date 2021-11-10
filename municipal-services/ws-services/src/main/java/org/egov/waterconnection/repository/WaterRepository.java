@@ -31,7 +31,7 @@ public class WaterRepository {
 
 	public List<String> getPendingCollection(String tenantId, String startDate, String endDate) {
 		StringBuilder query = new StringBuilder(WsQueryBuilder.PENDINGCOLLECTION);
-		query.append(" and demand.tenantid = '").append(tenantId).append("'")
+		query.append(" and DMD.tenantid = '").append(tenantId).append("'")
 		.append( " and taxperiodfrom  >= ").append( startDate)  
 		.append(" and  taxperiodto <= " ).append(endDate);
 		log.info("Active pending collection query : " + query);
@@ -58,7 +58,7 @@ public class WaterRepository {
 			query = new StringBuilder(queryBuilder.PREVIOUSDAYONLINECOLLECTION);
 		}
 		query.append( " and transactiondate  >= ").append( startDate)  
-		.append(" and  transactiondate <= " ).append(endDate); 
+		.append(" and  transactiondate <= " ).append(endDate).append(" and tenantId = '").append(tenantId).append("'"); 
 		log.info("Previous Day collection query : " + query);
 		List<Map<String, Object>> list =  jdbcTemplate.queryForList(query.toString());
 		return list;
