@@ -32,6 +32,7 @@ void main() {
       final login = find.byKey(Key("Login"));
       await tester.enterText(phoneNumber, '9686151676');
       await tester.pumpAndSettle(Duration(milliseconds: 3000));
+      await tester.ensureVisible(password);
       await tester.enterText(password, 'eGov@123');
       await tester.pumpAndSettle(Duration(milliseconds: 3000));
       await tester.ensureVisible(login);
@@ -51,12 +52,23 @@ void main() {
       final nameSearch = find.byKey(Key("nameSearch"));
       final phoneSearch = find.byKey(Key("phoneSearch"));
       final searchConnectionBtn = find.byKey(Key("Search Connection"));
+      await tester.ensureVisible(nameSearch);
       await tester.enterText(nameSearch, 'Na');
       await tester.pumpAndSettle(Duration(milliseconds: 3000));
       await tester.ensureVisible(searchConnectionBtn);
       await tester.tap(searchConnectionBtn);
       await tester.pumpAndSettle(Duration(milliseconds: 3000));
-
+      await tester.tap(find.byIcon(Icons.arrow_left));
+      await tester.pumpAndSettle(Duration(milliseconds: 3000));
+      await tester.tap(find.byIcon(Icons.arrow_left));
+      await tester.pumpAndSettle(Duration(milliseconds: 3000));
+      await tester.tap(collectPayment);
+      await tester.pumpAndSettle(Duration(milliseconds: 3000));
+      await tester.enterText(phoneSearch, '8145632987');
+      await tester.pumpAndSettle(Duration(milliseconds: 3000));
+      await tester.ensureVisible(searchConnectionBtn);
+      await tester.tap(searchConnectionBtn);
+      await tester.pumpAndSettle(Duration(milliseconds: 3000));
     });
   });
 }
