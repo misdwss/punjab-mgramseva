@@ -5,6 +5,7 @@ import 'package:mgramseva/providers/authentication.dart';
 import 'package:mgramseva/routers/Routers.dart';
 import 'package:mgramseva/utils/Constants/I18KeyConstants.dart';
 import 'package:mgramseva/utils/Locilization/application_localizations.dart';
+import 'package:mgramseva/utils/TestingKeys/testing_keys.dart';
 import 'package:mgramseva/utils/validators/Validators.dart';
 import 'package:mgramseva/widgets/Button.dart';
 import 'package:mgramseva/widgets/DesktopView.dart';
@@ -57,7 +58,7 @@ class _LoginState extends State<Login> {
 
   saveandLogin(context) async {
     var authProvider =
-        Provider.of<AuthenticationProvider>(context, listen: false);
+    Provider.of<AuthenticationProvider>(context, listen: false);
 
     if (formKey.currentState!.validate()) {
       authProvider.validateLogin(context, userNamecontroller.text.trim(),
@@ -94,6 +95,7 @@ class _LoginState extends State<Login> {
                   maxLength: 10,
                   validator: Validators.mobileNumberValidator,
                   textInputType: TextInputType.phone,
+                  key: Keys.login.LOGIN_PHONE_NUMBER_KEY,
                 ),
                 BuildTextField(
                   i18.login.LOGIN_PASSWORD,
@@ -102,6 +104,7 @@ class _LoginState extends State<Login> {
                   obscureText: !passwordVisible,
                   suffixIcon: buildPasswordVisibility(),
                   maxLines: 1,
+                  key: Keys.login.LOGIN_PASSWORD_KEY,
                 ),
                 GestureDetector(
                   onTap: () =>
@@ -119,9 +122,10 @@ class _LoginState extends State<Login> {
                           ))),
                 ),
                 Padding(
-                    padding: EdgeInsets.only(top: 15, bottom: 15, left: 8, right: 8),
-                    child: Button(
-                        i18.common.CONTINUE, buttonStatus ? () => saveandLogin(context) : null)),
+                  padding: EdgeInsets.only(top: 15, bottom: 15, left: 8, right: 8),
+                  child: Button(
+                      i18.common.CONTINUE, buttonStatus ? () => saveandLogin(context) : null),
+                  key: Keys.login.LOGIN_BTN_KEY,),
                 SizedBox(
                   height: 10,
                 )
@@ -149,12 +153,12 @@ class _LoginState extends State<Login> {
   Widget build(BuildContext context) {
     return FocusWatcher(
         child:Scaffold(body: LayoutBuilder(builder: (context, constraints) {
-      if (constraints.maxWidth < 760) {
-        return MobileView(getLoginCard());
-      } else {
-        return DesktopView(getLoginCard());
-      }
-    })));
+          if (constraints.maxWidth < 760) {
+            return MobileView(getLoginCard());
+          } else {
+            return DesktopView(getLoginCard());
+          }
+        })));
   }
 
   bool get buttonStatus => userNamecontroller.text.trim().length == 10 && passwordcontroller.text.trim().length > 1;

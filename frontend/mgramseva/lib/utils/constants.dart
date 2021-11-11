@@ -9,6 +9,7 @@ class Constants {
   static const int PAGINATION_LIMIT = 75;
 
   static const String DIGIT_FOOTER_ENDPOINT = 'mgramseva-dev-assets/logo/digit-footer.png';
+  static const String DIGIT_FOOTER_WHITE_ENDPOINT = 'mgramseva-dev-assets/logo/digit-footer-bw.png';
 
   static const String LOGIN_KEY = 'login_key';
   static const String LANGUAGE_KEY = 'language_key';
@@ -34,13 +35,13 @@ class Constants {
   ];
 
   static List<HomeItem> HOME_ITEMS = [
-     HomeItem(
-       "CORE_HOUSEHOLD_REGISTER",
-       (i18.homeWalkThroughMSg.HOUSEHOLD_REGISTER_MSG),
-       HomeIcons.hhregister,
-       Routes.HOUSEHOLD_REGISTER,
-       {},
-     ),
+    HomeItem(
+      "CORE_HOUSEHOLD_REGISTER",
+      (i18.homeWalkThroughMSg.HOUSEHOLD_REGISTER_MSG),
+      HomeIcons.hhregister,
+      Routes.HOUSEHOLD_REGISTER,
+      {},
+    ),
     HomeItem(
         "CORE_COLLECT_PAYMENTS",
         (i18.homeWalkThroughMSg.COLLECT_PAYMENTS_MSG),
@@ -126,4 +127,9 @@ class Constants {
     i18.common.NOV,
     i18.common.DEC,
   ];
+
+  /// Tabs
+  static const ALL = 'ALL';
+  static const PENDING = 'PENDING';
+  static const PAID = 'PAID';
 }

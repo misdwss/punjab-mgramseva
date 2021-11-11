@@ -5,6 +5,7 @@ import 'package:flutter_focus_watcher/flutter_focus_watcher.dart';
 import 'package:mgramseva/model/expensesDetails/expenses_details.dart';
 import 'package:mgramseva/providers/expenses_details_provider.dart';
 import 'package:mgramseva/screeens/AddExpense/AddExpenseWalkThrough/expenseWalkThrough.dart';
+import 'package:mgramseva/utils/TestingKeys/testing_keys.dart';
 import 'package:mgramseva/widgets/customAppbar.dart';
 import 'package:mgramseva/utils/Locilization/application_localizations.dart';
 import 'package:mgramseva/utils/common_methods.dart';
@@ -141,7 +142,9 @@ class _ExpenseDetailsState extends State<ExpenseDetails> {
                           !isUpdate)
                   ? () => expensesDetailsProvider.validateExpensesDetails(
                       context, isUpdate)
-                  : null),
+                  : null,
+          key: Keys.expense.EXPENSE_SUBMIT,
+          ),
         )));
   }
 
@@ -217,6 +220,7 @@ class _ExpenseDetailsState extends State<ExpenseDetails> {
                               contextkey:
                                   expenseProvider.expenseWalkthrougList[0].key,
                               controller: expenseDetails.expenseTypeController,
+                              key: Keys.expense.EXPENSE_TYPE,
                             ),
                             AutoCompleteView(
                               labelText: i18.expense.VENDOR_NAME,
@@ -238,6 +242,7 @@ class _ExpenseDetailsState extends State<ExpenseDetails> {
                               ],
                               contextkey:
                                   expenseProvider.expenseWalkthrougList[1].key,
+                              key: Keys.expense.VENDOR_NAME,
                             ),
                             if (expensesDetailsProvider.isNewVendor())
                               BuildTextField(
@@ -257,6 +262,7 @@ class _ExpenseDetailsState extends State<ExpenseDetails> {
                                       RegExp("[0-9]"))
                                 ],
                                 onChange: expensesDetailsProvider.onChangeOfMobileNumber,
+                                key: Keys.expense.VENDOR_MOBILE_NUMBER,
                               ),
                             BuildTextField(
                               '${i18.expense.AMOUNT}',
@@ -276,6 +282,7 @@ class _ExpenseDetailsState extends State<ExpenseDetails> {
                               validator: Validators.amountValidator,
                               contextkey:
                                   expenseProvider.expenseWalkthrougList[2].key,
+                              key: Keys.expense.EXPENSE_AMOUNT,
                             ),
                             BasicDateField(
                               i18.expense.BILL_DATE,
@@ -301,6 +308,7 @@ class _ExpenseDetailsState extends State<ExpenseDetails> {
                                   i18.expense.DATE_BILL_ENTERED_IN_RECORDS,
                               contextkey:
                                   expenseProvider.expenseWalkthrougList[3].key,
+                              key: Keys.expense.EXPENSE_BILL_DATE,
                             ),
                             BasicDateField(
                               i18.expense.PARTY_BILL_DATE,
@@ -321,6 +329,7 @@ class _ExpenseDetailsState extends State<ExpenseDetails> {
                               isEnabled: expenseDetails.allowEdit,
                               contextkey:
                                   expenseProvider.expenseWalkthrougList[4].key,
+                              key: Keys.expense.EXPENSE_PARTY_DATE,
                             ),
                             RadioButtonFieldBuilder(
                                 context,
