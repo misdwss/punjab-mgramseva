@@ -12,8 +12,7 @@ import 'package:provider/provider.dart';
 import 'package:mgramseva/utils/Constants/I18KeyConstants.dart';
 
 class HouseholdList extends StatefulWidget {
-  final int index;
-  const HouseholdList({Key? key, required this.index}) : super(key: key);
+  const HouseholdList({Key? key}) : super(key: key);
 
   @override
   _HouseholdListState createState() => _HouseholdListState();
@@ -23,28 +22,7 @@ class _HouseholdListState extends State<HouseholdList> {
 
   @override
   void initState() {
-    WidgetsBinding.instance?.addPostFrameCallback((_) => afterViewBuild());
     super.initState();
-  }
-
-  afterViewBuild(){
-    var householdProvider = Provider.of<HouseholdRegisterProvider>(context, listen: false)
-      ..limit = 10
-      ..offset = 1
-      ..sortBy = SortBy('connectionNumber', false);
-
-      householdProvider
-        ..waterConnectionsDetails?.waterConnection = <WaterConnection>[]
-        ..waterConnectionsDetails?.totalCount = null;
-
-      if(widget.index == 0) {
-        householdProvider.selectedTab = 'all';
-      }else if(widget.index == 1){
-        householdProvider.selectedTab = 'PAID';
-      }else{
-        householdProvider.selectedTab = 'PENDING';
-      }
-      householdProvider.fetchHouseholdDetails(context, householdProvider.limit, householdProvider.offset, true);
   }
 
   @override
@@ -80,7 +58,7 @@ class _HouseholdListState extends State<HouseholdList> {
     return LayoutBuilder(
         builder : (context, constraints) {
           var width = constraints.maxWidth < 760 ? 145.0  : (constraints.maxWidth / 3);
-          var tableData = householdProvider.getCollectionsData(widget.index, expenseList  as List<WaterConnection>);
+          var tableData = householdProvider.getCollectionsData(expenseList  as List<WaterConnection>);
           return tableData == null || tableData.isEmpty ?
           CommonWidgets.buildEmptyMessage(ApplicationLocalizations.of(context).translate(i18.dashboard.NO_RECORDS_MSG), context)
               : BillsTable
@@ -88,7 +66,7 @@ class _HouseholdListState extends State<HouseholdList> {
             tableData:  tableData,
             leftColumnWidth: width,
             rightColumnWidth: width * 2 ,
-
+            height: 68 + (52.0 * tableData.length),
           );
         }
     );

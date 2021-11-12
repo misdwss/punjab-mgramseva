@@ -65,31 +65,27 @@ class _HouseholdRegister extends State<HouseholdRegister> with SingleTickerProvi
                   : EdgeInsets.symmetric(
                   horizontal: MediaQuery.of(context).size.width / 25),
               child: Stack(children: [
-                SingleChildScrollView(
-                  child: Container(
-                      color: Color.fromRGBO(238, 238, 238, 1),
-                      padding: EdgeInsets.only(left: 8, right: 8),
-                      height: constraints.maxHeight - 50,
-                      child: CustomScrollView(slivers: [
-                        SliverList(
-                            delegate: SliverChildListDelegate([
-                              Row(
-                                mainAxisAlignment : MainAxisAlignment.spaceBetween,
-                                children: [
-                                  HomeBack(),
-                                  _buildShare
-                                ],
-                              ),
-                              Container(
-                                  key: key,
-                                  child: HouseholdCard()),
-                            ])),
-                        SliverFillRemaining(
-                            hasScrollBody: true,
-                            fillOverscroll: true,
-                            child: HouseholdSearch())
-                      ])),
-                ),
+                Container(
+                    color: Color.fromRGBO(238, 238, 238, 1),
+                    padding: EdgeInsets.only(left: 8, right: 8),
+                    height: constraints.maxHeight - 50,
+                    child: CustomScrollView(slivers: [
+                      SliverList(
+                          delegate: SliverChildListDelegate([
+                            Row(
+                              mainAxisAlignment : MainAxisAlignment.spaceBetween,
+                              children: [
+                                HomeBack(),
+                                _buildShare
+                              ],
+                            ),
+                            Container(
+                                key: key,
+                                child: HouseholdCard()),
+                          ])),
+                      SliverToBoxAdapter(
+                          child: HouseholdSearch())
+                    ])),
                 Align(
                     alignment: Alignment.bottomRight,
                     child: Consumer<HouseholdRegisterProvider>(
