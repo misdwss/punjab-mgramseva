@@ -107,9 +107,11 @@ class _SearchExpenseState extends State<SearchExpense> {
                                     FilteringTextInputFormatter.allow(
                                         RegExp("[A-Z0-9-]"))
                                   ],
+                                  key: Keys.expense.SEARCH_EXPENSE_BILL_ID,
                                 ),
                               ])),
                       InkWell(
+                        key: Keys.expense.SEARCH_EXPENSE_SHOW,
                         child: Padding(
                           padding: const EdgeInsets.only(
                               left: 25, top: 10, bottom: 10, right: 25),

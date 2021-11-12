@@ -31,6 +31,13 @@ void main() {
     final submitButton = find.widgetWithText(BottomButtonBar, ApplicationLocalizations.of(navigatorKey.currentContext!).translate(i18.common.SUBMIT));
     final expenseType = find.byKey(Keys.expense.SEARCH_EXPENSE_TYPE);
     final selectExpenseType = find.widgetWithText(ListTile, ApplicationLocalizations.of(navigatorKey.currentContext!).translate(TestInputs.expense.SEARCH_EXPENSE_TYPE));
+    final billId = find.byKey(Keys.expense.SEARCH_EXPENSE_BILL_ID);
+
+    /// set vendor name
+    await tester.enterText(vendorName, TestInputs.expense.VENDOR_NAME);
+    await tester.pumpAndSettle(Duration(milliseconds: 1000));
+    await tester.enterText(vendorName, '');
+    await tester.pumpAndSettle(Duration(milliseconds: 3000));
 
     /// selecting expense type
     await tester.ensureVisible(expenseType);
@@ -39,8 +46,16 @@ void main() {
     await tester.tap(selectExpenseType);
     await tester.pumpAndSettle(Duration(milliseconds: 3000));
 
-    // await tester.enterText(vendorName, 'Raja');
-    // await tester.pumpAndSettle(Duration(milliseconds: 2000));
+    final showType = find.byKey(Keys.expense.SEARCH_EXPENSE_SHOW);
+    await tester.ensureVisible(showType);
+    await tester.pumpAndSettle(Duration(milliseconds: 3000));
+    await tester.tap(showType);
+
+    await tester.pumpAndSettle(Duration(milliseconds: 3000));
+    await tester.enterText(billId, TestInputs.expense.BILL_ID);
+    await tester.pumpAndSettle(Duration(milliseconds: 3000));
+    await tester.enterText(billId, '');
+    await tester.pumpAndSettle(Duration(milliseconds: 1000));
 
     await tester.tap(find.byType(ElevatedButton));
     await tester.pumpAndSettle(Duration(seconds: 5));

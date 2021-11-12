@@ -45,4 +45,6 @@ class ExpenseKeys {
   Key get SEARCH_EXPENSES => Key("search_expenses_btn");
   Key get UPDATE_EXPNEDITURE => Key("update_expenditure");
   Key get SEARCH_EXPENSE_TYPE => Key("search_expense_type");
+  Key get SEARCH_EXPENSE_SHOW => Key("search_expense_show");
+  Key get SEARCH_EXPENSE_BILL_ID => Key("search_expense_billId");
 }
