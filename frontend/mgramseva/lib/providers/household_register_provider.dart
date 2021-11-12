@@ -11,6 +11,7 @@ import 'package:mgramseva/routers/Routers.dart';
 import 'package:mgramseva/screeens/HouseholdRegister/household_pdf.dart';
 import 'package:mgramseva/utils/Constants/I18KeyConstants.dart';
 import 'package:mgramseva/utils/Locilization/application_localizations.dart';
+import 'package:mgramseva/utils/constants.dart';
 import 'package:mgramseva/utils/date_formats.dart';
 import 'package:mgramseva/utils/error_logging.dart';
 import 'package:mgramseva/utils/global_variables.dart';
@@ -33,7 +34,7 @@ class HouseholdRegisterProvider with ChangeNotifier {
   SortBy? sortBy;
   WaterConnections? waterConnectionsDetails;
   WaterConnection? waterConnection;
-  String selectedTab = 'all';
+  String selectedTab = Constants.ALL;
   Map<String, int> collectionCountHolder= {};
   Timer? debounce;
   bool isLoaderEnabled = false;
@@ -55,11 +56,11 @@ class HouseholdRegisterProvider with ChangeNotifier {
       ..waterConnectionsDetails?.totalCount = null;
 
     if(index == 0) {
-      householdProvider.selectedTab = 'all';
+      householdProvider.selectedTab = Constants.ALL;
     }else if(index == 1){
-      householdProvider.selectedTab = 'paid';
+      householdProvider.selectedTab = Constants.PAID;
     }else{
-      householdProvider.selectedTab = 'pending';
+      householdProvider.selectedTab = Constants.PENDING;
     }
     householdProvider.fetchHouseholdDetails(context, householdProvider.limit, householdProvider.offset, true);
   }
@@ -95,9 +96,9 @@ class HouseholdRegisterProvider with ChangeNotifier {
       'isCollectionCount': 'true',
     };
 
-    if(selectedTab != 'all'){
+    if(selectedTab != Constants.ALL){
       query.addAll({
-        'isBillPaid' : (selectedTab == 'paid') ? 'true' : 'false'
+        'isBillPaid' : (selectedTab == Constants.PAID) ? 'true' : 'false'
       });
     }
 
@@ -125,7 +126,7 @@ class HouseholdRegisterProvider with ChangeNotifier {
       var response = await SearchConnectionRepository().getconnection(query);
 
       var searchResponse;
-      if(isSearch && selectedTab != 'all'){
+      if(isSearch && selectedTab != Constants.ALL){
         query.remove('isBillPaid');
         searchResponse = await SearchConnectionRepository().getconnection(query);
       }
@@ -134,14 +135,14 @@ class HouseholdRegisterProvider with ChangeNotifier {
 
 
       if (response != null) {
-        if(selectedTab == 'all'){
-          collectionCountHolder['all'] = response.totalCount ?? 0;
-          collectionCountHolder['paid'] = response.collectionDataCount?.collectionPaid ?? 0;
-          collectionCountHolder['pending'] = response.collectionDataCount?.collectionPending ?? 0;
+        if(selectedTab == Constants.ALL){
+          collectionCountHolder[Constants.ALL] = response.totalCount ?? 0;
+          collectionCountHolder[Constants.PAID] = response.collectionDataCount?.collectionPaid ?? 0;
+          collectionCountHolder[Constants.PENDING] = response.collectionDataCount?.collectionPending ?? 0;
         }else if(searchResponse != null){
-          collectionCountHolder['all'] = searchResponse.totalCount ?? 0;
-          collectionCountHolder['paid'] = searchResponse.collectionDataCount?.collectionPaid ?? 0;
-          collectionCountHolder['pending'] = searchResponse.collectionDataCount?.collectionPending ?? 0;
+          collectionCountHolder[Constants.ALL] = searchResponse.totalCount ?? 0;
+          collectionCountHolder[Constants.PAID] = searchResponse.collectionDataCount?.collectionPaid ?? 0;
+          collectionCountHolder[Constants.PENDING] = searchResponse.collectionDataCount?.collectionPending ?? 0;
         }
 
         if (waterConnectionsDetails == null) {
@@ -180,8 +181,8 @@ class HouseholdRegisterProvider with ChangeNotifier {
   }
 
   bool isTabSelected(int index){
-    if(selectedTab == 'all' && index == 0) return true;
-      if((selectedTab == 'pending' && index == 2) || (selectedTab == 'paid' && index == 1)) return true;
+    if(selectedTab == Constants.ALL && index == 0) return true;
+      if((selectedTab == Constants.PENDING && index == 2) || (selectedTab == Constants.PAID && index == 1)) return true;
     return false;
   }
 
@@ -223,11 +224,11 @@ class HouseholdRegisterProvider with ChangeNotifier {
   int getCollectionsCount(int index) {
     switch (index) {
       case 0:
-        return collectionCountHolder['all'] ?? 0;
+        return collectionCountHolder[Constants.ALL] ?? 0;
       case 1:
-        return collectionCountHolder['paid'] ?? 0;
+        return collectionCountHolder[Constants.PAID] ?? 0;
       case 2:
-        return collectionCountHolder['pending'] ?? 0;
+        return collectionCountHolder[Constants.PENDING] ?? 0;
       default:
         return 0;
     }
@@ -308,9 +309,9 @@ class HouseholdRegisterProvider with ChangeNotifier {
       'isCollectionCount': 'true',
     };
 
-    if(selectedTab != 'all'){
+    if(selectedTab != Constants.ALL){
       query.addAll({
-        'isBillPaid' : (selectedTab == 'paid') ? 'true' : 'false'
+        'isBillPaid' : (selectedTab == Constants.PAID) ? 'true' : 'false'
       });
     }
 
