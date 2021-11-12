@@ -10,6 +10,8 @@ import 'package:mgramseva/utils/TestingKeys/testing_keys.dart';
 import 'package:mgramseva/utils/date_formats.dart';
 import 'package:mgramseva/utils/global_variables.dart';
 
+import 'Test Inputs/test_inputs.dart';
+
 
 void main() {
 
@@ -25,8 +27,7 @@ void main() {
       final expenseBillDate = find.byKey(Keys.expense.EXPENSE_BILL_DATE);
       final addExpenseBtn = find.byKey(Keys.expense.EXPENSE_SUBMIT);
       final expenseType = find.byKey(Keys.expense.EXPENSE_TYPE);
-      final selectExpenseType = find.widgetWithText(ListTile, ApplicationLocalizations.of(navigatorKey.currentContext!).translate('ELECTRICITY_BILL'));
-
+      final selectExpenseType = find.widgetWithText(ListTile, ApplicationLocalizations.of(navigatorKey.currentContext!).translate(TestInputs.expense.EXPENSE_TYPE));
       final vendorNameAutoComplete = find.byKey(Keys.expense.VENDOR_NAME);
 
       /// selecting expense type
@@ -36,9 +37,9 @@ void main() {
       await tester.tap(selectExpenseType);
       await tester.pumpAndSettle(Duration(milliseconds: 3000));
 
-      await tester.enterText(vendorNameAutoComplete, 'hara');
+      await tester.enterText(vendorNameAutoComplete, TestInputs.expense.VENDOR_NAME);
       await tester.pumpAndSettle(Duration(milliseconds: 3000));
-      await tester.enterText(expenseAmount, '123');
+      await tester.enterText(expenseAmount, TestInputs.expense.VENDOR_NUMBER);
       await tester.pumpAndSettle(Duration(milliseconds: 2000));
 
       final findDatePicker = find.byKey(Keys.expense.EXPENSE_BILL_DATE);
