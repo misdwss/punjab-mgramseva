@@ -21,13 +21,13 @@ void main() {
       await tester.pumpAndSettle(Duration(milliseconds: 3000));
 
       final phoneNumber = find.byKey(Keys.expense.VENDOR_MOBILE_NUMBER);
-      final vendorName = find.byKey(Keys.expense.VENDOR_NAME);
       final expenseAmount = find.byKey(Keys.expense.EXPENSE_AMOUNT);
       final expenseBillDate = find.byKey(Keys.expense.EXPENSE_BILL_DATE);
       final addExpenseBtn = find.byKey(Keys.expense.EXPENSE_SUBMIT);
-      final backBtn = find.byKey(Keys.expense.BACK_BTN);
       final expenseType = find.byKey(Keys.expense.EXPENSE_TYPE);
       final selectExpenseType = find.widgetWithText(ListTile, ApplicationLocalizations.of(navigatorKey.currentContext!).translate('ELECTRICITY_BILL'));
+
+      final vendorNameAutoComplete = find.byKey(Keys.expense.VENDOR_NAME);
 
       /// selecting expense type
       await tester.ensureVisible(expenseType);
@@ -36,10 +36,9 @@ void main() {
       await tester.tap(selectExpenseType);
       await tester.pumpAndSettle(Duration(milliseconds: 3000));
 
-      await tester.enterText(vendorName, 'player');
+      await tester.enterText(vendorNameAutoComplete, 'hara');
+      await tester.pumpAndSettle(Duration(milliseconds: 3000));
       await tester.enterText(expenseAmount, '123');
-      await tester.pumpAndSettle(Duration(milliseconds: 2000));
-      await tester.enterText(phoneNumber, '7893104355');
       await tester.pumpAndSettle(Duration(milliseconds: 2000));
 
       final findDatePicker = find.byKey(Keys.expense.EXPENSE_BILL_DATE);
@@ -60,10 +59,12 @@ void main() {
 
       await tester.ensureVisible(addExpenseBtn);
       await tester.tap(addExpenseBtn);
-      await tester.pumpAndSettle(Duration(milliseconds: 3000));
+      await tester.pumpAndSettle(Duration(milliseconds: 5000));
 
-      // await tester.ensureVisible(backBtn);
-      // await tester.tap(backBtn);
+      await tester.ensureVisible(find.byIcon(Icons.arrow_left));
+      await tester.pumpAndSettle(Duration(seconds: 3));
+      await tester.tap(find.byIcon(Icons.arrow_left));
+      await tester.pumpAndSettle(Duration(seconds: 5));
 
     });
 }
