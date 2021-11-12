@@ -43,6 +43,27 @@ class HouseholdRegisterProvider with ChangeNotifier {
     super.dispose();
   }
 
+
+  onChangeOfTab(BuildContext context, int index) async {
+    var householdProvider = Provider.of<HouseholdRegisterProvider>(context, listen: false)
+      ..limit = 10
+      ..offset = 1
+      ..sortBy = SortBy('connectionNumber', false);
+
+    householdProvider
+      ..waterConnectionsDetails?.waterConnection = <WaterConnection>[]
+      ..waterConnectionsDetails?.totalCount = null;
+
+    if(index == 0) {
+      householdProvider.selectedTab = 'all';
+    }else if(index == 1){
+      householdProvider.selectedTab = 'paid';
+    }else{
+      householdProvider.selectedTab = 'pending';
+    }
+    householdProvider.fetchHouseholdDetails(context, householdProvider.limit, householdProvider.offset, true);
+  }
+
   Future<void> fetchHouseholdDetails(
       BuildContext context, int limit, int offSet,
       [bool isSearch = false]) async {
@@ -76,7 +97,7 @@ class HouseholdRegisterProvider with ChangeNotifier {
 
     if(selectedTab != 'all'){
       query.addAll({
-        'isBillPaid' : (selectedTab == 'PAID') ? 'true' : 'false'
+        'isBillPaid' : (selectedTab == 'paid') ? 'true' : 'false'
       });
     }
 
@@ -115,12 +136,12 @@ class HouseholdRegisterProvider with ChangeNotifier {
       if (response != null) {
         if(selectedTab == 'all'){
           collectionCountHolder['all'] = response.totalCount ?? 0;
-          collectionCountHolder['PAID'] = response.collectionDataCount?.collectionPaid ?? 0;
-          collectionCountHolder['PENDING'] = response.collectionDataCount?.collectionPending ?? 0;
+          collectionCountHolder['paid'] = response.collectionDataCount?.collectionPaid ?? 0;
+          collectionCountHolder['pending'] = response.collectionDataCount?.collectionPending ?? 0;
         }else if(searchResponse != null){
           collectionCountHolder['all'] = searchResponse.totalCount ?? 0;
-          collectionCountHolder['PAID'] = searchResponse.collectionDataCount?.collectionPaid ?? 0;
-          collectionCountHolder['PENDING'] = searchResponse.collectionDataCount?.collectionPending ?? 0;
+          collectionCountHolder['paid'] = searchResponse.collectionDataCount?.collectionPaid ?? 0;
+          collectionCountHolder['pending'] = searchResponse.collectionDataCount?.collectionPending ?? 0;
         }
 
         if (waterConnectionsDetails == null) {
@@ -149,14 +170,19 @@ class HouseholdRegisterProvider with ChangeNotifier {
     }
   }
 
-  List<Tab> getCollectionsTabList(
+  List<String> getCollectionsTabList(
       BuildContext context) {
     var list = [i18.dashboard.ALL, i18.dashboard.PAID, i18.dashboard.PENDING];
     return List.generate(
         list.length,
-            (index) => Tab(
-            text:
-            '${ApplicationLocalizations.of(context).translate(list[index])} (${getCollectionsCount(index)})'));
+            (index) =>
+            '${ApplicationLocalizations.of(context).translate(list[index])} (${getCollectionsCount(index)})');
+  }
+
+  bool isTabSelected(int index){
+    if(selectedTab == 'all' && index == 0) return true;
+      if((selectedTab == 'pending' && index == 2) || (selectedTab == 'paid' && index == 1)) return true;
+    return false;
   }
 
   List<TableHeader> get collectionHeaderList => [
@@ -186,7 +212,7 @@ class HouseholdRegisterProvider with ChangeNotifier {
   ];
 
 
-  List<TableDataRow> getCollectionsData(int index, List<WaterConnection> list) {
+  List<TableDataRow> getCollectionsData(List<WaterConnection> list) {
     return list.map((e) => getCollectionRow(e)).toList();
   }
 
@@ -199,9 +225,9 @@ class HouseholdRegisterProvider with ChangeNotifier {
       case 0:
         return collectionCountHolder['all'] ?? 0;
       case 1:
-        return collectionCountHolder['PAID'] ?? 0;
+        return collectionCountHolder['paid'] ?? 0;
       case 2:
-        return collectionCountHolder['PENDING'] ?? 0;
+        return collectionCountHolder['pending'] ?? 0;
       default:
         return 0;
     }
@@ -284,7 +310,7 @@ class HouseholdRegisterProvider with ChangeNotifier {
 
     if(selectedTab != 'all'){
       query.addAll({
-        'isBillPaid' : (selectedTab == 'PAID') ? 'true' : 'false'
+        'isBillPaid' : (selectedTab == 'paid') ? 'true' : 'false'
       });
     }
 
