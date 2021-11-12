@@ -127,4 +127,9 @@ class Constants {
     i18.common.NOV,
     i18.common.DEC,
   ];
+
+  /// Tabs
+  static const ALL = 'ALL';
+  static const PENDING = 'PENDING';
+  static const PAID = 'PAID';
 }
