@@ -7,6 +7,7 @@ import 'package:integration_test/integration_test.dart';
 import 'package:mgramseva/main.dart' as app;
 import 'package:mgramseva/utils/Locilization/application_localizations.dart';
 import 'package:mgramseva/utils/TestingKeys/testing_keys.dart';
+import 'package:mgramseva/utils/date_formats.dart';
 import 'package:mgramseva/utils/global_variables.dart';
 
 
@@ -26,19 +27,36 @@ void main() {
       final addExpenseBtn = find.byKey(Keys.expense.EXPENSE_SUBMIT);
       final backBtn = find.byKey(Keys.expense.BACK_BTN);
       final expenseType = find.byKey(Keys.expense.EXPENSE_TYPE);
+      final selectExpenseType = find.widgetWithText(ListTile, ApplicationLocalizations.of(navigatorKey.currentContext!).translate('ELECTRICITY_BILL'));
 
-      final selectExpenseType = find.widgetWithText(ListTile, ApplicationLocalizations.of(navigatorKey.currentContext!).translate('SALARY'));
+      /// selecting expense type
       await tester.ensureVisible(expenseType);
       await tester.tap(expenseType);
       await tester.pumpAndSettle(Duration(milliseconds: 3000));
       await tester.tap(selectExpenseType);
       await tester.pumpAndSettle(Duration(milliseconds: 3000));
 
-      await tester.enterText(vendorName, 'Singer');
-      await tester.enterText(expenseType, 'SALARY');
+      await tester.enterText(vendorName, 'player');
       await tester.enterText(expenseAmount, '123');
-      await tester.enterText(expenseBillDate, '12/10/2021');
       await tester.pumpAndSettle(Duration(milliseconds: 2000));
+      await tester.enterText(phoneNumber, '7893104355');
+      await tester.pumpAndSettle(Duration(milliseconds: 2000));
+
+      final findDatePicker = find.byKey(Keys.expense.EXPENSE_BILL_DATE);
+      final findEditDateIcon = find.byIcon(Icons.edit);
+      final findDateTextField = find.widgetWithText(TextField, DateFormats.getFilteredDate(
+          DateTime.now().toLocal().toString(),
+          dateFormat: "dd/MM/yyyy") );
+      final findOKButtonInDate = find.text('OK');
+      await tester.ensureVisible(findDatePicker);
+      await tester.tap(findDatePicker);
+      await tester.pumpAndSettle(Duration(milliseconds: 3000));
+      await tester.tap(findEditDateIcon);
+      await tester.pumpAndSettle(Duration(milliseconds: 3000));
+      await tester.enterText(findDateTextField, '01/10/2021');
+      await tester.pumpAndSettle(Duration(milliseconds: 3000));
+      await tester.tap(findOKButtonInDate);
+      await tester.pumpAndSettle(Duration(milliseconds: 3000));
 
       await tester.ensureVisible(addExpenseBtn);
       await tester.tap(addExpenseBtn);

@@ -22,14 +22,23 @@ void main() {
     await tester.tap(updateExpense);
     await tester.pumpAndSettle(Duration(milliseconds: 3000));
 
-    /// Searching by vendor name
+
     final vendorName = find.byKey(Keys.expense.SEARCH_VENDOR_NAME);
     final updateExpenditure = find.widgetWithText(ShortButton, ApplicationLocalizations.of(navigatorKey.currentContext!).translate(i18.expense.UPDATE_EXPENDITURE)).first;
     final checkBox = find.byType(Checkbox);
     final submitButton = find.widgetWithText(BottomButtonBar, ApplicationLocalizations.of(navigatorKey.currentContext!).translate(i18.common.SUBMIT));
+    final expenseType = find.byKey(Keys.expense.SEARCH_EXPENSE_TYPE);
+    final selectExpenseType = find.widgetWithText(ListTile, ApplicationLocalizations.of(navigatorKey.currentContext!).translate('ELECTRICITY_BILL'));
 
-    await tester.enterText(vendorName, 'Raja');
-    await tester.pumpAndSettle(Duration(milliseconds: 2000));
+    /// selecting expense type
+    await tester.ensureVisible(expenseType);
+    await tester.tap(expenseType);
+    await tester.pumpAndSettle(Duration(milliseconds: 3000));
+    await tester.tap(selectExpenseType);
+    await tester.pumpAndSettle(Duration(milliseconds: 3000));
+
+    // await tester.enterText(vendorName, 'Raja');
+    // await tester.pumpAndSettle(Duration(milliseconds: 2000));
 
     await tester.tap(find.byType(ElevatedButton));
     await tester.pumpAndSettle(Duration(seconds: 5));

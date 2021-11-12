@@ -52,9 +52,9 @@ void main() {
     // create_consumer.main();
 
     /// update expense
-    update_expense.main();
+    // update_expense.main();
 
     /// add expense
-    // add_expense.main();
+    add_expense.main();
   });
 }
