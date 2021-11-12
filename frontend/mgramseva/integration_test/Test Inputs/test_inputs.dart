@@ -32,6 +32,7 @@ class CreateConsumerInputs{
 class Expense {
   const Expense();
   String get EXPENSE_TYPE => 'ELECTRICITY_BILL';
+  String get SEARCH_EXPENSE_TYPE => 'OM';
   String get VENDOR_NAME => 'hara';
   String get VENDOR_NUMBER => '9949210191';
   String get VENDOR_AMOUNT => '123';

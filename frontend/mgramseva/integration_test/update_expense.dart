@@ -12,6 +12,8 @@ import 'package:mgramseva/widgets/BottonButtonBar.dart';
 import 'package:mgramseva/widgets/ShortButton.dart';
 import 'package:mgramseva/utils/Constants/I18KeyConstants.dart';
 
+import 'Test Inputs/test_inputs.dart';
+
 
 void main() {
 
@@ -28,7 +30,7 @@ void main() {
     final checkBox = find.byType(Checkbox);
     final submitButton = find.widgetWithText(BottomButtonBar, ApplicationLocalizations.of(navigatorKey.currentContext!).translate(i18.common.SUBMIT));
     final expenseType = find.byKey(Keys.expense.SEARCH_EXPENSE_TYPE);
-    final selectExpenseType = find.widgetWithText(ListTile, ApplicationLocalizations.of(navigatorKey.currentContext!).translate('ELECTRICITY_BILL'));
+    final selectExpenseType = find.widgetWithText(ListTile, ApplicationLocalizations.of(navigatorKey.currentContext!).translate(TestInputs.expense.SEARCH_EXPENSE_TYPE));
 
     /// selecting expense type
     await tester.ensureVisible(expenseType);

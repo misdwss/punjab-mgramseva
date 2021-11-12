@@ -329,6 +329,7 @@ class _ExpenseDetailsState extends State<ExpenseDetails> {
                               isEnabled: expenseDetails.allowEdit,
                               contextkey:
                                   expenseProvider.expenseWalkthrougList[4].key,
+                              key: Keys.expense.EXPENSE_PARTY_DATE,
                             ),
                             RadioButtonFieldBuilder(
                                 context,

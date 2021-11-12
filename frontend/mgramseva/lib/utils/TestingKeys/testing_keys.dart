@@ -37,6 +37,7 @@ class ExpenseKeys {
   Key get EXPENSE_TYPE => Key("expense_type");
   Key get EXPENSE_AMOUNT => Key("expense_amount");
   Key get EXPENSE_BILL_DATE => Key("expense_bill_date");
+  Key get EXPENSE_PARTY_DATE => Key("expense_party_date");
   Key get EXPENSE_SUBMIT => Key("expense_submit");
   Key get BACK_BTN => Key("back_home");
 

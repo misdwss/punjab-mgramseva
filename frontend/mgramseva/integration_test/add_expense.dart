@@ -53,10 +53,26 @@ void main() {
       await tester.pumpAndSettle(Duration(milliseconds: 3000));
       await tester.tap(findEditDateIcon);
       await tester.pumpAndSettle(Duration(milliseconds: 3000));
-      await tester.enterText(findDateTextField, '01/10/2021');
+      await tester.enterText(findDateTextField, '12/11/2021');
       await tester.pumpAndSettle(Duration(milliseconds: 3000));
       await tester.tap(findOKButtonInDate);
       await tester.pumpAndSettle(Duration(milliseconds: 3000));
+
+      // final partyDatePicker = find.byKey(Keys.expense.EXPENSE_PARTY_DATE);
+      // final findPartyEditDateIcon = find.byIcon(Icons.edit);
+      // final findPartyDateTextField = find.widgetWithText(TextField, DateFormats.getFilteredDate(
+      //     DateTime.now().toLocal().toString(),
+      //     dateFormat: "dd/MM/yyyy") );
+      // final findPartyOKButtonInDate = find.text('OK');
+      // await tester.ensureVisible(partyDatePicker);
+      // await tester.tap(partyDatePicker);
+      // await tester.pumpAndSettle(Duration(milliseconds: 3000));
+      // await tester.tap(findPartyEditDateIcon);
+      // await tester.pumpAndSettle(Duration(milliseconds: 3000));
+      // await tester.enterText(findPartyDateTextField, '12/11/2021');
+      // await tester.pumpAndSettle(Duration(milliseconds: 3000));
+      // await tester.tap(findPartyOKButtonInDate);
+      // await tester.pumpAndSettle(Duration(milliseconds: 5000));
 
       await tester.ensureVisible(addExpenseBtn);
       await tester.tap(addExpenseBtn);
