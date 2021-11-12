@@ -1,35 +1,38 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 // TODO 5: Import the app that you want to test
 import 'package:mgramseva/main.dart' as app;
+import 'package:mgramseva/utils/TestingKeys/testing_keys.dart';
 import 'package:mgramseva/widgets/LanguageCard.dart';
+import 'search_Connection_test.dart' as search_Connection;
+import 'create_consumer_test.dart' as create_consumer;
+import 'update_Consumer_Test.dart' as update_consumer;
 
 
 void main() {
   group('App Test', () {
-    // TODO 3: Add the IntegrationTestWidgetsFlutterBinding and .ensureInitialized
+    ///  Add the IntegrationTestWidgetsFlutterBinding and .ensureInitialized
     IntegrationTestWidgetsFlutterBinding.ensureInitialized();
-    // TODO 4: Create your test case
+    /// Create your test case
     testWidgets("full app test", (tester) async {
-      // TODO 6: execute the app.main() function
+      /// execute the app.main() function
       app.main();
-      // TODO 7: Wait until the app has settled
+      /// Wait until the app has settled
       await tester.pumpAndSettle(Duration(milliseconds: 1000));
 
       ///Language Selection Testing starts
-      final selectLanguage = find.byType(LanguageCard).last;
-      final selectLanButton = find.byKey(Key("language selected"));
+      final selectLanguage = find.byType(LanguageCard).at(2);
+      final selectLanButton = find.byKey(Keys.language.LANGUAGE_PAGE_CONTINUE_BTN);
       await tester.tap(selectLanguage);
       await tester.pumpAndSettle(Duration(milliseconds: 3000));
       await tester.tap(selectLanButton);
       await tester.pumpAndSettle(Duration(milliseconds: 3000));
 
       /// Login Testing starts
-      final phoneNumber = find.byKey(Key("PhoneNum"));
-      final password = find.byKey(Key("Login Password"));
-      final login = find.byKey(Key("Login"));
+      final phoneNumber = find.byKey(Keys.login.LOGIN_PHONE_NUMBER_KEY);
+      final password = find.byKey(Keys.login.LOGIN_PASSWORD_KEY);
+      final login = find.byKey(Keys.login.LOGIN_BTN_KEY);
       await tester.enterText(phoneNumber, '9686151676');
       await tester.pumpAndSettle(Duration(milliseconds: 3000));
       await tester.ensureVisible(password);
@@ -38,37 +41,15 @@ void main() {
       await tester.ensureVisible(login);
       await tester.tap(login);
       await tester.pumpAndSettle(Duration(milliseconds: 3000));
-      /*final clickSideBar = find.byKey(Key("SideBar"));
-      final editProfile = find.byKey(Key("Edit Profile"));
-      await tester.tap(clickSideBar);
-      await tester.pumpAndSettle(Duration(milliseconds: 3000));
-      await tester.tap(editProfile);
-      await tester.pumpAndSettle(Duration(milliseconds: 3000));*/
-      /// Open Collect Payment Screen
-      final collectPayment = find.byType(GridTile).at(1);
-      await tester.tap(collectPayment);
-      await tester.pumpAndSettle(Duration(milliseconds: 3000));
-      /// Search by Name
-      final nameSearch = find.byKey(Key("nameSearch"));
-      final phoneSearch = find.byKey(Key("phoneSearch"));
-      final searchConnectionBtn = find.byKey(Key("Search Connection"));
-      await tester.ensureVisible(nameSearch);
-      await tester.enterText(nameSearch, 'Na');
-      await tester.pumpAndSettle(Duration(milliseconds: 3000));
-      await tester.ensureVisible(searchConnectionBtn);
-      await tester.tap(searchConnectionBtn);
-      await tester.pumpAndSettle(Duration(milliseconds: 3000));
-      await tester.tap(find.byIcon(Icons.arrow_left));
-      await tester.pumpAndSettle(Duration(milliseconds: 3000));
-      await tester.tap(find.byIcon(Icons.arrow_left));
-      await tester.pumpAndSettle(Duration(milliseconds: 3000));
-      await tester.tap(collectPayment);
-      await tester.pumpAndSettle(Duration(milliseconds: 3000));
-      await tester.enterText(phoneSearch, '8145632987');
-      await tester.pumpAndSettle(Duration(milliseconds: 3000));
-      await tester.ensureVisible(searchConnectionBtn);
-      await tester.tap(searchConnectionBtn);
-      await tester.pumpAndSettle(Duration(milliseconds: 3000));
+
     });
+    ///Search Connection Testing
+    //search_Connection.main();
+
+    ///Create Consumer Testing
+    //create_consumer.main();
+
+    ///Update Consumer Details Testing
+    update_consumer.main();
   });
 }

@@ -4,6 +4,7 @@ import 'package:mgramseva/providers/language.dart';
 import 'package:mgramseva/routers/Routers.dart';
 import 'package:mgramseva/utils/Constants/I18KeyConstants.dart';
 import 'package:mgramseva/utils/Locilization/application_localizations.dart';
+import 'package:mgramseva/utils/TestingKeys/testing_keys.dart';
 import 'package:mgramseva/widgets/BackgroundContainer.dart';
 import 'package:mgramseva/widgets/Button.dart';
 import 'package:mgramseva/widgets/LanguageCard.dart';
@@ -94,7 +95,7 @@ class LanguageSelectMobileView extends StatelessWidget {
                       builder: (_, languageProvider, child) => Button(
                           i18.common.CONTINUE,
                           () => Navigator.pushNamed(context, Routes.LOGIN),
-                      key: Key("language selected"),),
+                      key: Keys.language.LANGUAGE_PAGE_CONTINUE_BTN,),
                     ))
               ])))))),
       (new Positioned(

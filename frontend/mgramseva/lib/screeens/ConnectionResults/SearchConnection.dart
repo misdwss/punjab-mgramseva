@@ -5,6 +5,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_focus_watcher/flutter_focus_watcher.dart';
 import 'package:mgramseva/model/connection/search_connection.dart';
 import 'package:mgramseva/providers/search_connection_provider.dart';
+import 'package:mgramseva/utils/TestingKeys/testing_keys.dart';
 import 'package:mgramseva/widgets/customAppbar.dart';
 import 'package:mgramseva/utils/Constants/I18KeyConstants.dart';
 import 'package:mgramseva/utils/Locilization/application_localizations.dart';
@@ -97,7 +98,7 @@ class _SearchConsumerConnectionState extends State<SearchConsumerConnection> {
                                     .searchconnection.controllers[0],
                                 onChange: (value) => searchConnectionProvider
                                     .getdetails(value, 0),
-                                key: Key("phoneSearch"),
+                                key: Keys.searchConnection.SEARCH_PHONE_NUMBER_KEY,
                               ),
                               Text(
                                 '\n${ApplicationLocalizations.of(context).translate(i18.common.OR)}',
@@ -118,7 +119,7 @@ class _SearchConsumerConnectionState extends State<SearchConsumerConnection> {
                                 hint: ApplicationLocalizations.of(context)
                                     .translate(
                                         i18.searchWaterConnection.NAME_HINT),
-                                key: Key("nameSearch"),
+                                key: Keys.searchConnection.SEARCH_NAME_KEY,
                               ),
                               Visibility(
                                   visible: !isVisible,
@@ -197,7 +198,7 @@ class _SearchConsumerConnectionState extends State<SearchConsumerConnection> {
           () => searchConnectionProvider.validatesearchConnectionDetails(
               context, widget.arguments, (searchConnectionProvider.searchconnection.controllers[1] == false)
               ? true : false),
-      key: Key("Search Connection"),),
+      key: Keys.searchConnection.SEARCH_BTN_KEY,),
     ));
   }
 }
