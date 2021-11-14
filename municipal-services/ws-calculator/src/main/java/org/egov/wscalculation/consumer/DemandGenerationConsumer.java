@@ -297,6 +297,7 @@ public class DemandGenerationConsumer {
 
 			} catch (Exception e) {
 				// TODO: handle exception
+				System.out.println("Got the exception while genating the demands:" + connectionNo);
 				failedConnectionNos.add(connectionNo);
 			}
 			// TODO need to call generatedemandinbatch method instead of pushing to kafka.
