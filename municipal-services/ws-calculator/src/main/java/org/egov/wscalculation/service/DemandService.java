@@ -1,14 +1,18 @@
 package org.egov.wscalculation.service;
 
 import java.math.BigDecimal;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -844,6 +848,31 @@ public class DemandService {
 		String tenantId = bulkDemand.getTenantId();
 		requestInfo.getUserInfo().setTenantId(tenantId);
 		Map<String, Object> billingMasterData = calculatorUtils.loadBillingFrequencyMasterData(requestInfo, tenantId);
+		
+		List<String> connectionNos = waterCalculatorDao.getConnectionsNoList(bulkDemand.getTenantId(),
+				WSCalculationConstant.nonMeterdConnection);
+		Set<String> connectionSet = connectionNos.stream().collect(Collectors.toSet());
+		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+		Date billingStrartDate;
+		Calendar startCal = Calendar.getInstance();
+		Calendar endCal = Calendar.getInstance();
+		try {
+			billingStrartDate = sdf.parse(bulkDemand.getBillingPeriod().split("-")[0].trim());
+			Date billingEndDate = sdf.parse(bulkDemand.getBillingPeriod().split("-")[1].trim());
+			startCal.setTime(billingStrartDate);
+			endCal.setTime(billingEndDate);
+
+		} catch (CustomException | ParseException ex) {
+			log.error("", ex);
+
+			if (ex instanceof CustomException)
+				throw new CustomException("BILLING_PERIOD_ISSUE", "Billing period can not be in future!!");
+
+			throw new CustomException("BILLING_PERIOD_PARSING_ISSUE", "Billing period can not parsed!!");
+		}
+		wsCalculationValidator.validateBulkDemandBillingPeriod(startCal.getTimeInMillis(), connectionSet,
+				bulkDemand.getTenantId(), (String) billingMasterData.get(WSCalculationConstant.Billing_Cycle_String));
+		
 		HashMap<Object, Object> demandData = new HashMap<Object, Object>();
 		demandData.put("billingMasterData", billingMasterData);
 		demandData.put("bulkDemand", bulkDemand);

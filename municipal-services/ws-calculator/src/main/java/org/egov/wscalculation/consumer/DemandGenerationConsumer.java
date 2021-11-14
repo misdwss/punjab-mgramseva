@@ -201,6 +201,7 @@ public class DemandGenerationConsumer {
 			wsCalulationWorkflowValidator.applicationValidation(request.getRequestInfo(), criteria.getTenantId(),
 					criteria.getConnectionNo(), genratedemand);
 		}
+		System.out.println("Calling Bulk Demand generation");
 		wSCalculationServiceImpl.bulkDemandGeneration(request, masterMap);
 		String connectionNoStrings = request.getCalculationCriteria().stream()
 				.map(criteria -> criteria.getConnectionNo()).collect(Collectors.toSet()).toString();
@@ -494,60 +495,11 @@ public class DemandGenerationConsumer {
 
 		String billingPeriod = bulkDemand.getBillingPeriod();
 		if (StringUtils.isEmpty(billingPeriod))
-			throw new CustomException("BILLING_PERIOD_PARSING_ISSUE", "Billing can not empty!!");
+			throw new CustomException("BILLING_PERIOD_PARSING_ISSUE", "Billing Period can not be empty!!");
 
-		List<String> connectionNos = waterCalculatorDao.getConnectionsNoList(bulkDemand.getTenantId(),
-				WSCalculationConstant.nonMeterdConnection);
-		List<String> meteredConnectionNos = waterCalculatorDao.getConnectionsNoList(bulkDemand.getTenantId(),
-				WSCalculationConstant.meteredConnectionType);
 		SendNotificationsToUsers(bulkDemand.getRequestInfo(), bulkDemand.getTenantId(), billingPeriod, master,
 				isSendMessage, isManual);
-		Set<String> connectionSet = connectionNos.stream().collect(Collectors.toSet());
-		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-		Date billingStrartDate;
-		Calendar startCal = Calendar.getInstance();
-		Calendar endCal = Calendar.getInstance();
-		try {
-			billingStrartDate = sdf.parse(billingPeriod.split("-")[0].trim());
-			Date billingEndDate = sdf.parse(billingPeriod.split("-")[1].trim());
-			startCal.setTime(billingStrartDate);
-			endCal.setTime(billingEndDate);
-
-		} catch (CustomException | ParseException ex) {
-			log.error("", ex);
-
-			if (ex instanceof CustomException)
-				throw new CustomException("BILLING_PERIOD_ISSUE", "Billing period can not be in future!!");
-
-			throw new CustomException("BILLING_PERIOD_PARSING_ISSUE", "Billing period can not parsed!!");
-		}
-		wsCalculationValidator.validateBulkDemandBillingPeriod(startCal.getTimeInMillis(), connectionSet,
-				bulkDemand.getTenantId(), (String) master.get(WSCalculationConstant.Billing_Cycle_String));
 		
-		
-		
-		
-//		String assessmentYear = estimationService.getAssessmentYear();
-//		ArrayList<String> failedConnectionNos = new ArrayList<String>();
-//
-//		for (String connectionNo : connectionNos) {
-//			CalculationCriteria calculationCriteria = CalculationCriteria.builder().tenantId(bulkDemand.getTenantId())
-//					.assessmentYear(assessmentYear).connectionNo(connectionNo).from(startCal.getTimeInMillis())
-//					.to(endCal.getTimeInMillis()).build();
-//			List<CalculationCriteria> calculationCriteriaList = new ArrayList<>();
-//			calculationCriteriaList.add(calculationCriteria);
-//			CalculationReq calculationReq = CalculationReq.builder().calculationCriteria(calculationCriteriaList)
-//					.requestInfo(bulkDemand.getRequestInfo()).isconnectionCalculation(true).build();
-////			wsCalculationProducer.push(config.getCreateDemand(), calculationReq);
-//			// log.info("Prepared Statement" + calculationRes.toString());
-//			try {
-//				generateDemandInBatch(calculationReq, master, billingPeriod, isSendMessage);
-//
-//			} catch (Exception e) {
-//				// TODO: handle exception
-//				failedConnectionNos.add(connectionNo);
-//			}
-//		}
 	}
 
 }
