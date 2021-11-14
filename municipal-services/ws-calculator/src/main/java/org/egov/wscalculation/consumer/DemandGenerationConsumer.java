@@ -308,7 +308,7 @@ public class DemandGenerationConsumer {
 
 		}
 		System.out.println("demand Failed event Messages to the GP users ");		
-		if (isSendMessage && failedConnectionNos.size() > 0  || isManual && failedConnectionNos.size() > 0 ) {
+		if (isSendMessage && failedConnectionNos.size() > 0 ) {
 			List<ActionItem> actionItems = new ArrayList<>();
 			String actionLink = config.getBulkDemandFailedLink();
 			ActionItem actionItem = ActionItem.builder().actionUrl(actionLink).build();
