@@ -54,7 +54,7 @@ void main() {
       await tester.pumpAndSettle(Duration(milliseconds: 3000));
       await tester.tap(checkBox);
       await tester.pumpAndSettle(Duration(seconds: 3));
-  }
+  }else{}
 
     final updateConsumerSubmitBtn = find.byKey(Keys.createConsumer.CREATE_CONSUMER_BTN_KEY);
 
