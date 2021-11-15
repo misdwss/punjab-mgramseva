@@ -465,18 +465,19 @@ public class SchedulerService {
 				cashMessageMap.get(NotificationUtil.MSG_KEY), mode);
 		HashMap<String, String> onlineMessageMap = util.getLocalizationMessage(requestInfo, TODAY_ONLINE_COLLECTION,
 				tenantId);
-		messages.add(message);
+		if(message!=null) {
+			messages.add(message);
+			for (String msg : messages) {
+				events.add(Event.builder().tenantId(tenantId).description(msg).eventType(USREVENTS_EVENT_TYPE)
+						.name(TODAY_COLLECTION).postedBy(USREVENTS_EVENT_POSTEDBY)
+						.recepient(getRecepient(requestInfo, tenantId)).source(Source.WEBAPP).eventDetails(null)
+						.actions(action).build());
+			}
+		}
 //		mode = "online";
 //		String onlineMessage = formatTodayCollectionMessage(requestInfo, tenantId,
 //				onlineMessageMap.get(NotificationUtil.MSG_KEY), mode);
 //		messages.add(onlineMessage);
-		for (String msg : messages) {
-			events.add(Event.builder().tenantId(tenantId).description(msg).eventType(USREVENTS_EVENT_TYPE)
-					.name(TODAY_COLLECTION).postedBy(USREVENTS_EVENT_POSTEDBY)
-					.recepient(getRecepient(requestInfo, tenantId)).source(Source.WEBAPP).eventDetails(null)
-					.actions(action).build());
-		}
-
 		if (!CollectionUtils.isEmpty(events)) {
 			return EventRequest.builder().requestInfo(requestInfo).events(events).build();
 		} else {
