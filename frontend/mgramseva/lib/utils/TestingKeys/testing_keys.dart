@@ -6,6 +6,7 @@ class Keys{
   static LoginKeys login = const LoginKeys();
   static CreateConsumerKeys createConsumer = const CreateConsumerKeys();
   static SearchConncetionKeys searchConnection = const SearchConncetionKeys();
+  static GenerateBulkDemandKeys bulkDemand = const GenerateBulkDemandKeys();
 }
 
 class LanguagePageKeys{
@@ -45,4 +46,11 @@ class SearchConncetionKeys {
   Key get SEARCH_NEW_ID_KEY => Key("new Connection Search");
   Key get SHOW_MORE_BTN => Key("Show more");
   Key get SEARCH_BTN_KEY => Key("Search Connection Btn");
+}
+
+class GenerateBulkDemandKeys{
+  const GenerateBulkDemandKeys();
+  Key get BULK_DEMAND_BILLING_YEAR => Key('Bulk Demand billingYear');
+  Key get BULK_DEMAND_BILLING_CYCLE => Key('Bulk Demand billingCycle');
+  Key get GENERATE_BILL_BTN => Key('Generate Bill button');
 }

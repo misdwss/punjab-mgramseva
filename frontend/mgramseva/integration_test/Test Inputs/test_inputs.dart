@@ -5,6 +5,7 @@ class TestInputs{
   static SearchConnectionInputs searchConnection = const SearchConnectionInputs();
   static CreateConsumerInputs createConsumer = const CreateConsumerInputs();
   static UpdateConsumerInputs updateConsumer = const UpdateConsumerInputs();
+  static GenerateBulkDemandInputs bulkDemand = const GenerateBulkDemandInputs();
 }
 
 class LoginInputs{
@@ -54,4 +55,13 @@ class UpdateConsumerInputs {
 
   String get CONSUMER_PROPERTY => 'COMMERCIAL'; // [RESIDENTIAL, COMMERCIAL]
   String get MARK_CONNECTION_INACTIVE => 'No'; // Make Connection inactive by passing 'Yes'
+}
+
+class GenerateBulkDemandInputs{
+  const GenerateBulkDemandInputs();
+
+  String get BILLING_YEAR => '2021-22';
+  String get BILLING_CYCLE => Constants.MONTHS[10 - 1];
+// If selected Month is October, then Constants.MONTHS[10 - 1]
+// If selected Month is November, then Constants.MONTHS[11 - 1]
 }
