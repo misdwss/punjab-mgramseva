@@ -85,12 +85,15 @@ public class EditNotificationService {
 	}
 
 	private EventRequest getEventRequest(WaterConnectionRequest waterConnectionRequest, Property property) {
+		Map<String, Object> additionalDetailsMap = new HashMap<String, Object>();
 		String localizationMessage = notificationUtil
 				.getLocalizationMessages(property.getTenantId(), waterConnectionRequest.getRequestInfo());
 		String code = WCConstants.WS_EDIT_IN_APP;
+		additionalDetailsMap.put("localizationCode", WCConstants.WS_EDIT_IN_APP);
 		if ((!waterConnectionRequest.getWaterConnection().getProcessInstance().getAction().equalsIgnoreCase(WCConstants.ACTIVATE_CONNECTION))
 				&& waterServicesUtil.isModifyConnectionRequest(waterConnectionRequest)) {
 			   code = WCConstants.WS_MODIFY_IN_APP;
+			   additionalDetailsMap.put("localizationCode", WCConstants.WS_MODIFY_IN_APP);
 		}
 		String message = notificationUtil.getCustomizedMsg(code, localizationMessage);
 		if (message == null) {
@@ -113,7 +116,7 @@ public class EditNotificationService {
 			});
 		}
 		Map<String, String> mobileNumberAndMessage = workflowNotificationService
-				.getMessageForMobileNumber(mobileNumbersAndNames, waterConnectionRequest, message, property);
+				.getMessageForMobileNumber(mobileNumbersAndNames, waterConnectionRequest, message, property, additionalDetailsMap);
 		Set<String> mobileNumbers = mobileNumberAndMessage.keySet().stream().collect(Collectors.toSet());
 		Map<String, String> mapOfPhoneNoAndUUIDs = workflowNotificationService.fetchUserUUIDs(mobileNumbers, waterConnectionRequest.getRequestInfo(),
 				property.getTenantId());
@@ -134,7 +137,7 @@ public class EditNotificationService {
 			events.add(Event.builder().tenantId(property.getTenantId())
 					.description(mobileNumberAndMessage.get(mobile)).eventType(WCConstants.USREVENTS_EVENT_TYPE)
 					.name(WCConstants.USREVENTS_EVENT_NAME).postedBy(WCConstants.USREVENTS_EVENT_POSTEDBY)
-					.source(Source.WEBAPP).recepient(recepient).eventDetails(null).actions(action).build());
+					.source(Source.WEBAPP).recepient(recepient).eventDetails(null).actions(action).additionalDetails(additionalDetailsMap).build());
 		}
 		if (!CollectionUtils.isEmpty(events)) {
 			return EventRequest.builder().requestInfo(waterConnectionRequest.getRequestInfo()).events(events).build();
@@ -173,7 +176,7 @@ public class EditNotificationService {
 			});
 		}
 		Map<String, String> mobileNumberAndMessage = workflowNotificationService
-				.getMessageForMobileNumber(mobileNumbersAndNames, waterConnectionRequest, message, property);
+				.getMessageForMobileNumber(mobileNumbersAndNames, waterConnectionRequest, message, property, new HashMap<>());
 		List<SMSRequest> smsRequest = new ArrayList<>();
 		mobileNumberAndMessage.forEach((mobileNumber, msg) -> {
 			SMSRequest req = SMSRequest.builder().mobileNumber(mobileNumber).message(msg).category(Category.TRANSACTION).build();

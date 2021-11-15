@@ -99,11 +99,14 @@ public class WSCalculationServiceImpl implements WSCalculationService {
 //					request.getCalculationCriteria().get(0).getTenantId());
 //			calculations = getCalculations(request, masterMap);
 //		}
+		List<WaterConnection> wsresults = calculatorUtil.getWaterConnection(request.getRequestInfo(),
+				request.getCalculationCriteria().get(0).getConnectionNo(), request.getCalculationCriteria().get(0).getTenantId());
+		
 		List<Demand> searchResult = demandService.searchDemandBasedOnConsumerCode(
 				request.getCalculationCriteria().get(0).getTenantId(),
 				request.getCalculationCriteria().get(0).getConnectionNo(), request.getRequestInfo());
 		if (searchResult != null && searchResult.size() > 0
-				&& searchResult.get(0).getConsumerType().equalsIgnoreCase("waterConnection-arrears") && !request.getIsconnectionCalculation()) {
+				&& searchResult.get(0).getConsumerType().equalsIgnoreCase("waterConnection-arrears") && !request.getIsconnectionCalculation() && wsresults !=null && wsresults.size()>0 && wsresults.get(0).getPreviousReadingDate().longValue() != request.getCalculationCriteria().get(0).getWaterConnection().getPreviousReadingDate().longValue()) {
 			searchResult.get(0).setStatus(StatusEnum.CANCELLED);
 			demandRepository.updateDemand(request.getRequestInfo(), searchResult);
 		}

@@ -260,6 +260,9 @@ public class PaymentUpdateService {
 	 * @return
 	 */
 	private EventRequest getEventRequest(WaterConnectionRequest request, Property property, PaymentDetail paymentDetail) {
+		Map<String, Object> additionalDetailsMap = new HashMap<String, Object>();
+		additionalDetailsMap.put("localizationCode", WCConstants.PAYMENT_NOTIFICATION_APP);
+		
 		String localizationMessage = notificationUtil
 				.getLocalizationMessages(property.getTenantId(), request.getRequestInfo());
 		String message = notificationUtil.getMessageTemplate(WCConstants.PAYMENT_NOTIFICATION_APP, localizationMessage);
@@ -281,7 +284,7 @@ public class PaymentUpdateService {
 			});
 		}
 		Map<String, String> getReplacedMessage = workflowNotificationService.getMessageForMobileNumber(mobileNumbersAndNames, request,
-				message, property);
+				message, property, additionalDetailsMap);
 		Map<String, String> mobileNumberAndMesssage = replacePaymentInfo(getReplacedMessage, paymentDetail,null, request.getWaterConnection().getConnectionType());
 		Set<String> mobileNumbers = mobileNumberAndMesssage.keySet().stream().collect(Collectors.toSet());
 		Map<String, String> mapOfPhnoAndUUIDs = workflowNotificationService.fetchUserUUIDs(mobileNumbers, request.getRequestInfo(), property.getTenantId());
@@ -301,7 +304,7 @@ public class PaymentUpdateService {
 			events.add(Event.builder().tenantId(property.getTenantId())
 					.description(mobileNumberAndMesssage.get(mobile)).eventType(WCConstants.USREVENTS_EVENT_TYPE)
 					.name(WCConstants.USREVENTS_EVENT_NAME).postedBy(WCConstants.USREVENTS_EVENT_POSTEDBY)
-					.source(Source.WEBAPP).recepient(recepient).eventDetails(null).actions(action).build());
+					.source(Source.WEBAPP).recepient(recepient).eventDetails(null).actions(action).additionalDetails(additionalDetailsMap).build());
 		}
 		if (!CollectionUtils.isEmpty(events)) {
 			return EventRequest.builder().requestInfo(request.getRequestInfo()).events(events).build();
@@ -341,7 +344,7 @@ public class PaymentUpdateService {
 			});
 		}
 		Map<String, String> getReplacedMessage = workflowNotificationService.getMessageForMobileNumber(mobileNumbersAndNames,
-				waterConnectionRequest, message, property);
+				waterConnectionRequest, message, property, new HashMap<>());
 		Map<String, String> mobileNumberAndMessage = replacePaymentInfo(getReplacedMessage, paymentDetail,paymentId, waterConnectionRequest.getWaterConnection().getConnectionType());
 
 		List<SMSRequest> smsRequest = new ArrayList<>();

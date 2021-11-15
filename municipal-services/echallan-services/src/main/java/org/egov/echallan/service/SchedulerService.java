@@ -169,7 +169,9 @@ public class SchedulerService {
 		ActionItem item = ActionItem.builder().actionUrl(actionLink).build();
 		items.add(item);
 		Action action = Action.builder().actionUrls(items).build();
+		Map<String, Object> additionalDetailsMap = new HashMap<String, Object>();
 		List<Event> events = new ArrayList<>();
+		additionalDetailsMap.put("localizationCode", NEW_EXPENDITURE_EVENT);
 		System.out.println("Action Link::" + actionLink);
 		if (tenantId.split("\\.").length >= 2) {
 			HashMap<String, String> messageMap = util.getLocalizationMessage(requestInfo, NEW_EXPENDITURE_EVENT,
@@ -178,7 +180,9 @@ public class SchedulerService {
 			events.add(Event.builder().tenantId(tenantId).description(messageMap.get(NotificationUtil.MSG_KEY))
 					.eventType(USREVENTS_EVENT_TYPE).name(NEW_EXPENSE_ENTRY).postedBy(USREVENTS_EVENT_POSTEDBY)
 					.recepient(getRecepient(requestInfo, tenantId)).source(Source.WEBAPP).eventDetails(null)
-					.actions(action).build());
+					.actions(action)
+					.additionalDetails(additionalDetailsMap)
+					.build());
 		}
 
 		if (!CollectionUtils.isEmpty(events))
@@ -293,14 +297,21 @@ public class SchedulerService {
 		Action action = Action.builder().actionUrls(items).build();
 		System.out.println("Action Link::" + actionLink);
 
+		Map<String, Object> additionalDetailsMap = new HashMap<String, Object>();
+		Map<String, String> attributes = new HashMap<>();
+		additionalDetailsMap.put("localizationCode", GENERATE_DEMAND_EVENT);
+		
 		List<Event> events = new ArrayList<>();
 		HashMap<String, String> messageMap = util.getLocalizationMessage(requestInfo, GENERATE_DEMAND_EVENT, tenantId);
 		String message = messageMap.get(NotificationUtil.MSG_KEY);
 		message = message.replace("{BILLING_CYCLE}", LocalDate.now().getMonth().toString());
+		attributes.put("{BILLING_CYCLE}", LocalDate.now().getMonth().toString());
+		additionalDetailsMap.put("attributes", attributes);
 		System.out.println("Demand Genaration Failed::" + messageMap);
 		events.add(Event.builder().tenantId(tenantId).description(message).eventType(USREVENTS_EVENT_TYPE)
 				.name(USREVENTS_EVENT_NAME).postedBy(USREVENTS_EVENT_POSTEDBY)
 				.recepient(getRecepient(requestInfo, tenantId)).source(Source.WEBAPP).eventDetails(null).actions(action)
+				.additionalDetails(additionalDetailsMap)
 				.build());
 
 		if (!CollectionUtils.isEmpty(events)) {
@@ -341,13 +352,15 @@ public class SchedulerService {
 		items.add(item);
 		Action action = Action.builder().actionUrls(items).build();
 		System.out.println("ActionLink::" + actionLink);
-
+		Map<String, Object> additionalDetailsMap = new HashMap<String, Object>();
+		additionalDetailsMap.put("localizationCode", MARK_PAID_BILL_EVENT);
 		List<Event> events = new ArrayList<>();
 		HashMap<String, String> messageMap = util.getLocalizationMessage(requestInfo, MARK_PAID_BILL_EVENT, tenantId);
 		events.add(Event.builder().tenantId(tenantId)
-				.description(formatMarkExpenseMessage(tenantId, messageMap.get(NotificationUtil.MSG_KEY)))
+				.description(formatMarkExpenseMessage(tenantId, messageMap.get(NotificationUtil.MSG_KEY), additionalDetailsMap))
 				.eventType(USREVENTS_EVENT_TYPE).name(EXPENSE_PAYMENT).postedBy(USREVENTS_EVENT_POSTEDBY)
 				.recepient(getRecepient(requestInfo, tenantId)).source(Source.WEBAPP).eventDetails(null).actions(action)
+				.additionalDetails(additionalDetailsMap)
 				.build());
 
 		if (!CollectionUtils.isEmpty(events)) {
@@ -358,10 +371,14 @@ public class SchedulerService {
 
 	}
 
-	public String formatMarkExpenseMessage(String tenantId, String message) {
+	public String formatMarkExpenseMessage(String tenantId, String message, Map<String, Object> additionalDetailsMap) {
+		Map<String, String> attributes = new HashMap<>();
 		List<String> activeExpenseCount = repository.getActiveExpenses(tenantId);
-		if (null != activeExpenseCount && activeExpenseCount.size() > 0)
+		if (null != activeExpenseCount && activeExpenseCount.size() > 0) {
 			message = message.replace("{BILL_COUNT_AWAIT}", activeExpenseCount.get(0));
+			attributes.put("{BILL_COUNT_AWAIT}", activeExpenseCount.get(0));
+			additionalDetailsMap.put("attributes", attributes);
+		}
 		System.out.println("Final message for Mark Expense::" + message);
 		return message;
 	}
@@ -448,12 +465,16 @@ public class SchedulerService {
 		Action action = Action.builder().actionUrls(items).build();
 		System.out.println("ActionLink::" + actionLink);
 
+		Map<String, Object> additionalDetailsMap = new HashMap<String, Object>();
+		additionalDetailsMap.put("localizationCode", MONTHLY_SUMMARY_EVENT);
+		
 		List<Event> events = new ArrayList<>();
 		HashMap<String, String> messageMap = util.getLocalizationMessage(requestInfo, MONTHLY_SUMMARY_EVENT, tenantId);
 		events.add(Event.builder().tenantId(tenantId)
-				.description(formatMonthSummaryMessage(requestInfo, tenantId, messageMap.get(NotificationUtil.MSG_KEY)))
+				.description(formatMonthSummaryMessage(requestInfo, tenantId, messageMap.get(NotificationUtil.MSG_KEY), additionalDetailsMap))
 				.eventType(USREVENTS_EVENT_TYPE).name(MONTHLY_SUMMARY).postedBy(USREVENTS_EVENT_POSTEDBY)
 				.recepient(getRecepient(requestInfo, tenantId)).source(Source.WEBAPP).eventDetails(null).actions(action)
+				.additionalDetails(additionalDetailsMap)
 				.build());
 
 		if (!CollectionUtils.isEmpty(events)) {
@@ -463,8 +484,8 @@ public class SchedulerService {
 		}
 	}
 
-	public String formatMonthSummaryMessage(RequestInfo requestInfo, String tenantId, String message) {
-
+	public String formatMonthSummaryMessage(RequestInfo requestInfo, String tenantId, String message, Map<String, Object> additionalDetailsMap) {
+		Map<String, String> attributes = new HashMap<>();
 		LocalDate prviousMonthStart = LocalDate.now().minusMonths(1).with(TemporalAdjusters.firstDayOfMonth());
 		LocalDate prviousMonthEnd = LocalDate.now().minusMonths(1).with(TemporalAdjusters.lastDayOfMonth());
 		LocalDateTime previousMonthStartDateTime = LocalDateTime.of(prviousMonthStart.getYear(),
@@ -475,17 +496,22 @@ public class SchedulerService {
 		Integer previousMonthCollection = repository.getPreviousMonthExpensePayments(tenantId,
 				((Long) previousMonthStartDateTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()),
 				((Long) previousMonthEndDateTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()));
-		if (null != previousMonthCollection)
+		if (null != previousMonthCollection) {
 			message = message.replace("{PREVIOUS_MONTH_COLLECTION}", previousMonthCollection.toString());
-
+			attributes.put("{PREVIOUS_MONTH_COLLECTION}", previousMonthCollection.toString());
+		}
 		message = message.replace("{PREVIOUS_MONTH}", LocalDate.now().minusMonths(1).getMonth().toString());
+		attributes.put("{PREVIOUS_MONTH}", LocalDate.now().minusMonths(1).getMonth().toString());
 		List<String> previousMonthExpense = repository.getPreviousMonthExpenseExpenses(tenantId,
 				((Long) previousMonthStartDateTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli())
 						.toString(),
 				((Long) previousMonthEndDateTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()).toString());
-		if (null != previousMonthExpense && previousMonthExpense.size() > 0)
+		if (null != previousMonthExpense && previousMonthExpense.size() > 0) {
 			message = message.replace("{PREVIOUS_MONTH_EXPENSE}", previousMonthExpense.get(0));
+			attributes.put("{PREVIOUS_MONTH_EXPENSE}", previousMonthExpense.get(0));
+		}
 		System.out.println("Final message::" + message);
+		additionalDetailsMap.put("attributes", attributes);
 		return message;
 	}
 
@@ -537,7 +563,7 @@ public class SchedulerService {
 							if (messageMap != null && !StringUtils.isEmpty(messageMap.get(NotificationUtil.MSG_KEY))) {
 								String uuidUsername = (String) map.getValue();
 								String message = formatMonthSummaryMessage(requestInfo, tenantId,
-										messageMap.get(NotificationUtil.MSG_KEY));
+										messageMap.get(NotificationUtil.MSG_KEY), new HashMap<>());
 								message = message.replace("{LINK}", getShortenedUrl(revenueLink));
 								message = message.replace("{GPWSC}", (gpwscMap != null
 										&& !StringUtils.isEmpty(gpwscMap.get(NotificationUtil.MSG_KEY)))
