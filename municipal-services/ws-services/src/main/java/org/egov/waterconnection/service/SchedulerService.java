@@ -504,7 +504,7 @@ public class SchedulerService {
 				events.add(Event.builder().tenantId(tenantId).description(msg).eventType(USREVENTS_EVENT_TYPE)
 						.name(TODAY_COLLECTION).postedBy(USREVENTS_EVENT_POSTEDBY)
 						.recepient(getRecepient(requestInfo, tenantId)).source(Source.WEBAPP).eventDetails(null)
-						.actions(action).build());
+						.additionalDetails(additionalDetailsMap).actions(action).build());
 			}
 		}
 //		mode = "online";
