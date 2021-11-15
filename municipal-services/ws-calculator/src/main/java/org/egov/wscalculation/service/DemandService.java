@@ -1,24 +1,30 @@
 package org.egov.wscalculation.service;
 
 import java.math.BigDecimal;
-import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.time.temporal.TemporalAdjusters;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.egov.common.contract.request.RequestInfo;
 import org.egov.common.contract.request.User;
-import org.egov.wscalculation.service.UserService;
-import org.egov.wscalculation.web.models.users.UserDetailResponse;
 import org.egov.tracer.model.CustomException;
 import org.egov.wscalculation.config.WSCalculationConfiguration;
 import org.egov.wscalculation.constants.WSCalculationConstant;
@@ -31,12 +37,8 @@ import org.egov.wscalculation.util.NotificationUtil;
 import org.egov.wscalculation.util.WSCalculationUtil;
 import org.egov.wscalculation.validator.WSCalculationValidator;
 import org.egov.wscalculation.validator.WSCalculationWorkflowValidator;
-import org.egov.wscalculation.web.models.Action;
-import org.egov.wscalculation.web.models.ActionItem;
 import org.egov.wscalculation.web.models.BulkDemand;
 import org.egov.wscalculation.web.models.Calculation;
-import org.egov.wscalculation.web.models.CalculationCriteria;
-import org.egov.wscalculation.web.models.CalculationReq;
 import org.egov.wscalculation.web.models.Category;
 import org.egov.wscalculation.web.models.Demand;
 import org.egov.wscalculation.web.models.Demand.StatusEnum;
@@ -44,19 +46,17 @@ import org.egov.wscalculation.web.models.DemandDetail;
 import org.egov.wscalculation.web.models.DemandDetailAndCollection;
 import org.egov.wscalculation.web.models.DemandRequest;
 import org.egov.wscalculation.web.models.DemandResponse;
-import org.egov.wscalculation.web.models.Event;
-import org.egov.wscalculation.web.models.EventRequest;
 import org.egov.wscalculation.web.models.GetBillCriteria;
 import org.egov.wscalculation.web.models.OwnerInfo;
 import org.egov.wscalculation.web.models.Property;
 import org.egov.wscalculation.web.models.Recipient;
 import org.egov.wscalculation.web.models.RequestInfoWrapper;
 import org.egov.wscalculation.web.models.SMSRequest;
-import org.egov.wscalculation.web.models.Source;
 import org.egov.wscalculation.web.models.TaxHeadEstimate;
 import org.egov.wscalculation.web.models.TaxPeriod;
 import org.egov.wscalculation.web.models.WaterConnection;
 import org.egov.wscalculation.web.models.WaterConnectionRequest;
+import org.egov.wscalculation.web.models.users.UserDetailResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -67,7 +67,6 @@ import com.jayway.jsonpath.JsonPath;
 
 import lombok.extern.slf4j.Slf4j;
 import net.minidev.json.JSONArray;
-import net.minidev.json.JSONObject;
 
 @Service
 @Slf4j
@@ -288,10 +287,8 @@ public class DemandService {
 						.category(Category.TRANSACTION).build();
 				producer.push(config.getSmsNotifTopic(), sms);
 
-				
-					
 			}
-			
+
 		}
 		log.info("Demand Object" + demands.toString());
 		List<Demand> demandRes = demandRepository.saveDemand(requestInfo, demands);
@@ -657,7 +654,7 @@ public class DemandService {
 			} else {
 				actionLink = actionLink.replace("$key", "ws-bill-nm");
 			}
-			
+
 			demands.add(demand);
 			log.info("Demand Object" + demands.toString());
 			List<String> billNumber = fetchBill(demands, requestInfo);
@@ -670,9 +667,9 @@ public class DemandService {
 			String messageString = localizationMessage.get(WSCalculationConstant.MSG_KEY);
 
 			System.out.println("Localization message::" + messageString + demand);
-			
+
 			if (!StringUtils.isEmpty(messageString)) {
-				
+
 				billCycle = (Instant.ofEpochMilli(fromDate).atZone(ZoneId.systemDefault()).toLocalDate() + "-"
 						+ Instant.ofEpochMilli(toDate).atZone(ZoneId.systemDefault()).toLocalDate());
 				messageString = messageString.replace("{ownername}", owner.getName());
@@ -713,8 +710,7 @@ public class DemandService {
 //				}
 
 			}
-			
-			
+
 		}
 
 		log.info("Updated Demand Details " + demands.toString());
@@ -836,13 +832,13 @@ public class DemandService {
 	/**
 	 * 
 	 * @param tenantId TenantId for getting master data.
-	 */
-	public void generateDemandForTenantId(String tenantId, RequestInfo requestInfo) {
-		requestInfo.getUserInfo().setTenantId(tenantId);
-		Map<String, Object> billingMasterData = calculatorUtils.loadBillingFrequencyMasterData(requestInfo, tenantId);
-		generateDemandForULB(billingMasterData, requestInfo, tenantId);
-	}
-
+	 *//*
+		 * public void generateDemandForTenantId(String tenantId, RequestInfo
+		 * requestInfo) { requestInfo.getUserInfo().setTenantId(tenantId); Map<String,
+		 * Object> billingMasterData =
+		 * calculatorUtils.loadBillingFrequencyMasterData(requestInfo, tenantId);
+		 * generateDemandForULB(billingMasterData, requestInfo, tenantId); }
+		 */
 	/**
 	 * 
 	 * @param tenantId TenantId for getting master data.
@@ -852,116 +848,17 @@ public class DemandService {
 		String tenantId = bulkDemand.getTenantId();
 		requestInfo.getUserInfo().setTenantId(tenantId);
 		Map<String, Object> billingMasterData = calculatorUtils.loadBillingFrequencyMasterData(requestInfo, tenantId);
-		generateBulkDemandForULB(billingMasterData, bulkDemand);
-	}
-
-	public void generateBulkDemandForULB(Map<String, Object> master, BulkDemand bulkDemand) {
-		log.info("Billing master data values for non metered connection:: {}", master);
-		String billingPeriod = bulkDemand.getBillingPeriod();
-		if (StringUtils.isEmpty(billingPeriod))
-			throw new CustomException("BILLING_PERIOD_PARSING_ISSUE", "Billing can not empty!!");
-
+		
 		List<String> connectionNos = waterCalculatorDao.getConnectionsNoList(bulkDemand.getTenantId(),
 				WSCalculationConstant.nonMeterdConnection);
-		List<String> meteredConnectionNos = waterCalculatorDao.getConnectionsNoList(bulkDemand.getTenantId(),
-				WSCalculationConstant.meteredConnectionType);
-
-		List<ActionItem> items = new ArrayList<>();
-		String actionLink = config.getBulkDemandLink();
-		ActionItem item = ActionItem.builder().actionUrl(actionLink).build();
-		items.add(item);
-		Action action = Action.builder().actionUrls(items).build();
-
-		List<Event> events = new ArrayList<>();
-
-		HashMap<String, String> messageMap = new HashMap<String, String>();
-
-		String message = null;
-		if (connectionNos.size() > 0 && meteredConnectionNos.size() > 0) {
-			messageMap = util.getLocalizationMessage(bulkDemand.getRequestInfo(),
-					WSCalculationConstant.NEW_BULK_DEMAND_EVENT, bulkDemand.getTenantId());
-			int size = connectionNos.size() + meteredConnectionNos.size();
-			message = messageMap.get(WSCalculationConstant.MSG_KEY);
-			message = message.replace("{billing cycle}", billingPeriod);
-			message = message.replace("{X}", String.valueOf(connectionNos.size()));
-			message = message.replace("{X/X+Y}", String.valueOf(connectionNos.size()) + "/" + String.valueOf(size));
-			message = message.replace("{Y}", String.valueOf(meteredConnectionNos.size()));
-		} else if (connectionNos.size() > 0 && meteredConnectionNos.isEmpty()) {
-			messageMap = util.getLocalizationMessage(bulkDemand.getRequestInfo(),
-					WSCalculationConstant.NEW_BULK_DEMAND_EVENT_NM, bulkDemand.getTenantId());
-
-			message = messageMap.get(WSCalculationConstant.MSG_KEY);
-			message = message.replace("{billing cycle}", billingPeriod);
-			message = message.replace("{X}", String.valueOf(connectionNos.size()));
-			message = message.replace("{X/X}",
-					String.valueOf(connectionNos.size()) + "/" + String.valueOf(connectionNos.size()));
-		} else if (connectionNos.isEmpty() && meteredConnectionNos.size() > 0) {
-			messageMap = util.getLocalizationMessage(bulkDemand.getRequestInfo(),
-					WSCalculationConstant.NEW_BULK_DEMAND_EVENT_M, bulkDemand.getTenantId());
-
-			message = messageMap.get(WSCalculationConstant.MSG_KEY);
-			message = message.replace("{Y}", String.valueOf(meteredConnectionNos.size()));
-		}
-
-		System.out.println("Bulk Event msg3:: " + message);
-		events.add(Event.builder().tenantId(bulkDemand.getTenantId()).description(message)
-				.eventType(WSCalculationConstant.USREVENTS_EVENT_TYPE).name(WSCalculationConstant.MONTHLY_DEMAND_GENERATED)
-				.postedBy(WSCalculationConstant.USREVENTS_EVENT_POSTEDBY)
-				.recepient(getRecepient(bulkDemand.getRequestInfo(), bulkDemand.getTenantId())).source(Source.WEBAPP)
-				.eventDetails(null).actions(action).build());
-
-		if (!CollectionUtils.isEmpty(events)) {
-			EventRequest eventReq = EventRequest.builder().requestInfo(bulkDemand.getRequestInfo()).events(events)
-					.build();
-			util.sendEventNotification(eventReq);
-		}
-
-		// GP User message
-
-		HashMap<String, String> demandMessage = util.getLocalizationMessage(bulkDemand.getRequestInfo(),
-				WSCalculationConstant.mGram_Consumer_NewDemand, bulkDemand.getTenantId());
-
-		HashMap<String, String> gpwscMap = util.getLocalizationMessage(bulkDemand.getRequestInfo(),
-				bulkDemand.getTenantId(), bulkDemand.getTenantId());
-		UserDetailResponse userDetailResponse = userService.getUserByRoleCodes(bulkDemand.getRequestInfo(),
-				Arrays.asList("COLLECTION_OPERATOR"), bulkDemand.getTenantId());
-		Map<String, String> mobileNumberIdMap = new LinkedHashMap<>();
-
-		String msgLink = config.getNotificationUrl() + config.getGpUserDemandLink();
-
-		for (OwnerInfo userInfo : userDetailResponse.getUser())
-			if (userInfo.getName() != null) {
-				mobileNumberIdMap.put(userInfo.getMobileNumber(), userInfo.getName());
-			} else {
-				mobileNumberIdMap.put(userInfo.getMobileNumber(), userInfo.getUserName());
-			}
-		mobileNumberIdMap.entrySet().stream().forEach(map -> {
-			String msg = demandMessage.get(WSCalculationConstant.MSG_KEY);
-			msg = msg.replace("{ownername}", map.getValue());
-			msg = msg.replace("{villagename}",
-					(gpwscMap != null && !StringUtils.isEmpty(gpwscMap.get(WSCalculationConstant.MSG_KEY)))
-							? gpwscMap.get(WSCalculationConstant.MSG_KEY)
-							: bulkDemand.getTenantId());
-			msg = msg.replace("{billingcycle}", billingPeriod);
-			msg = msg.replace("{LINK}", msgLink);
-
-			System.out.println("Demand GP USER SMS3::" + msg);
-
-			SMSRequest smsRequest = SMSRequest.builder().mobileNumber(map.getKey()).message(msg)
-					.category(Category.TRANSACTION).build();
-
-			producer.push(config.getSmsNotifTopic(), smsRequest);
-
-		});
-
 		Set<String> connectionSet = connectionNos.stream().collect(Collectors.toSet());
 		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 		Date billingStrartDate;
 		Calendar startCal = Calendar.getInstance();
 		Calendar endCal = Calendar.getInstance();
 		try {
-			billingStrartDate = sdf.parse(billingPeriod.split("-")[0].trim());
-			Date billingEndDate = sdf.parse(billingPeriod.split("-")[1].trim());
+			billingStrartDate = sdf.parse(bulkDemand.getBillingPeriod().split("-")[0].trim());
+			Date billingEndDate = sdf.parse(bulkDemand.getBillingPeriod().split("-")[1].trim());
 			startCal.setTime(billingStrartDate);
 			endCal.setTime(billingEndDate);
 
@@ -974,20 +871,13 @@ public class DemandService {
 			throw new CustomException("BILLING_PERIOD_PARSING_ISSUE", "Billing period can not parsed!!");
 		}
 		wsCalculationValidator.validateBulkDemandBillingPeriod(startCal.getTimeInMillis(), connectionSet,
-				bulkDemand.getTenantId(), (String) master.get(WSCalculationConstant.Billing_Cycle_String));
-		String assessmentYear = estimationService.getAssessmentYear();
-		for (String connectionNo : connectionNos) {
-			CalculationCriteria calculationCriteria = CalculationCriteria.builder().tenantId(bulkDemand.getTenantId())
-					.assessmentYear(assessmentYear).connectionNo(connectionNo).from(startCal.getTimeInMillis())
-					.to(endCal.getTimeInMillis()).build();
-			List<CalculationCriteria> calculationCriteriaList = new ArrayList<>();
-			calculationCriteriaList.add(calculationCriteria);
-			CalculationReq calculationReq = CalculationReq.builder().calculationCriteria(calculationCriteriaList)
-					.requestInfo(bulkDemand.getRequestInfo()).isconnectionCalculation(true).build();
-			wsCalculationProducer.push(configs.getCreateDemand(), calculationReq);
-			// log.info("Prepared Statement" + calculationRes.toString());
-
-		}
+				bulkDemand.getTenantId(), (String) billingMasterData.get(WSCalculationConstant.Billing_Cycle_String));
+		
+		HashMap<Object, Object> demandData = new HashMap<Object, Object>();
+		demandData.put("billingMasterData", billingMasterData);
+		demandData.put("bulkDemand", bulkDemand);
+		producer.push(config.getGenerateBulkDemandTopic(), demandData);
+//		generateBulkDemandForULB(billingMasterData, bulkDemand);
 	}
 
 	private String formatDemandMessage(RequestInfo requestInfo, String tenantId, String string) {
@@ -1017,156 +907,6 @@ public class DemandService {
 			return 80;
 		}
 		return 0;
-	}
-
-	/**
-	 * 
-	 * @param master      Master MDMS Data
-	 * @param requestInfo Request Info
-	 * @param tenantId    Tenant Id
-	 */
-	@SuppressWarnings("unchecked")
-	public void generateDemandForULB(Map<String, Object> master, RequestInfo requestInfo, String tenantId) {
-		log.info("Billing master data values for non metered connection:: {}", master);
-		long startDay = (((int) master.get(WSCalculationConstant.Demand_Generate_Date_String)) / 86400000);
-		if (isCurrentDateIsMatching((String) master.get(WSCalculationConstant.Billing_Cycle_String), startDay)) {
-			List<String> connectionNos = waterCalculatorDao.getConnectionsNoList(tenantId,
-					WSCalculationConstant.nonMeterdConnection);
-			String assessmentYear = estimationService.getAssessmentYear();
-			String billCycle = "";
-			for (String connectionNo : connectionNos) {
-				CalculationCriteria calculationCriteria = CalculationCriteria.builder().tenantId(tenantId)
-						.assessmentYear(assessmentYear).connectionNo(connectionNo).build();
-				List<CalculationCriteria> calculationCriteriaList = new ArrayList<>();
-				calculationCriteriaList.add(calculationCriteria);
-				CalculationReq calculationReq = CalculationReq.builder().calculationCriteria(calculationCriteriaList)
-						.requestInfo(requestInfo).isconnectionCalculation(true).build();
-				wsCalculationProducer.push(configs.getCreateDemand(), calculationReq);
-				// log.info("Prepared Statement" + calculationRes.toString());
-
-			}
-
-			System.out.println("Event Messages to the users");
-			LocalDate firstDate = LocalDate.now().with(TemporalAdjusters.firstDayOfMonth());
-			LocalDate lastDate = LocalDate.now().with(TemporalAdjusters.lastDayOfMonth());
-			
-			    DateTimeFormatter formatters = DateTimeFormatter.ofPattern("d/MM/uuuu");
-			    String fromDate = firstDate.format(formatters);
-			    String toDate = lastDate.format(formatters);
-			
-//			Map<String, Object> financialYearMaster = (Map<String, Object>) master
-//					.get(WSCalculationConstant.BILLING_PERIOD);
-//			Long fromDate = (Long) financialYearMaster.get(WSCalculationConstant.STARTING_DATE_APPLICABLES);
-//			Long toDate = (Long) financialYearMaster.get(WSCalculationConstant.ENDING_DATE_APPLICABLES);
-
-			List<String> meteredConnectionNos = waterCalculatorDao.getConnectionsNoList(tenantId,
-					WSCalculationConstant.meteredConnectionType);
-			List<ActionItem> items = new ArrayList<>();
-			String demandActionLink = config.getBulkDemandLink();
-			ActionItem item = ActionItem.builder().actionUrl(demandActionLink).build();
-			items.add(item);
-			Action action = Action.builder().actionUrls(items).build();
-			String billingCycle = fromDate + " - " + toDate;
-
-			List<Event> events = new ArrayList<>();
-
-			HashMap<String, String> messageMap = new HashMap<String, String>();
-			HashMap<String, Object> additionals = new HashMap<String, Object>();
-			
-			String message = null;
-			if (connectionNos.size() > 0 && meteredConnectionNos.size() > 0) {
-				messageMap = util.getLocalizationMessage(requestInfo, WSCalculationConstant.NEW_BULK_DEMAND_EVENT,
-						tenantId);
-				int size = connectionNos.size() + meteredConnectionNos.size();
-				message = messageMap.get(WSCalculationConstant.MSG_KEY);
-				message = message.replace("{billing cycle}", billingCycle);
-				message = message.replace("{X}", String.valueOf(connectionNos.size()));
-				message = message.replace("{X/X+Y}", String.valueOf(connectionNos.size()) + "/" + String.valueOf(size));
-				message = message.replace("{Y}", String.valueOf(meteredConnectionNos.size()));
-				additionals.put("localizationCode", WSCalculationConstant.NEW_BULK_DEMAND_EVENT);
-				HashMap<String, String> attributes = new HashMap<String, String>();
-				attributes.put("{billing cycle}", billingCycle);
-				attributes.put("{X}", String.valueOf(connectionNos.size()));
-				attributes.put("{X/X+Y}", String.valueOf(connectionNos.size()) + "/" + String.valueOf(size));
-				attributes.put("{Y}", String.valueOf(meteredConnectionNos.size()));
-				additionals.put("attributes", attributes);
-			} else if (connectionNos.size() > 0 && meteredConnectionNos.isEmpty()) {
-				messageMap = util.getLocalizationMessage(requestInfo, WSCalculationConstant.NEW_BULK_DEMAND_EVENT_NM,
-						tenantId);
-
-				message = messageMap.get(WSCalculationConstant.MSG_KEY);
-				message = message.replace("{billing cycle}", billingCycle);
-				message = message.replace("{X}", String.valueOf(connectionNos.size()));
-				message = message.replace("{X/X}",
-						String.valueOf(connectionNos.size()) + "/" + String.valueOf(connectionNos.size()));
-
-				additionals.put("localizationCode", "NEW_BULK_DEMAND_EVENT");
-				HashMap<String, String> attributes = new HashMap<String, String>();
-				attributes.put("{billing cycle}", billingCycle);
-				attributes.put("{X}", String.valueOf(connectionNos.size()));
-				attributes.put("{X/X}",
-						String.valueOf(connectionNos.size()) + "/" + String.valueOf(connectionNos.size()));
-				additionals.put("attributes", attributes);
-			} else if (connectionNos.isEmpty() && meteredConnectionNos.size() > 0) {
-				messageMap = util.getLocalizationMessage(requestInfo, WSCalculationConstant.NEW_BULK_DEMAND_EVENT_M,
-						tenantId);
-				message = messageMap.get(WSCalculationConstant.MSG_KEY);
-				message = message.replace("{Y}", String.valueOf(meteredConnectionNos.size()));
-				additionals.put("localizationCode", WSCalculationConstant.NEW_BULK_DEMAND_EVENT);
-				HashMap<String, String> attributes = new HashMap<String, String>();
-				attributes.put("{Y}", String.valueOf(meteredConnectionNos.size()));
-				additionals.put("attributes", attributes);
-			}
-
-			System.out.println("Bulk Event msg1:: " + message);
-			events.add(Event.builder().tenantId(tenantId).description(message)
-					.eventType(WSCalculationConstant.USREVENTS_EVENT_TYPE)
-					.name(WSCalculationConstant.MONTHLY_DEMAND_GENERATED)
-					.postedBy(WSCalculationConstant.USREVENTS_EVENT_POSTEDBY)
-					.recepient(getRecepient(requestInfo, tenantId)).source(Source.WEBAPP).eventDetails(null)
-					.actions(action).build());
-
-			if (!CollectionUtils.isEmpty(events)) {
-				EventRequest eventReq = EventRequest.builder().requestInfo(requestInfo).events(events).build();
-				util.sendEventNotification(eventReq);
-			}
-
-			// GP User message
-
-			HashMap<String, String> demandMessage = util.getLocalizationMessage(requestInfo,
-					WSCalculationConstant.mGram_Consumer_NewDemand, tenantId);
-
-			HashMap<String, String> gpwscMap = util.getLocalizationMessage(requestInfo, tenantId, tenantId);
-			UserDetailResponse userDetailResponse = userService.getUserByRoleCodes(requestInfo,
-					Arrays.asList("COLLECTION_OPERATOR"), tenantId);
-			Map<String, String> mobileNumberIdMap = new LinkedHashMap<>();
-
-			String msgLink = config.getNotificationUrl() + config.getGpUserDemandLink();
-							
-			for (OwnerInfo userInfo : userDetailResponse.getUser())
-				if (userInfo.getName() != null) {
-					mobileNumberIdMap.put(userInfo.getMobileNumber(), userInfo.getName());
-				} else {
-					mobileNumberIdMap.put(userInfo.getMobileNumber(), userInfo.getUserName());
-				}
-			mobileNumberIdMap.entrySet().stream().forEach(map -> {
-				String msg = demandMessage.get(WSCalculationConstant.MSG_KEY);
-				msg = msg.replace("{ownername}", map.getValue());
-				msg = msg.replace("{villagename}",
-						(gpwscMap != null && !StringUtils.isEmpty(gpwscMap.get(WSCalculationConstant.MSG_KEY)))
-								? gpwscMap.get(WSCalculationConstant.MSG_KEY)
-								: tenantId);
-				msg = msg.replace("{billingcycle}", billingCycle);
-				msg = msg.replace("{LINK}", msgLink);
-
-				System.out.println("Demand GP USER SMS1::" + msg);
-
-				SMSRequest smsRequest = SMSRequest.builder().mobileNumber(map.getKey()).message(msg)
-						.category(Category.TRANSACTION).build();
-
-				producer.push(config.getSmsNotifTopic(), smsRequest);
-			});
-		}
 	}
 
 	/**

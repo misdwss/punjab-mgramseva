@@ -223,15 +223,15 @@ public class ChallanService {
 	public ExpenseDashboard getExpenseDashboardData(@Valid SearchCriteria criteria, RequestInfo requestInfo) {
 		ExpenseDashboard dashboardData = new ExpenseDashboard();
 		String tenantId = criteria.getTenantId();
-		Integer totalExpenses = repository.getTotalExpense(criteria);
+		Long totalExpenses = repository.getTotalExpense(criteria);
 		if (null != totalExpenses) {
 			dashboardData.setTotalExpenditure(totalExpenses.toString());
 		}
-		Integer paidAmount = repository.getPaidAmountDetails(criteria);
+		Long paidAmount = repository.getPaidAmountDetails(criteria);
 		if (null != paidAmount) {
 			dashboardData.setAmountPaid(paidAmount.toString());
 		}
-		Integer amountUnpaid = repository.getPendingAmount(criteria);
+		Long amountUnpaid = repository.getPendingAmount(criteria);
 		if (null != amountUnpaid) {
 			dashboardData.setAmountUnpaid(amountUnpaid.toString());
 		}

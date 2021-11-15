@@ -29,4 +29,6 @@ public interface WSCalculationDao {
 	int isBillingPeriodExists(String connectionNo, String billingPeriod);
 	Boolean isDemandExists(String tenantId, Long bilingDate,Set<String> connectionNos);
 
+	List<String> getNonMeterConnectionsList(String tenantId, Long dayStartTime, Long dayEndTime);
+
 }

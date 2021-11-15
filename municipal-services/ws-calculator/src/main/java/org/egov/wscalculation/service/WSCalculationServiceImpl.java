@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -13,7 +14,9 @@ import org.egov.common.contract.request.RequestInfo;
 import org.egov.common.contract.request.User;
 import org.egov.mdms.model.MdmsCriteriaReq;
 import org.egov.tracer.model.CustomException;
+import org.egov.wscalculation.config.WSCalculationConfiguration;
 import org.egov.wscalculation.constants.WSCalculationConstant;
+import org.egov.wscalculation.producer.WSCalculationProducer;
 import org.egov.wscalculation.web.models.AdhocTaxReq;
 import org.egov.wscalculation.web.models.BulkDemand;
 import org.egov.wscalculation.web.models.Calculation;
@@ -71,6 +74,12 @@ public class WSCalculationServiceImpl implements WSCalculationService {
 	
 	@Autowired
 	private DemandRepository demandRepository;
+
+	@Autowired
+	private WSCalculationProducer wsCalculationProducer;
+	
+	@Autowired
+	private WSCalculationConfiguration config;
 
 	/**
 	 * Get CalculationReq and Calculate the Tax Head on Water Charge And Estimation Charge
@@ -292,7 +301,7 @@ public class WSCalculationServiceImpl implements WSCalculationService {
 	/**
 	 * Generate Demand Based on Time (Monthly, Quarterly, Yearly)
 	 */
-	public void generateDemandBasedOnTimePeriod(RequestInfo requestInfo) {
+	public void generateDemandBasedOnTimePeriod(RequestInfo requestInfo, boolean isSendMessage) {
 		DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 		LocalDateTime date = LocalDateTime.now();
 		log.info("Time schedule start for water demand generation on : " + date.format(dateTimeFormatter));
@@ -301,7 +310,12 @@ public class WSCalculationServiceImpl implements WSCalculationService {
 			return;
 		log.info("Tenant Ids : " + tenantIds.toString());
 		tenantIds.forEach(tenantId -> {
-			demandService.generateDemandForTenantId(tenantId, requestInfo);
+			HashMap<Object, Object> demandData = new HashMap<Object, Object>();
+			demandData.put("requestInfo", requestInfo);
+			demandData.put("tenantId", tenantId);
+			demandData.put("isSendMessage", isSendMessage);
+			wsCalculationProducer.push(config.getBulkDemandSchedularTopic(),demandData);
+//			demandService.generateDemandForTenantId(tenantId, requestInfo);
 		});
 	}
 	

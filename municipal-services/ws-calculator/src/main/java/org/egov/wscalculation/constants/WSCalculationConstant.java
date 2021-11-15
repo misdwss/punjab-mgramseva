@@ -274,6 +274,10 @@ public class WSCalculationConstant {
 	public static final String LOCALIZATION_MSGS_JSONPATH = "$.messages[0].message";
 
 	public static final String TEMPLATE_KEY = "templateId";
+
+	public static final String MONTHLY_DEMAND_FAILED = "MONTHLY_DEMAND_FAILED";
+
+	public static final String GENERATE_DEMAND_EVENT = "GENERATE_DEMAND_EN_REMINDER";
 	
 
 
