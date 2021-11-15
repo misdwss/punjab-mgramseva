@@ -41,5 +41,8 @@ class SearchConncetionKeys {
   const SearchConncetionKeys();
   Key get SEARCH_PHONE_NUMBER_KEY => Key("phoneSearch");
   Key get SEARCH_NAME_KEY => Key("nameSearch");
+  Key get SEARCH_OLD_ID_KEY => Key("old Connection  Search");
+  Key get SEARCH_NEW_ID_KEY => Key("new Connection Search");
+  Key get SHOW_MORE_BTN => Key("Show more");
   Key get SEARCH_BTN_KEY => Key("Search Connection Btn");
 }

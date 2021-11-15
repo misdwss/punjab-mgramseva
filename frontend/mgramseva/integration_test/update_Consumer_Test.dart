@@ -23,7 +23,12 @@ void main() {
     final searchConnectionBtn = find.byKey(Keys.searchConnection.SEARCH_BTN_KEY);
     final editConsumerDetailsBtn = find.widgetWithText(ShortButton,
         ApplicationLocalizations.of(navigatorKey.currentContext!).translate(i18.
-        searchWaterConnection.HOUSE_DETAILS_EDIT));
+        searchWaterConnection.HOUSE_DETAILS_EDIT)).first;
+
+    final findPropertyType = find.byKey(Keys.createConsumer.CONSUMER_PROPERTY_KEY);
+    final selectPropertyType = find.widgetWithText(ListTile,
+        ApplicationLocalizations.of(navigatorKey.currentContext!).translate(TestInputs.updateConsumer.CONSUMER_PROPERTY));
+    final checkBox = find.byType(Checkbox);
 
     await tester.enterText(phoneSearch, TestInputs.updateConsumer.SEARCH_MOBILE_NUMBER);
     await tester.pumpAndSettle(Duration(milliseconds: 3000));
@@ -33,6 +38,29 @@ void main() {
 
     await tester.ensureVisible(editConsumerDetailsBtn);
     await tester.tap(editConsumerDetailsBtn);
+    await tester.pumpAndSettle(Duration(milliseconds: 5000));
+
+    ///Change property type
+    await tester.ensureVisible(findPropertyType);
+    await tester.tap(findPropertyType);
     await tester.pumpAndSettle(Duration(milliseconds: 3000));
+    await tester.ensureVisible(selectPropertyType);
+    await tester.tap(selectPropertyType);
+    await tester.pumpAndSettle(Duration(milliseconds: 3000));
+
+    ///Mark Connection as Inactive
+    if(TestInputs.updateConsumer.MARK_CONNECTION_INACTIVE == 'Yes'){
+      await tester.ensureVisible (checkBox);
+      await tester.pumpAndSettle(Duration(milliseconds: 3000));
+      await tester.tap(checkBox);
+      await tester.pumpAndSettle(Duration(seconds: 3));
+  }
+
+    final updateConsumerSubmitBtn = find.byKey(Keys.createConsumer.CREATE_CONSUMER_BTN_KEY);
+
+    await tester.ensureVisible(updateConsumerSubmitBtn);
+    await tester.tap(updateConsumerSubmitBtn);
+    await tester.pumpAndSettle(Duration(seconds: 3));
+
   });
 }

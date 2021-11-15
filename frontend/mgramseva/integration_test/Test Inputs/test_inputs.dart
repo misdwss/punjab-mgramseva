@@ -18,6 +18,8 @@ class SearchConnectionInputs {
 
   String get SEARCH_MOBILE_NUMBER => '8145632987';
   String get SEARCH_NAME => 'Na';
+  String get SEARCH_OLD_CONNECTION_ID => 'WS-763-88463';
+  String get SEARCH_NEW_CONNECTION_ID => 'WS/400/2021-22/0018';
 }
 
 class CreateConsumerInputs{
@@ -49,5 +51,7 @@ class UpdateConsumerInputs {
   const UpdateConsumerInputs();
 
   String get SEARCH_MOBILE_NUMBER => '8145632987';
-  String get SEARCH_NAME => 'Ra';
+
+  String get CONSUMER_PROPERTY => 'COMMERCIAL'; // [RESIDENTIAL, COMMERCIAL]
+  String get MARK_CONNECTION_INACTIVE => 'No'; // Make Connection inactive by passing 'Yes'
 }

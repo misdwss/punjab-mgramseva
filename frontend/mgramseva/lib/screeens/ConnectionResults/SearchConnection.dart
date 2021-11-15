@@ -146,6 +146,7 @@ class _SearchConsumerConnectionState extends State<SearchConsumerConnection> {
                                               .translate(i18
                                                   .searchWaterConnection
                                                   .OLD_CONNECTION_HINT),
+                                          key: Keys.searchConnection.SEARCH_OLD_ID_KEY,
                                         ),
                                         Text(
                                             '\n${ApplicationLocalizations.of(context).translate(i18.common.OR)}',
@@ -166,6 +167,7 @@ class _SearchConsumerConnectionState extends State<SearchConsumerConnection> {
                                               .translate(i18
                                                   .searchWaterConnection
                                                   .NEW_CONNECTION_HINT),
+                                          key: Keys.searchConnection.SEARCH_NEW_ID_KEY,
                                         ),
                                       ])),
                               new InkWell(
@@ -178,6 +180,7 @@ class _SearchConsumerConnectionState extends State<SearchConsumerConnection> {
                                         '\n${ApplicationLocalizations.of(context).translate(isVisible ? i18.common.SHOW_MORE : i18.common.SHOW_LESS)}',
                                         style: new TextStyle(
                                             color: Colors.deepOrangeAccent),
+                                        key: Keys.searchConnection.SHOW_MORE_BTN,
                                       )
                                     ],
                                   ),

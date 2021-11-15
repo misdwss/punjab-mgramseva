@@ -117,6 +117,7 @@ void main() {
     await tester.tap(selectServiceType);
     await tester.pumpAndSettle(Duration(milliseconds: 3000));
 
+    ///Metered Connection Consumer
     if(TestInputs.createConsumer.CONSUMER_SERVICE == 'Metered'){
       await tester.ensureVisible(findDatePicker);
       await tester.tap(findDatePicker);
@@ -151,6 +152,8 @@ void main() {
           meterReading5, TestInputs.createConsumer.METER_READING_BOX_5);
       await tester.pumpAndSettle(Duration(seconds: 1));
     }
+
+    ///Non Metered Connection Consumer
     else{
       await tester.ensureVisible(findLastBilledCycle);
       await tester.enterText(findLastBilledCycle, TestInputs.createConsumer.LAST_BILLED_CYCLE_MONTH);
