@@ -373,7 +373,6 @@ public class SchedulerService {
 		LocalDateTime currentTime = LocalDateTime.parse(LocalDateTime.now().format(dateTimeFormatter),
 				dateTimeFormatter);
 		List<String> tenantIds = repository.getTenantId();
-
 		tenantIds.forEach(tenantId -> {
 			if (tenantId.split("\\.").length >= 2) {
 				if (null != config.getIsUserEventsNotificationEnabled()) {
@@ -396,48 +395,54 @@ public class SchedulerService {
 								messageMap.get(NotificationUtil.MSG_KEY), mode);
 						HashMap<String, String> onlineMessageMap = util.getLocalizationMessage(requestInfo,
 								TODAY_ONLINE_COLLECTION_SMS, tenantId);
-						messages.add(message);
-						mode = "online";
-//								String onlineMessage = formatTodayCollectionMessage(requestInfo, tenantId,
-//										onlineMessageMap.get(NotificationUtil.MSG_KEY), mode);
-//								messages.add(onlineMessage);
-						UserDetailResponse userDetailResponse = userService.getUserByRoleCodes(requestInfo, tenantId,
-								Arrays.asList("COLLECTION_OPERATOR"));
-						Map<String, String> mobileNumberIdMap = new LinkedHashMap<>();
+						if (message != null) {
 
-						for (OwnerInfo userInfo : userDetailResponse.getUser()) {
-							System.out.println("TODAY Coll User Info::" + userInfo);
-							if (userInfo.getName() != null) {
-								mobileNumberIdMap.put(userInfo.getMobileNumber(), userInfo.getName());
-							} else {
-								mobileNumberIdMap.put(userInfo.getMobileNumber(), userInfo.getUserName());
+							messages.add(message);
+							mode = "online";
+//							String onlineMessage = formatTodayCollectionMessage(requestInfo, tenantId,
+//									onlineMessageMap.get(NotificationUtil.MSG_KEY), mode);
+//							messages.add(onlineMessage);
+							UserDetailResponse userDetailResponse = userService.getUserByRoleCodes(requestInfo,
+									tenantId, Arrays.asList("COLLECTION_OPERATOR"));
+							Map<String, String> mobileNumberIdMap = new LinkedHashMap<>();
+
+							for (OwnerInfo userInfo : userDetailResponse.getUser()) {
+								System.out.println("TODAY Coll User Info::" + userInfo);
+								if (userInfo.getName() != null) {
+									mobileNumberIdMap.put(userInfo.getMobileNumber(), userInfo.getName());
+								} else {
+									mobileNumberIdMap.put(userInfo.getMobileNumber(), userInfo.getUserName());
+								}
 							}
+							mobileNumberIdMap.entrySet().stream().forEach(map -> {
+								if (!messages.isEmpty()) {
+									String uuidUsername = map.getValue();
+
+									messages.forEach(msg -> {
+										msg = msg.replace("{ownername}", uuidUsername);
+										msg = msg.replace("{GPWSC}",
+												(gpwscMap != null
+														&& !StringUtils.isEmpty(gpwscMap.get(NotificationUtil.MSG_KEY)))
+																? gpwscMap.get(NotificationUtil.MSG_KEY)
+																: tenantId);
+										DateFormat format = new SimpleDateFormat("dd/MM/yyyy");
+										Date today = new Date();
+										String formattedDate = format.format(today);
+										msg = msg.replace("{date}", formattedDate);
+										System.out.println("TODAY Coll SMS::" + msg);
+										SMSRequest smsRequest = SMSRequest.builder().mobileNumber(map.getKey())
+												.message(msg).templateId(messageMap.get(NotificationUtil.TEMPLATE_KEY))
+												.users(new String[] { uuidUsername }).build();
+										producer.push(config.getSmsNotifTopic(), smsRequest);
+									});
+								}
+							});
 						}
-						mobileNumberIdMap.entrySet().stream().forEach(map -> {
-							if (!messages.isEmpty()) {
-								String uuidUsername = map.getValue();
 
-								messages.forEach(msg -> {
-									msg = msg.replace("{ownername}", uuidUsername);
-									msg = msg.replace("{GPWSC}", (gpwscMap != null
-											&& !StringUtils.isEmpty(gpwscMap.get(NotificationUtil.MSG_KEY)))
-											? gpwscMap.get(NotificationUtil.MSG_KEY)
-											: tenantId);
-									DateFormat format = new SimpleDateFormat("dd/MM/yyyy");
-									Date today = new Date();
-									String formattedDate = format.format(today);
-									msg = msg.replace("{date}", formattedDate);
-									System.out.println("TODAY Coll SMS::" + msg);
-									SMSRequest smsRequest = SMSRequest.builder().mobileNumber(map.getKey()).message(msg)
-											.templateId(messageMap.get(NotificationUtil.TEMPLATE_KEY))
-											.users(new String[] { uuidUsername }).build();
-									producer.push(config.getSmsNotifTopic(), smsRequest);
-								});
-							}
-						});
 					}
 				}
 			}
+			return;
 		});
 	}
 
@@ -497,10 +502,12 @@ public class SchedulerService {
 					String key = entry.getKey();
 					Object value = entry.getValue();
 					if (key.equalsIgnoreCase("sum")) {
-						if (value != null)
-							message = message.replace("{amount}", value.toString());
-						else
-							message = message.replace("{amount}", "0");
+						if (value != null) {
+							message = message.replace("{amount}", value.toString());}
+						else {
+							message = null;
+							return message;
+						}
 					}
 					if (key.equalsIgnoreCase("count")) {
 						if (message.contains("{no}")) {
