@@ -306,17 +306,24 @@ public class DemandGenerationConsumer {
 			System.out.println("Action Link::" + actionLink);
 
 			List<Event> event = new ArrayList<>();
+			HashMap<String, Object> additionals = new HashMap<String, Object>();
+
 			HashMap<String, String> failedMessage = util.getLocalizationMessage(requestInfo,
 					WSCalculationConstant.GENERATE_DEMAND_EVENT, tenantId);
 			String messages = failedMessage.get(WSCalculationConstant.MSG_KEY);
 			messages = messages.replace("{BILLING_CYCLE}", LocalDate.now().getMonth().toString());
+			
+			additionals.put("localizationCode", WSCalculationConstant.GENERATE_DEMAND_EVENT);
+			HashMap<String, String> attributes = new HashMap<String, String>();
+			attributes.put("{BILLING_CYCLE}", LocalDate.now().getMonth().toString());
+			additionals.put("attributes", attributes);
 			System.out.println("Demand Genaration Failed::" + failedMessage);
 			event.add(Event.builder().tenantId(tenantId).description(messages)
 					.eventType(WSCalculationConstant.USREVENTS_EVENT_TYPE)
 					.name(WSCalculationConstant.MONTHLY_DEMAND_FAILED)
 					.postedBy(WSCalculationConstant.USREVENTS_EVENT_POSTEDBY)
 					.recepient(getRecepient(requestInfo, tenantId)).source(Source.WEBAPP).eventDetails(null)
-					.actions(actions).build());
+					.actions(actions).additionalDetails(additionals).build());
 
 			if (!CollectionUtils.isEmpty(event)) {
 				EventRequest eventReq = EventRequest.builder().requestInfo(requestInfo).events(event).build();
@@ -391,7 +398,7 @@ public class DemandGenerationConsumer {
 					.name(WSCalculationConstant.MONTHLY_DEMAND_GENERATED)
 					.postedBy(WSCalculationConstant.USREVENTS_EVENT_POSTEDBY)
 					.recepient(getRecepient(requestInfo, tenantId)).source(Source.WEBAPP).eventDetails(null)
-					.actions(action).build());
+					.actions(action).additionalDetails(additionals).build());
 
 			if (!CollectionUtils.isEmpty(events)) {
 				EventRequest eventReq = EventRequest.builder().requestInfo(requestInfo).events(events).build();
