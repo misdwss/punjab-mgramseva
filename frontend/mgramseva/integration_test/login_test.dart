@@ -10,6 +10,7 @@ import 'package:mgramseva/widgets/LanguageCard.dart';
 // import 'create_consumer_test.dart' as create_consumer;
 import 'update_expense.dart' as update_expense;
 import 'add_expense.dart' as add_expense;
+import 'dashboard_test.dart' as dashboard;
 
 
 void main() {
@@ -55,6 +56,6 @@ void main() {
     // add_expense.main();
 
     /// update expense
-    update_expense.main();
+    dashboard.main();
   });
 }

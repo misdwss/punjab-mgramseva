@@ -3,6 +3,8 @@ class TestInputs{
   static SearchConnectionInputs searchConnection = const SearchConnectionInputs();
   static CreateConsumerInputs createConsumer = const CreateConsumerInputs();
   static Expense expense = const Expense();
+  static Common common = const Common();
+  static Dashboard dashboard = const Dashboard();
 }
 
 class LoginInputs{
@@ -37,4 +39,13 @@ class Expense {
   String get VENDOR_NUMBER => '9949210191';
   String get VENDOR_AMOUNT => '123';
   String get BILL_ID => 'EB-2021-22-0270';
+}
+
+class Dashboard {
+  const Dashboard();
+  String get DASHBOARD_SEARCH => 'hara';
+}
+
+class Common {
+  const Common();
 }

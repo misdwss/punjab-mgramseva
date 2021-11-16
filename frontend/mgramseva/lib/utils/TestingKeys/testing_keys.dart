@@ -6,6 +6,8 @@ class Keys{
   static LoginKeys login = const LoginKeys();
   static CreateConsumerKeys createConsumer = const CreateConsumerKeys();
   static ExpenseKeys expense = const ExpenseKeys();
+  static DashboardKeys dashboard = const DashboardKeys();
+  static Common common = const Common();
 }
 class LanguagePageKeys{
   const LanguagePageKeys();
@@ -47,4 +49,19 @@ class ExpenseKeys {
   Key get SEARCH_EXPENSE_TYPE => Key("search_expense_type");
   Key get SEARCH_EXPENSE_SHOW => Key("search_expense_show");
   Key get SEARCH_EXPENSE_BILL_ID => Key("search_expense_billId");
+}
+
+class DashboardKeys {
+  const DashboardKeys();
+  Key get DASHBOARD_SEARCH => Key("dashboard_search");
+  Key get DASHBOARD_DATE_PICKER => Key("dashboard_date_picker");
+  Key get SECOND_TAB => Key("1");
+  Key get THIRD_TAB => Key("2");
+
+}
+
+class Common {
+  const Common();
+  Key get PAGINATION_DROPDOWN => Key("drop_down");
+  Key get PAGINATION_COUNT=> Key("20");
 }

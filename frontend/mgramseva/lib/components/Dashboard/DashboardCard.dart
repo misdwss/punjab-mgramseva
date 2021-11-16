@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mgramseva/providers/dashboard_provider.dart';
 import 'package:mgramseva/utils/Locilization/application_localizations.dart';
+import 'package:mgramseva/utils/TestingKeys/testing_keys.dart';
 import 'package:mgramseva/utils/common_widgets.dart';
 import 'package:mgramseva/utils/date_formats.dart';
 import 'package:mgramseva/utils/loaders.dart';
@@ -32,6 +33,7 @@ class DashboardCard extends StatelessWidget {
                     LabelText(i18.dashboard.DASHBOARD),
                     Expanded(
                       child: InkWell(
+                        key: Keys.dashboard.DASHBOARD_DATE_PICKER,
                         onTap: onMonthSelection,
                         child: Container(
                           alignment: Alignment.centerRight,
