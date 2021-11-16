@@ -228,7 +228,7 @@ public class DemandGenerationConsumer {
 		requestInfo = mapper.convertValue(demandData.get("requestInfo"), RequestInfo.class);
 		requestInfo.getUserInfo().setTenantId(tenantId);
 		Map<String, Object> billingMasterData = calculatorUtils.loadBillingFrequencyMasterData(requestInfo, tenantId);
-
+		
 		generateDemandForULB(billingMasterData, requestInfo, tenantId, isSendMessage);
 	}
 
@@ -288,8 +288,11 @@ public class DemandGenerationConsumer {
 			calculationCriteriaList.add(calculationCriteria);
 			CalculationReq calculationReq = CalculationReq.builder().calculationCriteria(calculationCriteriaList)
 					.requestInfo(requestInfo).isconnectionCalculation(true).build();
+			
+			Map<String, Object> masterMap = mDataService.loadMasterData(calculationReq.getRequestInfo(),
+					calculationReq.getCalculationCriteria().get(0).getTenantId());
 			try {
-				generateDemandInBatch(calculationReq, master, billingCycle, isSendMessage);
+				generateDemandInBatch(calculationReq, masterMap, billingCycle, isSendMessage);
 
 			} catch (Exception e) {
 				System.out.println("Got the exception while genating the demands:" + connectionNo);
@@ -479,19 +482,19 @@ public class DemandGenerationConsumer {
 			"${egov.generate.bulk.demand.manually.topic}" }, containerFactory = "kafkaListenerContainerFactory")
 	public void generateBulkDemandForULB(HashMap<Object, Object> messageData) {
 		log.info("Billing master data values for non metered connection:: {}", messageData);
-		Map<String, Object> master;
+		Map<String, Object> billingMasterData;
 		BulkDemand bulkDemand;
 		boolean isSendMessage = false;
 		boolean isManual = true;
 		HashMap<Object, Object> demandData = (HashMap<Object, Object>) messageData;
-		master = (Map<String, Object>) demandData.get("billingMasterData");
+		billingMasterData = (Map<String, Object>) demandData.get("billingMasterData");
 		bulkDemand = mapper.convertValue(demandData.get("bulkDemand"), BulkDemand.class);
 
 		String billingPeriod = bulkDemand.getBillingPeriod();
 		if (StringUtils.isEmpty(billingPeriod))
 			throw new CustomException("BILLING_PERIOD_PARSING_ISSUE", "Billing Period can not be empty!!");
 
-		SendNotificationsToUsers(bulkDemand.getRequestInfo(), bulkDemand.getTenantId(), billingPeriod, master,
+		SendNotificationsToUsers(bulkDemand.getRequestInfo(), bulkDemand.getTenantId(), billingPeriod, billingMasterData,
 				isSendMessage, isManual);
 		
 	}

@@ -8,7 +8,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -103,9 +102,6 @@ public class DemandService {
 
 	@Autowired
 	private CalculatorUtil calculatorUtils;
-
-	@Autowired
-	private EstimationService estimationService;
 
 	@Autowired
 	private WSCalculationProducer wsCalculationProducer;
@@ -203,15 +199,8 @@ public class DemandService {
 			Map<String, Object> masterMap, boolean isForConnectionNO) {
 		List<Demand> demands = new LinkedList<>();
 		List<SMSRequest> smsRequests = new LinkedList<>();
-//		DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
 		DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("d/MM/uuuu");
 		
-		
-//		LocalDate firstDate = LocalDate.now().with(TemporalAdjusters.firstDayOfMonth());
-//		LocalDate lastDate = LocalDate.now().with(TemporalAdjusters.lastDayOfMonth());
-
-//		String fromDate = firstDate.format(formatters);
-//		String toDate = lastDate.format(formatters);
 		String billCycle = "";
 		String consumerCode = null;
 		for (Calculation calculation : calculations) {
@@ -251,8 +240,6 @@ public class DemandService {
 			LocalDate lastDate = Instant.ofEpochMilli(toDate).atZone(ZoneId.systemDefault()).toLocalDate();
 
 			billCycle = firstDate.format(dateTimeFormatter) + " - " +lastDate.format(dateTimeFormatter);
-//			billCycle = (Instant.ofEpochMilli(fromDate).atZone(ZoneId.systemDefault()).toLocalDate() + "-"
-//					+ Instant.ofEpochMilli(toDate).atZone(ZoneId.systemDefault()).toLocalDate());
 			addRoundOffTaxHead(calculation.getTenantId(), demandDetails);
 
 			demands.add(Demand.builder().consumerCode(consumerCode).demandDetails(demandDetails).payer(owner)
@@ -625,9 +612,16 @@ public class DemandService {
 	private List<Demand> updateDemandForCalculation(RequestInfo requestInfo, List<Calculation> calculations,
 			Long fromDate, Long toDate, boolean isForConnectionNo) {
 		List<Demand> demands = new LinkedList<>();
+		
+		DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("d/MM/uuuu");
+		LocalDate firstDate = Instant.ofEpochMilli(fromDate).atZone(ZoneId.systemDefault()).toLocalDate();
+		LocalDate lastDate = Instant.ofEpochMilli(toDate).atZone(ZoneId.systemDefault()).toLocalDate();
+
+		String billCycle = firstDate.format(dateTimeFormatter) + " - " +lastDate.format(dateTimeFormatter);
+		
+		
 		Long fromDateSearch = fromDate; // isForConnectionNo ? fromDate : null;
 		Long toDateSearch = toDate; // isForConnectionNo ? toDate : null;
-		String billCycle = "";
 		for (Calculation calculation : calculations) {
 			Set<String> consumerCodes = Collections.singleton(calculation.getWaterConnection().getConnectionNo());
 			List<Demand> searchResult = searchDemand(calculation.getTenantId(), consumerCodes, fromDateSearch,
@@ -683,9 +677,6 @@ public class DemandService {
 			System.out.println("Localization message::" + messageString + demand);
 
 			if (!StringUtils.isEmpty(messageString)) {
-
-				billCycle = (Instant.ofEpochMilli(fromDate).atZone(ZoneId.systemDefault()).toLocalDate() + "-"
-						+ Instant.ofEpochMilli(toDate).atZone(ZoneId.systemDefault()).toLocalDate());
 				messageString = messageString.replace("{ownername}", owner.getName());
 				messageString = messageString.replace("{Period}", billCycle);
 				messageString = messageString.replace("{consumerno}", calculation.getConnectionNo());
