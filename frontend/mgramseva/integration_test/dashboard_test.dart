@@ -27,8 +27,7 @@ void main() {
     final expenditureTab = find.widgetWithText(GestureDetector, ApplicationLocalizations.of(navigatorKey.currentContext!).translate(i18.dashboard.EXPENDITURE)).first;
     final tab = find.byKey(Keys.dashboard.SECOND_TAB);
     final tab2 = find.byKey(Keys.dashboard.THIRD_TAB);
-    // final allTab = find.widgetWithText(TabButton, ApplicationLocalizations.of(navigatorKey.currentContext!).translate(i18.dashboard.ALL));
-    // final paidTab = find.widgetWithText(TabButton, ApplicationLocalizations.of(navigatorKey.currentContext!).translate(i18.dashboard.PAID));
+    final share = find.byKey(Keys.common.SHARE,);
 
     // await tester.pumpAndSettle(Duration(milliseconds: 3000));
     // await tester.scrollUntilVisible(dashboard_search, 100);
@@ -83,5 +82,14 @@ void main() {
     await tester.ensureVisible(dashboard_search);
     await tester.enterText(dashboard_search, TestInputs.dashboard.DASHBOARD_SEARCH);
     await tester.pumpAndSettle(Duration(milliseconds: 5000));
+
+    await tester.ensureVisible(share);
+    await tester.tap(share);
+    await tester.pumpAndSettle(Duration(milliseconds: 5000));
+
+    await tester.ensureVisible(share);
+    await tester.tap(share);
+    await tester.pumpAndSettle(Duration(milliseconds: 12000));
+    await tester.pumpAndSettle(Duration(milliseconds: 12000));
   });
 }

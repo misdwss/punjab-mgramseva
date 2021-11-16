@@ -8,6 +8,7 @@ class Keys{
   static ExpenseKeys expense = const ExpenseKeys();
   static DashboardKeys dashboard = const DashboardKeys();
   static Common common = const Common();
+  static HouseholdKeys household = const HouseholdKeys();
 }
 class LanguagePageKeys{
   const LanguagePageKeys();
@@ -64,4 +65,11 @@ class Common {
   const Common();
   Key get PAGINATION_DROPDOWN => Key("drop_down");
   Key get PAGINATION_COUNT=> Key("20");
+  Key get SHARE=> Key("Share Whatsapp");
+}
+
+class HouseholdKeys {
+  const HouseholdKeys();
+  Key get HOUSEHOLD_SEARCH => Key("household_search");
+
 }

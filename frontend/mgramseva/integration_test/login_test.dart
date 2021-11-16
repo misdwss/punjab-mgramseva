@@ -11,6 +11,7 @@ import 'package:mgramseva/widgets/LanguageCard.dart';
 import 'update_expense.dart' as update_expense;
 import 'add_expense.dart' as add_expense;
 import 'dashboard_test.dart' as dashboard;
+import 'house_hold.dart' as houseHold;
 
 
 void main() {
@@ -56,6 +57,9 @@ void main() {
     // add_expense.main();
 
     /// update expense
-    dashboard.main();
+    // dashboard.main();
+
+    /// House hold regisiter
+    houseHold.main();
   });
 }

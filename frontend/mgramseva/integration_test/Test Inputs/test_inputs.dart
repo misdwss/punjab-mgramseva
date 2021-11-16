@@ -5,6 +5,7 @@ class TestInputs{
   static Expense expense = const Expense();
   static Common common = const Common();
   static Dashboard dashboard = const Dashboard();
+  static HouseHoldRegister holdRegister = const HouseHoldRegister();
 }
 
 class LoginInputs{
@@ -48,4 +49,10 @@ class Dashboard {
 
 class Common {
   const Common();
+}
+
+class HouseHoldRegister {
+  const HouseHoldRegister();
+  String get HOUSEHOLD_SEARCH => '1370';
+
 }
