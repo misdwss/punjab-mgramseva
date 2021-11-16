@@ -47,6 +47,8 @@ class Events {
   String? eventDetails;
   @JsonKey(name: "auditDetails")
   AuditDetails? auditDetails;
+  @JsonKey(name: "additionalDetails")
+  AdditionalDetails? additionalDetails;
   @JsonKey(name: "recepientEventMap")
   String? recepientEventMap;
   @JsonKey(name: "generateCounterEvent")
@@ -113,4 +115,17 @@ class Recepient {
       _$RecepientFromJson(json);
 
   Map<String, dynamic> toJson() => _$RecepientToJson(this);
+}
+
+@JsonSerializable()
+class AdditionalDetails {
+  dynamic attributes;
+  dynamic localizationCode;
+
+  AdditionalDetails({this.attributes, this.localizationCode});
+
+  factory AdditionalDetails.fromJson(Map<String, dynamic> json) =>
+      _$AdditionalDetailsFromJson(json);
+
+  Map<String, dynamic> toJson() => _$AdditionalDetailsToJson(this);
 }

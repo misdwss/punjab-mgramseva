@@ -125,3 +125,16 @@ Map<String, dynamic> _$RecepientToJson(Recepient instance) => <String, dynamic>{
       'toRoles': instance.toRoles,
       'toUsers': instance.toUsers,
     };
+
+AdditionalDetails _$AdditionalDetailsFromJson(Map<String, dynamic> json) {
+  return AdditionalDetails(
+    attributes: json['attributes'],
+    localizationCode: json['localizationCode'] as String?,
+  );
+}
+
+Map<String, dynamic> _$AdditionalDetailsToJson(AdditionalDetails instance) =>
+    <String, dynamic>{
+      'attributes': instance.attributes,
+      'localizationCode': instance.localizationCode,
+    };
