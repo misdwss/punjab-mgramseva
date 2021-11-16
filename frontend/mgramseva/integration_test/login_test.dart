@@ -9,8 +9,7 @@ import 'search_Connection_test.dart' as search_Connection;
 import 'create_consumer_test.dart' as create_consumer;
 import 'update_Consumer_Test.dart' as update_consumer;
 import 'generate_bill_non_metered_test.dart' as generate_bulk_demand;
-import 'dashboard_test.dart' as dashboard;
-
+import 'generate_bill_metered_test.dart' as generate_metered_bill;
 
 void main() {
   group('App Test', () {
@@ -46,15 +45,18 @@ void main() {
 
     });
     ///Search Connection Testing
-    search_Connection.main();
+    //search_Connection.main();
 
     ///Create Consumer Testing
-    create_consumer.main();
+    //create_consumer.main();
 
     ///Update Consumer Details Testing
-    update_consumer.main();
+    //update_consumer.main();
 
     ///Generate Bulk Demand
-    generate_bulk_demand.main();
+    //generate_bulk_demand.main();
+
+    ///Generate Metered Bill
+    generate_metered_bill.main();
   });
 }

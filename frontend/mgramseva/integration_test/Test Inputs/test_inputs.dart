@@ -6,6 +6,7 @@ class TestInputs{
   static CreateConsumerInputs createConsumer = const CreateConsumerInputs();
   static UpdateConsumerInputs updateConsumer = const UpdateConsumerInputs();
   static GenerateBulkDemandInputs bulkDemand = const GenerateBulkDemandInputs();
+  static GenerateBillMeteredInputs generateBill = const GenerateBillMeteredInputs();
 }
 
 class LoginInputs{
@@ -64,4 +65,15 @@ class GenerateBulkDemandInputs{
   String get BILLING_CYCLE => Constants.MONTHS[10 - 1];
 // If selected Month is October, then Constants.MONTHS[10 - 1]
 // If selected Month is November, then Constants.MONTHS[11 - 1]
+}
+
+class GenerateBillMeteredInputs{
+  const GenerateBillMeteredInputs();
+
+  String get SEARCH_MOBILE_NUMBER => '9513848423';
+  String get NEW_METER_READING_BOX_1 => '1';
+  String get NEW_METER_READING_BOX_2 => '0';
+  String get NEW_METER_READING_BOX_3 => '0';
+  String get NEW_METER_READING_BOX_4 => '0';
+  String get NEW_METER_READING_BOX_5 => '6';
 }

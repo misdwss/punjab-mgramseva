@@ -7,6 +7,7 @@ class Keys{
   static CreateConsumerKeys createConsumer = const CreateConsumerKeys();
   static SearchConncetionKeys searchConnection = const SearchConncetionKeys();
   static GenerateBulkDemandKeys bulkDemand = const GenerateBulkDemandKeys();
+  static GenerateBillMeteredKeys generateBill = const GenerateBillMeteredKeys();
 }
 
 class LanguagePageKeys{
@@ -53,4 +54,8 @@ class GenerateBulkDemandKeys{
   Key get BULK_DEMAND_BILLING_YEAR => Key('Bulk Demand billingYear');
   Key get BULK_DEMAND_BILLING_CYCLE => Key('Bulk Demand billingCycle');
   Key get GENERATE_BILL_BTN => Key('Generate Bill button');
+}
+
+class GenerateBillMeteredKeys{
+  const GenerateBillMeteredKeys();
 }
