@@ -256,13 +256,13 @@ public class DemandGenerationConsumer {
 			String toDate = lastDate.format(formatters);
 			String billingCycle = fromDate + " - " + toDate;
 			boolean isManual = false;
-			SendNotificationsToUsers(requestInfo, tenantId, billingCycle, master, isSendMessage, isManual);
+			generateDemandAndSendnotification(requestInfo, tenantId, billingCycle, master, isSendMessage, isManual);
 			
 
 		}
 	}
 
-	private void SendNotificationsToUsers(RequestInfo requestInfo, String tenantId, String billingCycle,
+	private void generateDemandAndSendnotification(RequestInfo requestInfo, String tenantId, String billingCycle,
 			Map<String, Object> master, boolean isSendMessage, boolean isManual) {
 		// TODO Auto-generated method stub
 
@@ -291,6 +291,9 @@ public class DemandGenerationConsumer {
 			
 			Map<String, Object> masterMap = mDataService.loadMasterData(calculationReq.getRequestInfo(),
 					calculationReq.getCalculationCriteria().get(0).getTenantId());
+			// check weather this connection has demand for previous billing cycle 
+			//if not log a warn message as this connection doen't have the demand in previous billing cycle.
+			
 			try {
 				generateDemandInBatch(calculationReq, masterMap, billingCycle, isSendMessage);
 
@@ -494,7 +497,7 @@ public class DemandGenerationConsumer {
 		if (StringUtils.isEmpty(billingPeriod))
 			throw new CustomException("BILLING_PERIOD_PARSING_ISSUE", "Billing Period can not be empty!!");
 
-		SendNotificationsToUsers(bulkDemand.getRequestInfo(), bulkDemand.getTenantId(), billingPeriod, billingMasterData,
+		generateDemandAndSendnotification(bulkDemand.getRequestInfo(), bulkDemand.getTenantId(), billingPeriod, billingMasterData,
 				isSendMessage, isManual);
 		
 	}
