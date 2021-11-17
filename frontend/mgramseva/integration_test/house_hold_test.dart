@@ -25,11 +25,7 @@ void main() {
     final houseHoldSearch = find.byKey(Keys.household.HOUSEHOLD_SEARCH);
     final tab = find.byKey(Keys.dashboard.SECOND_TAB);
     final tab2 = find.byKey(Keys.dashboard.THIRD_TAB);
-    final share = find.byKey(Keys.common.SHARE,);
-
-    // await tester.ensureVisible(houseHoldSearch);
-    // await tester.enterText(houseHoldSearch, TestInputs.holdRegister.HOUSEHOLD_SEARCH);
-    // await tester.pumpAndSettle(Duration(milliseconds: 5000));
+    final share = find.byKey(Keys.common.SHARE);
 
     /// household tab selection
     await tester.pumpAndSettle(Duration(milliseconds: 500));
@@ -47,16 +43,24 @@ void main() {
     await tester.pumpAndSettle(Duration(milliseconds: 1000));
     await tester.tap(pagination);
     await tester.pumpAndSettle(Duration(milliseconds: 3000));
+
     final pagingItem = find.byKey(Keys.common.PAGINATION_COUNT).first;
     await tester.pumpAndSettle(Duration(milliseconds: 1000));
     await tester.tap(pagingItem);
+    await tester.pumpAndSettle(Duration(milliseconds: 5000));
+
+    await tester.ensureVisible(houseHoldSearch);
+    await tester.enterText(houseHoldSearch, TestInputs.holdRegister.HOUSEHOLD_SEARCH);
+    await tester.testTextInput.receiveAction(TextInputAction.done);
     await tester.pumpAndSettle(Duration(milliseconds: 5000));
 
     final downloadButton = find.byIcon(Icons.download_sharp).first;
     await tester.tap(downloadButton);
     await tester.pumpAndSettle(Duration(milliseconds: 2000));
 
-
+    await tester.ensureVisible(share);
+    await tester.tap(share);
+    await tester.pumpAndSettle(Duration(milliseconds: 12000));
 
   });
 }
