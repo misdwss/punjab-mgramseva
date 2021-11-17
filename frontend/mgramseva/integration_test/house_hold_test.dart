@@ -32,11 +32,31 @@ void main() {
     // await tester.pumpAndSettle(Duration(milliseconds: 5000));
 
     /// household tab selection
-    await tester.pumpAndSettle(Duration(milliseconds: 1000));
+    await tester.pumpAndSettle(Duration(milliseconds: 500));
     await tester.tap(tab);
     await tester.pumpAndSettle(Duration(milliseconds: 3000));
 
     await tester.tap(tab2);
     await tester.pumpAndSettle(Duration(milliseconds: 3000));
+
+    final paginationArrow = find.byIcon(Icons.arrow_right);
+    await tester.tap(paginationArrow);
+    await tester.pumpAndSettle(Duration(milliseconds: 2000));
+
+    final pagination = find.byKey(Keys.common.PAGINATION_DROPDOWN);
+    await tester.pumpAndSettle(Duration(milliseconds: 1000));
+    await tester.tap(pagination);
+    await tester.pumpAndSettle(Duration(milliseconds: 3000));
+    final pagingItem = find.byKey(Keys.common.PAGINATION_COUNT).first;
+    await tester.pumpAndSettle(Duration(milliseconds: 1000));
+    await tester.tap(pagingItem);
+    await tester.pumpAndSettle(Duration(milliseconds: 5000));
+
+    final downloadButton = find.byIcon(Icons.download_sharp).first;
+    await tester.tap(downloadButton);
+    await tester.pumpAndSettle(Duration(milliseconds: 2000));
+
+
+
   });
 }

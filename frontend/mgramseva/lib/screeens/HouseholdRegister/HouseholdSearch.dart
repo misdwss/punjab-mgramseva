@@ -73,7 +73,9 @@ class _HouseholdSearchState extends State<HouseholdSearch> with SingleTickerProv
                   scrollDirection: Axis.horizontal,
                   child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
-                      children: List.generate(tabList.length, (index) => Padding(padding: EdgeInsets.only(top: 16.0, right: 8.0, bottom: 16.0), child: TabButton(tabList[index], isSelected: householdRegisterProvider.isTabSelected(index), onPressed: () => householdRegisterProvider.onChangeOfTab(context, index))))           ),
+                      children: List.generate(tabList.length, (index) => Padding(
+                          key: Key(index.toString()),
+                          padding: EdgeInsets.only(top: 16.0, right: 8.0, bottom: 16.0), child: TabButton(tabList[index], isSelected: householdRegisterProvider.isTabSelected(index), onPressed: () => householdRegisterProvider.onChangeOfTab(context, index))))           ),
                 ),
               ),
               SizedBox(height: 15,),
