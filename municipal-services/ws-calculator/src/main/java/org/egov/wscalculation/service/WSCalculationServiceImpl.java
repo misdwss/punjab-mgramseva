@@ -32,6 +32,7 @@ import org.egov.wscalculation.web.models.TaxHeadEstimate;
 import org.egov.wscalculation.web.models.TaxHeadMaster;
 import org.egov.wscalculation.web.models.WaterConnection;
 import org.egov.wscalculation.web.models.WaterConnectionRequest;
+import org.egov.wscalculation.web.models.enums.Status;
 import org.egov.wscalculation.repository.DemandRepository;
 import org.egov.wscalculation.repository.ServiceRequestRepository;
 import org.egov.wscalculation.repository.WSCalculationDao;
@@ -100,18 +101,29 @@ public class WSCalculationServiceImpl implements WSCalculationService {
 //			calculations = getCalculations(request, masterMap);
 //		}
 		List<WaterConnection> wsresults = calculatorUtil.getWaterConnection(request.getRequestInfo(),
-				request.getCalculationCriteria().get(0).getConnectionNo(), request.getCalculationCriteria().get(0).getTenantId());
-		
+				request.getCalculationCriteria().get(0).getConnectionNo(),
+				request.getCalculationCriteria().get(0).getTenantId());
+
+		//TODO need to change this to WS service.
+		if(wsresults.get(0).getApplicationStatus() != null && wsresults.get(0).getApplicationStatus().equals(Status.INACTIVE.toString())) {
+			return calculations;
+		}
+		boolean isWSUpdateSMS = false;
 		List<Demand> searchResult = demandService.searchDemandBasedOnConsumerCode(
 				request.getCalculationCriteria().get(0).getTenantId(),
 				request.getCalculationCriteria().get(0).getConnectionNo(), request.getRequestInfo());
+		
 		if (searchResult != null && searchResult.size() > 0
-				&& searchResult.get(0).getConsumerType().equalsIgnoreCase("waterConnection-arrears") && !request.getIsconnectionCalculation() && wsresults !=null && wsresults.size()>0 && wsresults.get(0).getPreviousReadingDate().longValue() != request.getCalculationCriteria().get(0).getWaterConnection().getPreviousReadingDate().longValue()) {
+				&& searchResult.get(0).getConsumerType().equalsIgnoreCase("waterConnection-arrears")
+				&& !request.getIsconnectionCalculation() && wsresults != null && wsresults.size() > 0
+				&& wsresults.get(0).getPreviousReadingDate().longValue() != request.getCalculationCriteria().get(0)
+						.getWaterConnection().getPreviousReadingDate().longValue()) {
 			searchResult.get(0).setStatus(StatusEnum.CANCELLED);
+			isWSUpdateSMS = true;
 			demandRepository.updateDemand(request.getRequestInfo(), searchResult);
 		}
 		demandService.generateDemand(request.getRequestInfo(), calculations, masterMap,
-				request.getIsconnectionCalculation());
+				request.getIsconnectionCalculation(), isWSUpdateSMS);
 
 		unsetWaterConnection(calculations);
 		return calculations;
@@ -126,7 +138,7 @@ public class WSCalculationServiceImpl implements WSCalculationService {
 	 */
 	public List<Calculation> bulkDemandGeneration(CalculationReq request, Map<String, Object> masterMap) {
 		List<Calculation> calculations = getCalculations(request, masterMap);
-		demandService.generateDemand(request.getRequestInfo(), calculations, masterMap, true);
+		demandService.generateDemand(request.getRequestInfo(), calculations, masterMap, true, false);
 		return calculations;
 	}
 
