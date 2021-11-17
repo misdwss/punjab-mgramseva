@@ -218,7 +218,7 @@ public class WSCalculatorQueryBuilder {
 	}
 
 	public String previousBillingCycleDemandQuery(Set<String> connectionNos, String tenantId,
-			Long previousBillingCycleDate, List<Object> preparedStmtList) {
+			Long startDate, Long endDate, List<Object> preparedStmtList) {
 
 		StringBuilder builder = new StringBuilder(PREVIOUS_BILLING_CYCLE_DEMAND);
 
@@ -227,10 +227,10 @@ public class WSCalculatorQueryBuilder {
 			builder.append(" consumercode IN (").append(createQuery(connectionNos)).append(")");
 			addToPreparedStatement(preparedStmtList, connectionNos);
 		}
-		if (previousBillingCycleDate != null) {
+		if (startDate != null && endDate!=null) {
 			addClauseIfRequired(preparedStmtList, builder);
-			builder.append(" ? between taxperiodfrom and taxperiodto ");
-			preparedStmtList.add(previousBillingCycleDate);
+			builder.append(" taxperiodto between "   + startDate + " and " + endDate );
+			//todo taxperiod to is in between startdate and enddate of previous billing cycle
 		}
 
 		if (!StringUtils.isEmpty(tenantId)) {

@@ -13,6 +13,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -31,6 +32,7 @@ import org.egov.wscalculation.web.models.BulkDemand;
 import org.egov.wscalculation.web.models.CalculationCriteria;
 import org.egov.wscalculation.web.models.CalculationReq;
 import org.egov.wscalculation.web.models.Category;
+import org.egov.wscalculation.web.models.Demand;
 import org.egov.wscalculation.web.models.Event;
 import org.egov.wscalculation.web.models.EventRequest;
 import org.egov.wscalculation.web.models.OwnerInfo;
@@ -40,6 +42,7 @@ import org.egov.wscalculation.web.models.Source;
 import org.egov.wscalculation.web.models.users.UserDetailResponse;
 import org.egov.wscalculation.producer.WSCalculationProducer;
 import org.egov.wscalculation.repository.WSCalculationDao;
+import org.egov.wscalculation.service.DemandService;
 import org.egov.wscalculation.service.EstimationService;
 import org.egov.wscalculation.service.MasterDataService;
 import org.egov.wscalculation.service.UserService;
@@ -103,6 +106,9 @@ public class DemandGenerationConsumer {
 
 	@Autowired
 	private WSCalculationValidator wsCalculationValidator;
+	
+	@Autowired
+	private DemandService demandService;
 
 	/**
 	 * Listen the topic for processing the batch records.
@@ -257,27 +263,46 @@ public class DemandGenerationConsumer {
 			String billingCycle = fromDate + " - " + toDate;
 			boolean isManual = false;
 			generateDemandAndSendnotification(requestInfo, tenantId, billingCycle, master, isSendMessage, isManual);
-			
-
 		}
 	}
 
+	@SuppressWarnings("null")
 	private void generateDemandAndSendnotification(RequestInfo requestInfo, String tenantId, String billingCycle,
 			Map<String, Object> master, boolean isSendMessage, boolean isManual) {
 		// TODO Auto-generated method stub
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d/MM/yyyy");
 
-		LocalDate todayDate = LocalDate.now().with(TemporalAdjusters.firstDayOfMonth());
+
+		LocalDate fromDate = LocalDate.parse(billingCycle.split("-")[0].trim(), formatter);
+		LocalDate toDate = LocalDate.parse(billingCycle.split("-")[0].trim(), formatter);
+
 		Long dayStartTime = LocalDateTime
-				.of(todayDate.getYear(), todayDate.getMonth(), todayDate.getDayOfMonth(), 0, 0, 0)
+				.of(fromDate.getYear(), fromDate.getMonth(), fromDate.getDayOfMonth(), 0, 0, 0)
 				.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
 		Long dayEndTime = LocalDateTime
-				.of(todayDate.getYear(), todayDate.getMonth(), todayDate.getDayOfMonth(), 23, 59, 59)
+				.of(toDate.getYear(), toDate.getMonth(), toDate.getDayOfMonth(), 23, 59, 59)
 				.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
 
+		
 		List<String> connectionNos = waterCalculatorDao.getNonMeterConnectionsList(tenantId, dayStartTime, dayEndTime);
 
 		List<String> meteredConnectionNos = waterCalculatorDao.getConnectionsNoList(tenantId,
 				WSCalculationConstant.meteredConnectionType);
+
+		
+		  
+		// convert String to LocalDate
+		LocalDate PrevoiusStartDate = LocalDate.parse(billingCycle.split("-")[0].trim(), formatter);
+		LocalDate PrevoiusEndDate = LocalDate.parse(billingCycle.split("-")[1].trim(), formatter);
+		
+		Long startDate = LocalDateTime
+				.of(PrevoiusStartDate.getYear(), PrevoiusStartDate.minusMonths(1).getMonth(),
+						PrevoiusStartDate.getDayOfMonth(), 0, 0, 0)
+				.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
+		Long endDate = LocalDateTime
+				.of(PrevoiusEndDate.getYear(), PrevoiusEndDate.minusMonths(1).getMonth(),
+						PrevoiusEndDate.getDayOfMonth(), 23, 59, 59)
+				.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
 
 		String assessmentYear = estimationService.getAssessmentYear();
 		ArrayList<String> failedConnectionNos = new ArrayList<String>();
@@ -288,12 +313,20 @@ public class DemandGenerationConsumer {
 			calculationCriteriaList.add(calculationCriteria);
 			CalculationReq calculationReq = CalculationReq.builder().calculationCriteria(calculationCriteriaList)
 					.requestInfo(requestInfo).isconnectionCalculation(true).build();
-			
+
 			Map<String, Object> masterMap = mDataService.loadMasterData(calculationReq.getRequestInfo(),
 					calculationReq.getCalculationCriteria().get(0).getTenantId());
-			// check weather this connection has demand for previous billing cycle 
-			//if not log a warn message as this connection doen't have the demand in previous billing cycle.
-			
+			// check weather this connection has demand for previous billing cycle
+			// if not log a warn message as this connection doen't have the demand in
+			// previous billing cycle.
+			Set<String> consumerCodes = new LinkedHashSet<String>();
+			consumerCodes.add(connectionNo);
+
+			List<Demand> demands = demandService.searchDemand(tenantId, consumerCodes, startDate, endDate, requestInfo);
+			if (demands != null && demands.size() == 0) {
+				log.warn("this connection doen't have the demand in previous billing cycle");
+				continue;
+			}
 			try {
 				generateDemandInBatch(calculationReq, masterMap, billingCycle, isSendMessage);
 

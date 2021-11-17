@@ -456,7 +456,7 @@ public class DemandService {
 	 * @param requestInfo   The RequestInfo of the incoming request
 	 * @return Lis to demands for the given consumerCode
 	 */
-	private List<Demand> searchDemand(String tenantId, Set<String> consumerCodes, Long taxPeriodFrom, Long taxPeriodTo,
+	public List<Demand> searchDemand(String tenantId, Set<String> consumerCodes, Long taxPeriodFrom, Long taxPeriodTo,
 			RequestInfo requestInfo) {
 		Object result = serviceRequestRepository.fetchResult(
 				getDemandSearchURL(tenantId, consumerCodes, taxPeriodFrom, taxPeriodTo),
@@ -853,31 +853,25 @@ public class DemandService {
 		String tenantId = bulkDemand.getTenantId();
 		requestInfo.getUserInfo().setTenantId(tenantId);
 		Map<String, Object> billingMasterData = calculatorUtils.loadBillingFrequencyMasterData(requestInfo, tenantId);
-		
+
 		List<String> connectionNos = waterCalculatorDao.getConnectionsNoList(bulkDemand.getTenantId(),
 				WSCalculationConstant.nonMeterdConnection);
 		Set<String> connectionSet = connectionNos.stream().collect(Collectors.toSet());
-		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-		Date billingStrartDate;
-		Calendar startCal = Calendar.getInstance();
-		Calendar endCal = Calendar.getInstance();
-		try {
-			billingStrartDate = sdf.parse(bulkDemand.getBillingPeriod().split("-")[0].trim());
-			Date billingEndDate = sdf.parse(bulkDemand.getBillingPeriod().split("-")[1].trim());
-			startCal.setTime(billingStrartDate);
-			endCal.setTime(billingEndDate);
 
-		} catch (CustomException | ParseException ex) {
-			log.error("", ex);
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d/MM/yyyy");
 
-			if (ex instanceof CustomException)
-				throw new CustomException("BILLING_PERIOD_ISSUE", "Billing period can not be in future!!");
+		LocalDate fromDate = LocalDate.parse(bulkDemand.getBillingPeriod().split("-")[0].trim(), formatter);
+		LocalDate toDate = LocalDate.parse(bulkDemand.getBillingPeriod().split("-")[1].trim(), formatter);
 
-			throw new CustomException("BILLING_PERIOD_PARSING_ISSUE", "Billing period can not parsed!!");
-		}
-		wsCalculationValidator.validateBulkDemandBillingPeriod(startCal.getTimeInMillis(), connectionSet,
+		Long dayStartTime = LocalDateTime.of(fromDate.getYear(), fromDate.getMonth(), fromDate.getDayOfMonth(), 0, 0, 0)
+				.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
+		Long dayEndTime = LocalDateTime.of(toDate.getYear(), toDate.getMonth(), toDate.getDayOfMonth(), 23, 59, 59)
+				.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
+
+
+		wsCalculationValidator.validateBulkDemandBillingPeriod(dayStartTime, dayEndTime, connectionSet,
 				bulkDemand.getTenantId(), (String) billingMasterData.get(WSCalculationConstant.Billing_Cycle_String));
-		
+
 		HashMap<Object, Object> demandData = new HashMap<Object, Object>();
 		demandData.put("billingMasterData", billingMasterData);
 		demandData.put("bulkDemand", bulkDemand);
