@@ -648,7 +648,7 @@ public class DemandService {
 						.taxHeadMasterCode(taxHeadEstimate.getTaxHeadCode()).collectionAmount(BigDecimal.ZERO)
 						.tenantId(calculation.getTenantId()).build());
 			});
-
+			demands.add(demand);
 //			Commenting to avoid sending message as new bill while updating
 			
 			/*
@@ -667,9 +667,9 @@ public class DemandService {
 			 * = actionLink.replace("$key", "ws-bill"); } else { actionLink =
 			 * actionLink.replace("$key", "ws-bill-nm"); }
 			 * 
-			 * demands.add(demand); log.info("Demand Object" + demands.toString());
-			 * List<String> billNumber = fetchBill(demands, requestInfo);
-			 * log.info("Bill Number :: " + billNumber.toString());
+			 * log.info("Demand Object" + demands.toString()); List<String> billNumber =
+			 * fetchBill(demands, requestInfo); log.info("Bill Number :: " +
+			 * billNumber.toString());
 			 * 
 			 * if (billNumber.size() > 0) { actionLink = actionLink.replace("$billNumber",
 			 * billNumber.get(0)); } actionLink = getShortenedUrl(actionLink); String
@@ -695,6 +695,7 @@ public class DemandService {
 			 * 
 			 * }
 			 */
+			 
 
 			if (isForConnectionNo) {
 				WaterConnection connection = calculation.getWaterConnection();
