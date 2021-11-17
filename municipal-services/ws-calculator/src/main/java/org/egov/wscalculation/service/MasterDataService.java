@@ -224,7 +224,7 @@ public class MasterDataService {
 					.equalsIgnoreCase(WSCalculationConstant.meteredConnectionType)) {
 				
 				endDate.setTimeInMillis(criteria.getTo());
-				endDate.set(Calendar.DAY_OF_MONTH, startDate.getActualMaximum(Calendar.DAY_OF_MONTH));
+				endDate.set(Calendar.DAY_OF_MONTH, endDate.getActualMaximum(Calendar.DAY_OF_MONTH));
 				estimationService.setTimeToEndofDay(endDate);
 				criteria.setTo(endDate.getTimeInMillis());
 				
