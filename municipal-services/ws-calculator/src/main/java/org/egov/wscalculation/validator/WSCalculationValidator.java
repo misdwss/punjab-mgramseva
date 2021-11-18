@@ -195,6 +195,9 @@ public class WSCalculationValidator {
 		startTime = startCal.getTimeInMillis();
 		endTime = endCal.getTimeInMillis();
 
+		System.out.println("StartTime to check the billing period::" + startTime);
+		System.out.println("endTime to check the billing period::" + endTime);
+		
 		if (!wSCalculationDao.isDemandExists(tenantId, startTime, endTime, connectionNos)) {
 
 			Month month = Month.of(startCal.get(Calendar.MONTH) + 1);

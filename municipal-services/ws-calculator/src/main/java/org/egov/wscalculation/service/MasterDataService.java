@@ -229,6 +229,8 @@ public class MasterDataService {
 				criteria.setTo(endDate.getTimeInMillis());
 				
 			}
+			System.out.println("demand from time" + criteria.getFrom());
+			System.out.println("demand to time" + criteria.getTo());
 			billingPeriod.put(WSCalculationConstant.STARTING_DATE_APPLICABLES, criteria.getFrom());
 			billingPeriod.put(WSCalculationConstant.ENDING_DATE_APPLICABLES, criteria.getTo());
 			
