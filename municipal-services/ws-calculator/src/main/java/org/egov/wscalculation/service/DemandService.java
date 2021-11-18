@@ -651,50 +651,48 @@ public class DemandService {
 			demands.add(demand);
 //			Commenting to avoid sending message as new bill while updating
 			
-			/*
-			 * HashMap<String, String> localizationMessage =
-			 * util.getLocalizationMessage(requestInfo,
-			 * WSCalculationConstant.mGram_Consumer_NewBill, calculation.getTenantId());
-			 * 
-			 * String actionLink = config.getNotificationUrl() +
-			 * config.getBillDownloadSMSLink().replace("$mobile", owner.getMobileNumber())
-			 * .replace("$consumerCode",
-			 * waterConnectionRequest.getWaterConnection().getConnectionNo())
-			 * .replace("$tenantId", property.getTenantId());
-			 * 
-			 * if (waterConnectionRequest.getWaterConnection().getConnectionType()
-			 * .equalsIgnoreCase(WSCalculationConstant.meteredConnectionType)) { actionLink
-			 * = actionLink.replace("$key", "ws-bill"); } else { actionLink =
-			 * actionLink.replace("$key", "ws-bill-nm"); }
-			 * 
-			 * log.info("Demand Object" + demands.toString()); List<String> billNumber =
-			 * fetchBill(demands, requestInfo); log.info("Bill Number :: " +
-			 * billNumber.toString());
-			 * 
-			 * if (billNumber.size() > 0) { actionLink = actionLink.replace("$billNumber",
-			 * billNumber.get(0)); } actionLink = getShortenedUrl(actionLink); String
-			 * messageString = localizationMessage.get(WSCalculationConstant.MSG_KEY);
-			 * 
-			 * System.out.println("Localization message::" + messageString + demand);
-			 * 
-			 * if (!StringUtils.isEmpty(messageString)) { messageString =
-			 * messageString.replace("{ownername}", owner.getName()); messageString =
-			 * messageString.replace("{Period}", billCycle); messageString =
-			 * messageString.replace("{consumerno}", calculation.getConnectionNo());
-			 * messageString = messageString.replace("{billamount}", demandDetails.stream()
-			 * .map(DemandDetail::getTaxAmount).reduce(BigDecimal.ZERO,
-			 * BigDecimal::add).toString()); messageString =
-			 * messageString.replace("{BILL_LINK}", getShortenedUrl(actionLink));
-			 * 
-			 * System.out.println("Demand genaration Message2::" + messageString);
-			 * 
-			 * SMSRequest sms =
-			 * SMSRequest.builder().mobileNumber(owner.getMobileNumber()).message(
-			 * messageString) .category(Category.TRANSACTION).build();
-			 * producer.push(config.getSmsNotifTopic(), sms);
-			 * 
-			 * }
-			 */
+			HashMap<String, String> localizationMessage = util.getLocalizationMessage(requestInfo,
+					WSCalculationConstant.mGram_Consumer_NewBill, calculation.getTenantId());
+
+			String actionLink = config.getNotificationUrl()
+					+ config.getBillDownloadSMSLink().replace("$mobile", owner.getMobileNumber())
+							.replace("$consumerCode", waterConnectionRequest.getWaterConnection().getConnectionNo())
+							.replace("$tenantId", property.getTenantId());
+
+			if (waterConnectionRequest.getWaterConnection().getConnectionType()
+					.equalsIgnoreCase(WSCalculationConstant.meteredConnectionType)) {
+				actionLink = actionLink.replace("$key", "ws-bill");
+			} else {
+				actionLink = actionLink.replace("$key", "ws-bill-nm");
+			}
+
+			log.info("Demand Object" + demands.toString());
+			List<String> billNumber = fetchBill(demands, requestInfo);
+			log.info("Bill Number :: " + billNumber.toString());
+
+			if (billNumber.size() > 0) {
+				actionLink = actionLink.replace("$billNumber", billNumber.get(0));
+			}
+			actionLink = getShortenedUrl(actionLink);
+			String messageString = localizationMessage.get(WSCalculationConstant.MSG_KEY);
+
+			System.out.println("Localization message::" + messageString + demand);
+
+			if (!StringUtils.isEmpty(messageString)) {
+				messageString = messageString.replace("{ownername}", owner.getName());
+				messageString = messageString.replace("{Period}", billCycle);
+				messageString = messageString.replace("{consumerno}", calculation.getConnectionNo());
+				messageString = messageString.replace("{billamount}", demandDetails.stream()
+						.map(DemandDetail::getTaxAmount).reduce(BigDecimal.ZERO, BigDecimal::add).toString());
+				messageString = messageString.replace("{BILL_LINK}", getShortenedUrl(actionLink));
+
+				System.out.println("Demand genaration Message2::" + messageString);
+
+				SMSRequest sms = SMSRequest.builder().mobileNumber(owner.getMobileNumber()).message(messageString)
+						.category(Category.TRANSACTION).build();
+				producer.push(config.getSmsNotifTopic(), sms);
+
+			}
 			 
 
 			if (isForConnectionNo) {
