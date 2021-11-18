@@ -10,7 +10,7 @@ import 'Test Inputs/test_inputs.dart';
 
 void main() {
 
-  testWidgets("search Connection Test", (tester) async {
+  testWidgets("Search Connection Test", (tester) async {
     app.main();
     await tester.pumpAndSettle(Duration(milliseconds: 3000));
     /// Open Collect Payment Screen

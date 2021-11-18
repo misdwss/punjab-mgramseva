@@ -2,6 +2,9 @@ import 'package:mgramseva/utils/constants.dart';
 
 class TestInputs{
   static LoginInputs login = const LoginInputs();
+  static ForgotPasswordInputs forgotPassword = const ForgotPasswordInputs();
+  static EditProfileInputs editProfile = const EditProfileInputs();
+  static ChangePasswordInputs changePassword = const ChangePasswordInputs();
   static SearchConnectionInputs searchConnection = const SearchConnectionInputs();
   static CreateConsumerInputs createConsumer = const CreateConsumerInputs();
   static UpdateConsumerInputs updateConsumer = const UpdateConsumerInputs();
@@ -13,6 +16,25 @@ class LoginInputs{
   const LoginInputs();
   String get LOGIN_MOBILE_NUMBER => '9686151676';
   String get LOGIN_PASSWORD => 'eGov@123';
+}
+
+class ForgotPasswordInputs{
+  const ForgotPasswordInputs();
+  String get FORGOT_PASSWORD_MOBILE_NUMBER => '9777522448';
+}
+
+class EditProfileInputs{
+  const EditProfileInputs();
+  String get EDIT_PROFILE_NAME => 'Naveen J';
+  String get EDIT_PROFILE_GENDER => 'CORE_COMMON_GENDER_MALE';
+  String get EDIT_PROFILE_EMAIL => 'naveen@egovernment.org';
+}
+
+class ChangePasswordInputs{
+  const ChangePasswordInputs();
+  String get CURRENT_PASSWORD => 'eGov@123';
+  String get NEW_PASSWORD => 'eGov@123';
+  String get CONFIRM_NEW_PASSWORD => 'eGov@123';
 }
 
 class SearchConnectionInputs {

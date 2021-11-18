@@ -117,6 +117,7 @@ class _LoginState extends State<Login> {
                           child: Text(
                             ApplicationLocalizations.of(context)
                                 .translate(i18.login.FORGOT_PASSWORD),
+                            key: Keys.forgotPassword.FORGOT_PASSWORD_BUTTON,
                             style: TextStyle(
                                 color: Theme.of(context).primaryColor),
                           ))),

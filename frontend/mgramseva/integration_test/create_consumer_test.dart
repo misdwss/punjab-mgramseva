@@ -12,7 +12,7 @@ import 'Test Inputs/test_inputs.dart';
 
 void main() {
 
-  testWidgets("create Consumer Test", (tester) async {
+  testWidgets("Create Consumer Test", (tester) async {
     app.main();
     await tester.pumpAndSettle(Duration(milliseconds: 3000));
 

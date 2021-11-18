@@ -10,7 +10,7 @@ import 'Test Inputs/test_inputs.dart';
 
 
 void main() {
-  testWidgets("update Consumer Test", (tester) async {
+  testWidgets("Update Consumer Test", (tester) async {
     app.main();
     await tester.pumpAndSettle(Duration(milliseconds: 3000));
 

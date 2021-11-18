@@ -11,7 +11,7 @@ import 'package:mgramseva/utils/Constants/I18KeyConstants.dart';
 
 
 void main() {
-  testWidgets("Generate Demand Non-Metered", (tester) async {
+  testWidgets("Generate Demand Non-Metered Test", (tester) async {
     app.main();
     await tester.pumpAndSettle(Duration(milliseconds: 3000));
 

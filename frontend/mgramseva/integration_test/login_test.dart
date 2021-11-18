@@ -10,13 +10,19 @@ import 'create_consumer_test.dart' as create_consumer;
 import 'update_Consumer_Test.dart' as update_consumer;
 import 'generate_bill_non_metered_test.dart' as generate_bulk_demand;
 import 'generate_bill_metered_test.dart' as generate_metered_bill;
+import 'forgot_password_test.dart' as forgot_password;
+import 'edit_profile_test.dart' as edit_profile;
+import 'change_password_test.dart' as change_password;
 
 void main() {
   group('App Test', () {
     ///  Add the IntegrationTestWidgetsFlutterBinding and .ensureInitialized
     IntegrationTestWidgetsFlutterBinding.ensureInitialized();
+
+    ///Forgot Password Testing
+    //forgot_password.main();
     /// Create your test case
-    testWidgets("full app test", (tester) async {
+    testWidgets("Login test", (tester) async {
       /// execute the app.main() function
       app.main();
       /// Wait until the app has settled
@@ -44,6 +50,13 @@ void main() {
       await tester.pumpAndSettle(Duration(milliseconds: 3000));
 
     });
+
+    ///Edit Profile Testing
+    //edit_profile.main();
+
+    ///Change Password Testing
+    change_password.main();
+
     ///Search Connection Testing
     //search_Connection.main();
 
@@ -57,6 +70,6 @@ void main() {
     //generate_bulk_demand.main();
 
     ///Generate Metered Bill
-    generate_metered_bill.main();
+    //generate_metered_bill.main();
   });
 }

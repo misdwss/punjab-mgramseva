@@ -4,6 +4,7 @@ import 'package:mgramseva/providers/language.dart';
 import 'package:mgramseva/routers/Routers.dart';
 import 'package:mgramseva/utils/Constants/I18KeyConstants.dart';
 import 'package:mgramseva/utils/Locilization/application_localizations.dart';
+import 'package:mgramseva/utils/TestingKeys/testing_keys.dart';
 import 'package:mgramseva/utils/common_methods.dart';
 import 'package:mgramseva/utils/global_variables.dart';
 import 'package:mgramseva/widgets/LanguageCard.dart';
@@ -49,7 +50,6 @@ class SideBar extends StatelessWidget {
           margin: EdgeInsets.all(0.0),
           padding: EdgeInsets.all(0.0)),
       ListTile(
-        key: Key("Home"),
         title: Text(
             ApplicationLocalizations.of(context).translate(i18.common.HOME)),
         leading: Icon(
@@ -101,7 +101,7 @@ class SideBar extends StatelessWidget {
           ),
           onTap: () => Navigator.pop(context)),
       ListTile(
-        key: Key("Edit Profile"),
+        key: Keys.editProfile.SIDE_BAR_EDIT_PROFILE_TILE_KEY,
           title: Text(ApplicationLocalizations.of(context)
               .translate(i18.common.EDIT_PROFILE)),
           leading: Icon(
@@ -110,16 +110,15 @@ class SideBar extends StatelessWidget {
           ),
           onTap: () => Navigator.pushNamed(context, Routes.EDIT_PROFILE)),
       ListTile(
-        key: Key("Change Password"),
           title: Text(ApplicationLocalizations.of(context)
               .translate(i18.password.CHANGE_PASSWORD)),
           leading: Icon(
             Icons.sync_alt,
             color: iconColor,
           ),
-          onTap: () => Navigator.pushNamed(context, Routes.CHANGE_PASSWORD)),
+          onTap: () => Navigator.pushNamed(context, Routes.CHANGE_PASSWORD),
+      key: Keys.changePassword.SIDE_BAR_CHANGE_PASSWORD_TILE_KEY,),
       ListTile(
-        key: Key("Logout"),
         title: Text(
             ApplicationLocalizations.of(context).translate(i18.common.LOGOUT)),
         leading: Icon(

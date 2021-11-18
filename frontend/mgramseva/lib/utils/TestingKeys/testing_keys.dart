@@ -3,7 +3,10 @@ import 'package:flutter/material.dart';
 
 class Keys{
   static LanguagePageKeys language = const LanguagePageKeys();
+  static ForgotPasswordKeys forgotPassword = const ForgotPasswordKeys();
   static LoginKeys login = const LoginKeys();
+  static EditProfileKeys editProfile = const EditProfileKeys();
+  static ChangePasswordKeys changePassword = const ChangePasswordKeys();
   static CreateConsumerKeys createConsumer = const CreateConsumerKeys();
   static SearchConncetionKeys searchConnection = const SearchConncetionKeys();
   static GenerateBulkDemandKeys bulkDemand = const GenerateBulkDemandKeys();
@@ -15,11 +18,35 @@ class LanguagePageKeys{
   Key get LANGUAGE_PAGE_CONTINUE_BTN => Key("language selected continue button");
 }
 
+class ForgotPasswordKeys{
+  const ForgotPasswordKeys();
+  Key get FORGOT_PASSWORD_BUTTON => Key("forgot Password Button");
+  Key get FORGOT_PASSWORD_MOBILE_NO => Key("forgot Password Mobile");
+  Key get FORGOT_PASSWORD_CONTINUE_BTN => Key("forgot Password Continue button");
+}
+
 class LoginKeys {
   const LoginKeys();
   Key get LOGIN_PHONE_NUMBER_KEY => Key("PhoneNum");
   Key get LOGIN_PASSWORD_KEY => Key("Login Password");
   Key get LOGIN_BTN_KEY => Key("Login");
+}
+
+class EditProfileKeys {
+  const EditProfileKeys();
+  Key get SIDE_BAR_EDIT_PROFILE_TILE_KEY => Key("Edit Profile Side Bar");
+  Key get EDIT_PROFILE_NAME_KEY => Key("Edit Profile Name");
+  Key get EDIT_PROFILE_E_MAIL_KEY => Key("Edit Profile e-mail");
+  Key get EDIT_PROFILE_SAVE_BTN_KEY => Key("Edit Profile Save");
+}
+
+class ChangePasswordKeys {
+  const ChangePasswordKeys();
+  Key get SIDE_BAR_CHANGE_PASSWORD_TILE_KEY => Key("Change Password Side Bar");
+  Key get CURRENT_PASSWORD_KEY => Key("Current Password Key");
+  Key get NEW_PASSWORD_KEY => Key("New Password Key");
+  Key get CONFIRM_PASSWORD_KEY => Key("Confirm Password Key");
+  Key get CHANGE_PASSWORD_BTN_KEY => Key("Change Password Button Key");
 }
 
 class CreateConsumerKeys{
