@@ -301,9 +301,11 @@ public class DemandGenerationConsumer {
 				.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
 		Long endDate = LocalDateTime
 				.of(PrevoiusEndDate.getYear(), PrevoiusEndDate.minusMonths(1).getMonth(),
-						PrevoiusEndDate.getDayOfMonth(), 23, 59, 59)
+						PrevoiusEndDate.getDayOfMonth(), 23, 59, 59).with(TemporalAdjusters.lastDayOfMonth())
 				.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
 
+		System.out.println("Lastday of month: " + endDate);
+		
 		String assessmentYear = estimationService.getAssessmentYear();
 		ArrayList<String> failedConnectionNos = new ArrayList<String>();
 		for (String connectionNo : connectionNos) {
