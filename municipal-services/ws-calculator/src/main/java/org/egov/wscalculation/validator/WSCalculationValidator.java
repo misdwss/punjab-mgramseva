@@ -183,7 +183,10 @@ public class WSCalculationValidator {
 		System.out.println(formatter.format(startCal.getTime()));
 		if (billingFrequency.equalsIgnoreCase(WSCalculationConstant.Monthly_Billing_Period)) {
 			startCal.add(Calendar.MONTH, -1);
+
 			endCal.add(Calendar.MONTH, -1);
+			int max = endCal.getActualMaximum(Calendar.DAY_OF_MONTH);
+			endCal.set(Calendar.DAY_OF_MONTH, max);
 			setTimeToEndofDay(endCal);
 			// to do get the end date also and make the month -1 and time 23 h 59m 59 s and
 			// start date time would b 0
@@ -196,7 +199,6 @@ public class WSCalculationValidator {
 		}
 		startTime = startCal.getTimeInMillis();
 		endTime = endCal.getTimeInMillis();
-		
 		System.out.println("StartTime to check the billing period::" + startTime);
 		System.out.println("endTime to check the billing period::" + endTime);
 		
