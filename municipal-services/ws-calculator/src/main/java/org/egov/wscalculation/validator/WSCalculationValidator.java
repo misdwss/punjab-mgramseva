@@ -184,17 +184,19 @@ public class WSCalculationValidator {
 		if (billingFrequency.equalsIgnoreCase(WSCalculationConstant.Monthly_Billing_Period)) {
 			startCal.add(Calendar.MONTH, -1);
 			endCal.add(Calendar.MONTH, -1);
+			setTimeToEndofDay(endCal);
 			// to do get the end date also and make the month -1 and time 23 h 59m 59 s and
 			// start date time would b 0
 //				startCal.set(Calendar.DAY_OF_MONTH, 15);
 		} else if (billingFrequency.equalsIgnoreCase(WSCalculationConstant.Quaterly_Billing_Period)) {
 			startCal.add(Calendar.MONTH, -3);
 			endCal.add(Calendar.MONTH, -3);
+			setTimeToEndofDay(endCal);
 //				startCal.set(Calendar.DAY_OF_MONTH, 15);
 		}
 		startTime = startCal.getTimeInMillis();
 		endTime = endCal.getTimeInMillis();
-
+		
 		System.out.println("StartTime to check the billing period::" + startTime);
 		System.out.println("endTime to check the billing period::" + endTime);
 		
@@ -207,5 +209,13 @@ public class WSCalculationValidator {
 							+ month.getDisplayName(TextStyle.FULL, locale) + ")!!");
 		}
 
+	}
+	
+
+	public static void setTimeToEndofDay(Calendar calendar) {
+	    calendar.set(Calendar.HOUR_OF_DAY, 23);
+	    calendar.set(Calendar.MINUTE, 59);
+	    calendar.set(Calendar.SECOND, 59);
+	    calendar.set(Calendar.MILLISECOND, 999);
 	}
 }

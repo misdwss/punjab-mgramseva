@@ -288,23 +288,14 @@ public class DemandGenerationConsumer {
 
 		List<String> meteredConnectionNos = waterCalculatorDao.getConnectionsNoList(tenantId,
 				WSCalculationConstant.meteredConnectionType);
-
 		
-		  
-		// convert String to LocalDate
-		LocalDate PrevoiusStartDate = LocalDate.parse(billingCycle.split("-")[0].trim(), formatter);
-		LocalDate PrevoiusEndDate = LocalDate.parse(billingCycle.split("-")[1].trim(), formatter);
+		Calendar previousFromDate = Calendar.getInstance();
+		Calendar previousToDate = Calendar.getInstance();
 		
-		Long startDate = LocalDateTime
-				.of(PrevoiusStartDate.getYear(), PrevoiusStartDate.minusMonths(1).getMonth(),
-						PrevoiusStartDate.getDayOfMonth(), 0, 0, 0)
-				.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
-		Long endDate = LocalDateTime
-				.of(PrevoiusEndDate.getYear(), PrevoiusEndDate.minusMonths(1).getMonth(),
-						PrevoiusEndDate.getDayOfMonth(), 23, 59, 59).with(TemporalAdjusters.lastDayOfMonth())
-				.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
-
-		System.out.println("Lastday of month: " + endDate);
+		previousFromDate.add(Calendar.MONTH, -1); //assuming billing cycle will be first day of month
+		previousToDate.add(Calendar.MONTH, -1); 
+		
+		previousToDate.getActualMaximum(Calendar.DAY_OF_MONTH);
 		
 		String assessmentYear = estimationService.getAssessmentYear();
 		ArrayList<String> failedConnectionNos = new ArrayList<String>();
@@ -324,7 +315,7 @@ public class DemandGenerationConsumer {
 			Set<String> consumerCodes = new LinkedHashSet<String>();
 			consumerCodes.add(connectionNo);
 
-			List<Demand> demands = demandService.searchDemand(tenantId, consumerCodes, startDate, endDate, requestInfo);
+			List<Demand> demands = demandService.searchDemand(tenantId, consumerCodes, previousFromDate.getTimeInMillis(), previousToDate.getTimeInMillis(), requestInfo);
 			if (demands != null && demands.size() == 0) {
 				log.warn("this connection doen't have the demand in previous billing cycle");
 				continue;

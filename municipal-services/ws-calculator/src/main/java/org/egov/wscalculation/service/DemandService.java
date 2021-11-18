@@ -859,19 +859,18 @@ public class DemandService {
 		requestInfo.getUserInfo().setTenantId(tenantId);
 		Map<String, Object> billingMasterData = calculatorUtils.loadBillingFrequencyMasterData(requestInfo, tenantId);
 
-		List<String> connectionNos = waterCalculatorDao.getConnectionsNoList(bulkDemand.getTenantId(),
-				WSCalculationConstant.nonMeterdConnection);
-		Set<String> connectionSet = connectionNos.stream().collect(Collectors.toSet());
-
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d/MM/yyyy");
 
 		LocalDate fromDate = LocalDate.parse(bulkDemand.getBillingPeriod().split("-")[0].trim(), formatter);
 		LocalDate toDate = LocalDate.parse(bulkDemand.getBillingPeriod().split("-")[1].trim(), formatter);
-
+		
 		Long dayStartTime = LocalDateTime.of(fromDate.getYear(), fromDate.getMonth(), fromDate.getDayOfMonth(), 0, 0, 0)
 				.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
 		Long dayEndTime = LocalDateTime.of(toDate.getYear(), toDate.getMonth(), toDate.getDayOfMonth(), 23, 59, 59)
 				.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
+
+		List<String> connectionNos = waterCalculatorDao.getNonMeterConnectionsList(tenantId, dayStartTime, dayEndTime);;
+		Set<String> connectionSet = connectionNos.stream().collect(Collectors.toSet());
 
 
 		wsCalculationValidator.validateBulkDemandBillingPeriod(dayStartTime, dayEndTime, connectionSet,

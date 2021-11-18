@@ -213,6 +213,7 @@ public class MasterDataService {
 		Map<String, Object> billingPeriod = new HashMap<>();
 		if(!isconnectionCalculation) {
 			
+			
 			Calendar startDate = Calendar.getInstance();
 			Calendar endDate = Calendar.getInstance();
 			startDate.setTimeInMillis(criteria.getFrom());
@@ -224,7 +225,7 @@ public class MasterDataService {
 					.equalsIgnoreCase(WSCalculationConstant.meteredConnectionType)) {
 				
 				endDate.setTimeInMillis(criteria.getTo());
-				endDate.set(Calendar.DAY_OF_MONTH, endDate.getActualMinimum(Calendar.DAY_OF_MONTH));
+				endDate.set(Calendar.DAY_OF_MONTH, endDate.getActualMaximum(Calendar.DAY_OF_MONTH));
 				estimationService.setTimeToEndofDay(endDate);
 				criteria.setTo(endDate.getTimeInMillis());
 				
