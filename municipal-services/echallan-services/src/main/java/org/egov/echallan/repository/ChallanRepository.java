@@ -222,7 +222,7 @@ public class ChallanRepository {
 	
 	public Integer getPreviousMonthNewExpense(String tenantId, Long startDate, Long endDate) {
 		StringBuilder query = new StringBuilder(queryBuilder.PREVIOUSMONTHNEWEXPENSE);
-		query.append("  WHERE  CHALLAN.BILLISSUEDDATE BETWEEN ").append(startDate).append(" and  ")
+		query.append("  and  CHALLAN.BILLISSUEDDATE BETWEEN ").append(startDate).append(" and  ")
 				.append(endDate).append(" and CHALLAN.TENANTID = '").append(tenantId).append("'");
 		return jdbcTemplate.queryForObject(query.toString(), Integer.class);
 	}
