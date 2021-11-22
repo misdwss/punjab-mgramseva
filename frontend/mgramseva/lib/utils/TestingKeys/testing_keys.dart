@@ -8,9 +8,9 @@ class Keys{
   static EditProfileKeys editProfile = const EditProfileKeys();
   static ChangePasswordKeys changePassword = const ChangePasswordKeys();
   static CreateConsumerKeys createConsumer = const CreateConsumerKeys();
-  static SearchConncetionKeys searchConnection = const SearchConncetionKeys();
+  static SearchConnectionKeys searchConnection = const SearchConnectionKeys();
   static GenerateBulkDemandKeys bulkDemand = const GenerateBulkDemandKeys();
-  static GenerateBillMeteredKeys generateBill = const GenerateBillMeteredKeys();
+  static CommonKeys common = const CommonKeys();
 }
 
 class LanguagePageKeys{
@@ -66,8 +66,8 @@ class CreateConsumerKeys{
   Key get CREATE_CONSUMER_BTN_KEY => Key("createConsumerBtn");
 }
 
-class SearchConncetionKeys {
-  const SearchConncetionKeys();
+class SearchConnectionKeys {
+  const SearchConnectionKeys();
   Key get SEARCH_PHONE_NUMBER_KEY => Key("phoneSearch");
   Key get SEARCH_NAME_KEY => Key("nameSearch");
   Key get SEARCH_OLD_ID_KEY => Key("old Connection  Search");
@@ -83,6 +83,8 @@ class GenerateBulkDemandKeys{
   Key get GENERATE_BILL_BTN => Key('Generate Bill button');
 }
 
-class GenerateBillMeteredKeys{
-  const GenerateBillMeteredKeys();
+class CommonKeys{
+  const CommonKeys();
+
+  Key get LOGOUT_TILE_KEY => Key('Log out Side Bar');
 }

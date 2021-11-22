@@ -7,13 +7,15 @@ import 'package:mgramseva/utils/TestingKeys/testing_keys.dart';
 import 'package:mgramseva/utils/global_variables.dart';
 import 'package:mgramseva/widgets/BottonButtonBar.dart';
 import 'package:mgramseva/widgets/ShortButton.dart';
-import 'Test Inputs/test_inputs.dart';
 import 'package:mgramseva/utils/Constants/I18KeyConstants.dart';
+
+import 'Test Inputs/test_inputs.dart';
 
 
 
 void main() {
   testWidgets("Generate Bill Metered Test", (tester) async {
+    var generateBillMeteredTestData = getTestData();
     app.main();
     await tester.pumpAndSettle(Duration(milliseconds: 3000));
 
@@ -27,7 +29,7 @@ void main() {
     final phoneSearch = find.byKey(Keys.searchConnection.SEARCH_PHONE_NUMBER_KEY);
     final searchConnectionBtn = find.byKey(Keys.searchConnection.SEARCH_BTN_KEY);
 
-    await tester.enterText(phoneSearch, TestInputs.generateBill.SEARCH_MOBILE_NUMBER);
+    await tester.enterText(phoneSearch, generateBillMeteredTestData['billGenerateSearchMobileNumber']);
     await tester.pumpAndSettle(Duration(milliseconds: 3000));
     await tester.ensureVisible(searchConnectionBtn);
     await tester.tap(searchConnectionBtn);
@@ -52,22 +54,22 @@ void main() {
     final newMeterReading4 = find.byType(MeterReadingDigitTextFieldBox).at(8);
     final newMeterReading5 = find.byType(MeterReadingDigitTextFieldBox).at(9);
 
-    /*await tester.ensureVisible(newMeterReading1);
+    await tester.ensureVisible(newMeterReading1);
     await tester.enterText(
-        newMeterReading1, TestInputs.generateBill.NEW_METER_READING_BOX_1);
+        newMeterReading1, generateBillMeteredTestData['newMeterReadingField1']);
     await tester.pumpAndSettle(Duration(seconds: 1));
     await tester.enterText(
-        newMeterReading2, TestInputs.generateBill.NEW_METER_READING_BOX_2);
+        newMeterReading2, generateBillMeteredTestData['newMeterReadingField2']);
     await tester.pumpAndSettle(Duration(seconds: 1));
     await tester.enterText(
-        newMeterReading3, TestInputs.generateBill.NEW_METER_READING_BOX_3);
+        newMeterReading3, generateBillMeteredTestData['newMeterReadingField3']);
     await tester.pumpAndSettle(Duration(seconds: 1));
     await tester.enterText(
-        newMeterReading4, TestInputs.generateBill.NEW_METER_READING_BOX_4);
+        newMeterReading4, generateBillMeteredTestData['newMeterReadingField4']);
     await tester.pumpAndSettle(Duration(seconds: 1));
     await tester.enterText(
-        newMeterReading5, TestInputs.generateBill.NEW_METER_READING_BOX_5);
-    await tester.pumpAndSettle(Duration(seconds: 1));*/
+        newMeterReading5, generateBillMeteredTestData['newMeterReadingField5']);
+    await tester.pumpAndSettle(Duration(seconds: 1));
 
     final generateDemandBtn = find.byKey(Keys.bulkDemand.GENERATE_BILL_BTN);
     await tester.ensureVisible(generateDemandBtn);

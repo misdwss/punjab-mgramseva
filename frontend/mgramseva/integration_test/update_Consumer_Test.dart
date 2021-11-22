@@ -11,6 +11,7 @@ import 'Test Inputs/test_inputs.dart';
 
 void main() {
   testWidgets("Update Consumer Test", (tester) async {
+    var updateConsumerTestData = getTestData();
     app.main();
     await tester.pumpAndSettle(Duration(milliseconds: 3000));
 
@@ -27,10 +28,10 @@ void main() {
 
     final findPropertyType = find.byKey(Keys.createConsumer.CONSUMER_PROPERTY_KEY);
     final selectPropertyType = find.widgetWithText(ListTile,
-        ApplicationLocalizations.of(navigatorKey.currentContext!).translate(TestInputs.updateConsumer.CONSUMER_PROPERTY));
+        ApplicationLocalizations.of(navigatorKey.currentContext!).translate(updateConsumerTestData['updateConsumerProperty']));
     final checkBox = find.byType(Checkbox);
 
-    await tester.enterText(phoneSearch, TestInputs.updateConsumer.SEARCH_MOBILE_NUMBER);
+    await tester.enterText(phoneSearch, updateConsumerTestData['updateConsumerSearchMobileNumber']);
     await tester.pumpAndSettle(Duration(milliseconds: 3000));
     await tester.ensureVisible(searchConnectionBtn);
     await tester.tap(searchConnectionBtn);
@@ -49,7 +50,7 @@ void main() {
     await tester.pumpAndSettle(Duration(milliseconds: 3000));
 
     ///Mark Connection as Inactive
-    if(TestInputs.updateConsumer.MARK_CONNECTION_INACTIVE == 'Yes'){
+    if(updateConsumerTestData['updateConsumerMarkConnectionInactive'] == 'Yes'){
       await tester.ensureVisible (checkBox);
       await tester.pumpAndSettle(Duration(milliseconds: 3000));
       await tester.tap(checkBox);

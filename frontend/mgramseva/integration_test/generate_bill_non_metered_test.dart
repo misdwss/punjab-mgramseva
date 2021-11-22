@@ -12,6 +12,7 @@ import 'package:mgramseva/utils/Constants/I18KeyConstants.dart';
 
 void main() {
   testWidgets("Generate Demand Non-Metered Test", (tester) async {
+    var generateBulkDemandTestData = getTestData();
     app.main();
     await tester.pumpAndSettle(Duration(milliseconds: 3000));
 
@@ -22,14 +23,14 @@ void main() {
 
     final findBillingYearField = find.byKey(Keys.bulkDemand.BULK_DEMAND_BILLING_YEAR);
     final selectBillingYear = find.widgetWithText(ListTile,
-        ApplicationLocalizations.of(navigatorKey.currentContext!).translate(TestInputs.bulkDemand.BILLING_YEAR));
+        ApplicationLocalizations.of(navigatorKey.currentContext!).translate(generateBulkDemandTestData['bulkDemandBillingYear']));
 
     final findBillingCycleField = find.byKey(Keys.bulkDemand.BULK_DEMAND_BILLING_CYCLE);
     final selectBillingCycle = find.widgetWithText(ListTile,
         ApplicationLocalizations.of(navigatorKey.currentContext!)
-            .translate(TestInputs.bulkDemand.BILLING_CYCLE) +
+            .translate(generateBulkDemandTestData['bulkDemandBillingCycle']) +
             " - " +
-            TestInputs.bulkDemand.BILLING_YEAR.substring(0,4));
+            generateBulkDemandTestData['bulkDemandBillingYear'].substring(0,4));
     final generateDemandBtn = find.byKey(Keys.bulkDemand.GENERATE_BILL_BTN);
     final backHome = find.widgetWithText(BottomButtonBar, ApplicationLocalizations.of(navigatorKey.currentContext!).translate(i18.common.BACK_HOME));
 
@@ -41,7 +42,7 @@ void main() {
     await tester.pumpAndSettle(Duration(milliseconds: 3000));
 
     await tester.ensureVisible(findBillingCycleField);
-    await tester.enterText(findBillingCycleField, TestInputs.bulkDemand.BILLING_CYCLE);    await tester.pumpAndSettle(Duration(milliseconds: 3000));
+    await tester.enterText(findBillingCycleField, generateBulkDemandTestData['bulkDemandBillingCycle']);
     await tester.pumpAndSettle(Duration(milliseconds: 3000));
     await tester.ensureVisible(selectBillingCycle);
     await tester.tap(selectBillingCycle);

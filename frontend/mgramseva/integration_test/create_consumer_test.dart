@@ -13,6 +13,7 @@ import 'Test Inputs/test_inputs.dart';
 void main() {
 
   testWidgets("Create Consumer Test", (tester) async {
+    var createConsumerTestData = getTestData();
     app.main();
     await tester.pumpAndSettle(Duration(milliseconds: 3000));
 
@@ -22,7 +23,7 @@ void main() {
     await tester.pumpAndSettle(Duration(milliseconds: 3000));
     final consumerName = find.byKey(Keys.createConsumer.CONSUMER_NAME_KEY);
     final selectGender = find.widgetWithText(RadioListTile,
-        ApplicationLocalizations.of(navigatorKey.currentContext!).translate(TestInputs.createConsumer.CONSUMER_GENDER));
+        ApplicationLocalizations.of(navigatorKey.currentContext!).translate(createConsumerTestData['consumerGender']));
     final consumerSpouseParent = find.byKey(Keys.createConsumer.CONSUMER_SPOUSE_PARENT_KEY);
     final consumerPhone = find.byKey(Keys.createConsumer.CONSUMER_PHONE_NUMBER_KEY);
     final consumerOldID = find.byKey(Keys.createConsumer.CONSUMER_OLD_ID_KEY);
@@ -30,26 +31,26 @@ void main() {
 
     final findConsumerCategory = find.byKey(Keys.createConsumer.CONSUMER_CATEORY_KEY);
     final selectConsumerCategory = find.widgetWithText(ListTile,
-        ApplicationLocalizations.of(navigatorKey.currentContext!).translate(TestInputs.createConsumer.CONSUMER_CATEGORY));
+        ApplicationLocalizations.of(navigatorKey.currentContext!).translate(createConsumerTestData['consumerCategory']));
 
     final findConsumerSubCategory = find.byKey(Keys.createConsumer.CONSUMER_SUB_CATEORY_KEY);
     final selectConsumerSubCategory = find.widgetWithText(ListTile,
-        ApplicationLocalizations.of(navigatorKey.currentContext!).translate(TestInputs.createConsumer.CONSUMER_SUB_CATEGORY));
+        ApplicationLocalizations.of(navigatorKey.currentContext!).translate(createConsumerTestData['consumerSubCategory']));
 
     final findPropertyType = find.byKey(Keys.createConsumer.CONSUMER_PROPERTY_KEY);
     final selectPropertyType = find.widgetWithText(ListTile,
-        ApplicationLocalizations.of(navigatorKey.currentContext!).translate(TestInputs.createConsumer.CONSUMER_PROPERTY));
+        ApplicationLocalizations.of(navigatorKey.currentContext!).translate(createConsumerTestData['consumerProperty']));
 
     final findServiceType = find.byKey(Keys.createConsumer.CONSUMER_SERVICE_KEY);
     final selectServiceType = find.widgetWithText(ListTile,
-        ApplicationLocalizations.of(navigatorKey.currentContext!).translate(TestInputs.createConsumer.CONSUMER_SERVICE));
+        ApplicationLocalizations.of(navigatorKey.currentContext!).translate(createConsumerTestData['consumerService']));
 
     final findLastBilledCycle = find.byKey(Keys.createConsumer.CONSUMER_LAST_BILLED_CYCLE);
     final selectLastBilledCycle = find.widgetWithText(ListTile,
         ApplicationLocalizations.of(navigatorKey.currentContext!)
-            .translate(TestInputs.createConsumer.LAST_BILLED_CYCLE_MONTH) +
+            .translate(createConsumerTestData['consumerLastBilledCycleMonth']) +
             " - " +
-            TestInputs.createConsumer.LAST_BILLED_CYCLE_YEAR);
+            createConsumerTestData['consumerLastBilledCycleYear']);
 
     final findDatePicker = find.byKey(Keys.createConsumer.CONSUMER_PREVIOUS_READING_DATE_KEY);
     final findEditDateIcon = find.byIcon(Icons.edit);
@@ -57,7 +58,7 @@ void main() {
         DateTime.now().toLocal().toString(),
         dateFormat: "dd/MM/yyyy") );
     final findOKButtonInDate = find.text(ApplicationLocalizations.of(navigatorKey.currentContext!).
-    translate(TestInputs.createConsumer.DATEPICKER_OK_BUTTON));
+    translate('OK'));
 
     final consumerMeterNumber = find.byKey(Keys.createConsumer.CONSUMER_METER_NUMBER_KEY);
 
@@ -71,37 +72,48 @@ void main() {
 
     final createConsumerBtn = find.byKey(Keys.createConsumer.CREATE_CONSUMER_BTN_KEY);
 
-    await tester.enterText(consumerName, TestInputs.createConsumer.CONSUMER_NAME);
+    await tester.enterText(consumerName, createConsumerTestData['consumerName']);
     await tester.pumpAndSettle(Duration(milliseconds: 3000));
 
     await tester.tap(selectGender);
     await tester.pumpAndSettle(Duration(milliseconds: 3000));
 
     await tester.ensureVisible(consumerSpouseParent);
-    await tester.enterText(consumerSpouseParent, TestInputs.createConsumer.CONSUMER_SPOUSE_PARENT);
+    await tester.enterText(consumerSpouseParent, createConsumerTestData['consumerSpouseOrParent']);
     await tester.pumpAndSettle(Duration(milliseconds: 3000));
 
     await tester.ensureVisible(consumerPhone);
-    await tester.enterText(consumerPhone, TestInputs.createConsumer.CONSUMER_PHONE_NUMBER);
+    await tester.enterText(consumerPhone, createConsumerTestData['consumerPhoneNumber']);
     await tester.pumpAndSettle(Duration(milliseconds: 3000));
 
     await tester.ensureVisible(consumerOldID);
-    await tester.enterText(consumerOldID, TestInputs.createConsumer.CONSUMER_OLD_ID);
+    await tester.enterText(consumerOldID, createConsumerTestData['consumerOldConnectionID']);
     await tester.pumpAndSettle(Duration(milliseconds: 3000));
 
-    await tester.ensureVisible(findConsumerCategory);
-    await tester.tap(findConsumerCategory);
-    await tester.pumpAndSettle(Duration(milliseconds: 3000));
-    await tester.ensureVisible(selectConsumerCategory);
-    await tester.tap(selectConsumerCategory);
-    await tester.pumpAndSettle(Duration(milliseconds: 3000));
+    if(createConsumerTestData['consumerCategory'] != ''){
+      await tester.ensureVisible(findConsumerCategory);
+      await tester.tap(findConsumerCategory);
+      await tester.pumpAndSettle(Duration(milliseconds: 3000));
+      await tester.ensureVisible(selectConsumerCategory);
+      await tester.tap(selectConsumerCategory);
+      await tester.pumpAndSettle(Duration(milliseconds: 3000));
+    }
+    else{
+      await tester.pumpAndSettle(Duration(milliseconds: 1000));
+    }
 
-    await tester.ensureVisible(findConsumerSubCategory);
-    await tester.tap(findConsumerSubCategory);
-    await tester.pumpAndSettle(Duration(milliseconds: 3000));
-    await tester.ensureVisible(selectConsumerSubCategory);
-    await tester.tap(selectConsumerSubCategory);
-    await tester.pumpAndSettle(Duration(milliseconds: 3000));
+    if(createConsumerTestData['consumerSubCategory'] != '')
+    {
+      await tester.ensureVisible(findConsumerSubCategory);
+      await tester.tap(findConsumerSubCategory);
+      await tester.pumpAndSettle(Duration(milliseconds: 3000));
+      await tester.ensureVisible(selectConsumerSubCategory);
+      await tester.tap(selectConsumerSubCategory);
+      await tester.pumpAndSettle(Duration(milliseconds: 3000));
+    }
+    else{
+      await tester.pumpAndSettle(Duration(milliseconds: 1000));
+    }
 
     await tester.ensureVisible(findPropertyType);
     await tester.tap(findPropertyType);
@@ -118,51 +130,51 @@ void main() {
     await tester.pumpAndSettle(Duration(milliseconds: 3000));
 
     ///Metered Connection Consumer
-    if(TestInputs.createConsumer.CONSUMER_SERVICE == 'Metered'){
+    if(createConsumerTestData['consumerService'] == 'Metered'){
       await tester.ensureVisible(findDatePicker);
       await tester.tap(findDatePicker);
       await tester.pumpAndSettle(Duration(milliseconds: 3000));
       await tester.tap(findEditDateIcon);
       await tester.pumpAndSettle(Duration(milliseconds: 3000));
       await tester.enterText(findDateTextField,
-          TestInputs.createConsumer.CONSUMER_PREVIOUS_READING_DATE);
+          createConsumerTestData['previousReadingDate']);
       await tester.pumpAndSettle(Duration(milliseconds: 3000));
       await tester.tap(findOKButtonInDate);
       await tester.pumpAndSettle(Duration(milliseconds: 3000));
 
       await tester.ensureVisible(consumerMeterNumber);
       await tester.enterText(
-          consumerMeterNumber, TestInputs.createConsumer.CONSUMER_METER_NUMBER);
+          consumerMeterNumber, createConsumerTestData['consumerMeterNumber']);
       await tester.pumpAndSettle(Duration(milliseconds: 3000));
 
       await tester.ensureVisible(meterReading1);
       await tester.enterText(
-          meterReading1, TestInputs.createConsumer.METER_READING_BOX_1);
+          meterReading1, createConsumerTestData['consumerMeterReadingField1']);
       await tester.pumpAndSettle(Duration(seconds: 1));
       await tester.enterText(
-          meterReading2, TestInputs.createConsumer.METER_READING_BOX_2);
+          meterReading2, createConsumerTestData['consumerMeterReadingField2']);
       await tester.pumpAndSettle(Duration(seconds: 1));
       await tester.enterText(
-          meterReading3, TestInputs.createConsumer.METER_READING_BOX_3);
+          meterReading3, createConsumerTestData['consumerMeterReadingField3']);
       await tester.pumpAndSettle(Duration(seconds: 1));
       await tester.enterText(
-          meterReading4, TestInputs.createConsumer.METER_READING_BOX_4);
+          meterReading4, createConsumerTestData['consumerMeterReadingField4']);
       await tester.pumpAndSettle(Duration(seconds: 1));
       await tester.enterText(
-          meterReading5, TestInputs.createConsumer.METER_READING_BOX_5);
+          meterReading5, createConsumerTestData['consumerMeterReadingField5']);
       await tester.pumpAndSettle(Duration(seconds: 1));
     }
 
     ///Non Metered Connection Consumer
     else{
       await tester.ensureVisible(findLastBilledCycle);
-      await tester.enterText(findLastBilledCycle, TestInputs.createConsumer.LAST_BILLED_CYCLE_MONTH);
+      await tester.enterText(findLastBilledCycle, createConsumerTestData['consumerLastBilledCycleMonth']);
       await tester.pumpAndSettle(Duration(milliseconds: 3000));
       await tester.tap(selectLastBilledCycle);
       await tester.pumpAndSettle(Duration(milliseconds: 3000));
     }
 
-    await tester.enterText(consumerArrears, TestInputs.createConsumer.CONSUMER_ARREARS);
+    await tester.enterText(consumerArrears, createConsumerTestData['consumerArrears']);
     await tester.pumpAndSettle(Duration(milliseconds: 3000));
 
     await tester.tap(createConsumerBtn);

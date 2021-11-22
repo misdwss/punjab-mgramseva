@@ -11,6 +11,7 @@ import 'Test Inputs/test_inputs.dart';
 void main() {
 
   testWidgets("Search Connection Test", (tester) async {
+    var searchConnectionTestData = getTestData();
     app.main();
     await tester.pumpAndSettle(Duration(milliseconds: 3000));
     /// Open Collect Payment Screen
@@ -27,29 +28,29 @@ void main() {
     final newIDSearch = find.byKey(Keys.searchConnection.SEARCH_NEW_ID_KEY);
     final backButton = find.byIcon(Icons.arrow_left);
 
-    await tester.ensureVisible(nameSearch);
-    await tester.enterText(nameSearch, TestInputs.searchConnection.SEARCH_NAME);
+    await tester.enterText(phoneSearch, searchConnectionTestData['searchConnectionMobileNumber']);
     await tester.pumpAndSettle(Duration(milliseconds: 3000));
     await tester.ensureVisible(searchConnectionBtn);
     await tester.tap(searchConnectionBtn);
     await tester.pumpAndSettle(Duration(milliseconds: 3000));
     await tester.tap(backButton);
-    await tester.pumpAndSettle(Duration(milliseconds: 3000));
+    await tester.pumpAndSettle(Duration(seconds: 3));
     await tester.tap(backButton);
-    await tester.pumpAndSettle(Duration(milliseconds: 3000));
-
+    await tester.pumpAndSettle(Duration(seconds: 3));
 
     await tester.tap(collectPayment);
     await tester.pumpAndSettle(Duration(milliseconds: 3000));
-    await tester.enterText(phoneSearch, TestInputs.searchConnection.SEARCH_MOBILE_NUMBER);
+    await tester.ensureVisible(nameSearch);
+    await tester.enterText(nameSearch, searchConnectionTestData['searchConnectionName']);
     await tester.pumpAndSettle(Duration(milliseconds: 3000));
     await tester.ensureVisible(searchConnectionBtn);
     await tester.tap(searchConnectionBtn);
     await tester.pumpAndSettle(Duration(milliseconds: 3000));
     await tester.tap(backButton);
-    await tester.pumpAndSettle(Duration(seconds: 3));
+    await tester.pumpAndSettle(Duration(milliseconds: 3000));
     await tester.tap(backButton);
-    await tester.pumpAndSettle(Duration(seconds: 3));
+    await tester.pumpAndSettle(Duration(milliseconds: 3000));
+
 
     await tester.tap(collectPayment);
     await tester.pumpAndSettle(Duration(milliseconds: 3000));
@@ -57,7 +58,7 @@ void main() {
     await tester.tap(tapShowMore);
     await tester.pumpAndSettle(Duration(seconds: 3));
     await tester.ensureVisible(oldIDSearch);
-    await tester.enterText(oldIDSearch, TestInputs.searchConnection.SEARCH_OLD_CONNECTION_ID);
+    await tester.enterText(oldIDSearch, searchConnectionTestData['searchConnectionOldConnectionID']);
     await tester.pumpAndSettle(Duration(milliseconds: 3000));
     await tester.tap(searchConnectionBtn);
     await tester.pumpAndSettle(Duration(milliseconds: 3000));
@@ -74,7 +75,7 @@ void main() {
     await tester.tap(tapShowMore);
     await tester.pumpAndSettle(Duration(seconds: 3));
     await tester.ensureVisible(newIDSearch);
-    await tester.enterText(newIDSearch, TestInputs.searchConnection.SEARCH_NEW_CONNECTION_ID);
+    await tester.enterText(newIDSearch, searchConnectionTestData['searchConnectionNewConnectionID']);
     await tester.pumpAndSettle(Duration(milliseconds: 3000));
     await tester.tap(searchConnectionBtn);
     await tester.pumpAndSettle(Duration(milliseconds: 3000));

@@ -12,10 +12,11 @@ import 'Test Inputs/test_inputs.dart';
 void main() {
 
   testWidgets("Forgot Password Test", (tester) async {
+    var forgotPasswordTestData = getTestData();
     app.main();
     await tester.pumpAndSettle(Duration(milliseconds: 3000));
 
-    final selectLanguage = find.byType(LanguageCard).at(2);
+    final selectLanguage = find.byType(LanguageCard).at(forgotPasswordTestData['selectLanguage']);
     final selectLanButton = find.byKey(Keys.language.LANGUAGE_PAGE_CONTINUE_BTN);
     await tester.tap(selectLanguage);
     await tester.pumpAndSettle(Duration(milliseconds: 3000));
@@ -28,7 +29,7 @@ void main() {
 
     final enterMobileNumber = find.byKey(Keys.forgotPassword.FORGOT_PASSWORD_MOBILE_NO);
     await tester.ensureVisible(enterMobileNumber);
-    await tester.enterText(enterMobileNumber, TestInputs.forgotPassword.FORGOT_PASSWORD_MOBILE_NUMBER);
+    await tester.enterText(enterMobileNumber, forgotPasswordTestData['forgotPasswordMobileNumber']);
     await tester.pumpAndSettle(Duration(milliseconds: 3000));
 
     final continueBtn = find.byKey(Keys.forgotPassword.FORGOT_PASSWORD_CONTINUE_BTN);

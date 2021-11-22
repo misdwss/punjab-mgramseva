@@ -6,6 +6,8 @@ import 'Test Inputs/test_inputs.dart';
 
 void main() {
   testWidgets("Change Password Test", (tester) async {
+
+    var changePasswordTestData = getTestData();
     app.main();
     await tester.pumpAndSettle(Duration(milliseconds: 3000));
 
@@ -22,15 +24,15 @@ void main() {
     final confirmPasswordField = find.byKey(Keys.changePassword.CONFIRM_PASSWORD_KEY);
     final changePasswordBtn = find.byKey(Keys.changePassword.CHANGE_PASSWORD_BTN_KEY);
 
-    await tester.enterText(currentPasswordField, TestInputs.changePassword.CURRENT_PASSWORD);
+    await tester.enterText(currentPasswordField, changePasswordTestData['currentPassword']);
     await tester.pumpAndSettle(Duration(seconds: 3));
 
     await tester.ensureVisible(newPasswordField);
-    await tester.enterText(newPasswordField, TestInputs.changePassword.NEW_PASSWORD);
+    await tester.enterText(newPasswordField, changePasswordTestData['newPassword']);
     await tester.pumpAndSettle(Duration(seconds: 3));
 
     await tester.ensureVisible(confirmPasswordField);
-    await tester.enterText(confirmPasswordField, TestInputs.changePassword.CONFIRM_NEW_PASSWORD);
+    await tester.enterText(confirmPasswordField, changePasswordTestData['confirmNewPassword']);
     await tester.pumpAndSettle(Duration(seconds: 3));
 
     await tester.ensureVisible(changePasswordBtn);

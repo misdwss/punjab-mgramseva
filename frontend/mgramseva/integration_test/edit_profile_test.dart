@@ -8,6 +8,7 @@ import 'Test Inputs/test_inputs.dart';
 
 void main() {
   testWidgets("Edit Profile Test", (tester) async {
+    var editProfileTestData = getTestData();
     app.main();
     await tester.pumpAndSettle(Duration(milliseconds: 3000));
 
@@ -22,12 +23,12 @@ void main() {
     final editProfileName = find.byKey(Keys.editProfile.EDIT_PROFILE_NAME_KEY);
     final editProfileEmail = find.byKey(Keys.editProfile.EDIT_PROFILE_E_MAIL_KEY);
     final editGender = find.widgetWithText(ListTile, ApplicationLocalizations.of(navigatorKey.currentContext!)
-        .translate(TestInputs.editProfile.EDIT_PROFILE_GENDER));
+        .translate(editProfileTestData['editProfileGender']));
     final saveBtn = find.byKey(Keys.editProfile.EDIT_PROFILE_SAVE_BTN_KEY);
 
     await tester.enterText(editProfileName, '');
     await tester.pumpAndSettle(Duration(seconds: 3));
-    await tester.enterText(editProfileName, TestInputs.editProfile.EDIT_PROFILE_NAME);
+    await tester.enterText(editProfileName, editProfileTestData['editProfileName']);
     await tester.pumpAndSettle(Duration(seconds: 3));
 
     await tester.ensureVisible(editGender);
@@ -36,7 +37,7 @@ void main() {
 
     await tester.enterText(editProfileEmail, '');
     await tester.pumpAndSettle(Duration(seconds: 3));
-    await tester.enterText(editProfileEmail, TestInputs.editProfile.EDIT_PROFILE_EMAIL);
+    await tester.enterText(editProfileEmail, editProfileTestData['editProfileEmail']);
     await tester.pumpAndSettle(Duration(seconds: 3));
 
     await tester.ensureVisible(saveBtn);
