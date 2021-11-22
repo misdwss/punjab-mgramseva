@@ -313,12 +313,18 @@ public class DemandGenerationConsumer {
 			Set<String> consumerCodes = new LinkedHashSet<String>();
 			consumerCodes.add(connectionNo);
 
-			
-			List<Demand> demands = demandService.searchDemand(tenantId, consumerCodes, previousFromDate.getTimeInMillis(), previousToDate.getTimeInMillis(), requestInfo);
-			if (demands != null && demands.size() == 0) {
+			if (!waterCalculatorDao.isDemandExists(tenantId, previousFromDate.getTimeInMillis(), previousToDate.getTimeInMillis(), consumerCodes)) {
 				log.warn("this connection doen't have the demand in previous billing cycle :" + connectionNo );
 				continue;
 			}
+			
+			/*
+			 * List<Demand> demands = demandService.searchDemand(tenantId, consumerCodes,
+			 * previousFromDate.getTimeInMillis(), previousToDate.getTimeInMillis(),
+			 * requestInfo); if (demands != null && demands.size() == 0) {
+			 * log.warn("this connection doen't have the demand in previous billing cycle :"
+			 * + connectionNo ); continue; }
+			 */
 			try {
 				generateDemandInBatch(calculationReq, masterMap, billingCycle, isSendMessage);
 
