@@ -17,7 +17,7 @@ class BillsTable extends StatefulWidget {
         required this.headerList,
         required this.tableData,
         required this.leftColumnWidth,
-        required this.rightColumnWidth, this.height, this.scrollPhysics})
+        required this.rightColumnWidth, this.height, this.scrollPhysics,})
       : super(key: key);
 
   @override
@@ -123,6 +123,11 @@ class _BillsTable extends State<BillsTable> {
       alignment: Alignment.centerLeft,
     );
   }
+  double increaseHeight(int index) {
+    return
+      (widget.tableData[index].tableRow.first.label.substring(28).length.toInt()).toDouble();
+    //if greater than 28 characters
+  }
 
   Widget _generateFirstColumnRow(BuildContext context, int index) {
     return LayoutBuilder(builder: (context, constraints) {
@@ -148,7 +153,7 @@ class _BillsTable extends State<BillsTable> {
                 style: TextStyle(color: Theme.of(context).primaryColor),
               ),
               width: widget.leftColumnWidth,
-              height: 52,
+              height: widget.tableData[index].tableRow.first.label.length > 28 ? 50 + increaseHeight(index) : 52,
               padding: EdgeInsets.only(left: 17, right: 5, top: 6, bottom: 6),
               alignment: Alignment.centerLeft,
             ),
@@ -172,7 +177,7 @@ class _BillsTable extends State<BillsTable> {
         ],
       ),
       width: widget.leftColumnWidth,
-      height: 52,
+      height: widget.tableData[index].tableRow.first.label.length > 28 ? 50 + increaseHeight(index) : 52,
       padding: EdgeInsets.only(left: 17, right: 5, top: 6, bottom: 6),
       alignment: Alignment.centerLeft,
     );
