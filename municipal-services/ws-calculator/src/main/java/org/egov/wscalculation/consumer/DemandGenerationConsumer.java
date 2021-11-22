@@ -277,7 +277,7 @@ public class DemandGenerationConsumer {
 				.of(fromDate.getYear(), fromDate.getMonth(), fromDate.getDayOfMonth(), 0, 0, 0)
 				.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
 		Long dayEndTime = LocalDateTime
-				.of(toDate.getYear(), toDate.getMonth(), toDate.getDayOfMonth(), 23, 59, 59)
+				.of(toDate.getYear(), toDate.getMonth(), toDate.getDayOfMonth(), 23, 59, 59, 999000000)
 				.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
 
 		
@@ -286,19 +286,23 @@ public class DemandGenerationConsumer {
 		List<String> meteredConnectionNos = waterCalculatorDao.getConnectionsNoList(tenantId,
 				WSCalculationConstant.meteredConnectionType);
 		
+		
 		Calendar previousFromDate = Calendar.getInstance();
 		Calendar previousToDate = Calendar.getInstance();
 		
+		previousFromDate.setTimeInMillis(dayStartTime);
+		previousToDate.setTimeInMillis(dayEndTime);
+
 		previousFromDate.add(Calendar.MONTH, -1); //assuming billing cycle will be first day of month
 		previousToDate.add(Calendar.MONTH, -1); 
-		
-		previousToDate.getActualMaximum(Calendar.DAY_OF_MONTH);
+		int max = previousToDate.getActualMaximum(Calendar.DAY_OF_MONTH);
+		previousToDate.set(Calendar.DAY_OF_MONTH, max);
 		
 		String assessmentYear = estimationService.getAssessmentYear();
 		ArrayList<String> failedConnectionNos = new ArrayList<String>();
 		for (String connectionNo : connectionNos) {
 			CalculationCriteria calculationCriteria = CalculationCriteria.builder().tenantId(tenantId)
-					.assessmentYear(assessmentYear).connectionNo(connectionNo).build();
+					.assessmentYear(assessmentYear).connectionNo(connectionNo).from(dayStartTime).to(dayEndTime).build();
 			List<CalculationCriteria> calculationCriteriaList = new ArrayList<>();
 			calculationCriteriaList.add(calculationCriteria);
 			CalculationReq calculationReq = CalculationReq.builder().calculationCriteria(calculationCriteriaList)
@@ -306,15 +310,13 @@ public class DemandGenerationConsumer {
 
 			Map<String, Object> masterMap = mDataService.loadMasterData(calculationReq.getRequestInfo(),
 					calculationReq.getCalculationCriteria().get(0).getTenantId());
-			// check weather this connection has demand for previous billing cycle
-			// if not log a warn message as this connection doen't have the demand in
-			// previous billing cycle.
 			Set<String> consumerCodes = new LinkedHashSet<String>();
 			consumerCodes.add(connectionNo);
 
+			
 			List<Demand> demands = demandService.searchDemand(tenantId, consumerCodes, previousFromDate.getTimeInMillis(), previousToDate.getTimeInMillis(), requestInfo);
 			if (demands != null && demands.size() == 0) {
-				log.warn("this connection doen't have the demand in previous billing cycle");
+				log.warn("this connection doen't have the demand in previous billing cycle :" + connectionNo );
 				continue;
 			}
 			try {

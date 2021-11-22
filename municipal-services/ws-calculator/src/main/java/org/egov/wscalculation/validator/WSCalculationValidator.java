@@ -194,6 +194,8 @@ public class WSCalculationValidator {
 		} else if (billingFrequency.equalsIgnoreCase(WSCalculationConstant.Quaterly_Billing_Period)) {
 			startCal.add(Calendar.MONTH, -3);
 			endCal.add(Calendar.MONTH, -3);
+			int max = endCal.getActualMaximum(Calendar.DAY_OF_MONTH);
+			endCal.set(Calendar.DAY_OF_MONTH, max);
 			setTimeToEndofDay(endCal);
 //				startCal.set(Calendar.DAY_OF_MONTH, 15);
 		}
