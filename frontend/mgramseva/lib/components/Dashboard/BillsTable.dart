@@ -28,6 +28,7 @@ class BillsTable extends StatefulWidget {
 
 class _BillsTable extends State<BillsTable> {
   final ScrollController controller = ScrollController();
+  final double columnRowFixedHeight = 52.0;
 
   @override
   void initState() {
@@ -123,9 +124,9 @@ class _BillsTable extends State<BillsTable> {
       alignment: Alignment.centerLeft,
     );
   }
-  double increaseHeight(int index) {
+  double columnRowIncreasedHeight(int index) {
     return
-      (widget.tableData[index].tableRow.first.label.substring(28).length.toDouble());
+      (50 + widget.tableData[index].tableRow.first.label.substring(28).length.toDouble());
     //if greater than 28 characters
   }
 
@@ -153,7 +154,7 @@ class _BillsTable extends State<BillsTable> {
                 style: TextStyle(color: Theme.of(context).primaryColor),
               ),
               width: widget.leftColumnWidth,
-              height: widget.tableData[index].tableRow.first.label.length > 28 ? 50 + increaseHeight(index) : 52,
+              height: widget.tableData[index].tableRow.first.label.length > 28 ? columnRowIncreasedHeight(index) : columnRowFixedHeight,
               padding: EdgeInsets.only(left: 17, right: 5, top: 6, bottom: 6),
               alignment: Alignment.centerLeft,
             ),
@@ -177,7 +178,7 @@ class _BillsTable extends State<BillsTable> {
         ],
       ),
       width: widget.leftColumnWidth,
-      height: widget.tableData[index].tableRow.first.label.length > 28 ? 50 + increaseHeight(index) : 52,
+      height: widget.tableData[index].tableRow.first.label.length > 28 ? columnRowIncreasedHeight(index) : columnRowFixedHeight,
       padding: EdgeInsets.only(left: 17, right: 5, top: 6, bottom: 6),
       alignment: Alignment.centerLeft,
     );
