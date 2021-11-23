@@ -156,7 +156,7 @@ public class NICSMSServiceImpl extends BaseSMSService {
 	    		HttpsURLConnection conn = (HttpsURLConnection) new URL(smsProperties.getUrl()).openConnection();
 				conn.setSSLSocketFactory(sslContext.getSocketFactory());
 				conn.setDoOutput(true);
-				conn.setRequestMethod("POST");
+				//conn.setRequestMethod("POST");
 				conn.setRequestProperty("Content-Length", Integer.toString(final_data.length()));
 				conn.getOutputStream().write(final_data.getBytes());
 				final BufferedReader rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
