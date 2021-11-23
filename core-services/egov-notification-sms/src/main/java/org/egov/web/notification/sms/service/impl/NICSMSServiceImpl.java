@@ -72,6 +72,7 @@ public class NICSMSServiceImpl extends BaseSMSService {
     
 	@PostConstruct
 	private void postConstruct() {
+		log.info("postConstruct() start");
 		try
 		{
 			sslContext = SSLContext.getInstance("TLSv1.2");
@@ -116,7 +117,8 @@ public class NICSMSServiceImpl extends BaseSMSService {
 	}
 
     protected void submitToExternalSmsService(Sms sms) {
-        try {
+    	log.info("submitToExternalSmsService() start");
+    	try {
         	
         	String final_data="";
         	final_data+="username="+ smsProperties.getUsername();
@@ -156,6 +158,7 @@ public class NICSMSServiceImpl extends BaseSMSService {
 				while ((line = rd.readLine()) != null) {
 					stringBuffer.append(line);
 				}
+				log.info("conn: "+conn.toString());
 				if(smsProperties.isDebugMsggateway())
 				{
 					log.info("sms response: " + stringBuffer.toString());
