@@ -17,7 +17,7 @@ class BillsTable extends StatefulWidget {
         required this.headerList,
         required this.tableData,
         required this.leftColumnWidth,
-        required this.rightColumnWidth, this.height, this.scrollPhysics,})
+        required this.rightColumnWidth, this.height, this.scrollPhysics})
       : super(key: key);
 
   @override
