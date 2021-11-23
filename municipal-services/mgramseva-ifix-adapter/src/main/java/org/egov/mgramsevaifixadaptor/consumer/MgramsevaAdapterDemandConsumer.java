@@ -1,9 +1,16 @@
 package org.egov.mgramsevaifixadaptor.consumer;
 
+import java.math.BigDecimal;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 
 import org.egov.mgramsevaifixadaptor.config.PropertyConfiguration;
 import org.egov.mgramsevaifixadaptor.contract.DemandRequest;
+import org.egov.mgramsevaifixadaptor.models.AuditDetails;
+import org.egov.mgramsevaifixadaptor.models.Bill.StatusEnum;
+import org.egov.mgramsevaifixadaptor.models.Demand;
+import org.egov.mgramsevaifixadaptor.models.DemandDetail;
 import org.egov.mgramsevaifixadaptor.models.EventTypeEnum;
 import org.egov.mgramsevaifixadaptor.util.Constants;
 import org.egov.mgramsevaifixadaptor.util.MgramasevaAdapterWrapperUtil;
@@ -12,6 +19,7 @@ import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.support.KafkaHeaders;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -44,9 +52,9 @@ public class MgramsevaAdapterDemandConsumer {
 			log.error("Error while listening to value: " + record + " on topic: " + topic + ": " + e);
 		}
 		
-		
 		 //TODO enable after implementation
 	}
+	
 	@KafkaListener(topics = { "${kafka.topics.update.demand}"})
 	public void listenUpdate(final HashMap<String, Object> record, @Header(KafkaHeaders.RECEIVED_TOPIC) String topic) throws Exception {
 		ObjectMapper mapper = new ObjectMapper();
