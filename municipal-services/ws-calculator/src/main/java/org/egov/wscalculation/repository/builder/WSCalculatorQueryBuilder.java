@@ -183,7 +183,8 @@ public class WSCalculatorQueryBuilder {
 
 	}
 
-	public String getNonMeteredConnectionsList(String tenantId, Long dayStartTime, Long dayEndTime, List<Object> preparedStatement) {
+	public String getNonMeteredConnectionsList(String tenantId, Long dayStartTime, Long dayEndTime,
+			List<Object> preparedStatement) {
 		StringBuilder query = new StringBuilder(nonmeteredConnectionList);
 
 		// add tenantid
@@ -217,8 +218,8 @@ public class WSCalculatorQueryBuilder {
 		return query.toString();
 	}
 
-	public String previousBillingCycleDemandQuery(Set<String> connectionNos, String tenantId,
-			Long startDate, Long endDate, List<Object> preparedStmtList) {
+	public String previousBillingCycleDemandQuery(Set<String> connectionNos, String tenantId, Long startDate,
+			Long endDate, List<Object> preparedStmtList) {
 
 		StringBuilder builder = new StringBuilder(PREVIOUS_BILLING_CYCLE_DEMAND);
 
@@ -227,10 +228,13 @@ public class WSCalculatorQueryBuilder {
 			builder.append(" consumercode IN (").append(createQuery(connectionNos)).append(")");
 			addToPreparedStatement(preparedStmtList, connectionNos);
 		}
-		if (startDate != null && endDate!=null) {
+		if (startDate != null && endDate != null) {
 			addClauseIfRequired(preparedStmtList, builder);
-			builder.append(" taxperiodto between "   + startDate + " and " + endDate );
-			//todo taxperiod to is in between startdate and enddate of previous billing cycle
+			builder.append(" taxperiodto between  ?  and  ? ");
+			preparedStmtList.add(startDate);
+			preparedStmtList.add(endDate);
+			// todo taxperiod to is in between startdate and enddate of previous billing
+			// cycle
 		}
 
 		if (!StringUtils.isEmpty(tenantId)) {
@@ -238,7 +242,7 @@ public class WSCalculatorQueryBuilder {
 			builder.append(" tenantId =?  ");
 			preparedStmtList.add(tenantId);
 		}
-
+		System.out.println("Final query ::" + builder.toString());
 		return builder.toString();
 	}
 
