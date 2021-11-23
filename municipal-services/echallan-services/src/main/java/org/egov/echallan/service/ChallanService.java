@@ -174,14 +174,14 @@ public class ChallanService {
 		LocalDateTime previousMonthStartDateTime = LocalDateTime.of(prviousMonthStart.getYear(),
 				prviousMonthStart.getMonth(), prviousMonthStart.getDayOfMonth(), 0, 0, 0);
 		LocalDateTime previousMonthEndDateTime = LocalDateTime.of(prviousMonthEnd.getYear(), prviousMonthEnd.getMonth(),
-				prviousMonthEnd.getDayOfMonth(), 23, 59, 59);
+				prviousMonthEnd.getDayOfMonth(), 23, 59, 59, 999000000);
 
 		// actual payments
-		Integer previousMonthExpensePayments = repository.getPreviousMonthExpensePayments(tenantId,
+		List<String> previousMonthExpensePayments = repository.getPreviousMonthExpensePayments(tenantId,
 				((Long) previousMonthStartDateTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()),
 				((Long) previousMonthEndDateTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()));
-		if (null != previousMonthExpensePayments)
-			lastMonthSummary.setPreviousMonthCollection(previousMonthExpensePayments.toString());
+		if (previousMonthExpensePayments!=null && previousMonthExpensePayments.get(0)!=null)
+			lastMonthSummary.setPreviousMonthCollection(previousMonthExpensePayments.get(0).toString());
 
 		// new expenditure
 		Integer previousMonthNewExpense = repository.getPreviousMonthNewExpense(tenantId,

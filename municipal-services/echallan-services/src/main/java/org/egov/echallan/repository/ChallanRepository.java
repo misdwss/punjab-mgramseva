@@ -184,7 +184,7 @@ public class ChallanRepository {
 
 
 
-	public Integer getPreviousMonthExpensePayments(String tenantId, Long startDate, Long endDate) {
+	public List<String> getPreviousMonthExpensePayments(String tenantId, Long startDate, Long endDate) {
 		StringBuilder query = new StringBuilder(queryBuilder.PREVIOUSMONTHEXPPAYMENT);
 		
 		//previous month start date startDate
@@ -193,7 +193,7 @@ public class ChallanRepository {
 		query.append( " and PAYMTDTL.receiptdate  >= ").append( startDate)  
 		.append(" and  PAYMTDTL.receiptdate <= " ).append(endDate).append(" and PAYMTDTL.tenantid = '").append(tenantId).append("'"); 
 		log.info("Previous month expense paid query : " + query);
-		return jdbcTemplate.queryForObject(query.toString(), Integer.class);
+		return jdbcTemplate.queryForList(query.toString(), String.class);
 	}
 
 
