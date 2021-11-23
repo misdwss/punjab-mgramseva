@@ -57,9 +57,9 @@ void main() {
     // add_expense.main();
 
     /// update expense
-    // dashboard.main();
+    dashboard.main();
 
     /// House hold regisiter
-    houseHold.main();
+    // houseHold.main();
   });
 }

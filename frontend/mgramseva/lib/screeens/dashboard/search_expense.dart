@@ -69,27 +69,7 @@ class _SearchExpenseDashboardState extends State<SearchExpenseDashboard> {
             onChange: (val) => dashBoardProvider.onSearch(val, context),
             key: Keys.dashboard.DASHBOARD_SEARCH,
           ),
-          StreamBuilder(
-              stream: dashBoardProvider.initialStreamController.stream,
-              builder: (context, AsyncSnapshot snapshot) {
-                if (snapshot.hasData) {
-                  if(snapshot.data is String){
-                    return CommonWidgets.buildEmptyMessage(snapshot.data, context);
-                  }
-                  return _buildTabView();
-                } else if (snapshot.hasError) {
-                  return Notifiers.networkErrorPage(context, () => {});
-                } else {
-                  switch (snapshot.connectionState) {
-                    case ConnectionState.waiting:
-                      return Loaders.CircularLoader();
-                    case ConnectionState.active:
-                      return Loaders.CircularLoader();
-                    default:
-                      return Container();
-                  }
-                }
-              }),
+          _buildTabView(),
           Footer()
         ]
     );
