@@ -13,16 +13,13 @@ import 'package:mgramseva/repository/expenses_repo.dart';
 import 'package:mgramseva/repository/search_connection_repo.dart';
 import 'package:mgramseva/routers/Routers.dart';
 import 'package:mgramseva/screeens/dashboard/dashboard_pdf.dart';
-import 'package:mgramseva/screeens/dashboard/search_expense.dart';
 import 'package:mgramseva/services/MDMS.dart';
 import 'package:mgramseva/utils/Constants/I18KeyConstants.dart';
 import 'package:mgramseva/utils/Locilization/application_localizations.dart';
-import 'package:mgramseva/utils/common_methods.dart';
 import 'package:mgramseva/utils/date_formats.dart';
 import 'package:mgramseva/utils/error_logging.dart';
 import 'package:mgramseva/utils/global_variables.dart';
 import 'package:mgramseva/utils/loaders.dart';
-import 'package:mgramseva/utils/models.dart';
 import 'package:mgramseva/utils/models.dart';
 import 'package:provider/provider.dart';
 
@@ -477,7 +474,7 @@ class DashBoardProvider with ChangeNotifier {
 
   TableDataRow getExpenseRow(ExpensesDetailsModel expense) {
     return TableDataRow([
-      TableData('${expense.challanNo} \n ${expense.vendorName}',
+      TableData('${expense.challanNo} \n${expense.vendorName}',
           callBack: onClickOfChallanNo, apiKey: expense.challanNo),
       TableData('${expense.expenseType}'),
       TableData('₹ ${expense.totalAmount ?? '-'}'),
@@ -490,13 +487,20 @@ class DashBoardProvider with ChangeNotifier {
     ]);
   }
 
+  String? truncateWithEllipsis(String? myString) {
+    return (myString!.length <= 20)
+        ? myString
+        : '${myString.substring(0, 20)}...';
+  }
+
   TableDataRow getCollectionRow(WaterConnection connection) {
+    String? name = truncateWithEllipsis(connection.connectionHolders?.first.name);
     return TableDataRow([
       TableData(
           '${connection.connectionNo?.split('/').first ?? ''}/...${connection.connectionNo?.split('/').last ?? ''} ${connection.connectionType == 'Metered' ? '- M' : ''}',
           callBack: onClickOfCollectionNo,
           apiKey: connection.connectionNo),
-      TableData('${connection.connectionHolders?.first.name ?? ''}'),
+      TableData('${name ?? ''}'),
       TableData(
           '${connection.additionalDetails?.collectionAmount != null ? '₹ ${connection.additionalDetails?.collectionAmount}' : '-'}'),
     ]);

@@ -125,7 +125,7 @@ class _BillsTable extends State<BillsTable> {
   }
   double increaseHeight(int index) {
     return
-      (widget.tableData[index].tableRow.first.label.substring(28).length.toInt()).toDouble();
+      (widget.tableData[index].tableRow.first.label.substring(28).length.toDouble());
     //if greater than 28 characters
   }
 
