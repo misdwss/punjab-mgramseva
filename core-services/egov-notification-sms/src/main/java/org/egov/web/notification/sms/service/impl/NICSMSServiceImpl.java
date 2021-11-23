@@ -124,7 +124,14 @@ public class NICSMSServiceImpl extends BaseSMSService {
         	final_data+="username="+ smsProperties.getUsername();
         	final_data+="&pin="+ smsProperties.getPassword();
         	
-        	String message= "" + sms.getMessage() + smsProperties.getSmsMsgAppend();
+        	String smsBody = sms.getMessage();
+                	
+        	String templateId = smsBody.split("#")[1];
+        	
+        	sms.setTemplateId(templateId);
+        	
+        	smsBody = smsBody.split("#")[0];
+        	String message= "" + smsBody + smsProperties.getSmsMsgAppend();
         	if(textIsInEnglish(message)) {
 				message=URLEncoder.encode(message,"UTF-8");
         	}
