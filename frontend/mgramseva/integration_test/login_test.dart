@@ -23,7 +23,7 @@ void main() {
     IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
     ///Forgot Password Testing
-    //forgot_password.main();
+    forgot_password.main();
 
     ///Login Testing
     testWidgets("Login test", (tester) async {
@@ -64,21 +64,21 @@ void main() {
     change_password.main();
 
     ///Search Connection Testing
-    //search_Connection.main();
+    search_Connection.main();
 
     ///Create Consumer Testing
-    //create_consumer.main();
+    create_consumer.main();
 
     ///Update Consumer Details Testing
-    //update_consumer.main();
+    update_consumer.main();
 
     ///Generate Bulk Demand
-    //generate_bulk_demand.main();
+    generate_bulk_demand.main();
 
     ///Generate Metered Bill
-    //generate_metered_bill.main();
+    generate_metered_bill.main();
 
     ///Log Out
-    //logout.main();
+    logout.main();
   });
 }
