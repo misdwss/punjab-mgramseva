@@ -61,6 +61,18 @@ Map<String, dynamic> getTestData() {
     ///********* Bulk Demand Generate Inputs *********
     'bulkDemandBillingYear': '2021-22',
     'bulkDemandBillingCycle': 'OCT',
+
+    ///*******Expense Inputs ********
+    'addExpenseType' : 'ELECTRICITY_BILL',
+    'searchExpenseType' : 'OM',
+    'expenseVendorName' : 'hara',
+    'expenseVendorPhoneNum' : '9949210191',
+    'searchExpenseBillID' : 'EB-2021-22-0270',
+
+    ///******** GPWSC Dashboard Inputs ********
+    'dashboardSearch' : 'hara',
+
+    ///********* Household Register Inputs *********
+    'householdSearch' : '1370',
   };
 }
-
