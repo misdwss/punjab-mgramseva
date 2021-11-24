@@ -83,9 +83,9 @@ void main() {
     await tester.enterText(dashboard_search, TestInputs.dashboard.DASHBOARD_SEARCH);
     await tester.pumpAndSettle(Duration(milliseconds: 5000));
 
-    await tester.ensureVisible(share);
-    await tester.tap(share);
-    await tester.pumpAndSettle(Duration(milliseconds: 12000));
-    await tester.pumpAndSettle(Duration(milliseconds: 12000));
+    // await tester.ensureVisible(share);
+    // await tester.tap(share);
+    // await tester.pumpAndSettle(Duration(milliseconds: 12000));
+    // await tester.pumpAndSettle(Duration(milliseconds: 12000));
   });
 }
