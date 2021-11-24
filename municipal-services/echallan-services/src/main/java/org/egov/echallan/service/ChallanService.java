@@ -177,7 +177,7 @@ public class ChallanService {
 				prviousMonthEnd.getDayOfMonth(), 23, 59, 59, 999000000);
 
 		// actual payments
-		Integer previousMonthExpensePayments = repository.getPreviousMonthExpensePayments(tenantId,
+		Integer previousMonthExpensePayments = repository.getLastsMonthExpensePayments(tenantId,
 				((Long) previousMonthStartDateTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()),
 				((Long) previousMonthEndDateTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()));
 		if (previousMonthExpensePayments!=null)

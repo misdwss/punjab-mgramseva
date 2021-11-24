@@ -187,14 +187,16 @@ public class ChallanRepository {
 		return jdbcTemplate.queryForList(query.toString(), String.class);
 	}
 
-
-
-	public Integer getPreviousMonthExpensePayments(String tenantId, Long startDate, Long endDate) {
+	public List<String>  getPreviousMonthExpensePayments(String tenantId, Long startDate, Long endDate) {
 		StringBuilder query = new StringBuilder(queryBuilder.PREVIOUSMONTHEXPPAYMENT);
-		
-		//previous month start date startDate
-		// previous month end date endDate
-		
+		query.append( " and PAYMTDTL.receiptdate  >= ").append( startDate)  
+		.append(" and  PAYMTDTL.receiptdate <= " ).append(endDate).append(" and PAYMTDTL.tenantid = '").append(tenantId).append("'"); 
+		log.info("Previous month expense paid query : " + query);
+		return jdbcTemplate.queryForList(query.toString(), String.class);
+	}
+
+	public Integer getLastsMonthExpensePayments(String tenantId, Long startDate, Long endDate) {
+		StringBuilder query = new StringBuilder(queryBuilder.PREVIOUSMONTHEXPPAYMENT);
 		query.append( " and PAYMTDTL.receiptdate  >= ").append( startDate)  
 		.append(" and  PAYMTDTL.receiptdate <= " ).append(endDate).append(" and PAYMTDTL.tenantid = '").append(tenantId).append("'"); 
 		log.info("Previous month expense paid query : " + query);
