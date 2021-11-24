@@ -162,5 +162,12 @@ public class WSCalculationDaoImpl implements WSCalculationDao {
 		Integer count = jdbcTemplate.queryForObject(query, preparedStmtList.toArray(), Integer.class);
 		return count > 0;
 	}
+	public Boolean isConnectionExists(String tenantId, Long startDate,  Long endTime, Set<String> connectionNos) {
+		List<Object> preparedStmtList = new ArrayList<>();
+		String query = queryBuilder.previousBillingCycleConnectionQuery(connectionNos, tenantId, startDate, endTime,
+				preparedStmtList);
+		Integer count = jdbcTemplate.queryForObject(query, preparedStmtList.toArray(), Integer.class);
+		return count > 0;
+	}
 
 }

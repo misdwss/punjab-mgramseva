@@ -177,11 +177,11 @@ public class ChallanService {
 				prviousMonthEnd.getDayOfMonth(), 23, 59, 59, 999000000);
 
 		// actual payments
-		List<String> previousMonthExpensePayments = repository.getPreviousMonthExpensePayments(tenantId,
+		Integer previousMonthExpensePayments = repository.getPreviousMonthExpensePayments(tenantId,
 				((Long) previousMonthStartDateTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()),
 				((Long) previousMonthEndDateTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()));
-		if (previousMonthExpensePayments!=null && previousMonthExpensePayments.get(0)!=null)
-			lastMonthSummary.setPreviousMonthCollection(previousMonthExpensePayments.get(0).toString());
+		if (previousMonthExpensePayments!=null)
+			lastMonthSummary.setPreviousMonthCollection(previousMonthExpensePayments.toString());
 
 		// new expenditure
 		Integer previousMonthNewExpense = repository.getPreviousMonthNewExpense(tenantId,
@@ -191,7 +191,8 @@ public class ChallanService {
 			lastMonthSummary.setPreviousMonthNewExpense(previousMonthNewExpense.toString());
 
 		// pending expenes to be paid
-		Integer cumulativePendingExpense = repository.getCumulativePendingExpense(tenantId);
+		Integer cumulativePendingExpense = repository.getCumulativePendingExpense(tenantId,
+				((Long) previousMonthEndDateTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()));
 		if (null != cumulativePendingExpense )
 			lastMonthSummary.setCumulativePendingExpense(cumulativePendingExpense.toString());
 
