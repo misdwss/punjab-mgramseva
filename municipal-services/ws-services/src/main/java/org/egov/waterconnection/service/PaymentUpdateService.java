@@ -1,6 +1,7 @@
 package org.egov.waterconnection.service;
 
 import java.math.BigDecimal;
+import java.text.DecimalFormat;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -367,20 +368,20 @@ public class PaymentUpdateService {
 	 */
 	private Map<String, String> replacePaymentInfo(Map<String, String> mobileAndMessage, PaymentDetail paymentDetail,String paymentId, String connectionType) {
 		Map<String, String> messageToReturn = new HashMap<>();
+		DecimalFormat df = new DecimalFormat("0.00");
+
 		List<PaymentDetail> payments = new LinkedList<>();
 		payments.add(paymentDetail);
 		for (Map.Entry<String, String> mobAndMesg : mobileAndMessage.entrySet()) {
 			String message = mobAndMesg.getValue();
 			if (message.contains("{amountpaid}")) {
 				// paymentDetail.getTotalAmountPaid().toString()
-				message = message.replace("{amountpaid}", payments.stream().map(PaymentDetail::getTotalAmountPaid)
-						.reduce(BigDecimal.ZERO, BigDecimal::add).toString());
+				message = message.replace("{amountpaid}", df.format(paymentDetail.getTotalAmountPaid().toString()));
 			}
 			
 			if (message.contains("{pendingamount}")) {
 				// paymentDetail.getTotalDue().subtract(paymentDetail.getTotalAmountPaid()).toString()
-				message = message.replace("{pendingamount}", payments.stream().map(PaymentDetail::getTotalDue)
-						.reduce(BigDecimal.ZERO, BigDecimal::add).toString());
+				message = message.replace("{pendingamount}", df.format(paymentDetail.getTotalDue().subtract(paymentDetail.getTotalAmountPaid()).toString()));
 			}
 			if (message.contains("<Billing Period>")) {
 				int fromDateLength = (int) (Math.log10(paymentDetail.getBill().getBillDetails().get(0).getFromPeriod()) + 1);
