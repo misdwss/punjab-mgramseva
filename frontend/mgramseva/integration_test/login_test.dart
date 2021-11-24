@@ -5,6 +5,13 @@ import 'package:integration_test/integration_test.dart';
 import 'package:mgramseva/main.dart' as app;
 import 'package:mgramseva/utils/TestingKeys/testing_keys.dart';
 import 'package:mgramseva/widgets/LanguageCard.dart';
+// import 'search_Connection_test.dart' as search_Connection;
+// import 'create_consumer_test.dart' as create_consumer;
+import 'Test Inputs/test_inputs.dart';
+import 'update_expense.dart' as update_expense;
+import 'add_expense.dart' as add_expense;
+import 'dashboard_test.dart' as dashboard;
+import 'house_hold_test.dart' as houseHold;
 import 'Test Inputs/test_inputs.dart';
 import 'search_Connection_test.dart' as search_Connection;
 import 'create_consumer_test.dart' as create_consumer;
@@ -56,6 +63,21 @@ void main() {
       await tester.pumpAndSettle(Duration(milliseconds: 3000));
 
     });
+
+    ///Search Connection Testing
+    //search_Connection.main();
+
+    ///Create Consumer Testing
+    // create_consumer.main();
+
+    /// add expense
+    // add_expense.main();
+
+    /// update expense
+    dashboard.main();
+
+    /// House hold regisiter
+    // houseHold.main();
 
     ///Edit Profile Testing
     edit_profile.main();

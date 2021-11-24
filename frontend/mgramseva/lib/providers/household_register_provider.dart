@@ -182,7 +182,7 @@ class HouseholdRegisterProvider with ChangeNotifier {
 
   bool isTabSelected(int index){
     if(selectedTab == Constants.ALL && index == 0) return true;
-      if((selectedTab == Constants.PENDING && index == 2) || (selectedTab == Constants.PAID && index == 1)) return true;
+    if((selectedTab == Constants.PENDING && index == 2) || (selectedTab == Constants.PAID && index == 1)) return true;
     return false;
   }
 
@@ -270,8 +270,8 @@ class HouseholdRegisterProvider with ChangeNotifier {
     }
     sortBy = SortBy(header.apiKey ?? '', header.isAscendingOrder!);
     notifyListeners();
-      fetchHouseholdDetails(
-          navigatorKey.currentContext!, limit, 1, true);
+    fetchHouseholdDetails(
+        navigatorKey.currentContext!, limit, 1, true);
   }
 
 
@@ -291,8 +291,8 @@ class HouseholdRegisterProvider with ChangeNotifier {
       [int? localLimit, int? localOffSet, bool isSearch = false]) {
     if(isLoaderEnabled) return;
 
-      fetchHouseholdDetails(
-          context, localLimit ?? limit, localOffSet ?? 1, isSearch);
+    fetchHouseholdDetails(
+        context, localLimit ?? limit, localOffSet ?? 1, isSearch);
   }
 
   void createPdfForAllConnections(BuildContext context, bool isDownload) async {

@@ -10,6 +10,7 @@ import 'package:mgramseva/providers/dashboard_provider.dart';
 import 'package:mgramseva/screeens/dashboard/individual_tab.dart';
 import 'package:mgramseva/utils/Constants/I18KeyConstants.dart';
 import 'package:mgramseva/utils/Locilization/application_localizations.dart';
+import 'package:mgramseva/utils/TestingKeys/testing_keys.dart';
 import 'package:mgramseva/utils/common_widgets.dart';
 import 'package:mgramseva/utils/loaders.dart';
 import 'package:mgramseva/utils/models.dart';
@@ -66,28 +67,9 @@ class _SearchExpenseDashboardState extends State<SearchExpenseDashboard> {
             isFilled: true,
             placeHolder: widget.dashBoardType == DashBoardType.collections ? i18.dashboard.SEARCH_NAME_CONNECTION : i18.dashboard.SEARCH_BY_BILL_OR_VENDOR,
             onChange: (val) => dashBoardProvider.onSearch(val, context),
+            key: Keys.dashboard.DASHBOARD_SEARCH,
           ),
-          StreamBuilder(
-              stream: dashBoardProvider.initialStreamController.stream,
-              builder: (context, AsyncSnapshot snapshot) {
-                if (snapshot.hasData) {
-                  if(snapshot.data is String){
-                    return CommonWidgets.buildEmptyMessage(snapshot.data, context);
-                  }
-                  return _buildTabView();
-                } else if (snapshot.hasError) {
-                  return Notifiers.networkErrorPage(context, () => {});
-                } else {
-                  switch (snapshot.connectionState) {
-                    case ConnectionState.waiting:
-                      return Loaders.CircularLoader();
-                    case ConnectionState.active:
-                      return Loaders.CircularLoader();
-                    default:
-                      return Container();
-                  }
-                }
-              }),
+          _buildTabView(),
           Footer()
         ]
     );
@@ -106,7 +88,9 @@ class _SearchExpenseDashboardState extends State<SearchExpenseDashboard> {
            scrollDirection: Axis.horizontal,
            child: Row(
              crossAxisAlignment: CrossAxisAlignment.start,
-               children: List.generate(tabList.length, (index) => Padding(padding: EdgeInsets.only(top: 16.0, right: 8.0, bottom: 16.0), child: TabButton(tabList[index], isSelected: dashBoardProvider.isTabSelected(index), onPressed: () => dashBoardProvider.onChangeOfChildTab(context, index))))           ),
+               children: List.generate(tabList.length, (index) => Padding(
+                   key: Key(index.toString()),
+                   padding: EdgeInsets.only(top: 16.0, right: 8.0, bottom: 16.0), child: TabButton(tabList[index], isSelected: dashBoardProvider.isTabSelected(index), onPressed: () => dashBoardProvider.onChangeOfChildTab(context, index))))           ),
          ),
           IndividualTab()
         ],

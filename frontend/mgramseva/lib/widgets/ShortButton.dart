@@ -5,7 +5,8 @@ import 'package:mgramseva/utils/common_styles.dart';
 class ShortButton extends StatelessWidget {
   final String label;
   final VoidCallback? callBack;
-  ShortButton(this.label, this.callBack);
+  final Key? key;
+  ShortButton(this.label, this.callBack,{this.key});
 
   @override
   Widget build(BuildContext context) {
@@ -15,6 +16,7 @@ class ShortButton extends StatelessWidget {
         width: constraints.maxWidth > 760 ? constraints.maxWidth / 4 : constraints.maxWidth,
             decoration: CommonStyles.buttonBottomDecoration,
             child: new ElevatedButton(
+              key: key,
               child: new Text(
                   ApplicationLocalizations.of(context).translate(label),
                    style:

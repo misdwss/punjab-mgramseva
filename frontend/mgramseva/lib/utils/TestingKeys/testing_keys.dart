@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-
 class Keys{
   static LanguagePageKeys language = const LanguagePageKeys();
   static ForgotPasswordKeys forgotPassword = const ForgotPasswordKeys();
@@ -10,7 +9,10 @@ class Keys{
   static CreateConsumerKeys createConsumer = const CreateConsumerKeys();
   static SearchConnectionKeys searchConnection = const SearchConnectionKeys();
   static GenerateBulkDemandKeys bulkDemand = const GenerateBulkDemandKeys();
-  static CommonKeys common = const CommonKeys();
+  static ExpenseKeys expense = const ExpenseKeys();
+  static DashboardKeys dashboard = const DashboardKeys();
+  static Common common = const Common();
+  static HouseholdKeys household = const HouseholdKeys();
 }
 
 class LanguagePageKeys{
@@ -49,6 +51,7 @@ class ChangePasswordKeys {
   Key get CHANGE_PASSWORD_BTN_KEY => Key("Change Password Button Key");
 }
 
+
 class CreateConsumerKeys{
   const CreateConsumerKeys();
   Key get CONSUMER_NAME_KEY => Key("consumerName");
@@ -66,6 +69,47 @@ class CreateConsumerKeys{
   Key get CREATE_CONSUMER_BTN_KEY => Key("createConsumerBtn");
 }
 
+class ExpenseKeys {
+  const ExpenseKeys();
+  Key get VENDOR_NAME => Key("expense_vendor_name");
+  Key get VENDOR_MOBILE_NUMBER => Key("expense_mobile_number");
+  Key get EXPENSE_TYPE => Key("expense_type");
+  Key get EXPENSE_AMOUNT => Key("expense_amount");
+  Key get EXPENSE_BILL_DATE => Key("expense_bill_date");
+  Key get EXPENSE_PARTY_DATE => Key("expense_party_date");
+  Key get EXPENSE_SUBMIT => Key("expense_submit");
+  Key get BACK_BTN => Key("back_home");
+
+  Key get SEARCH_VENDOR_NAME => Key("search_vendor_name");
+  Key get SEARCH_EXPENSES => Key("search_expenses_btn");
+  Key get UPDATE_EXPNEDITURE => Key("update_expenditure");
+  Key get SEARCH_EXPENSE_TYPE => Key("search_expense_type");
+  Key get SEARCH_EXPENSE_SHOW => Key("search_expense_show");
+  Key get SEARCH_EXPENSE_BILL_ID => Key("search_expense_billId");
+}
+
+class DashboardKeys {
+  const DashboardKeys();
+  Key get DASHBOARD_SEARCH => Key("dashboard_search");
+  Key get DASHBOARD_DATE_PICKER => Key("dashboard_date_picker");
+  Key get SECOND_TAB => Key("1");
+  Key get THIRD_TAB => Key("2");
+
+}
+
+class Common {
+  const Common();
+  Key get PAGINATION_DROPDOWN => Key("drop_down");
+  Key get PAGINATION_COUNT=> Key("20");
+  Key get SHARE=> Key("Share Whatsapp");
+  Key get LOGOUT_TILE_KEY => Key('Log out Side Bar');
+}
+
+class HouseholdKeys {
+  const HouseholdKeys();
+  Key get HOUSEHOLD_SEARCH => Key("household_search");
+}
+
 class SearchConnectionKeys {
   const SearchConnectionKeys();
   Key get SEARCH_PHONE_NUMBER_KEY => Key("phoneSearch");
@@ -81,10 +125,4 @@ class GenerateBulkDemandKeys{
   Key get BULK_DEMAND_BILLING_YEAR => Key('Bulk Demand billingYear');
   Key get BULK_DEMAND_BILLING_CYCLE => Key('Bulk Demand billingCycle');
   Key get GENERATE_BILL_BTN => Key('Generate Bill button');
-}
-
-class CommonKeys{
-  const CommonKeys();
-
-  Key get LOGOUT_TILE_KEY => Key('Log out Side Bar');
 }

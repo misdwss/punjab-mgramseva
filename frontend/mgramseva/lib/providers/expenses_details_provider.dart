@@ -194,7 +194,16 @@ class ExpensesDetailsProvider with ChangeNotifier {
           .taxHeadCode
       ..consumerType = 'EXPENSE'
       ..tenantId = commonProvider.userDetails?.selectedtenant?.code
-      ..setText()
+      ..setText();
+
+      if(expenditureDetails.selectedVendor == null && expenditureDetails.vendorNameCtrl.text.trim().isNotEmpty){
+        var indexOf = vendorList.indexWhere((element) => element.name == expenditureDetails.vendorNameCtrl.text.trim());
+        if(indexOf != -1){
+          expenditureDetails.selectedVendor = vendorList[indexOf];
+        }
+      }
+
+    expenditureDetails
       ..vendorId = expenditureDetails.selectedVendor?.id ??
           expenditureDetails.vendorNameCtrl.text
       ..vendorName = expenditureDetails.selectedVendor?.name ??

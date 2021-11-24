@@ -25,7 +25,6 @@ import 'package:provider/provider.dart';
 
 class DashBoardProvider with ChangeNotifier {
   var streamController = StreamController.broadcast();
-  var initialStreamController = StreamController.broadcast();
   TextEditingController searchController = TextEditingController();
   ExpensesDetailsWithPagination? expenseDashboardDetails;
   int offset = 1;
@@ -48,7 +47,6 @@ class DashBoardProvider with ChangeNotifier {
   @override
   void dispose() {
     streamController.close();
-    initialStreamController.close();
     super.dispose();
   }
 
@@ -64,7 +62,7 @@ class DashBoardProvider with ChangeNotifier {
     notifyListeners();
     metricInformation = null;
     searchController.clear();
-    fetchData();
+    onChangeOfChildTab(navigatorKey.currentContext!, 0);
     fetchDashboardMetricInformation(context, dashBoardType == DashBoardType.Expenditure ? true : false);
     selectedTab = 'all';
     if(dashBoardType == DashBoardType.Expenditure) {
@@ -113,7 +111,7 @@ class DashBoardProvider with ChangeNotifier {
     }
   }
 
-  fetchData() async {
+  Future<void> fetchData() async {
     var commonProvider = Provider.of<CommonProvider>(navigatorKey.currentContext!, listen: false);
 
     if (propertyTaxList.isEmpty) {
@@ -129,11 +127,7 @@ class DashBoardProvider with ChangeNotifier {
             languageList.mdmsRes?.propertyTax?.PropertyTypeList ??
                 <PropertyType>[]);
       }
-    }else{
-      await Future.delayed(Duration(seconds: 1));
     }
-    initialStreamController.add([]);
-    onChangeOfChildTab(navigatorKey.currentContext!, 0);
   }
 
   Future<void> fetchExpenseDashBoardDetails(
@@ -262,6 +256,7 @@ class DashBoardProvider with ChangeNotifier {
     }
 
     if (isSearch) waterConnectionsDetails = null;
+    await fetchData();
 
     var query = {
       'tenantId': commonProvider.userDetails?.selectedtenant?.code,
