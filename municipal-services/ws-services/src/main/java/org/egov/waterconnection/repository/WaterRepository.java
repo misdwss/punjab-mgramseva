@@ -1,9 +1,12 @@
 package org.egov.waterconnection.repository;
 
+import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
 
 import org.egov.waterconnection.repository.builder.WsQueryBuilder;
+import org.egov.waterconnection.service.WaterService;
+import org.egov.waterconnection.util.WaterServicesUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -21,6 +24,9 @@ public class WaterRepository {
 
 	@Autowired
     private JdbcTemplate jdbcTemplate;
+	
+	@Autowired
+	private WaterServicesUtil util;
 	
 	public List<String> getTenantId() {
 		String query = queryBuilder.getDistinctTenantIds();
@@ -64,11 +70,17 @@ public class WaterRepository {
 		return list;
 	}
 	
-	public Integer getTotalPendingCollection(String tenantId) {
+	public Integer getTotalPendingCollection(String tenantId, Long endDate) {
 		StringBuilder query = new StringBuilder(queryBuilder.PENDINGCOLLECTION);
+		Calendar startDate = Calendar.getInstance();
+		startDate.setTimeInMillis(endDate);
+		startDate.set(Calendar.MONTH,3);
+		startDate.set(Calendar.DAY_OF_MONTH, startDate.getActualMinimum(Calendar.DAY_OF_MONTH));
+		util.setTimeToBeginningOfDay(startDate);
+		query.append(" and  dmd.taxperiodto between " +  startDate.getTimeInMillis() +" and "+ endDate );
 		query.append(" and dmd.tenantid = '").append(tenantId).append("'");
+		System.out.println("Query in WS for pending collection: " + query.toString());
 		return jdbcTemplate.queryForObject(query.toString(), Integer.class);
-
 	}
 
 	public Integer getNewDemand(String tenantId, Long startDate, Long endDate) {

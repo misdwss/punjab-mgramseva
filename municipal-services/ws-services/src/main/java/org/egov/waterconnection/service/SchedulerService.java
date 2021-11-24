@@ -136,7 +136,7 @@ public class SchedulerService {
 						UserDetailResponse userDetailResponse = userService.getUserByRoleCodes(requestInfo, tenantId,
 								Arrays.asList("GP_ADMIN"));
 
-						String penColLink = config.getWebUiPath() + config.getMonthRevenueDashboardLink();
+						String penColLink = config.getUiPath() + config.getMonthRevenueDashboardLink();
 						Map<String, String> mobileNumberIdMap = new LinkedHashMap<>();
 
 						for (OwnerInfo userInfo : userDetailResponse.getUser())

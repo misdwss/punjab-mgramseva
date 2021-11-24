@@ -216,6 +216,9 @@ public class WSConfiguration {
 	@Value("${egov.mgramseva.ui.path}")
 	private String webUiPath;
 	
+	@Value("${egov.ui.path}")
+	private String uiPath;
+	
 
     @Value("${egov.url.shortner.host}")
     private String urlShortnerHost;

@@ -409,7 +409,7 @@ public class WaterServiceImpl implements WaterService {
 		if (criteria.getCurrentDate() != null) {
 			Calendar currentDate = Calendar.getInstance();
 			currentDate.setTimeInMillis(criteria.getCurrentDate());
-			currentMonthDate = LocalDate.of(currentDate.get(Calendar.YEAR), currentDate.get(Calendar.MONTH) + 1,
+			currentMonthDate = LocalDate.of(currentDate.get(Calendar.YEAR), currentDate.get(Calendar.MONTH)+1,
 					currentDate.get(Calendar.DAY_OF_MONTH));
 		}
 		LocalDate prviousMonthStart = currentMonthDate.minusMonths(1).with(TemporalAdjusters.firstDayOfMonth());
@@ -418,10 +418,11 @@ public class WaterServiceImpl implements WaterService {
 		LocalDateTime previousMonthStartDateTime = LocalDateTime.of(prviousMonthStart.getYear(),
 				prviousMonthStart.getMonth(), prviousMonthStart.getDayOfMonth(), 0, 0, 0);
 		LocalDateTime previousMonthEndDateTime = LocalDateTime.of(prviousMonthEnd.getYear(), prviousMonthEnd.getMonth(),
-				prviousMonthEnd.getDayOfMonth(), 23, 59, 59);
+				prviousMonthEnd.getDayOfMonth(), 23, 59, 59, 999000000);
 
 		// pending ws collectioni
-		Integer cumulativePendingCollection = repository.getTotalPendingCollection(tenantId);
+		Integer cumulativePendingCollection = repository.getTotalPendingCollection(tenantId,
+				((Long) previousMonthEndDateTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()));
 		if (null != cumulativePendingCollection)
 			lastMonthSummary.setCumulativePendingCollection(cumulativePendingCollection.toString());
 
@@ -458,8 +459,7 @@ public class WaterServiceImpl implements WaterService {
 			monthYear = monthYear + (Integer.toString(YearMonth.now().getYear()).substring(2, monthYear.length() - 1));
 
 		}
-		localDateTime.minusMonths(1);
-		StringBuilder monthYearBuilder = new StringBuilder(localDateTime.getMonth().toString()).append(" ")
+		StringBuilder monthYearBuilder = new StringBuilder(localDateTime.minusMonths(1).getMonth().toString()).append(" ")
 				.append(monthYear);
 
 		return monthYearBuilder.toString();

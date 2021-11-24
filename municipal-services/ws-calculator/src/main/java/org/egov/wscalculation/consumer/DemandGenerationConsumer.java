@@ -1,7 +1,5 @@
 package org.egov.wscalculation.consumer;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -10,9 +8,9 @@ import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -23,6 +21,16 @@ import org.egov.common.contract.request.RequestInfo;
 import org.egov.tracer.model.CustomException;
 import org.egov.wscalculation.config.WSCalculationConfiguration;
 import org.egov.wscalculation.constants.WSCalculationConstant;
+import org.egov.wscalculation.producer.WSCalculationProducer;
+import org.egov.wscalculation.repository.WSCalculationDao;
+import org.egov.wscalculation.service.DemandService;
+import org.egov.wscalculation.service.EstimationService;
+import org.egov.wscalculation.service.MasterDataService;
+import org.egov.wscalculation.service.UserService;
+import org.egov.wscalculation.service.WSCalculationServiceImpl;
+import org.egov.wscalculation.util.CalculatorUtil;
+import org.egov.wscalculation.util.NotificationUtil;
+import org.egov.wscalculation.util.WSCalculationUtil;
 import org.egov.wscalculation.validator.WSCalculationValidator;
 import org.egov.wscalculation.validator.WSCalculationWorkflowValidator;
 import org.egov.wscalculation.web.models.Action;
@@ -31,6 +39,7 @@ import org.egov.wscalculation.web.models.BulkDemand;
 import org.egov.wscalculation.web.models.CalculationCriteria;
 import org.egov.wscalculation.web.models.CalculationReq;
 import org.egov.wscalculation.web.models.Category;
+import org.egov.wscalculation.web.models.Demand;
 import org.egov.wscalculation.web.models.Event;
 import org.egov.wscalculation.web.models.EventRequest;
 import org.egov.wscalculation.web.models.OwnerInfo;
@@ -38,15 +47,6 @@ import org.egov.wscalculation.web.models.Recipient;
 import org.egov.wscalculation.web.models.SMSRequest;
 import org.egov.wscalculation.web.models.Source;
 import org.egov.wscalculation.web.models.users.UserDetailResponse;
-import org.egov.wscalculation.producer.WSCalculationProducer;
-import org.egov.wscalculation.repository.WSCalculationDao;
-import org.egov.wscalculation.service.EstimationService;
-import org.egov.wscalculation.service.MasterDataService;
-import org.egov.wscalculation.service.UserService;
-import org.egov.wscalculation.service.WSCalculationServiceImpl;
-import org.egov.wscalculation.util.CalculatorUtil;
-import org.egov.wscalculation.util.NotificationUtil;
-import org.egov.wscalculation.util.WSCalculationUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.messaging.Message;
@@ -103,6 +103,9 @@ public class DemandGenerationConsumer {
 
 	@Autowired
 	private WSCalculationValidator wsCalculationValidator;
+	
+	@Autowired
+	private DemandService demandService;
 
 	/**
 	 * Listen the topic for processing the batch records.
@@ -228,7 +231,7 @@ public class DemandGenerationConsumer {
 		requestInfo = mapper.convertValue(demandData.get("requestInfo"), RequestInfo.class);
 		requestInfo.getUserInfo().setTenantId(tenantId);
 		Map<String, Object> billingMasterData = calculatorUtils.loadBillingFrequencyMasterData(requestInfo, tenantId);
-
+		
 		generateDemandForULB(billingMasterData, requestInfo, tenantId, isSendMessage);
 	}
 
@@ -256,40 +259,74 @@ public class DemandGenerationConsumer {
 			String toDate = lastDate.format(formatters);
 			String billingCycle = fromDate + " - " + toDate;
 			boolean isManual = false;
-			SendNotificationsToUsers(requestInfo, tenantId, billingCycle, master, isSendMessage, isManual);
-			
-
+			generateDemandAndSendnotification(requestInfo, tenantId, billingCycle, master, isSendMessage, isManual);
 		}
 	}
 
-	private void SendNotificationsToUsers(RequestInfo requestInfo, String tenantId, String billingCycle,
+	@SuppressWarnings("null")
+	private void generateDemandAndSendnotification(RequestInfo requestInfo, String tenantId, String billingCycle,
 			Map<String, Object> master, boolean isSendMessage, boolean isManual) {
 		// TODO Auto-generated method stub
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d/MM/yyyy");
 
-		LocalDate todayDate = LocalDate.now().with(TemporalAdjusters.firstDayOfMonth());
+
+		LocalDate fromDate = LocalDate.parse(billingCycle.split("-")[0].trim(), formatter);
+		LocalDate toDate = LocalDate.parse(billingCycle.split("-")[0].trim(), formatter);
+
 		Long dayStartTime = LocalDateTime
-				.of(todayDate.getYear(), todayDate.getMonth(), todayDate.getDayOfMonth(), 0, 0, 0)
+				.of(fromDate.getYear(), fromDate.getMonth(), fromDate.getDayOfMonth(), 0, 0, 0)
 				.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
 		Long dayEndTime = LocalDateTime
-				.of(todayDate.getYear(), todayDate.getMonth(), todayDate.getDayOfMonth(), 23, 59, 59)
+				.of(toDate.getYear(), toDate.getMonth(), toDate.getDayOfMonth(), 23, 59, 59, 999000000)
 				.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
 
+		
 		List<String> connectionNos = waterCalculatorDao.getNonMeterConnectionsList(tenantId, dayStartTime, dayEndTime);
 
 		List<String> meteredConnectionNos = waterCalculatorDao.getConnectionsNoList(tenantId,
 				WSCalculationConstant.meteredConnectionType);
+		
+		
+		Calendar previousFromDate = Calendar.getInstance();
+		Calendar previousToDate = Calendar.getInstance();
+		
+		previousFromDate.setTimeInMillis(dayStartTime);
+		previousToDate.setTimeInMillis(dayEndTime);
 
+		previousFromDate.add(Calendar.MONTH, -1); //assuming billing cycle will be first day of month
+		previousToDate.add(Calendar.MONTH, -1); 
+		int max = previousToDate.getActualMaximum(Calendar.DAY_OF_MONTH);
+		previousToDate.set(Calendar.DAY_OF_MONTH, max);
+		
 		String assessmentYear = estimationService.getAssessmentYear();
 		ArrayList<String> failedConnectionNos = new ArrayList<String>();
 		for (String connectionNo : connectionNos) {
 			CalculationCriteria calculationCriteria = CalculationCriteria.builder().tenantId(tenantId)
-					.assessmentYear(assessmentYear).connectionNo(connectionNo).build();
+					.assessmentYear(assessmentYear).connectionNo(connectionNo).from(dayStartTime).to(dayEndTime).build();
 			List<CalculationCriteria> calculationCriteriaList = new ArrayList<>();
 			calculationCriteriaList.add(calculationCriteria);
 			CalculationReq calculationReq = CalculationReq.builder().calculationCriteria(calculationCriteriaList)
 					.requestInfo(requestInfo).isconnectionCalculation(true).build();
+
+			Map<String, Object> masterMap = mDataService.loadMasterData(calculationReq.getRequestInfo(),
+					calculationReq.getCalculationCriteria().get(0).getTenantId());
+			Set<String> consumerCodes = new LinkedHashSet<String>();
+			consumerCodes.add(connectionNo);
+
+			if (!waterCalculatorDao.isDemandExists(tenantId, previousFromDate.getTimeInMillis(), previousToDate.getTimeInMillis(), consumerCodes)) {
+				log.warn("this connection doen't have the demand in previous billing cycle :" + connectionNo );
+				continue;
+			}
+			
+			/*
+			 * List<Demand> demands = demandService.searchDemand(tenantId, consumerCodes,
+			 * previousFromDate.getTimeInMillis(), previousToDate.getTimeInMillis(),
+			 * requestInfo); if (demands != null && demands.size() == 0) {
+			 * log.warn("this connection doen't have the demand in previous billing cycle :"
+			 * + connectionNo ); continue; }
+			 */
 			try {
-				generateDemandInBatch(calculationReq, master, billingCycle, isSendMessage);
+				generateDemandInBatch(calculationReq, masterMap, billingCycle, isSendMessage);
 
 			} catch (Exception e) {
 				System.out.println("Got the exception while genating the demands:" + connectionNo);
@@ -479,19 +516,19 @@ public class DemandGenerationConsumer {
 			"${egov.generate.bulk.demand.manually.topic}" }, containerFactory = "kafkaListenerContainerFactory")
 	public void generateBulkDemandForULB(HashMap<Object, Object> messageData) {
 		log.info("Billing master data values for non metered connection:: {}", messageData);
-		Map<String, Object> master;
+		Map<String, Object> billingMasterData;
 		BulkDemand bulkDemand;
 		boolean isSendMessage = false;
 		boolean isManual = true;
 		HashMap<Object, Object> demandData = (HashMap<Object, Object>) messageData;
-		master = (Map<String, Object>) demandData.get("billingMasterData");
+		billingMasterData = (Map<String, Object>) demandData.get("billingMasterData");
 		bulkDemand = mapper.convertValue(demandData.get("bulkDemand"), BulkDemand.class);
 
 		String billingPeriod = bulkDemand.getBillingPeriod();
 		if (StringUtils.isEmpty(billingPeriod))
 			throw new CustomException("BILLING_PERIOD_PARSING_ISSUE", "Billing Period can not be empty!!");
 
-		SendNotificationsToUsers(bulkDemand.getRequestInfo(), bulkDemand.getTenantId(), billingPeriod, master,
+		generateDemandAndSendnotification(bulkDemand.getRequestInfo(), bulkDemand.getTenantId(), billingPeriod, billingMasterData,
 				isSendMessage, isManual);
 		
 	}

@@ -6,14 +6,14 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.egov.wscalculation.repository.builder.WSCalculatorQueryBuilder;
-import org.egov.wscalculation.web.models.MeterConnectionRequest;
-import org.egov.wscalculation.web.models.MeterReading;
-import org.egov.wscalculation.web.models.MeterReadingSearchCriteria;
 import org.egov.wscalculation.producer.WSCalculationProducer;
+import org.egov.wscalculation.repository.builder.WSCalculatorQueryBuilder;
 import org.egov.wscalculation.repository.rowmapper.DemandSchedulerRowMapper;
 import org.egov.wscalculation.repository.rowmapper.MeterReadingCurrentReadingRowMapper;
 import org.egov.wscalculation.repository.rowmapper.MeterReadingRowMapper;
+import org.egov.wscalculation.web.models.MeterConnectionRequest;
+import org.egov.wscalculation.web.models.MeterReading;
+import org.egov.wscalculation.web.models.MeterReadingSearchCriteria;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -155,9 +155,16 @@ public class WSCalculationDaoImpl implements WSCalculationDao {
 		return jdbcTemplate.queryForObject(query, preparedStatement.toArray(), Integer.class);
 	}
 
-	public Boolean isDemandExists(String tenantId, Long bilingDate, Set<String> connectionNos) {
+	public Boolean isDemandExists(String tenantId, Long startDate,  Long endTime, Set<String> connectionNos) {
 		List<Object> preparedStmtList = new ArrayList<>();
-		String query = queryBuilder.previousBillingCycleDemandQuery(connectionNos, tenantId, bilingDate,
+		String query = queryBuilder.previousBillingCycleDemandQuery(connectionNos, tenantId, startDate, endTime,
+				preparedStmtList);
+		Integer count = jdbcTemplate.queryForObject(query, preparedStmtList.toArray(), Integer.class);
+		return count > 0;
+	}
+	public Boolean isConnectionExists(String tenantId, Long startDate,  Long endTime, Set<String> connectionNos) {
+		List<Object> preparedStmtList = new ArrayList<>();
+		String query = queryBuilder.previousBillingCycleConnectionQuery(connectionNos, tenantId, startDate, endTime,
 				preparedStmtList);
 		Integer count = jdbcTemplate.queryForObject(query, preparedStmtList.toArray(), Integer.class);
 		return count > 0;

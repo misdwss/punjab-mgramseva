@@ -326,7 +326,8 @@ class _ConnectionPaymentViewState extends State<ConnectionPaymentView> {
                           child: _buildDemandDetails(
                               bill, bill.billDetails![index])),
                       TableCell(
-                          child: Text('₹ ${bill.billDetails![index].amount}'))
+                          child: Text('₹ ${bill.billDetails![index].amount}',
+                          textAlign: TextAlign.center,))
                     ]);
                   }
                 }).toList()));
