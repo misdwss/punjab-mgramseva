@@ -5,6 +5,7 @@ import 'package:mgramseva/providers/authentication.dart';
 import 'package:mgramseva/routers/Routers.dart';
 import 'package:mgramseva/utils/Constants/I18KeyConstants.dart';
 import 'package:mgramseva/utils/Locilization/application_localizations.dart';
+import 'package:mgramseva/utils/TestingKeys/testing_keys.dart';
 import 'package:mgramseva/utils/validators/Validators.dart';
 import 'package:mgramseva/widgets/Button.dart';
 import 'package:mgramseva/widgets/DesktopView.dart';
@@ -94,6 +95,7 @@ class _LoginState extends State<Login> {
                   maxLength: 10,
                   validator: Validators.mobileNumberValidator,
                   textInputType: TextInputType.phone,
+                  key: Keys.login.LOGIN_PHONE_NUMBER_KEY,
                 ),
                 BuildTextField(
                   i18.login.LOGIN_PASSWORD,
@@ -102,6 +104,7 @@ class _LoginState extends State<Login> {
                   obscureText: !passwordVisible,
                   suffixIcon: buildPasswordVisibility(),
                   maxLines: 1,
+                  key: Keys.login.LOGIN_PASSWORD_KEY,
                 ),
                 GestureDetector(
                   onTap: () =>
@@ -114,6 +117,7 @@ class _LoginState extends State<Login> {
                           child: Text(
                             ApplicationLocalizations.of(context)
                                 .translate(i18.login.FORGOT_PASSWORD),
+                            key: Keys.forgotPassword.FORGOT_PASSWORD_BUTTON,
                             style: TextStyle(
                                 color: Theme.of(context).primaryColor),
                           ))),
@@ -121,7 +125,8 @@ class _LoginState extends State<Login> {
                 Padding(
                     padding: EdgeInsets.only(top: 15, bottom: 15, left: 8, right: 8),
                     child: Button(
-                        i18.common.CONTINUE, buttonStatus ? () => saveandLogin(context) : null)),
+                        i18.common.CONTINUE, buttonStatus ? () => saveandLogin(context) : null),
+                  key: Keys.login.LOGIN_BTN_KEY,),
                 SizedBox(
                   height: 10,
                 )
