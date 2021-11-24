@@ -49,13 +49,14 @@ void main() {
       final findDateTextField = find.widgetWithText(TextField, DateFormats.getFilteredDate(
           DateTime.now().toLocal().toString(),
           dateFormat: "dd/MM/yyyy") );
-      final findOKButtonInDate = find.text('OK');
+      final findOKButtonInDate = find.text(ApplicationLocalizations.of(navigatorKey.currentContext!).
+      translate('OK'));
       await tester.ensureVisible(findDatePicker);
       await tester.tap(findDatePicker);
       await tester.pumpAndSettle(Duration(milliseconds: 3000));
       await tester.tap(findEditDateIcon);
       await tester.pumpAndSettle(Duration(milliseconds: 3000));
-      await tester.enterText(findDateTextField, '12/11/2021');
+      await tester.enterText(findDateTextField, addExpenseTestData['expenseBillDate']);
       await tester.pumpAndSettle(Duration(milliseconds: 3000));
       await tester.tap(findOKButtonInDate);
       await tester.pumpAndSettle(Duration(milliseconds: 3000));

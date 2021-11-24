@@ -4,7 +4,7 @@ Map<String, dynamic> getTestData() {
     'forgotPasswordMobileNumber': '9686151676',
 
     ///*********** Language Selection and Login Inputs ****************
-    'selectLanguage': '2',  //For Punjabi - 0, Hindi- 1 , English - 2
+    'selectLanguage': 2,  //For Punjabi - 0, Hindi- 1 , English - 2
     'loginPhoneNumber' : '9686151676',
     'loginPassword' : 'eGov@123',
 
@@ -64,6 +64,7 @@ Map<String, dynamic> getTestData() {
 
     ///*******Expense Inputs ********
     'addExpenseType' : 'ELECTRICITY_BILL',
+    'expenseBillDate' : '12/11/2021',
     'searchExpenseType' : 'OM',
     'expenseVendorName' : 'hara',
     'expenseVendorPhoneNum' : '9949210191',
