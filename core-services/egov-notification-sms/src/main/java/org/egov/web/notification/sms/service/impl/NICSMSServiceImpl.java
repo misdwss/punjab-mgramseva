@@ -126,11 +126,13 @@ public class NICSMSServiceImpl extends BaseSMSService {
         	
         	String smsBody = sms.getMessage();
                 	
-        	String templateId = smsBody.split("#")[1];
-        	
-        	sms.setTemplateId(templateId);
-        	
-        	smsBody = smsBody.split("#")[0];
+        	if(smsBody.split("#").length > 1) {
+        		String templateId = smsBody.split("#")[1];
+            	
+            	sms.setTemplateId(templateId);
+            	smsBody = smsBody.split("#")[0];
+        	}
+      
         	String message= "" + smsBody + smsProperties.getSmsMsgAppend();
         	if(textIsInEnglish(message)) {
 				message=URLEncoder.encode(message,"UTF-8");
