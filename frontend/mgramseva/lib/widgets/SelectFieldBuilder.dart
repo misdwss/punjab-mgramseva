@@ -29,7 +29,8 @@ class SelectFieldBuilder extends StatelessWidget {
       this.readOnly,
       this.requiredMessage,
       this.contextkey,
-      this.controller, this.key});
+      this.controller,
+      this.key});
 
   var suggestionCtrl = new SuggestionsBoxController();
   @override

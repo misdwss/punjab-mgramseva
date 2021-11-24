@@ -177,7 +177,7 @@ class HouseholdRegisterProvider with ChangeNotifier {
     return List.generate(
         list.length,
             (index) =>
-        '${ApplicationLocalizations.of(context).translate(list[index])} (${getCollectionsCount(index)})');
+            '${ApplicationLocalizations.of(context).translate(list[index])} (${getCollectionsCount(index)})');
   }
 
   bool isTabSelected(int index){

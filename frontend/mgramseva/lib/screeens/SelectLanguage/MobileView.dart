@@ -77,27 +77,27 @@ class LanguageSelectMobileView extends StatelessWidget {
                                             border: Border(
                                                 left: BorderSide(width: 1.0))),
                                         child: Text('${language.label}')),
-                                  ],
-                                )
-                            ])),
-                    Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: [
-                              for (var language in stateInfo.languages ?? [])
-                                LanguageCard(
-                                    language, stateInfo.languages ?? [], 85, 10, 10)
-                            ])),
-                    Padding(
-                        padding: EdgeInsets.all(15),
-                        child: Consumer<LanguageProvider>(
-                          builder: (_, languageProvider, child) => Button(
-                            i18.common.CONTINUE,
-                                () => Navigator.pushNamed(context, Routes.LOGIN),
-                            key: Keys.language.LANGUAGE_PAGE_CONTINUE_BTN,),
-                        ))
-                  ])))))),
+                              ],
+                            )
+                        ])),
+                Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          for (var language in stateInfo.languages ?? [])
+                            LanguageCard(
+                                language, stateInfo.languages ?? [], 85, 10, 10)
+                        ])),
+                Padding(
+                    padding: EdgeInsets.all(15),
+                    child: Consumer<LanguageProvider>(
+                      builder: (_, languageProvider, child) => Button(
+                          i18.common.CONTINUE,
+                          () => Navigator.pushNamed(context, Routes.LOGIN),
+                      key: Keys.language.LANGUAGE_PAGE_CONTINUE_BTN,),
+                    ))
+              ])))))),
       (new Positioned(
           bottom: 0.0,
           left: MediaQuery.of(context).size.width / 4,

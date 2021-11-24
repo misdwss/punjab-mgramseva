@@ -5,6 +5,7 @@ import 'package:mgramseva/providers/common_provider.dart';
 import 'package:mgramseva/providers/changePassword_details_provider.dart';
 import 'package:mgramseva/utils/Constants/I18KeyConstants.dart';
 import 'package:mgramseva/utils/Locilization/application_localizations.dart';
+import 'package:mgramseva/utils/TestingKeys/testing_keys.dart';
 import 'package:mgramseva/utils/validators/Validators.dart';
 import 'package:mgramseva/widgets/BaseAppBar.dart';
 import 'package:mgramseva/widgets/BottonButtonBar.dart';
@@ -86,6 +87,7 @@ class _ChangePasswordState extends State<ChangePassword> {
                     isRequired: true,
                     maxLines: 1,
                     onChange: (value) => saveInput(value),
+                    key: Keys.changePassword.CURRENT_PASSWORD_KEY,
                   ),
                   BuildTextField(
                     i18.password.NEW_PASSWORD,
@@ -96,6 +98,7 @@ class _ChangePasswordState extends State<ChangePassword> {
                     validator: (val) => Validators.passwordComparision(
                         val, ApplicationLocalizations.of(context).translate(i18.password.NEW_PASSWORD_ENTER)),
                     onChange: (value) => saveInput(value),
+                    key: Keys.changePassword.NEW_PASSWORD_KEY,
                   ),
                   BuildTextField(
                     i18.password.CONFIRM_PASSWORD,
@@ -108,6 +111,7 @@ class _ChangePasswordState extends State<ChangePassword> {
                         ApplicationLocalizations.of(context).translate(i18.password.CONFIRM_PASSWORD_ENTER),
                         passwordDetails.newpasswordCtrl.text),
                     onChange: (value) => saveInput(value),
+                    key: Keys.changePassword.CONFIRM_PASSWORD_KEY,
                   ),
                   SizedBox(
                     height: 20,
@@ -152,6 +156,7 @@ class _ChangePasswordState extends State<ChangePassword> {
             () => saveInputandchangepass(
                 context,
                 changePasswordProvider.changePasswordDetails.getText(),
-                changePasswordProvider.changePasswordDetails))));
+                changePasswordProvider.changePasswordDetails),
+        key: Keys.changePassword.CHANGE_PASSWORD_BTN_KEY,)));
   }
 }

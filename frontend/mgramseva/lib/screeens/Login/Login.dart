@@ -117,14 +117,15 @@ class _LoginState extends State<Login> {
                           child: Text(
                             ApplicationLocalizations.of(context)
                                 .translate(i18.login.FORGOT_PASSWORD),
+                            key: Keys.forgotPassword.FORGOT_PASSWORD_BUTTON,
                             style: TextStyle(
                                 color: Theme.of(context).primaryColor),
                           ))),
                 ),
                 Padding(
-                  padding: EdgeInsets.only(top: 15, bottom: 15, left: 8, right: 8),
-                  child: Button(
-                      i18.common.CONTINUE, buttonStatus ? () => saveandLogin(context) : null),
+                    padding: EdgeInsets.only(top: 15, bottom: 15, left: 8, right: 8),
+                    child: Button(
+                        i18.common.CONTINUE, buttonStatus ? () => saveandLogin(context) : null),
                   key: Keys.login.LOGIN_BTN_KEY,),
                 SizedBox(
                   height: 10,

@@ -38,13 +38,17 @@ Events _$EventsFromJson(Map<String, dynamic> json) {
     ..actions = json['actions'] == null
         ? null
         : Actions.fromJson(json['actions'] as Map<String, dynamic>)
-    ..eventDetails = json['eventDetails'] as String?
+    ..eventDetails = json['eventDetails'] as dynamic?
     ..auditDetails = json['auditDetails'] == null
         ? null
         : AuditDetails.fromJson(json['auditDetails'] as Map<String, dynamic>)
     ..recepientEventMap = json['recepientEventMap'] as String?
     ..generateCounterEvent = json['generateCounterEvent'] as String?
-    ..internallyUpdted = json['internallyUpdted'] as String?;
+    ..internallyUpdted = json['internallyUpdted'] as bool?
+    ..additionalDetails = json['additionalDetails'] == null
+        ? null
+        : AdditionalDetails.fromJson(
+            json['additionalDetails'] as Map<String, dynamic>);
 }
 
 Map<String, dynamic> _$EventsToJson(Events instance) => <String, dynamic>{
@@ -65,6 +69,7 @@ Map<String, dynamic> _$EventsToJson(Events instance) => <String, dynamic>{
       'recepientEventMap': instance.recepientEventMap,
       'generateCounterEvent': instance.generateCounterEvent,
       'internallyUpdted': instance.internallyUpdted,
+      'additionalDetails': instance.additionalDetails,
     };
 
 AuditDetails _$AuditDetailsFromJson(Map<String, dynamic> json) {
@@ -124,4 +129,17 @@ Recepient _$RecepientFromJson(Map<String, dynamic> json) {
 Map<String, dynamic> _$RecepientToJson(Recepient instance) => <String, dynamic>{
       'toRoles': instance.toRoles,
       'toUsers': instance.toUsers,
+    };
+
+AdditionalDetails _$AdditionalDetailsFromJson(Map<String, dynamic> json) {
+  return AdditionalDetails(
+    attributes: json['attributes'],
+    localizationCode: json['localizationCode'] as String?,
+  );
+}
+
+Map<String, dynamic> _$AdditionalDetailsToJson(AdditionalDetails instance) =>
+    <String, dynamic>{
+      'attributes': instance.attributes,
+      'localizationCode': instance.localizationCode,
     };

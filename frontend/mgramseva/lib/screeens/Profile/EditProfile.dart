@@ -7,6 +7,7 @@ import 'package:mgramseva/providers/user_edit_profile_provider.dart';
 import 'package:mgramseva/providers/user_profile_provider.dart';
 import 'package:mgramseva/utils/Constants/I18KeyConstants.dart';
 import 'package:mgramseva/utils/Locilization/application_localizations.dart';
+import 'package:mgramseva/utils/TestingKeys/testing_keys.dart';
 import 'package:mgramseva/utils/constants.dart';
 import 'package:mgramseva/utils/loaders.dart';
 import 'package:mgramseva/utils/validators/Validators.dart';
@@ -78,6 +79,7 @@ class _EditProfileState extends State<EditProfile> {
                     inputFormatter: [
                       FilteringTextInputFormatter.allow(RegExp("[a-zA-Z ]"))
                     ],
+                    key: Keys.editProfile.EDIT_PROFILE_NAME_KEY,
                   ),
                   BuildTextField(
                     i18.common.PHONE_NUMBER,
@@ -115,6 +117,7 @@ class _EditProfileState extends State<EditProfile> {
                         .translate(i18.profileEdit.INVALID_EMAIL_FORMAT),
                     pattern:
                         r'^$|^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$',
+                    key: Keys.editProfile.EDIT_PROFILE_E_MAIL_KEY,
                   ),
                   SizedBox(
                     height: 20,
@@ -174,6 +177,7 @@ class _EditProfileState extends State<EditProfile> {
         i18.common.SAVE,
             () => saveInputandedit(
             context, userProvider.profileDetails.getText(), userProvider.profileDetails),
+        key: Keys.editProfile.EDIT_PROFILE_SAVE_BTN_KEY,
       ),
     ));
   }

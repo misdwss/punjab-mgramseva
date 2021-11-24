@@ -9,6 +9,7 @@ import 'package:mgramseva/providers/consumer_details_provider.dart';
 import 'package:mgramseva/screeens/ConsumerDetails/ConsumerDetailsWalkThrough/WalkFlowContainer.dart';
 import 'package:mgramseva/screeens/ConsumerDetails/ConsumerDetailsWalkThrough/walkthrough.dart';
 import 'package:mgramseva/screeens/GenerateBill/widgets/MeterReading.dart';
+import 'package:mgramseva/utils/TestingKeys/testing_keys.dart';
 import 'package:mgramseva/utils/validators/Validators.dart';
 import 'package:mgramseva/widgets/customAppbar.dart';
 import 'package:mgramseva/utils/Constants/I18KeyConstants.dart';
@@ -199,6 +200,7 @@ class _ConsumerDetailsState extends State<ConsumerDetails> {
                             isRequired: true,
                             contextkey:
                                 consumerProvider.consmerWalkthrougList[0].key,
+                            key: Keys.createConsumer.CONSUMER_NAME_KEY,
                           ),
 
                           RadioButtonFieldBuilder(
@@ -225,6 +227,7 @@ class _ConsumerDetailsState extends State<ConsumerDetails> {
                             ],
                             contextkey:
                                 consumerProvider.consmerWalkthrougList[2].key,
+                            key: Keys.createConsumer.CONSUMER_SPOUSE_PARENT_KEY,
                           ),
 
                           //Consumer Phone Number Field
@@ -247,6 +250,7 @@ class _ConsumerDetailsState extends State<ConsumerDetails> {
                             ],
                             contextkey:
                                 consumerProvider.consmerWalkthrougList[3].key,
+                            key: Keys.createConsumer.CONSUMER_PHONE_NUMBER_KEY,
                           ),
 
                           //Consumer Old Connection Field
@@ -258,6 +262,7 @@ class _ConsumerDetailsState extends State<ConsumerDetails> {
                                   .waterconnection.OldConnectionCtrl,
                               contextkey:
                                   consumerProvider.consmerWalkthrougList[4].key,
+                                  key: Keys.createConsumer.CONSUMER_OLD_ID_KEY,
                             ),
                           ),
                           Consumer<ConsumerProvider>(
@@ -274,7 +279,8 @@ class _ConsumerDetailsState extends State<ConsumerDetails> {
                                     // contextkey: consumerProvider
                                     //     .consmerWalkthrougList[6].key,
                                     controller: consumerProvider
-                                        .waterconnection.categoryCtrl),
+                                        .waterconnection.categoryCtrl,
+                                key: Keys.createConsumer.CONSUMER_CATEORY_KEY,),
                           ),
 
                           Consumer<ConsumerProvider>(
@@ -291,7 +297,8 @@ class _ConsumerDetailsState extends State<ConsumerDetails> {
                                     // contextkey: consumerProvider
                                     //     .consmerWalkthrougList[6].key,
                                     controller: consumerProvider
-                                        .waterconnection.subCategoryCtrl),
+                                        .waterconnection.subCategoryCtrl,
+                                key: Keys.createConsumer.CONSUMER_SUB_CATEORY_KEY),
                           ),
                           //Consumer Door Number Field
                           BuildTextField(
@@ -341,7 +348,8 @@ class _ConsumerDetailsState extends State<ConsumerDetails> {
                                     true,
                                     contextkey: consumerProvider
                                         .consmerWalkthrougList[6].key,
-                                    controller: property.address.propertyCtrl),
+                                    controller: property.address.propertyCtrl,
+                                key: Keys.createConsumer.CONSUMER_PROPERTY_KEY,),
                           ),
                           //Consumer Service Type Field
                           Consumer<ConsumerProvider>(
@@ -366,6 +374,7 @@ class _ConsumerDetailsState extends State<ConsumerDetails> {
                                                 false ||
                                             consumerProvider.isfirstdemand ==
                                                 false,
+                                        key: Keys.createConsumer.CONSUMER_SERVICE_KEY,
                                       ),
 
                                       //Consumer Service Type Field),
@@ -391,7 +400,8 @@ class _ConsumerDetailsState extends State<ConsumerDetails> {
                                                             DateTime.now(),
                                                         onChangeOfDate:
                                                             consumerProvider
-                                                                .onChangeOfDate)
+                                                                .onChangeOfDate,
+                                                key: Keys.createConsumer.CONSUMER_PREVIOUS_READING_DATE_KEY,)
                                                     : Text(""),
                                                 BuildTextField(
                                                   i18.consumer.METER_NUMBER,
@@ -404,6 +414,7 @@ class _ConsumerDetailsState extends State<ConsumerDetails> {
                                                         .allow(RegExp(
                                                             "[a-zA-Z0-9]"))
                                                   ],
+                                                  key: Keys.createConsumer.CONSUMER_METER_NUMBER_KEY,
                                                 ),
                                                 consumerProvider.isEdit ==
                                                             false ||
@@ -460,6 +471,7 @@ class _ConsumerDetailsState extends State<ConsumerDetails> {
                                                           controller: consumerProvider
                                                               .waterconnection
                                                               .BillingCycleCtrl,
+                                                    key: Keys.createConsumer.CONSUMER_LAST_BILLED_CYCLE,
                                                         )
                                                       : Text("")),
                                     ],
@@ -474,7 +486,8 @@ class _ConsumerDetailsState extends State<ConsumerDetails> {
                                         RegExp("[0-9.]"))
                                   ],
                                   contextkey: consumerProvider
-                                      .consmerWalkthrougList[8].key)
+                                      .consmerWalkthrougList[8].key,
+                          key: Keys.createConsumer.CONSUMER_ARREARS_KEY,)
                               : Text(""),
                           if (consumerProvider.isEdit)
                             Container(
@@ -552,7 +565,8 @@ class _ConsumerDetailsState extends State<ConsumerDetails> {
                     Footer(),
       ]))),
           bottomNavigationBar: BottomButtonBar(i18.common.SUBMIT,
-          () => {userProvider.validateConsumerDetails(context)}),
+          () => {userProvider.validateConsumerDetails(context)},
+          key: Keys.createConsumer.CREATE_CONSUMER_BTN_KEY,),
     ));
   }
 }

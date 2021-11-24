@@ -70,7 +70,7 @@ public class WsQueryBuilder {
 
 	public static final String COLLECTION_DATA_COUNT = "SELECT (select sum(dd.taxamount) - sum(dd.collectionamount) as pendingamount from egbs_demand_v1 d join egbs_demanddetail_v1 dd on d.id = dd.demandid group by d.consumercode, d.status having d.status = 'ACTIVE' and d.consumercode = conn.connectionno ) as pendingamount FROM eg_ws_connection conn INNER JOIN eg_ws_service wc ON wc.connection_id = conn.id";
 
-	public static final String PENDINGCOLLECTION = "SELECT SUM(DMDL.TAXAMOUNT - DMDL.COLLECTIONAMOUNT) FROM EGBS_DEMAND_V1 DMD INNER JOIN EGBS_DEMANDDETAIL_V1 DMDL ON DMD.ID=DMDL.DEMANDID AND DMD.TENANTID=DMDL.TENANTID WHERE DMD.BUSINESSSERVICE = 'WS' ";
+	public static final String PENDINGCOLLECTION = "SELECT SUM(DMDL.TAXAMOUNT - DMDL.COLLECTIONAMOUNT) FROM EGBS_DEMAND_V1 DMD INNER JOIN EGBS_DEMANDDETAIL_V1 DMDL ON DMD.ID=DMDL.DEMANDID AND DMD.TENANTID=DMDL.TENANTID WHERE DMD.BUSINESSSERVICE = 'WS' and DMD.status = 'ACTIVE' ";
 
 	private static final String TENANTIDS = "SELECT distinct(tenantid) FROM eg_ws_connection conn";
 
@@ -80,7 +80,7 @@ public class WsQueryBuilder {
 
 	public static final String PREVIOUSDAYONLINECOLLECTION = "select  count(*), sum(totalamountpaid) from egcl_payment where paymentmode='ONLINE' ";
 
-	public static final String NEWDEMAND = "select sum(dmdl.taxamount) FROM egbs_demand_v1 dmd INNER JOIN egbs_demanddetail_v1 dmdl ON dmd.id=dmdl.demandid AND dmd.tenantid=dmdl.tenantid WHERE dmd.businessservice='WS' ";
+	public static final String NEWDEMAND = "select sum(dmdl.taxamount) FROM egbs_demand_v1 dmd INNER JOIN egbs_demanddetail_v1 dmdl ON dmd.id=dmdl.demandid AND dmd.tenantid=dmdl.tenantid WHERE dmd.businessservice='WS' and dmd.status = 'ACTIVE' ";
 
 	public static final String ACTUALCOLLECTION = " select sum(py.totalAmountPaid) FROM egcl_payment py INNER JOIN egcl_paymentdetail pyd ON pyd.paymentid = py.id where pyd.businessservice='WS' ";
 

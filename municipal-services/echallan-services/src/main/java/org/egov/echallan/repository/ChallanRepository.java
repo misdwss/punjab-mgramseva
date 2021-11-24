@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.io.ObjectInputStream.GetField;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,6 +21,7 @@ import org.egov.echallan.producer.Producer;
 import org.egov.echallan.repository.builder.ChallanQueryBuilder;
 import org.egov.echallan.repository.rowmapper.ChallanRowMapper;
 import org.egov.echallan.service.ChallanService;
+import org.egov.echallan.util.CommonUtils;
 import org.egov.echallan.web.models.collection.Bill;
 import org.egov.echallan.web.models.collection.PaymentDetail;
 import org.egov.echallan.web.models.collection.PaymentRequest;
@@ -51,6 +53,9 @@ public class ChallanRepository {
     private ChallanRowMapper rowMapper;
     
     private RestTemplate restTemplate;
+    
+    @Autowired
+    private CommonUtils util;
 
     @Value("${egov.filestore.host}")
     private String fileStoreHost;
@@ -222,39 +227,46 @@ public class ChallanRepository {
 	
 	public Integer getPreviousMonthNewExpense(String tenantId, Long startDate, Long endDate) {
 		StringBuilder query = new StringBuilder(queryBuilder.PREVIOUSMONTHNEWEXPENSE);
-		query.append("  WHERE  CHALLAN.BILLISSUEDDATE BETWEEN ").append(startDate).append(" and  ")
+		query.append("  and demand.taxperiodto BETWEEN ").append(startDate).append(" and  ")
 				.append(endDate).append(" and CHALLAN.TENANTID = '").append(tenantId).append("'");
 		return jdbcTemplate.queryForObject(query.toString(), Integer.class);
 	}
 
-	public Integer getCumulativePendingExpense(String tenantId) {
+	public Integer getCumulativePendingExpense(String tenantId, Long endDate) {
 		StringBuilder query = new StringBuilder(queryBuilder.CUMULATIVEPENDINGEXPENSE);
+		Calendar startDate = Calendar.getInstance();
+		startDate.setTimeInMillis(endDate);
+		startDate.set(Calendar.MONTH,3);
+		startDate.set(Calendar.DAY_OF_MONTH, startDate.getActualMinimum(Calendar.DAY_OF_MONTH));
+		util.setTimeToBeginningOfDay(startDate);
+		query.append(" and DEMAND.taxperiodto between " + startDate.getTimeInMillis() +" and "+ endDate );
 		query.append(" and challan.tenantId = '").append(tenantId).append("'");
+		System.out.println("Query in Challan for pending collection: " + query.toString());
 		return jdbcTemplate.queryForObject(query.toString(), Integer.class);
 	}
 
-	public Integer getTotalExpense(@Valid SearchCriteria criteria) {
+	public Long getTotalExpense(@Valid SearchCriteria criteria) {
 		StringBuilder query = new StringBuilder(queryBuilder.NEWEXPDEMAND);
 		query.append(" and dmd.taxperiodto between " + criteria.getFromDate() + " and " + criteria.getToDate())
 				.append(" and dmd.tenantId = '").append(criteria.getTenantId()).append("'");
-		return jdbcTemplate.queryForObject(query.toString(), Integer.class);
+		return jdbcTemplate.queryForObject(query.toString(), Long.class);
 	}
 
-	public Integer getPaidAmountDetails(@Valid SearchCriteria criteria) {
+	public Long getPaidAmountDetails(@Valid SearchCriteria criteria) {
 		StringBuilder query = new StringBuilder(queryBuilder.ACTUALEXPCOLLECTION);
 		query.append(" and py.transactionDate  >= ").append(criteria.getFromDate())
 				.append(" and py.transactionDate <= ").append(criteria.getToDate()).append(" and py.tenantId = '")
 				.append(criteria.getTenantId()).append("'");
-		return jdbcTemplate.queryForObject(query.toString(), Integer.class);
+		return jdbcTemplate.queryForObject(query.toString(), Long.class);
 
 	}
 
-	public Integer getPendingAmount(@Valid SearchCriteria criteria) {
+	public Long getPendingAmount(@Valid SearchCriteria criteria) {
 		StringBuilder query = new StringBuilder(queryBuilder.PENDINGEXPCOLL);
 		query.append(" and dmd.taxperiodto between " + criteria.getFromDate() + " and " + criteria.getToDate())
 				.append(" and dmd.tenantId = '").append(criteria.getTenantId()).append("'");
 		log.info("Active pending collection query : " + query);
-		return jdbcTemplate.queryForObject(query.toString(), Integer.class);
+		return jdbcTemplate.queryForObject(query.toString(), Long.class);
 	}
     
 }
