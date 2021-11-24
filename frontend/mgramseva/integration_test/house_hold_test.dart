@@ -9,6 +9,7 @@ import 'package:mgramseva/utils/date_formats.dart';
 import 'package:mgramseva/utils/global_variables.dart';
 import 'package:mgramseva/utils/Constants/I18KeyConstants.dart';
 import 'package:mgramseva/utils/models.dart';
+import 'package:mgramseva/widgets/HomeBack.dart';
 import 'package:mgramseva/widgets/tab_button.dart';
 
 import 'Test Inputs/test_inputs.dart';
@@ -27,6 +28,7 @@ void main() {
     final tab = find.byKey(Keys.dashboard.SECOND_TAB);
     final tab2 = find.byKey(Keys.dashboard.THIRD_TAB);
     final share = find.byKey(Keys.common.SHARE);
+
 
     /// household tab selection
     await tester.pumpAndSettle(Duration(milliseconds: 500));
@@ -59,9 +61,13 @@ void main() {
     await tester.tap(downloadButton);
     await tester.pumpAndSettle(Duration(milliseconds: 2000));
 
+    await tester.tap(tab2);
+    await tester.pumpAndSettle(Duration(milliseconds: 5000));
+
     await tester.ensureVisible(share);
+    await tester.pumpAndSettle(Duration(milliseconds: 3000));
     await tester.tap(share);
-    await tester.pumpAndSettle(Duration(milliseconds: 12000));
+    await tester.pumpAndSettle(Duration(milliseconds: 3000));
 
   });
 }
