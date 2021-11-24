@@ -8,6 +8,7 @@ import 'package:mgramseva/utils/TestingKeys/testing_keys.dart';
 import 'package:mgramseva/widgets/LanguageCard.dart';
 // import 'search_Connection_test.dart' as search_Connection;
 // import 'create_consumer_test.dart' as create_consumer;
+import 'Test Inputs/test_inputs.dart';
 import 'update_expense.dart' as update_expense;
 import 'add_expense.dart' as add_expense;
 import 'dashboard_test.dart' as dashboard;
@@ -19,13 +20,15 @@ void main() {
     ///  Add the IntegrationTestWidgetsFlutterBinding and .ensureInitialized
     IntegrationTestWidgetsFlutterBinding.ensureInitialized();
     /// Create your test case
-    testWidgets("full app test", (tester) async {
+    testWidgets("Login test", (tester) async {
+
+      var loginTestData = getTestData();
       /// execute the app.main() function
       app.main();
       /// Wait until the app has settled
       await tester.pumpAndSettle(Duration(milliseconds: 1000));
 
-      ///Language Selection Testing starts
+      ///Language Selection Testing
       final selectLanguage = find.byType(LanguageCard).at(2);
       final selectLanButton = find.byKey(Keys.language.LANGUAGE_PAGE_CONTINUE_BTN);
       await tester.tap(selectLanguage);
@@ -33,14 +36,14 @@ void main() {
       await tester.tap(selectLanButton);
       await tester.pumpAndSettle(Duration(milliseconds: 3000));
 
-      /// Login Testing starts
+      /// Login Testing
       final phoneNumber = find.byKey(Keys.login.LOGIN_PHONE_NUMBER_KEY);
       final password = find.byKey(Keys.login.LOGIN_PASSWORD_KEY);
       final login = find.byKey(Keys.login.LOGIN_BTN_KEY);
-      await tester.enterText(phoneNumber, '9686151676');
+      await tester.enterText(phoneNumber, loginTestData['loginPhoneNumber']);
       await tester.pumpAndSettle(Duration(milliseconds: 3000));
       await tester.ensureVisible(password);
-      await tester.enterText(password, 'eGov@123');
+      await tester.enterText(password, loginTestData['loginPassword']);
       await tester.pumpAndSettle(Duration(milliseconds: 3000));
       await tester.ensureVisible(login);
       await tester.tap(login);

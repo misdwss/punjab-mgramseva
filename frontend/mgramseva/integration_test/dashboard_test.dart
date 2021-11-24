@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:integration_test/integration_test.dart';
 import 'package:mgramseva/main.dart' as app;
 import 'package:mgramseva/utils/Locilization/application_localizations.dart';
 import 'package:mgramseva/utils/TestingKeys/testing_keys.dart';
@@ -15,6 +14,7 @@ import 'Test Inputs/test_inputs.dart';
 void main() {
 
   testWidgets("dashboard app test", (tester) async {
+    var dashboardTestData = getTestData();
     app.main();
     await tester.pumpAndSettle(Duration(milliseconds: 2000));
     final dashboard = find.byType(GridTile).at(8);
@@ -65,22 +65,19 @@ void main() {
     await tester.tap(tab);
     await tester.pumpAndSettle(Duration(milliseconds: 3000));
 
-    final paginationArrow = find.byIcon(Icons.arrow_right);
-    await tester.tap(paginationArrow);
-    await tester.pumpAndSettle(Duration(milliseconds: 2000));
-
     final pagination = find.byKey(Keys.common.PAGINATION_DROPDOWN);
     await tester.pumpAndSettle(Duration(milliseconds: 1000));
     await tester.tap(pagination);
     await tester.pumpAndSettle(Duration(milliseconds: 3000));
     final pagingItem = find.byKey(Keys.common.PAGINATION_COUNT).first;
+    await tester.ensureVisible(pagingItem);
     await tester.pumpAndSettle(Duration(milliseconds: 1000));
     await tester.tap(pagingItem);
     await tester.pumpAndSettle(Duration(milliseconds: 5000));
 
     /// Searching items
     await tester.ensureVisible(dashboard_search);
-    await tester.enterText(dashboard_search, TestInputs.dashboard.DASHBOARD_SEARCH);
+    await tester.enterText(dashboard_search, dashboardTestData['dashboardSearch']);
     await tester.pumpAndSettle(Duration(milliseconds: 5000));
 
     // await tester.ensureVisible(share);
