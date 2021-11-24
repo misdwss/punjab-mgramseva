@@ -132,4 +132,4 @@ class Constants {
   static const ALL = 'ALL';
   static const PENDING = 'PENDING';
   static const PAID = 'PAID';
-
+}

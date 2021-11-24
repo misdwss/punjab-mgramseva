@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
 
-
-import 'package:flutter/material.dart';
-
 class Keys{
   static LanguagePageKeys language = const LanguagePageKeys();
   static ForgotPasswordKeys forgotPassword = const ForgotPasswordKeys();
@@ -65,7 +62,11 @@ class CreateConsumerKeys{
   Key get CONSUMER_SUB_CATEORY_KEY => Key("consumerSubCategory");
   Key get CONSUMER_PROPERTY_KEY => Key("consumerProperty");
   Key get CONSUMER_SERVICE_KEY => Key("consumerService");
+  Key get CONSUMER_LAST_BILLED_CYCLE => Key("consumerLastBilledCycle");
   Key get CONSUMER_PREVIOUS_READING_DATE_KEY => Key("consumerPreviousReadingDatePicker");
+  Key get CONSUMER_METER_NUMBER_KEY => Key("consumerMeterNumber");
+  Key get CONSUMER_ARREARS_KEY => Key("consumerArrears");
+  Key get CREATE_CONSUMER_BTN_KEY => Key("createConsumerBtn");
 }
 
 class ExpenseKeys {
@@ -107,13 +108,6 @@ class Common {
 class HouseholdKeys {
   const HouseholdKeys();
   Key get HOUSEHOLD_SEARCH => Key("household_search");
-
-=======
-  Key get CONSUMER_LAST_BILLED_CYCLE => Key("consumerLastBilledCycle");
-  Key get CONSUMER_PREVIOUS_READING_DATE_KEY => Key("consumerPreviousReadingDatePicker");
-  Key get CONSUMER_METER_NUMBER_KEY => Key("consumerMeterNumber");
-  Key get CONSUMER_ARREARS_KEY => Key("consumerArrears");
-  Key get CREATE_CONSUMER_BTN_KEY => Key("createConsumerBtn");
 }
 
 class SearchConnectionKeys {
