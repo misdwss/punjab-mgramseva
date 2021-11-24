@@ -26,7 +26,7 @@ void main() {
     IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
     ///Forgot Password Testing
-    //forgot_password.main();
+    forgot_password.main();
 
     ///Login Testing
     testWidgets("Login test", (tester) async {
@@ -61,39 +61,39 @@ void main() {
     });
 
     ///Edit Profile Testing
-    // edit_profile.main();
-    //
-    // ///Change Password Testing
-    // change_password.main();
-    //
-    // ///Search Connection Testing
-    // search_Connection.main();
-    //
-    // ///Create Consumer Testing
-    // create_consumer.main();
-    //
-    // ///Update Consumer Details Testing
-    // update_consumer.main();
-    //
-    // ///Generate Bulk Demand
-    // generate_bulk_demand.main();
-    //
-    // ///Generate Metered Bill
-    // generate_metered_bill.main();
-    //
-    // /// add expense Testing
-    // add_expense.main();
-    //
-    // ///Update expenses Testing
-    // update_expense.main();
+    edit_profile.main();
+
+    ///Change Password Testing
+    change_password.main();
+
+    ///Search Connection Testing
+    search_Connection.main();
+
+    ///Create Consumer Testing
+    create_consumer.main();
+
+    ///Update Consumer Details Testing
+    update_consumer.main();
+
+    ///Generate Bulk Demand
+    generate_bulk_demand.main();
+
+    ///Generate Metered Bill
+    generate_metered_bill.main();
+
+    /// add expense Testing
+    add_expense.main();
+
+    ///Update expenses Testing
+    update_expense.main();
 
     /// Dashboard Testing
     dashboard.main();
 
-    // /// House hold register
-    // houseHold.main();
-    //
-    // ///Log Out
-    // logout.main();
+    /// House hold register
+    houseHold.main();
+
+    ///Log Out
+    logout.main();
   });
 }
