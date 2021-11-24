@@ -77,7 +77,7 @@ public class WaterRepository {
 		startDate.set(Calendar.MONTH,3);
 		startDate.set(Calendar.DAY_OF_MONTH, startDate.getActualMinimum(Calendar.DAY_OF_MONTH));
 		util.setTimeToBeginningOfDay(startDate);
-		query.append(" and  dmd.taxperiodto between " + startDate +" and "+ endDate );
+		query.append(" and  dmd.taxperiodto between " +  startDate.getTimeInMillis() +" and "+ endDate );
 		query.append(" and dmd.tenantid = '").append(tenantId).append("'");
 		System.out.println("Query in WS for pending collection: " + query.toString());
 		return jdbcTemplate.queryForObject(query.toString(), Integer.class);

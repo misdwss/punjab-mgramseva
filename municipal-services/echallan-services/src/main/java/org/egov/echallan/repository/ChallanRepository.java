@@ -239,7 +239,7 @@ public class ChallanRepository {
 		startDate.set(Calendar.MONTH,3);
 		startDate.set(Calendar.DAY_OF_MONTH, startDate.getActualMinimum(Calendar.DAY_OF_MONTH));
 		util.setTimeToBeginningOfDay(startDate);
-		query.append(" and DEMAND.taxperiodto between " + startDate +" and "+ endDate );
+		query.append(" and DEMAND.taxperiodto between " + startDate.getTimeInMillis() +" and "+ endDate );
 		query.append(" and challan.tenantId = '").append(tenantId).append("'");
 		System.out.println("Query in Challan for pending collection: " + query.toString());
 		return jdbcTemplate.queryForObject(query.toString(), Integer.class);
