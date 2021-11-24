@@ -196,18 +196,10 @@ public class WsQueryBuilder {
 			preparedStatement.add(criteria.getOldConnectionNumber());
 		}
 
-		if (!StringUtils.isEmpty(criteria.getConnectionNumber()) || !CollectionUtils.isEmpty(criteria.getConnectionNumberSet())) {
+		if (!StringUtils.isEmpty(criteria.getConnectionNumber())) {
 			addClauseIfRequired(preparedStatement, query);
-			
-			if(!CollectionUtils.isEmpty(criteria.getConnectionNumberSet()) && criteria.getConnectionNumberSet().size() > 1 ){
-				query.append(" conn.connectionno in (").append(createQuery(criteria.getConnectionNumberSet())).append(" )");
-				addToPreparedStatement(preparedStatement, criteria.getConnectionNumberSet());
-			}else {
-				if(!StringUtils.isEmpty(criteria.getConnectionNumber())) {
-					query.append(" conn.connectionno ~*  ? ");
-					preparedStatement.add(criteria.getConnectionNumber());
-				}
-			}
+			query.append(" conn.connectionno ~*  ? ");
+			preparedStatement.add(criteria.getConnectionNumber());
 		}
 
 		if (!StringUtils.isEmpty(criteria.getStatus())) {
@@ -374,8 +366,19 @@ public class WsQueryBuilder {
 			finalQuery = PAGINATION_WRAPPER.replace("{}", query);
 		}
 		finalQuery = finalQuery.replace("{orderby}", string);
+		
 		finalQuery = finalQuery.replace("{holderSelectValues}",
-				"(select nullif(sum(payd.amountpaid),0) from egcl_paymentdetail payd join egcl_bill payspay on (payd.billid = payspay.id) where payd.businessservice = 'WS' and payspay.consumercode = conn.connectionno group by payspay.consumercode) as collectionamount, connectionholder.tenantid as holdertenantid, connectionholder.connectionid as holderapplicationId, userid, connectionholder.status as holderstatus, isprimaryholder, connectionholdertype, holdershippercentage, connectionholder.relationship as holderrelationship, connectionholder.createdby as holdercreatedby, connectionholder.createdtime as holdercreatedtime, connectionholder.lastmodifiedby as holderlastmodifiedby, connectionholder.lastmodifiedtime as holderlastmodifiedtime");
+				"(select nullif(sum(payd.amountpaid),0) from egcl_paymentdetail payd join egcl_bill payspay on (payd.billid = payspay.id) where payd.businessservice = 'WS' and payspay.consumercode = conn.connectionno" +" {fromToDateHolder} "+ "group by payspay.consumercode) as collectionamount, connectionholder.tenantid as holdertenantid, connectionholder.connectionid as holderapplicationId, userid, connectionholder.status as holderstatus, isprimaryholder, connectionholdertype, holdershippercentage, connectionholder.relationship as holderrelationship, connectionholder.createdby as holdercreatedby, connectionholder.createdtime as holdercreatedtime, connectionholder.lastmodifiedby as holderlastmodifiedby, connectionholder.lastmodifiedtime as holderlastmodifiedtime");
+		
+		if((criteria.getIsCollectionCount() != null && criteria.getIsCollectionCount())) {
+			finalQuery = finalQuery.replace("{fromToDateHolder}", " ");
+		}else {
+			if(criteria.getFromDate() != null && criteria.getToDate() != null) {
+				finalQuery = finalQuery.replace("{fromToDateHolder}", " and payd.receiptdate between "+criteria.getFromDate()+" AND "+criteria.getToDate()+" ");
+			}else {
+				finalQuery = finalQuery.replace("{fromToDateHolder}", " ");
+			}
+		}
 		finalQuery = finalQuery.replace("{pendingAmountValue}",
 				"(select sum(dd.taxamount) - sum(dd.collectionamount) as pendingamount from egbs_demand_v1 d join egbs_demanddetail_v1 dd on d.id = dd.demandid group by d.consumercode, d.status having d.status = 'ACTIVE' and d.consumercode = conn.connectionno ) as pendingamount");
 		if (criteria.getLimit() == null && criteria.getOffset() == null)

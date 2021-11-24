@@ -88,16 +88,6 @@ public class WaterDaoImpl implements WaterDao {
 		Boolean flag = null;
 		Set<String> consumerCodeSet = null;
 		
-		if(criteria.getFromDate() != null && criteria.getToDate() != null) {
-			StringBuilder demandDetailsQuery = new StringBuilder(wsQueryBuilder.DEMAND_DETAILS);
-			demandDetailsQuery.append(" and d.taxperiodto between " + criteria.getFromDate() + " AND " + criteria.getToDate());
-			List<String> consumerCodeList = jdbcTemplate.queryForList(demandDetailsQuery.toString(), String.class);
-			if(!CollectionUtils.isEmpty(consumerCodeList)) {
-				consumerCodeSet = consumerCodeList.stream().collect(Collectors.toSet());
-			}
-			criteria.setConnectionNumberSet(consumerCodeSet);
-		}
-		
 		String query = wsQueryBuilder.getSearchQueryString(criteria, preparedStatement, requestInfo);
 
 		if (query == null)

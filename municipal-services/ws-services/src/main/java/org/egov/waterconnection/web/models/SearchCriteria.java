@@ -116,8 +116,6 @@ public class SearchCriteria {
 	@JsonProperty("currentDate")
 	private Long currentDate;
 	
-	private Set<String> connectionNumberSet;
-
 	public enum SortOrder {
 	    ASC,
 	    DESC
