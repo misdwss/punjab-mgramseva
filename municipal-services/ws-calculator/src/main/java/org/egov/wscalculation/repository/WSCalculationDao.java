@@ -31,4 +31,6 @@ public interface WSCalculationDao {
 
 	List<String> getNonMeterConnectionsList(String tenantId, Long dayStartTime, Long dayEndTime);
 
+	Boolean isConnectionExists(String tenantId, Long startTime, Long endTime, Set<String> connectionNos);
+
 }

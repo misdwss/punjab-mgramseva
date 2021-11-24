@@ -205,12 +205,18 @@ public class WSCalculationValidator {
 		System.out.println("endTime to check the billing period::" + endTime);
 		
 		if (!wSCalculationDao.isDemandExists(tenantId, startTime, endTime, connectionNos)) {
+			if (!wSCalculationDao.isConnectionExists(tenantId, startTime, endTime, connectionNos)) {
 
-			Month month = Month.of(startCal.get(Calendar.MONTH) + 1);
-			Locale locale = Locale.getDefault();
-			throw new CustomException("NO_DEMAND_PREVIOUS_BILLING_CYCLE",
-					"No Demand exists for previous billing cycle, please generated demand for previous billing cycle ("
-							+ month.getDisplayName(TextStyle.FULL, locale) + ")!!");
+				Month month = Month.of(startCal.get(Calendar.MONTH) + 1);
+				Locale locale = Locale.getDefault();
+				throw new CustomException("NO_DEMAND_PREVIOUS_BILLING_CYCLE",
+						"No Demand exists for previous billing cycle, please generated demand for previous billing cycle ("
+								+ month.getDisplayName(TextStyle.FULL, locale) + ")!!");
+			}
+			
+//			Select * from eg_ws_connection where priviousmeterreadingdate between starttime and endtime and tenantid=tenatID and connectionno IN (connectionnos);
+//			if()
+			
 		}
 
 	}
