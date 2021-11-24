@@ -28,6 +28,25 @@ class NotificationScreenProvider with ChangeNotifier {
     var commonProvider = Provider.of<CommonProvider>(
         navigatorKey.currentContext!,
         listen: false);
+    if (notifications != null && notifications.length > 0) {
+      final jsonList = notifications.map((item) => jsonEncode(item)).toList();
+      final uniqueJsonList = jsonList.toSet().toList();
+      var result = new EventsList.fromJson(
+          {"events": uniqueJsonList.map((item) => jsonDecode(item)).toList()});
+      if (((offSet + limit) > totalCount ? totalCount : (offSet + limit)) <=
+          (result.events!.length)) {
+        streamController.add(result.events!.sublist(
+            offSet - 1,
+            ((offset + limit) - 1) > totalCount
+                ? totalCount
+                : (offset + limit) - 1));
+        return;
+      }
+    }
+    streamController.add(null);
+
+    enableNotification = true;
+    notifyListeners();
     try {
       var notifications1 = await CoreRepository().fetchNotifications({
         "tenantId": commonProvider.userDetails?.selectedtenant?.code!,
@@ -75,6 +94,7 @@ class NotificationScreenProvider with ChangeNotifier {
   }
 
   void onChangeOfPageLimit(PaginationResponse response) {
+    if (enableNotification) return;
     try {
       getNotifications(response.offset, response.limit);
     } catch (e, s) {

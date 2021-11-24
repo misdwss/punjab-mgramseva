@@ -27,8 +27,8 @@ class DashboardPdfCreator {
   BuildContext buildContext;
   final Map feedBack;
 
-  DashboardPdfCreator(this.buildContext, this.headers, this.tableData,
-      this.gridList, this.feedBack);
+  DashboardPdfCreator(
+      this.buildContext, this.headers, this.tableData, this.feedBack);
 
   pdfPreview() async {
     var pdf = pw.Document();

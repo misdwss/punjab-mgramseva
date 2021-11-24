@@ -430,6 +430,7 @@ class GenerateBillDetails {
   String get GENERATE_NEW_BTN_LABEL => 'GENERATE_NEW_BTN_LABEL';
   String get INFO => 'INFO';
   String get INFO_TEXT => 'INFO_TEXT';
+  String get DAY_AGO => 'DAY_AGO';
 }
 
 class ConsumerReciepts {

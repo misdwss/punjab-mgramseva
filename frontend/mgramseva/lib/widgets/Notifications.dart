@@ -4,7 +4,7 @@ import 'package:mgramseva/utils/Constants/I18KeyConstants.dart';
 import 'package:mgramseva/utils/Locilization/application_localizations.dart';
 
 class Notifications extends StatefulWidget {
-  final  event;
+  final event;
   final VoidCallback? callback;
   final bool close;
   Notifications(this.event, this.callback, this.close);
@@ -12,6 +12,14 @@ class Notifications extends StatefulWidget {
   State<StatefulWidget> createState() {
     return _NotificationsState();
   }
+}
+
+stringreplacer(String? input, Map? pattern) {
+  var output = input;
+  pattern?.keys.forEach((element) {
+    output = output!.replaceFirst(element, pattern[element]);
+  });
+  return output;
 }
 
 class _NotificationsState extends State<Notifications> {
@@ -67,12 +75,23 @@ class _NotificationsState extends State<Notifications> {
                                   width:
                                       MediaQuery.of(context).size.width / 1.5,
                                   child: Text(
-                                    ApplicationLocalizations.of(context)
-                                        .translate(widget.event?.description !=
-                                                null
-                                            ? widget.event!.description!.trim()
-                                            : ""),
-                                    maxLines: 4,
+                                    stringreplacer(
+                                        ApplicationLocalizations.of(context)
+                                            .translate(widget
+                                                        .event
+                                                        ?.additionalDetails
+                                                        ?.localizationCode !=
+                                                    null
+                                                ? widget
+                                                    .event!
+                                                    .additionalDetails!
+                                                    .localizationCode
+                                                    .trim()
+                                                : "")
+                                            .toString(),
+                                        widget.event?.additionalDetails
+                                            ?.attributes),
+                                    //maxLines: 4,
                                     style: TextStyle(
                                         fontSize: 14,
                                         fontWeight: FontWeight.w400,
@@ -84,11 +103,10 @@ class _NotificationsState extends State<Notifications> {
                                   padding: EdgeInsets.only(
                                       top: 24, bottom: 4, left: 4, right: 4),
                                   child: Text(
-                                    DateTime.now().difference(DateTime.fromMillisecondsSinceEpoch(widget.event!.auditDetails!.createdTime!)).inDays >
-                                            0
+                                    DateTime.now().difference(DateTime.fromMillisecondsSinceEpoch(widget.event!.auditDetails!.createdTime!)).inDays > 0
                                         ? (DateTime.now()
-                                                .difference(DateTime
-                                                    .fromMillisecondsSinceEpoch(
+                                                .difference(
+                                                    DateTime.fromMillisecondsSinceEpoch(
                                                         widget
                                                             .event!
                                                             .auditDetails!
@@ -96,13 +114,15 @@ class _NotificationsState extends State<Notifications> {
                                                 .inDays
                                                 .toString() +
                                             " " +
-                                            ApplicationLocalizations.of(context)
-                                                .translate(i18
-                                                    .generateBillDetails
-                                                    .DAYS_AGO))
-                                        : ApplicationLocalizations.of(context)
-                                            .translate(
-                                                i18.generateBillDetails.TODAY),
+                                            (DateTime.now().difference(DateTime.fromMillisecondsSinceEpoch(widget.event!.auditDetails!.createdTime!)).inDays.toString() == '1'
+                                                ? ApplicationLocalizations.of(context)
+                                                    .translate(i18
+                                                        .generateBillDetails
+                                                        .DAY_AGO)
+                                                : ApplicationLocalizations.of(context)
+                                                    .translate(
+                                                        i18.generateBillDetails.DAYS_AGO)))
+                                        : ApplicationLocalizations.of(context).translate(i18.generateBillDetails.TODAY),
                                     style: TextStyle(
                                         fontSize: 14,
                                         fontWeight: FontWeight.w400,
@@ -112,16 +132,18 @@ class _NotificationsState extends State<Notifications> {
                             ],
                           )))),
               Visibility(
-                visible: widget.close,
+                  visible: widget.close,
                   child: Align(
-                  alignment: Alignment.topRight,
-                  child: Container(
-                      child: IconButton(
-                      icon: Icon(Icons.close ,
-                      color: Theme.of(context).primaryColorLight,),
-                     onPressed: widget.callback,
-                   )))
-              ),
+                      alignment: Alignment.topRight,
+                      child: Container(
+                          child: IconButton(
+                        icon: Icon(
+                          Icons.close,
+                          color: Theme.of(context).primaryColorLight,
+                          size: 20.0,
+                        ),
+                        onPressed: widget.callback,
+                      )))),
             ],
           )),
     );
