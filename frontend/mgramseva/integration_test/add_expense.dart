@@ -16,6 +16,7 @@ import 'Test Inputs/test_inputs.dart';
 void main() {
 
     testWidgets("add expense app test", (tester) async {
+      var addExpenseTestData = getTestData();
       app.main();
       await tester.pumpAndSettle(Duration(milliseconds: 2000));
       final addExpense = find.byType(GridTile).at(3);
@@ -27,7 +28,8 @@ void main() {
       final expenseBillDate = find.byKey(Keys.expense.EXPENSE_BILL_DATE);
       final addExpenseBtn = find.byKey(Keys.expense.EXPENSE_SUBMIT);
       final expenseType = find.byKey(Keys.expense.EXPENSE_TYPE);
-      final selectExpenseType = find.widgetWithText(ListTile, ApplicationLocalizations.of(navigatorKey.currentContext!).translate(TestInputs.expense.EXPENSE_TYPE));
+      final selectExpenseType = find.widgetWithText(ListTile, ApplicationLocalizations.of(navigatorKey.currentContext!).
+      translate(addExpenseTestData['addExpenseType']));
       final vendorNameAutoComplete = find.byKey(Keys.expense.VENDOR_NAME);
 
       /// selecting expense type
@@ -37,9 +39,9 @@ void main() {
       await tester.tap(selectExpenseType);
       await tester.pumpAndSettle(Duration(milliseconds: 3000));
 
-      await tester.enterText(vendorNameAutoComplete, TestInputs.expense.VENDOR_NAME);
+      await tester.enterText(vendorNameAutoComplete, addExpenseTestData['expenseVendorName']);
       await tester.pumpAndSettle(Duration(milliseconds: 3000));
-      await tester.enterText(expenseAmount, TestInputs.expense.VENDOR_NUMBER);
+      await tester.enterText(expenseAmount, addExpenseTestData['expenseVendorPhoneNum']);
       await tester.pumpAndSettle(Duration(milliseconds: 2000));
 
       final findDatePicker = find.byKey(Keys.expense.EXPENSE_BILL_DATE);

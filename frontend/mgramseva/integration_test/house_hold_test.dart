@@ -16,6 +16,7 @@ import 'Test Inputs/test_inputs.dart';
 void main() {
 
   testWidgets("dashboard app test", (tester) async {
+    var householdTestData = getTestData();
     app.main();
     await tester.pumpAndSettle(Duration(milliseconds: 2000));
     final dashboard = find.byType(GridTile).at(0);
@@ -50,7 +51,7 @@ void main() {
     await tester.pumpAndSettle(Duration(milliseconds: 5000));
 
     await tester.ensureVisible(houseHoldSearch);
-    await tester.enterText(houseHoldSearch, TestInputs.holdRegister.HOUSEHOLD_SEARCH);
+    await tester.enterText(houseHoldSearch, householdTestData['householdSearch']);
     await tester.testTextInput.receiveAction(TextInputAction.done);
     await tester.pumpAndSettle(Duration(milliseconds: 5000));
 

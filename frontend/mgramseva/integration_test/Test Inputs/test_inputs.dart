@@ -1,58 +1,78 @@
-class TestInputs{
-  static LoginInputs login = const LoginInputs();
-  static SearchConnectionInputs searchConnection = const SearchConnectionInputs();
-  static CreateConsumerInputs createConsumer = const CreateConsumerInputs();
-  static Expense expense = const Expense();
-  static Common common = const Common();
-  static Dashboard dashboard = const Dashboard();
-  static HouseHoldRegister holdRegister = const HouseHoldRegister();
-}
+Map<String, dynamic> getTestData() {
+  return {
+    ///Forgot Password Inputs
+    'forgotPasswordMobileNumber': '9686151676',
 
-class LoginInputs{
-  const LoginInputs();
-  String get LOGIN_MOBILE_NUMBER => '9686151676';
-  String get LOGIN_PASSWORD => 'eGov@123';
-}
+    ///*********** Language Selection and Login Inputs ****************
+    'selectLanguage': '2',  //For Punjabi - 0, Hindi- 1 , English - 2
+    'loginPhoneNumber' : '9686151676',
+    'loginPassword' : 'eGov@123',
 
-class SearchConnectionInputs {
-  const SearchConnectionInputs();
+    ///********** Edit Profile Inputs *************
+    'editProfileName': 'Naveen ',
+    'editProfileGender' : 'CORE_COMMON_GENDER_MALE', //For Female- CORE_COMMON_GENDER_FEMALE, Transgender- CORE_COMMON_GENDER_TRANSGENDER
+    'editProfileEmail' : 'naveen@egov.in',
 
-  String get SEARCH_MOBILE_NUMBER => '8145632987';
-  String get SEARCH_NAME => 'Na';
-}
+    ///*********** Change Password Inputs ***********
+    'currentPassword': 'eGov@123 ',
+    'newPassword' : 'eGov@123',
+    'confirmNewPassword' : 'eGov@123',
 
-class CreateConsumerInputs{
-  const CreateConsumerInputs();
-  String get CONSUMER_NAME => 'Ramesh';
-  String get CONSUMER_SPOUSE_PARENT => 'Rajesh';
-  String get CONSUMER_PHONE_NUMBER => '9859856321';
-  String get CONSUMER_OLD_ID => 'WS-986-456';
-  String get CONSUMER_PREVIOUS_READING_DATE => '01/10/2021';
-  String get CONSUMER_METER_NUMBER => 'ID745LO';
-  String get CONSUMER_ARREARS => '100';
-}
+    ///********* Search Connection Inputs *************
+    'searchConnectionMobileNumber': '8145632987',
+    'searchConnectionName': 'Na',
+    'searchConnectionOldConnectionID': 'WS-763-88463',
+    'searchConnectionNewConnectionID': 'WS/400/2021-22/0018',
 
-class Expense {
-  const Expense();
-  String get EXPENSE_TYPE => 'ELECTRICITY_BILL';
-  String get SEARCH_EXPENSE_TYPE => 'OM';
-  String get VENDOR_NAME => 'hara';
-  String get VENDOR_NUMBER => '9949210191';
-  String get VENDOR_AMOUNT => '123';
-  String get BILL_ID => 'EB-2021-22-0270';
-}
+    ///********* Create Consumer Inputs ***************
+    'consumerName': 'Ramesh',
+    'consumerGender': 'CORE_COMMON_GENDER_MALE', //For Female- CORE_COMMON_GENDER_FEMALE, Transgender- CORE_COMMON_GENDER_TRANSGENDER
+    'consumerSpouseOrParent': 'Rajesh',
+    'consumerPhoneNumber': '9859856321',
+    'consumerCategory': 'APL', // [APL, BPL]
+    'consumerSubCategory': 'SC', // [SC, ST, GENERAL]
+    'consumerProperty': 'RESIDENTIAL', // [RESIDENTIAL, COMMERCIAL]
+    'consumerService': 'Metered', // [Metered, Non_Metered]
+    'consumerOldConnectionID': 'WS-986-456',
+    'previousReadingDate': '01/10/2021',
+    'consumerMeterNumber': 'ID745MS',
+    'consumerMeterReadingField1': '1',
+    'consumerMeterReadingField2': '3',
+    'consumerMeterReadingField3': '2',
+    'consumerMeterReadingField4': '4',
+    'consumerMeterReadingField5': '0',
+    'consumerLastBilledCycleYear': '2021',
+    'consumerLastBilledCycleMonth': 'OCT',
+    'consumerArrears': '100',
 
-class Dashboard {
-  const Dashboard();
-  String get DASHBOARD_SEARCH => 'hara';
-}
+    ///********** Update Consumer Inputs ****************
+    'updateConsumerSearchMobileNumber': '8145632987',
+    'updateConsumerProperty': 'COMMERCIAL',
+    'updateConsumerMarkConnectionInactive': 'No', //To mark connection inactive --- 'Yes
 
-class Common {
-  const Common();
-}
+    ///************** Metered Bill Generation Inputs ***********
+    'billGenerateSearchMobileNumber' : '9513848423',
+    'newMeterReadingField1' : '1',
+    'newMeterReadingField2' : '4',
+    'newMeterReadingField3' : '3',
+    'newMeterReadingField4' : '2',
+    'newMeterReadingField5' : '0',
 
-class HouseHoldRegister {
-  const HouseHoldRegister();
-  String get HOUSEHOLD_SEARCH => '1370';
+    ///********* Bulk Demand Generate Inputs *********
+    'bulkDemandBillingYear': '2021-22',
+    'bulkDemandBillingCycle': 'OCT',
 
+    ///*******Expense Inputs ********
+    'addExpenseType' : 'ELECTRICITY_BILL',
+    'searchExpenseType' : 'OM',
+    'expenseVendorName' : 'hara',
+    'expenseVendorPhoneNum' : '9949210191',
+    'searchExpenseBillID' : 'EB-2021-22-0270',
+
+    ///******** GPWSC Dashboard Inputs ********
+    'dashboardSearch' : 'hara',
+
+    ///********* Household Register Inputs *********
+    'householdSearch' : '1370',
+  };
 }

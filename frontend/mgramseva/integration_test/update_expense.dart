@@ -18,6 +18,7 @@ import 'Test Inputs/test_inputs.dart';
 void main() {
 
   testWidgets("update expense app test", (tester) async {
+    var updateExpenseTestData = getTestData();
     app.main();
     await tester.pumpAndSettle(Duration(milliseconds: 2000));
     final updateExpense = find.byType(GridTile).at(4);
@@ -30,11 +31,12 @@ void main() {
     final checkBox = find.byType(Checkbox);
     final submitButton = find.widgetWithText(BottomButtonBar, ApplicationLocalizations.of(navigatorKey.currentContext!).translate(i18.common.SUBMIT));
     final expenseType = find.byKey(Keys.expense.SEARCH_EXPENSE_TYPE);
-    final selectExpenseType = find.widgetWithText(ListTile, ApplicationLocalizations.of(navigatorKey.currentContext!).translate(TestInputs.expense.SEARCH_EXPENSE_TYPE));
+    final selectExpenseType = find.widgetWithText(ListTile, ApplicationLocalizations.of(navigatorKey.currentContext!).translate
+      (updateExpenseTestData['searchExpenseType']));
     final billId = find.byKey(Keys.expense.SEARCH_EXPENSE_BILL_ID);
 
     /// set vendor name
-    await tester.enterText(vendorName, TestInputs.expense.VENDOR_NAME);
+    await tester.enterText(vendorName, updateExpenseTestData['expenseVendorName']);
     await tester.pumpAndSettle(Duration(milliseconds: 1000));
     await tester.enterText(vendorName, '');
     await tester.pumpAndSettle(Duration(milliseconds: 3000));
@@ -52,7 +54,7 @@ void main() {
     await tester.tap(showType);
 
     await tester.pumpAndSettle(Duration(milliseconds: 3000));
-    await tester.enterText(billId, TestInputs.expense.BILL_ID);
+    await tester.enterText(billId, updateExpenseTestData['searchExpenseBillID']);
     await tester.pumpAndSettle(Duration(milliseconds: 3000));
     await tester.enterText(billId, '');
     await tester.pumpAndSettle(Duration(milliseconds: 1000));
