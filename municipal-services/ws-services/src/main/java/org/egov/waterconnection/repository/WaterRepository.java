@@ -64,8 +64,9 @@ public class WaterRepository {
 		return list;
 	}
 	
-	public Integer getTotalPendingCollection(String tenantId) {
+	public Integer getTotalPendingCollection(String tenantId, Long endDate) {
 		StringBuilder query = new StringBuilder(queryBuilder.PENDINGCOLLECTION);
+		query.append(" and dmd.taxperiodto <= ").append(endDate);
 		query.append(" and dmd.tenantid = '").append(tenantId).append("'");
 		return jdbcTemplate.queryForObject(query.toString(), Integer.class);
 
