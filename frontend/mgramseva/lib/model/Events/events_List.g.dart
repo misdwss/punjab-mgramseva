@@ -44,9 +44,11 @@ Events _$EventsFromJson(Map<String, dynamic> json) {
         : AuditDetails.fromJson(json['auditDetails'] as Map<String, dynamic>)
     ..recepientEventMap = json['recepientEventMap'] as String?
     ..generateCounterEvent = json['generateCounterEvent'] as String?
-    ..internallyUpdted = json['internallyUpdted'] as String?
+    ..internallyUpdted = json['internallyUpdted'] as bool?
     ..additionalDetails = json['additionalDetails'] == null
-        ? null : AdditionalDetails.fromJson(json['additionalDetails'] as Map<String, dynamic>);
+        ? null
+        : AdditionalDetails.fromJson(
+            json['additionalDetails'] as Map<String, dynamic>);
 }
 
 Map<String, dynamic> _$EventsToJson(Events instance) => <String, dynamic>{

@@ -44,6 +44,7 @@ class Events {
   @JsonKey(name: "actions")
   Actions? actions;
   @JsonKey(name: "eventDetails")
+  // ignore: unnecessary_question_mark
   dynamic? eventDetails;
   @JsonKey(name: "auditDetails")
   AuditDetails? auditDetails;
@@ -54,7 +55,7 @@ class Events {
   @JsonKey(name: "generateCounterEvent")
   String? generateCounterEvent;
   @JsonKey(name: "internallyUpdted")
-  String? internallyUpdted;
+  bool? internallyUpdted;
   Events();
   factory Events.fromJson(Map<String, dynamic> json) => _$EventsFromJson(json);
 
