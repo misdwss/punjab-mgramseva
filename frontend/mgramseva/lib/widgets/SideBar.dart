@@ -119,6 +119,7 @@ class SideBar extends StatelessWidget {
           onTap: () => Navigator.pushNamed(context, Routes.CHANGE_PASSWORD),
       key: Keys.changePassword.SIDE_BAR_CHANGE_PASSWORD_TILE_KEY,),
       ListTile(
+        key: Keys.common.LOGOUT_TILE_KEY,
         title: Text(
             ApplicationLocalizations.of(context).translate(i18.common.LOGOUT)),
         leading: Icon(
