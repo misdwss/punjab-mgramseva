@@ -36,6 +36,7 @@ public class MgramsevaAdapterDemandConsumer {
 	public void listen(final HashMap<String, Object> record, @Header(KafkaHeaders.RECEIVED_TOPIC) String topic) throws Exception {
 		ObjectMapper mapper = new ObjectMapper();
 		DemandRequest demandRequest=null;
+		log.info("crate demand topic");
 		try {
 			log.debug("Consuming record: " + record);
 			demandRequest = mapper.convertValue(record, DemandRequest.class);
@@ -59,6 +60,7 @@ public class MgramsevaAdapterDemandConsumer {
 	public void listenUpdate(final HashMap<String, Object> record, @Header(KafkaHeaders.RECEIVED_TOPIC) String topic) throws Exception {
 		ObjectMapper mapper = new ObjectMapper();
 		DemandRequest demandRequest=null;
+		log.info("update demand topic");
 		try {
 			log.debug("Consuming record: " + record);
 			demandRequest = mapper.convertValue(record, DemandRequest.class);

@@ -29,6 +29,7 @@ public class MgramasevaAdapterPaymentConsumer {
 			throws Exception {
 		ObjectMapper mapper = new ObjectMapper();
 		PaymentRequest paymentRequest = null;
+		log.info("crate payment topic");
 		try {
 			log.debug("Consuming record: " + record);
 			paymentRequest = mapper.convertValue(record, PaymentRequest.class);
@@ -39,6 +40,9 @@ public class MgramasevaAdapterPaymentConsumer {
 			}else {
 				eventType=EventTypeEnum.RECEIPT.toString();
 			}
+			log.info("PaymentRequest: "+paymentRequest);
+			log.info("eventType: "+eventType);
+			
 			util.callIFIXAdapter(paymentRequest, eventType, paymentRequest.getPayment().getTenantId(),paymentRequest.getRequestInfo());
 		} catch (final Exception e) {
 			log.error("Error while listening to value: " + record + " on topic: " + topic + ": " + e);

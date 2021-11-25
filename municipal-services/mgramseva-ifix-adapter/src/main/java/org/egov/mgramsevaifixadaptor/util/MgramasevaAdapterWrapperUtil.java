@@ -78,6 +78,7 @@ public class MgramasevaAdapterWrapperUtil {
 		eventRequest.setRequestHeader(requestHeader);
 		eventRequest.setEvent(eventObj);
 		try {
+			log.info("eventRequest: "+eventRequest);
 			Object response = serviceRequestRepository.fetchResult(
 					propertyConfiguration.getAdapterHost() + propertyConfiguration.getAdapterCreateEndpoint(),
 					eventRequest);
