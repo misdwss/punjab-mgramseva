@@ -1,10 +1,15 @@
 package org.egov.mgramsevaifixadaptor.consumer;
 
+import java.math.BigDecimal;
+import java.util.Collections;
 import java.util.HashMap;
 
 import org.egov.mgramsevaifixadaptor.config.PropertyConfiguration;
 import org.egov.mgramsevaifixadaptor.contract.PaymentRequest;
+import org.egov.mgramsevaifixadaptor.models.Bill;
+import org.egov.mgramsevaifixadaptor.models.BillDetail;
 import org.egov.mgramsevaifixadaptor.models.EventTypeEnum;
+import org.egov.mgramsevaifixadaptor.models.PaymentDetail;
 import org.egov.mgramsevaifixadaptor.util.Constants;
 import org.egov.mgramsevaifixadaptor.util.MgramasevaAdapterWrapperUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +17,7 @@ import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.support.KafkaHeaders;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -40,6 +46,15 @@ public class MgramasevaAdapterPaymentConsumer {
 			}else {
 				eventType=EventTypeEnum.RECEIPT.toString();
 			}
+			
+			if(paymentRequest != null && paymentRequest.getPayment() != null &&
+					!CollectionUtils.isEmpty(paymentRequest.getPayment().getPaymentDetails())) {
+				log.info("in if --> removing zero value entries");
+				for(PaymentDetail pd : paymentRequest.getPayment().getPaymentDetails()) {
+					pd.getBill().getBillDetails().removeIf(bd -> bd.getAmountPaid().equals(BigDecimal.ZERO));
+				}
+			}
+			
 			log.info("PaymentRequest: "+paymentRequest);
 			log.info("eventType: "+eventType);
 			
