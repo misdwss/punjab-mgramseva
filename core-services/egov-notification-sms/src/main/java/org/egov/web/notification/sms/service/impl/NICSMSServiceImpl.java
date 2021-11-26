@@ -133,7 +133,7 @@ public class NICSMSServiceImpl extends BaseSMSService {
             	smsBody = smsBody.split("#")[0];
         	}
       
-        	String message= "" + smsBody + smsProperties.getSmsMsgAppend();
+        	String message= "" + smsBody ;
         	message=URLEncoder.encode(message,"UTF-8");
         	//TODO not encryppt the message.
 //        	if(textIsInEnglish(message)) {
@@ -160,7 +160,7 @@ public class NICSMSServiceImpl extends BaseSMSService {
 	    		HttpsURLConnection conn = (HttpsURLConnection) new URL(smsProperties.getUrl()).openConnection();
 				conn.setSSLSocketFactory(sslContext.getSocketFactory());
 				conn.setDoOutput(true);
-				//conn.setRequestMethod("POST");
+				conn.setRequestMethod("POST");
 				conn.setRequestProperty("Content-Length", Integer.toString(final_data.length()));
 				conn.getOutputStream().write(final_data.getBytes());
 				final BufferedReader rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
@@ -172,6 +172,7 @@ public class NICSMSServiceImpl extends BaseSMSService {
 				log.info("conn: "+conn.toString());
 				if(smsProperties.isDebugMsggateway())
 				{
+					log.info("sms api url : "+ smsProperties.getUrl() );
 					log.info("sms response: " + stringBuffer.toString());
 					log.info("sms data: " + final_data);
 				}
