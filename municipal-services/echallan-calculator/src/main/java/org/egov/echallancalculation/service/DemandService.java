@@ -288,6 +288,14 @@ public class DemandService {
                                      .tenantId(calculation.getTenantId())
                                      .collectionAmount(BigDecimal.ZERO)
                                      .build());
+                 }else {
+                	 newDemandDetails.add(
+                             DemandDetail.builder()
+                                     .taxAmount(BigDecimal.ZERO)
+                                     .taxHeadMasterCode(taxHeadEstimate.getTaxHeadCode())
+                                     .tenantId(calculation.getTenantId())
+                                     .collectionAmount(BigDecimal.ZERO)
+                                     .build()); 
                  }
             }
         }

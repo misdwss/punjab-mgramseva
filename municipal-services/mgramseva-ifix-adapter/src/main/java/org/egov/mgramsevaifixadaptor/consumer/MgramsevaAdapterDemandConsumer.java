@@ -1,6 +1,7 @@
 package org.egov.mgramsevaifixadaptor.consumer;
 
 import java.math.BigDecimal;
+import java.text.Bidi;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -64,9 +65,21 @@ public class MgramsevaAdapterDemandConsumer {
 		try {
 			log.debug("Consuming record: " + record);
 			demandRequest = mapper.convertValue(record, DemandRequest.class);
+			log.info("demandRequest: "+demandRequest);
 			String eventType=null;
 			if(demandRequest.getDemands().get(0).getBusinessService().contains(Constants.EXPENSE))
 			{
+				log.info("in expense update");
+				int demandDetailsSize = demandRequest.getDemands().get(0).getDemandDetails().size();
+				for(int i=0; i<demandDetailsSize-1; i++) {
+					demandRequest.getDemands().get(0).getDemandDetails().remove(0);
+				}
+				log.info("last expence details: "+demandRequest);
+				if(demandRequest.getDemands().get(0).getDemandDetails().get(0).getTaxAmount().equals(BigDecimal.ZERO)) {
+					log.info("expence is zero terminating");
+					return;
+				}
+				log.info("if not terminated");
 				eventType=EventTypeEnum.BILL.toString();
 			}else {
 				eventType=EventTypeEnum.DEMAND.toString();
