@@ -6,6 +6,8 @@ enum Environment { dev, stage, prod }
 
 late Map<String, dynamic> _config;
 
+const String? BASE_PATH = String.fromEnvironment('BASE_PATH');
+
 void setEnvironment(Environment env) {
   switch (env) {
     case Environment.dev:
@@ -25,7 +27,7 @@ dynamic get apiBaseUrl {
 }
 
 Map<String, dynamic> devConstants = {
-  _baseUrl: "https://mgramseva-qa.egov.org.in/",
+  _baseUrl: BASE_PATH ?? "${window.location.origin}/",
 };
 
 Map<String, dynamic> stageConstants = {

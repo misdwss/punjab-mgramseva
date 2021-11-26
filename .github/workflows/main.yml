@@ -29,4 +29,5 @@ jobs:
           target: ${{ matrix.target }}
           arch: x86_64
           profile: Nexus 6
-          script: "cd ./frontend/mgramseva && flutter drive   --driver=test_driver/integration_test_driver.dart   --target=integration_test/login_test.dart"
+          script: "cd ./frontend/mgramseva && flutter drive  --dart-define=BASE_PATH=https://mgramseva-qa.egov.org.in/
+          --driver=test_driver/integration_test_driver.dart   --target=integration_test/login_test.dart"
