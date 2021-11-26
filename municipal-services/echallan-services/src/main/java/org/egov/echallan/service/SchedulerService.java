@@ -496,9 +496,9 @@ public class SchedulerService {
 		List<String> previousMonthCollection = repository.getPreviousMonthExpensePayments(tenantId,
 				((Long) previousMonthStartDateTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()),
 				((Long) previousMonthEndDateTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()));
-		if (null != previousMonthCollection) {
-			message = message.replace("{PREVIOUS_MONTH_COLLECTION}", previousMonthCollection.toString());
-			attributes.put("{PREVIOUS_MONTH_COLLECTION}", previousMonthCollection.toString());
+		if (null != previousMonthCollection && previousMonthCollection.get(0) != null) {
+			message = message.replace("{PREVIOUS_MONTH_COLLECTION}", previousMonthCollection.get(0).toString());
+			attributes.put("{PREVIOUS_MONTH_COLLECTION}", previousMonthCollection.get(0).toString());
 		}
 		message = message.replace("{PREVIOUS_MONTH}", LocalDate.now().minusMonths(1).getMonth().toString());
 		attributes.put("{PREVIOUS_MONTH}", LocalDate.now().minusMonths(1).getMonth().toString());
