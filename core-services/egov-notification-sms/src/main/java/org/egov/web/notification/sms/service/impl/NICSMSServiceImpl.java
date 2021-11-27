@@ -163,7 +163,7 @@ public class NICSMSServiceImpl extends BaseSMSService {
 				conn.setDoOutput(true);
 				conn.setRequestMethod("GET");
 				//conn.setRequestProperty("Content-Length", Integer.toString(final_data.length()));
-				conn.getOutputStream().write(0);
+				//conn.getOutputStream().close();
 				final BufferedReader rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
 				final StringBuffer stringBuffer = new StringBuffer();
 				String line;
