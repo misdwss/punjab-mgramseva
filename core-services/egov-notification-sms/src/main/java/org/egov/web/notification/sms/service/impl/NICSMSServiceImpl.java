@@ -134,7 +134,7 @@ public class NICSMSServiceImpl extends BaseSMSService {
         	}
       
         	String message= "" + smsBody ;
-		message = message.replaceAll(" ","%20");
+		//message = message.replaceAll(" ","%20");
         //	message=URLEncoder.encode(message,"UTF-8");
         	//TODO not encryppt the message.
 //        	if(textIsInEnglish(message)) {
