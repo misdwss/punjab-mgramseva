@@ -158,12 +158,12 @@ public class NICSMSServiceImpl extends BaseSMSService {
 				final_data+="&dlt_template_id="+sms.getTemplateId();
 
 	    	if(smsProperties.isSmsEnabled()) {
-	    		HttpsURLConnection conn = (HttpsURLConnection) new URL(smsProperties.getUrl()).openConnection();
+	    		HttpsURLConnection conn = (HttpsURLConnection) new URL(smsProperties.getUrl()+"?"+final_data).openConnection();
 				conn.setSSLSocketFactory(sslContext.getSocketFactory());
 				conn.setDoOutput(true);
 				conn.setRequestMethod("GET");
 				//conn.setRequestProperty("Content-Length", Integer.toString(final_data.length()));
-				conn.getOutputStream().write(final_data.getBytes());
+				conn.getOutputStream().write(0);
 				final BufferedReader rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
 				final StringBuffer stringBuffer = new StringBuffer();
 				String line;
