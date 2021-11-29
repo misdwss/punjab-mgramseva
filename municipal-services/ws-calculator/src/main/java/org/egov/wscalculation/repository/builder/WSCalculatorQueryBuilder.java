@@ -261,7 +261,7 @@ public class WSCalculatorQueryBuilder {
 		}
 		if (startDate != null && endDate != null) {
 			addClauseIfRequired(preparedStmtList, builder);
-			builder.append(" priviousmeterreadingdate between  ?  and  ? ");
+			builder.append(" previousreadingdate between  ?  and  ? ");
 			preparedStmtList.add(startDate);
 			preparedStmtList.add(endDate);
 		}
