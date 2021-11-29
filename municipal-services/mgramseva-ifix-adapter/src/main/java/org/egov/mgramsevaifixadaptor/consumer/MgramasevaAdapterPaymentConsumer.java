@@ -60,4 +60,33 @@ public class MgramasevaAdapterPaymentConsumer {
 
 		// TODO enable after implementation
 	}
+	
+	@KafkaListener(topics = { "${kafka.topics.cancel.payment}" })
+	public void listenForCancel(final HashMap<String, Object> record, @Header(KafkaHeaders.RECEIVED_TOPIC) String topic)
+			throws Exception {
+		ObjectMapper mapper = new ObjectMapper();
+		PaymentRequest paymentRequest = null;
+		log.info("cancel payment topic");
+		try {
+			log.debug("Consuming record: " + record);
+			paymentRequest = mapper.convertValue(record, PaymentRequest.class);
+			log.info("paymentRequest: "+paymentRequest);
+			String eventType=null;
+			if(paymentRequest.getPayment().getPaymentDetails().get(0).getBusinessService().contains(Constants.EXPENSE))
+			{
+				eventType=EventTypeEnum.PAYMENT.toString();
+			}else {
+				eventType=EventTypeEnum.RECEIPT.toString();
+			}
+
+			
+			
+			util.callIFIXAdapter(paymentRequest, eventType, paymentRequest.getPayment().getTenantId(),paymentRequest.getRequestInfo());
+		} catch (final Exception e) {
+			log.error("Error while listening to value: " + record + " on topic: " + topic + ": " + e);
+		}
+
+		// TODO enable after implementation
+	}
+	
 }
