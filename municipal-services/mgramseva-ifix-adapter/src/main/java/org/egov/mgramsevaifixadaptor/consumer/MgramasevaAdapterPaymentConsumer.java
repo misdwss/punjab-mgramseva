@@ -49,15 +49,10 @@ public class MgramasevaAdapterPaymentConsumer {
 			
 			if(paymentRequest != null && paymentRequest.getPayment() != null &&
 					!CollectionUtils.isEmpty(paymentRequest.getPayment().getPaymentDetails())) {
-				log.info("in if --> removing zero value entries");
 				for(PaymentDetail pd : paymentRequest.getPayment().getPaymentDetails()) {
 					pd.getBill().getBillDetails().removeIf(bd -> bd.getAmountPaid().equals(BigDecimal.ZERO));
 				}
 			}
-			
-			log.info("PaymentRequest: "+paymentRequest);
-			log.info("eventType: "+eventType);
-			
 			util.callIFIXAdapter(paymentRequest, eventType, paymentRequest.getPayment().getTenantId(),paymentRequest.getRequestInfo());
 		} catch (final Exception e) {
 			log.error("Error while listening to value: " + record + " on topic: " + topic + ": " + e);
