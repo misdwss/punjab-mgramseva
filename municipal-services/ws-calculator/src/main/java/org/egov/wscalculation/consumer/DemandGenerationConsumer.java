@@ -318,6 +318,7 @@ public class DemandGenerationConsumer {
 					&& !waterCalculatorDao.isConnectionExists(tenantId, previousFromDate.getTimeInMillis(),
 							previousToDate.getTimeInMillis(), consumerCodes)) {
 				log.warn("this connection doen't have the demand in previous billing cycle :" + connectionNo);
+				failedConnectionNos.add(connectionNo);
 				continue;
 			}
 			
