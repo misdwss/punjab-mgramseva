@@ -42,11 +42,6 @@ android {
         multiDexEnabled true
     }
 
-    packagingOptions{
-        doNotStrip '*/mips/*.so'
-        doNotStrip '*/mips64/*.so'
-    }
-
     buildTypes {
         release {
             // TODO: Add your own signing config for the release build.
