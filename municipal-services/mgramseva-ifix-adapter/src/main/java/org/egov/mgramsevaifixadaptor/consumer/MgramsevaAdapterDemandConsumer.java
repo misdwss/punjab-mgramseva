@@ -73,29 +73,10 @@ public class MgramsevaAdapterDemandConsumer {
 			demandRequest = mapper.convertValue(record, DemandRequest.class);
 			log.info("demandRequest: "+demandRequest);
 			String eventType=null;
-			
-			if(demandRequest.getDemands().get(0).getBusinessService().contains(Constants.EXPENSE))
-			{
-				log.info("in expense update");
-				int demandDetailsSize = demandRequest.getDemands().get(0).getDemandDetails().size();
-				for(int i=0; i<demandDetailsSize-1; i++) {
-					demandRequest.getDemands().get(0).getDemandDetails().remove(0);
-				}
-				log.info("last expence details: "+demandRequest);
-				Integer count =  getCountByDemandDetailsId(demandRequest.getDemands().get(0).getDemandDetails().get(0).getId());
-				
-				if(count != null && count > 1) {
-					log.info("terminating");
-					return;
-				}
-				log.info("if not terminated");
-				eventType=EventTypeEnum.BILL.toString();
-			}else {
-				eventType=EventTypeEnum.DEMAND.toString();
-			}
 			if(demandRequest != null) {
 				Collections.sort(demandRequest.getDemands(), getCreatedTimeComparatorForDemand());
 				if(demandRequest.getDemands().get(0).getStatus().toString().equalsIgnoreCase(Constants.CANCELLED)) {
+					log.info("demand status cancelled states");
 					BigDecimal totalAmount = new BigDecimal(0.00);
 					if(demandRequest.getDemands().get(0).getDemandDetails() != null) {
 						for(DemandDetail dd : demandRequest.getDemands().get(0).getDemandDetails()) {
@@ -109,12 +90,27 @@ public class MgramsevaAdapterDemandConsumer {
 						demandRequest.getDemands().get(0).getDemandDetails().get(0).setTaxAmount(totalAmount);
 					}
 				}else {
+					log.info("demand status active status");
 					int demandDetailsSize = demandRequest.getDemands().get(0).getDemandDetails().size();
 					for(int i=0; i<demandDetailsSize-1; i++) {
 						demandRequest.getDemands().get(0).getDemandDetails().remove(0);
 					}
+					log.info("demandDatabefore process: "+demandRequest);
+					Integer count =  getCountByDemandDetailsId(demandRequest.getDemands().get(0).getDemandDetails().get(0).getId());
+					if(count != null && count > 1) {
+						log.info("terminating");
+						return;
+					}
 				}
 			}
+			if(demandRequest.getDemands().get(0).getBusinessService().contains(Constants.EXPENSE))
+			{
+				eventType=EventTypeEnum.BILL.toString();
+			}else {
+				eventType=EventTypeEnum.DEMAND.toString();
+			}
+			
+			log.info("demand data after process: "+demandRequest);
 			util.callIFIXAdapter(demandRequest, eventType, demandRequest.getDemands().get(0).getTenantId(),demandRequest.getRequestInfo());
 		} catch (final Exception e) {
 			log.error("Error while listening to value: " + record + " on topic: " + topic + ": " + e);
