@@ -195,7 +195,7 @@ public class WSCalculatorQueryBuilder {
 		preparedStatement.add(tenantId);
 		addClauseIfRequired(preparedStatement, query);
 		query.append(" ( d.taxperiodto  between " + dayStartTime + " and " + dayEndTime +" ) )");
-		query.append(" and conn.tenantid = ? ) ");
+		query.append(" and conn.tenantid = ?  ");
 		preparedStatement.add(tenantId);
 		return query.toString();
 
