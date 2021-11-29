@@ -5,6 +5,7 @@ import java.text.Bidi;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.List;
 
 import org.egov.mgramsevaifixadaptor.config.PropertyConfiguration;
 import org.egov.mgramsevaifixadaptor.contract.DemandRequest;
@@ -16,6 +17,8 @@ import org.egov.mgramsevaifixadaptor.models.EventTypeEnum;
 import org.egov.mgramsevaifixadaptor.util.Constants;
 import org.egov.mgramsevaifixadaptor.util.MgramasevaAdapterWrapperUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.support.KafkaHeaders;
 import org.springframework.messaging.handler.annotation.Header;
@@ -32,6 +35,9 @@ public class MgramsevaAdapterDemandConsumer {
 
 	@Autowired
 	MgramasevaAdapterWrapperUtil util;
+	
+	@Autowired
+	JdbcTemplate jdbcTemplate;
 	
 	@KafkaListener(topics = { "${kafka.topics.create.demand}"})
 	public void listen(final HashMap<String, Object> record, @Header(KafkaHeaders.RECEIVED_TOPIC) String topic) throws Exception {
@@ -67,6 +73,7 @@ public class MgramsevaAdapterDemandConsumer {
 			demandRequest = mapper.convertValue(record, DemandRequest.class);
 			log.info("demandRequest: "+demandRequest);
 			String eventType=null;
+			
 			if(demandRequest.getDemands().get(0).getBusinessService().contains(Constants.EXPENSE))
 			{
 				log.info("in expense update");
@@ -75,8 +82,10 @@ public class MgramsevaAdapterDemandConsumer {
 					demandRequest.getDemands().get(0).getDemandDetails().remove(0);
 				}
 				log.info("last expence details: "+demandRequest);
-				if(demandRequest.getDemands().get(0).getDemandDetails().get(0).getTaxAmount().equals(BigDecimal.ZERO)) {
-					log.info("expence is zero terminating");
+				Integer count =  getCountByDemandDetailsId(demandRequest.getDemands().get(0).getDemandDetails().get(0).getId());
+				
+				if(count != null && count > 1) {
+					log.info("terminating");
 					return;
 				}
 				log.info("if not terminated");
@@ -120,4 +129,12 @@ public class MgramsevaAdapterDemandConsumer {
 			}
 		};
 	}
+	
+	public Integer getCountByDemandDetailsId(String demanddetailid) {  
+		String sql = "SELECT count(*) FROM egbs_demanddetail_v1_audit WHERE demanddetailid = '"+demanddetailid+"' ";
+		Integer count = jdbcTemplate.queryForObject(sql, Integer.class);
+		System.out.println("count: "+count);
+		return count;
+	}
+	
 }
