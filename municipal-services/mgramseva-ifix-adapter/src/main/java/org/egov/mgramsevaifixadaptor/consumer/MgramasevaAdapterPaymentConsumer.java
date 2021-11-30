@@ -78,10 +78,16 @@ public class MgramasevaAdapterPaymentConsumer {
 			}else {
 				eventType=EventTypeEnum.RECEIPT.toString();
 			}
+			paymentRequest.getPayment().setTotalDue(paymentRequest.getPayment().getTotalDue().negate());
 			paymentRequest.getPayment().setTotalAmountPaid(paymentRequest.getPayment().getTotalAmountPaid().negate());
 			paymentRequest.getPayment().getPaymentDetails().get(0).getBill().getBillDetails().get(0).setAmount(paymentRequest.getPayment().getPaymentDetails().get(0).getBill().getBillDetails().get(0).getAmount().negate());
 			paymentRequest.getPayment().getPaymentDetails().get(0).getBill().getBillDetails().get(0).setAmountPaid(paymentRequest.getPayment().getPaymentDetails().get(0).getBill().getBillDetails().get(0).getAmountPaid().negate());
+			paymentRequest.getPayment().getPaymentDetails().get(0).setTotalDue(paymentRequest.getPayment().getPaymentDetails().get(0).getTotalDue().negate());
 			paymentRequest.getPayment().getPaymentDetails().get(0).setTotalAmountPaid(paymentRequest.getPayment().getPaymentDetails().get(0).getTotalAmountPaid().negate());
+			paymentRequest.getPayment().getPaymentDetails().get(0).getBill().setTotalAmount(paymentRequest.getPayment().getPaymentDetails().get(0).getBill().getTotalAmount().negate());
+			
+			
+			log.info("final paymentRequest: "+paymentRequest);
 			
 			util.callIFIXAdapter(paymentRequest, eventType, paymentRequest.getPayment().getTenantId(),paymentRequest.getRequestInfo());
 		} catch (final Exception e) {
