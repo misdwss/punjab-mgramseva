@@ -78,7 +78,10 @@ public class MgramasevaAdapterPaymentConsumer {
 			}else {
 				eventType=EventTypeEnum.RECEIPT.toString();
 			}
+			paymentRequest.getPayment().setTotalAmountPaid(paymentRequest.getPayment().getTotalAmountPaid().negate());
 			paymentRequest.getPayment().getPaymentDetails().get(0).getBill().getBillDetails().get(0).setAmount(paymentRequest.getPayment().getPaymentDetails().get(0).getBill().getBillDetails().get(0).getAmount().negate());
+			paymentRequest.getPayment().getPaymentDetails().get(0).getBill().getBillDetails().get(0).setAmountPaid(paymentRequest.getPayment().getPaymentDetails().get(0).getBill().getBillDetails().get(0).getAmountPaid().negate());
+			paymentRequest.getPayment().getPaymentDetails().get(0).setTotalAmountPaid(paymentRequest.getPayment().getPaymentDetails().get(0).getTotalAmountPaid().negate());
 			
 			util.callIFIXAdapter(paymentRequest, eventType, paymentRequest.getPayment().getTenantId(),paymentRequest.getRequestInfo());
 		} catch (final Exception e) {
