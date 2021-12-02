@@ -112,7 +112,7 @@ class WaterConnection {
   getText() {
     OldConnectionCtrl.text = oldConnectionNo ?? "";
     meterIdCtrl.text = meterId ?? "";
-    arrearsCtrl.text = arrears.toString();
+    arrearsCtrl.text = arrears == null ? '' : arrears.toString();
 
     previousReadingDateCtrl.text = previousReadingDate == null
         ? DateFormats.timeStampToDate(meterInstallationDate)
