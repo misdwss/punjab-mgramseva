@@ -38,6 +38,6 @@ public interface WaterService {
 	RevenueDashboard getRevenueDashboardData(@Valid SearchCriteria criteria, RequestInfo requestInfo);
 
 	WaterConnectionResponse getWCListFuzzySearch(SearchCriteria criteria, RequestInfo requestInfo);
-
-
+	
+	WaterConnectionResponse planeSearch(SearchCriteria criteria, RequestInfo requestInfo);
 }

@@ -278,4 +278,27 @@ public class ChallanQueryBuilder {
 		return builder.toString();
 	}
 
+	public String getChallanSearchQueryForPlaneSearch(SearchCriteria criteria, List<Object> preparedStmtList) {
+
+		StringBuilder builder = new StringBuilder(QUERY);
+		builder = applyFiltersForPlaneSearch(builder, preparedStmtList, criteria);
+		return addPaginationWrapper(builder.toString(), preparedStmtList, criteria);
+	}
+	
+	public StringBuilder applyFiltersForPlaneSearch(StringBuilder builder, List<Object> preparedStmtList,
+			SearchCriteria criteria) {
+
+		if (criteria.getTenantId() != null) {
+			addClauseIfRequired(preparedStmtList, builder);
+			builder.append(" challan.tenantid=? ");
+			preparedStmtList.add(criteria.getTenantId());
+		}
+		if (criteria.getIsBillPaid() != null) {
+			addClauseIfRequired(preparedStmtList, builder);
+			builder.append("  challan.isBillPaid = ? ");
+			preparedStmtList.add(criteria.getIsBillPaid());
+		}
+		return builder;
+	}
+	
 }

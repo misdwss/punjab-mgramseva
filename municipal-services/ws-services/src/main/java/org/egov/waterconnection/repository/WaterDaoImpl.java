@@ -281,4 +281,31 @@ public class WaterDaoImpl implements WaterDao {
 		}
 		
 	}
+	
+	@Override
+	public WaterConnectionResponse getWaterConnectionListForPlaneSearch(SearchCriteria criteria, RequestInfo requestInfo) {
+
+		List<WaterConnection> waterConnectionList = new ArrayList<>();
+		List<Object> preparedStatement = new ArrayList<>();
+		
+		String query = wsQueryBuilder.getSearchQueryStringForPlaneSearch(criteria, preparedStatement, requestInfo);
+
+		if (query == null)
+			return null;
+		
+		Boolean isOpenSearch = isSearchOpen(requestInfo.getUserInfo());
+		WaterConnectionResponse connectionResponse = new WaterConnectionResponse();
+		if (isOpenSearch) {
+			waterConnectionList = jdbcTemplate.query(query, preparedStatement.toArray(), openWaterRowMapper);
+			connectionResponse = WaterConnectionResponse.builder().waterConnection(waterConnectionList)
+					.totalCount(openWaterRowMapper.getFull_count()).build();
+		} else {
+			waterConnectionList = jdbcTemplate.query(query, preparedStatement.toArray(), waterRowMapper);
+			connectionResponse = WaterConnectionResponse.builder().waterConnection(waterConnectionList)
+					.totalCount(waterRowMapper.getFull_count()).build();
+		}
+		return connectionResponse;
+	}
+	
+	
 }

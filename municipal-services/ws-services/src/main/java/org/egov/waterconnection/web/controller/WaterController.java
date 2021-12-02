@@ -166,4 +166,13 @@ public class WaterController {
 					responseInfoFactory.createResponseInfoFromRequestInfo(requestInfoWrapper.getRequestInfo(), true));
 			return new ResponseEntity<>(response, HttpStatus.OK);
 	    }
+	 
+	 @RequestMapping(value = "/plane/_search", method = RequestMethod.POST)
+		public ResponseEntity<WaterConnectionResponse> planeSearch(@Valid @RequestBody RequestInfoWrapper requestInfoWrapper,
+				@Valid @ModelAttribute SearchCriteria criteria) {
+			WaterConnectionResponse response = waterService.planeSearch(criteria, requestInfoWrapper.getRequestInfo());
+			response.setResponseInfo(
+					responseInfoFactory.createResponseInfoFromRequestInfo(requestInfoWrapper.getRequestInfo(), true));
+			return new ResponseEntity<>(response, HttpStatus.OK);
+		}
 }
