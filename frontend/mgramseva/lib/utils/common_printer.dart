@@ -6,15 +6,11 @@ class CommonPrinter {
   static bool connected = false;
 
   static setConnect(String mac, value, context) async {
-    print(mac);
-    print("its a datataa..");
-    print(connected);
     if (connected) {
       CommonPrinter.printTicket(value, context);
       Navigator.of(context).pop();
     } else {
       final String? result = await BluetoothThermalPrinter.connect(mac);
-      print("result");
 
       print("state conneected $result");
       if (result == "true") {
@@ -76,7 +72,6 @@ class CommonPrinter {
   }
 
   static Future<void> printTicket(value, context) async {
-    print("funcation called");
     String? isConnected = await BluetoothThermalPrinter.connectionStatus;
     print(isConnected);
     if (isConnected == "true") {
@@ -86,7 +81,6 @@ class CommonPrinter {
     } else {
       CommonPrinter.showMyDialog(context, value);
       print("connction not established");
-      //Hadnle Not Connected Senario
     }
   }
 
