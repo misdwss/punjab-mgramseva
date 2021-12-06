@@ -106,8 +106,10 @@
       function sendNextImageDataBatch(resolve, reject) {
         // Can only write 512 bytes at a time to the characteristic
         // Need to send the image data in 512 byte batches
+        console.log(index);
         if (index + 512 < data.length) {
           printCharacteristic.writeValue(data.slice(index, index + 512)).then(() => {
+            console.log(index);
             index += 512;
             sendNextImageDataBatch(resolve, reject);
           })
