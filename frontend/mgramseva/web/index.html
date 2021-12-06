@@ -109,7 +109,7 @@
         console.log(index);
         printCharacteristic
         if (index + 512 < data.length) {
-          printCharacteristic.wr(data.slice(index, index + 512)).then(() => {
+          printCharacteristic.writeValueWithResponse(data.slice(index, index + 512)).then(() => {
             console.log(index);
             index += 512;
             sendNextImageDataBatch(resolve, reject);
@@ -120,7 +120,7 @@
           // Send the last bytes
           if (index < data.length) {
             console.log("ist completed");
-            printCharacteristic.writeValue(data.slice(index, data.length)).then(() => {
+            printCharacteristic.writeValueWithResponse(data.slice(index, data.length)).then(() => {
               resolve();
             })
               .catch(error => reject(error));
@@ -274,7 +274,7 @@
       // Add line feed + carriage return chars to text
       let text = encoder.encode('hello');
 
-      return printCharacteristic.writeValue(text).then(() => {
+      return printCharacteristic.writeValueWithResponse(text).then(() => {
         console.log('Write done.');
     
 
@@ -318,7 +318,7 @@
           .then(characteristic => {
             // Cache the characteristic
             printCharacteristic = characteristic;
-            console.log(printCharacteristic );
+            console.log(printCharacteristic);
             let image = document.querySelector('#image');
             // Use the canvas to get image data
             let canvas = document.createElement('canvas');
