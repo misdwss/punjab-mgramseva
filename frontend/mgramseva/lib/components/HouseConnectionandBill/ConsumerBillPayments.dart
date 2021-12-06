@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:typed_data';
 import 'dart:io';
+import 'dart:js' as js;
 import 'dart:typed_data';
 import 'package:image/image.dart' as img;
 import 'package:bluetooth_thermal_printer/bluetooth_thermal_printer.dart';
@@ -44,24 +45,25 @@ class ConsumerBillPaymentsState extends State<ConsumerBillPayments> {
 
   getprinterlabel(key, value) {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Container(
-            width: 65,
             child: Text(ApplicationLocalizations.of(context).translate(key),
+                textScaleFactor: 4,
+                textAlign: TextAlign.start,
                 style: TextStyle(
-                    color: Colors.black,
+                    color: Colors.blue,
                     fontSize: 6,
                     fontWeight: FontWeight.bold))),
         Container(
-          width: 85,
+          width: 570 / 2,
           child: Text(
               ApplicationLocalizations.of(navigatorKey.currentContext!)
                   .translate(value),
-              maxLines: 2,
+              textScaleFactor: 4,
               style: TextStyle(
-                color: Colors.black,
+                color: Colors.blue,
                 fontSize: 6,
               )),
         ),
@@ -77,7 +79,8 @@ class ConsumerBillPaymentsState extends State<ConsumerBillPayments> {
         .captureFromWidget(Container(
             margin: EdgeInsets.zero,
             padding: EdgeInsets.zero,
-            width: 150,
+            width: 570,
+            height: 1600,
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -85,23 +88,25 @@ class ConsumerBillPaymentsState extends State<ConsumerBillPayments> {
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
                     Image(
-                        width: 20,
-                        height: 40,
+                        width: 160,
+                        height: 70,
                         image: NetworkImage(
-                          apiBaseUrl + 'logo/punjab-logo.png',
+                          apiBaseUrl +
+                              '/mgramseva-dev-assets/logo/punjab-logo.png',
                         )),
                     Container(
-                      width: 90,
+                      width: 420,
                       margin: EdgeInsets.all(5),
                       child: Text(
                         ApplicationLocalizations.of(
                                 navigatorKey.currentContext!)
                             .translate(i18.consumerReciepts
                                 .GRAM_PANCHAYAT_WATER_SUPPLY_AND_SANITATION),
+                        textScaleFactor: 3.5,
                         style: TextStyle(
-                            color: Colors.black,
+                            color: Colors.blue,
                             fontSize: 12,
-                            height: 1.2,
+                            height: 1,
                             fontWeight: FontWeight.bold,
                             fontStyle: FontStyle.italic),
                         textAlign: TextAlign.left,
@@ -112,15 +117,20 @@ class ConsumerBillPaymentsState extends State<ConsumerBillPayments> {
                 SizedBox(
                   height: 5,
                 ),
-                Text(
-                    ApplicationLocalizations.of(navigatorKey.currentContext!)
-                        .translate(i18.consumerReciepts.WATER_RECEIPT),
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 12,
-                      height: 1,
-                      fontWeight: FontWeight.bold,
-                    )),
+                Container(
+                    width: 550,
+                    margin: EdgeInsets.all(5),
+                    child: Text(
+                        ApplicationLocalizations.of(
+                                navigatorKey.currentContext!)
+                            .translate(i18.consumerReciepts.WATER_RECEIPT),
+                        textScaleFactor: 3.5,
+                        style: TextStyle(
+                          color: Colors.blue,
+                          fontSize: 10,
+                          height: 1,
+                          fontWeight: FontWeight.bold,
+                        ))),
                 SizedBox(
                   height: 8,
                 ),
@@ -191,12 +201,26 @@ class ConsumerBillPaymentsState extends State<ConsumerBillPayments> {
                             .convert('en-in', item.totalAmountPaid.toInt())
                             .toString()) +
                         ' only')),
+                Text('--***--',
+                    textScaleFactor: 4,
+                    textAlign: TextAlign.start,
+                    style: TextStyle(
+                        color: Colors.blue,
+                        fontSize: 7,
+                        fontWeight: FontWeight.bold)),
+                Text('Powered by DIGIT',
+                    textScaleFactor: 4,
+                    textAlign: TextAlign.start,
+                    style: TextStyle(
+                        color: Colors.blue,
+                        fontSize: 7,
+                        fontWeight: FontWeight.bold))
               ],
             )))
         .then((value) => {
-              // js.context.callMethod('onButtonClick', []);
-              CommonPrinter.printTicket(
-                  img.decodeImage(value), navigatorKey.currentContext!),
+              js.context.callMethod('onButtonClick', [value])
+              // CommonPrinter.printTicket(
+              //     img.decodeImage(value), navigatorKey.currentContext!),
               // print(value as Image),
             });
   }
