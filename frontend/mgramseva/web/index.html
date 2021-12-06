@@ -107,8 +107,9 @@
         // Can only write 512 bytes at a time to the characteristic
         // Need to send the image data in 512 byte batches
         console.log(index);
+        printCharacteristic
         if (index + 512 < data.length) {
-          printCharacteristic.writeValue(data.slice(index, index + 512)).then(() => {
+          printCharacteristic.wr(data.slice(index, index + 512)).then(() => {
             console.log(index);
             index += 512;
             sendNextImageDataBatch(resolve, reject);
@@ -317,6 +318,7 @@
           .then(characteristic => {
             // Cache the characteristic
             printCharacteristic = characteristic;
+            console.log(printCharacteristic);
             let image = document.querySelector('#image');
             // Use the canvas to get image data
             let canvas = document.createElement('canvas');
