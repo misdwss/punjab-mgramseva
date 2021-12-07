@@ -37,6 +37,12 @@ class ConsumerBillPaymentsState extends State<ConsumerBillPayments> {
   Uint8List? _imageFile;
 
   ScreenshotController screenshotController = ScreenshotController();
+  Image _image = Image(
+      width: 70,
+      height: 70,
+      image: NetworkImage(
+        'https://mgramseva-qa.egov.org.in/mgramseva-dev-assets/logo/punjab-logo.png',
+      ));
   @override
   void initState() {
     WidgetsBinding.instance?.addPostFrameCallback((_) => afterViewBuild());
@@ -49,7 +55,7 @@ class ConsumerBillPaymentsState extends State<ConsumerBillPayments> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Container(
-            width: 65,
+            width: MediaQuery.of(context).size.width / 2.1,
             child: Text(ApplicationLocalizations.of(context).translate(key),
                 maxLines: 3,
                 textScaleFactor: 3,
@@ -58,8 +64,11 @@ class ConsumerBillPaymentsState extends State<ConsumerBillPayments> {
                     color: Colors.blue,
                     fontSize: 6,
                     fontWeight: FontWeight.bold))),
+        SizedBox(
+          width: 10,
+        ),
         Container(
-            width: 85,
+            width: MediaQuery.of(context).size.width / 2.1,
             child: Text(
               ApplicationLocalizations.of(navigatorKey.currentContext!)
                   .translate(value),
@@ -90,12 +99,7 @@ class ConsumerBillPaymentsState extends State<ConsumerBillPayments> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
-                    Image(
-                        width: 70,
-                        height: 70,
-                        image: NetworkImage(
-                          'https://mgramseva-qa.egov.org.in/mgramseva-dev-assets/logo/punjab-logo.png',
-                        )),
+                    _image,
                     Container(
                       width: 400,
                       margin: EdgeInsets.all(5),
@@ -204,7 +208,7 @@ class ConsumerBillPaymentsState extends State<ConsumerBillPayments> {
                             .convert('en-in', item.totalAmountPaid.toInt())
                             .toString()) +
                         ' only')),
-                Text('--***--',
+                Text('- - *** - -',
                     textScaleFactor: 4,
                     textAlign: TextAlign.start,
                     style: TextStyle(
