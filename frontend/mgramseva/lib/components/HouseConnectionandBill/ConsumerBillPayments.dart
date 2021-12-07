@@ -49,7 +49,7 @@ class ConsumerBillPaymentsState extends State<ConsumerBillPayments> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Container(
-            width: 170 / 2,
+            width: MediaQuery.of(context).size.width / 2.1,
             child: Text(ApplicationLocalizations.of(context).translate(key),
                 maxLines: 3,
                 textScaleFactor: 3,
@@ -62,7 +62,7 @@ class ConsumerBillPaymentsState extends State<ConsumerBillPayments> {
           width: 10,
         ),
         Container(
-            width: 170 / 2,
+            width: MediaQuery.of(context).size.width / 2.1,
             child: Text(
               ApplicationLocalizations.of(navigatorKey.currentContext!)
                   .translate(value),
@@ -84,7 +84,7 @@ class ConsumerBillPaymentsState extends State<ConsumerBillPayments> {
         listen: false);
     screenshotController
         .captureFromWidget(Container(
-            width: 750,
+            width: MediaQuery.of(context).size.width,
             margin: EdgeInsets.zero,
             padding: EdgeInsets.zero,
             child: Column(
