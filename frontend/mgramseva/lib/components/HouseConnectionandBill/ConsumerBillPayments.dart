@@ -45,36 +45,30 @@ class ConsumerBillPaymentsState extends State<ConsumerBillPayments> {
 
   getprinterlabel(key, value) {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Container(
-            width: 200,
-            child: Flexible(
-                child: Text(ApplicationLocalizations.of(context).translate(key),
-                    textScaleFactor: 3,
-                    textAlign: TextAlign.start,
-                    maxLines: 3,
-                    style: TextStyle(
-                        color: Colors.blue,
-                        fontSize: 7,
-                        fontWeight: FontWeight.bold)))),
+        Text(ApplicationLocalizations.of(context).translate(key),
+            textScaleFactor: 3,
+            textAlign: TextAlign.start,
+            style: TextStyle(
+                color: Colors.blue, fontSize: 7, fontWeight: FontWeight.bold)),
         SizedBox(
           width: 20,
+          height: 20,
         ),
         Container(
-            width: 250,
-            child: Flexible(
-                child: Text(
-                    ApplicationLocalizations.of(navigatorKey.currentContext!)
-                        .translate(value),
-                    textScaleFactor: 3,
-                    textAlign: TextAlign.start,
-                    maxLines: 3,
-                    style: TextStyle(
-                      color: Colors.blue,
-                      fontSize: 7,
-                    )))),
+          width: 250,
+          child: Text(
+              ApplicationLocalizations.of(navigatorKey.currentContext!)
+                  .translate(value),
+              textScaleFactor: 3,
+              textAlign: TextAlign.start,
+              style: TextStyle(
+                color: Colors.blue,
+                fontSize: 7,
+              )),
+        ),
       ],
     );
   }
@@ -103,23 +97,22 @@ class ConsumerBillPaymentsState extends State<ConsumerBillPayments> {
                               '/mgramseva-dev-assets/logo/punjab-logo.png',
                         )),
                     Container(
+                      width: 400,
                       margin: EdgeInsets.all(5),
-                      child: Flexible(
-                        child: Text(
-                          ApplicationLocalizations.of(
-                                  navigatorKey.currentContext!)
-                              .translate(i18.consumerReciepts
-                                  .GRAM_PANCHAYAT_WATER_SUPPLY_AND_SANITATION),
-                          textScaleFactor: 3.5,
-                          maxLines: 3,
-                          style: TextStyle(
-                              color: Colors.blue,
-                              fontSize: 12,
-                              height: 1,
-                              fontWeight: FontWeight.bold,
-                              fontStyle: FontStyle.italic),
-                          textAlign: TextAlign.left,
-                        ),
+                      child: Text(
+                        ApplicationLocalizations.of(
+                                navigatorKey.currentContext!)
+                            .translate(i18.consumerReciepts
+                                .GRAM_PANCHAYAT_WATER_SUPPLY_AND_SANITATION),
+                        textScaleFactor: 3.5,
+                        maxLines: 3,
+                        style: TextStyle(
+                            color: Colors.blue,
+                            fontSize: 12,
+                            height: 1,
+                            fontWeight: FontWeight.bold,
+                            fontStyle: FontStyle.italic),
+                        textAlign: TextAlign.left,
                       ),
                     )
                   ],
