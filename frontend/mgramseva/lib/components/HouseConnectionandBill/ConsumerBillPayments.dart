@@ -49,7 +49,7 @@ class ConsumerBillPaymentsState extends State<ConsumerBillPayments> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Container(
-            width: 200,
+            width: 180,
             child: Text(ApplicationLocalizations.of(context).translate(key),
                 textScaleFactor: 3,
                 textAlign: TextAlign.start,
@@ -108,7 +108,7 @@ class ConsumerBillPaymentsState extends State<ConsumerBillPayments> {
                         maxLines: 3,
                         style: TextStyle(
                             color: Colors.blue,
-                            fontSize: 12,
+                            fontSize: 10,
                             height: 1,
                             fontWeight: FontWeight.bold,
                             fontStyle: FontStyle.italic),
