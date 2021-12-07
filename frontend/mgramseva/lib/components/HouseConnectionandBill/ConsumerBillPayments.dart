@@ -49,7 +49,7 @@ class ConsumerBillPaymentsState extends State<ConsumerBillPayments> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Container(
-            width: MediaQuery.of(context).size.width / 2.3,
+            width: 65,
             child: Text(ApplicationLocalizations.of(context).translate(key),
                 maxLines: 3,
                 textScaleFactor: 3,
@@ -59,7 +59,7 @@ class ConsumerBillPaymentsState extends State<ConsumerBillPayments> {
                     fontSize: 7,
                     fontWeight: FontWeight.bold))),
         Container(
-            width: MediaQuery.of(context).size.width / 1.7,
+            width: 85,
             child: Text(
               ApplicationLocalizations.of(navigatorKey.currentContext!)
                   .translate(value),
