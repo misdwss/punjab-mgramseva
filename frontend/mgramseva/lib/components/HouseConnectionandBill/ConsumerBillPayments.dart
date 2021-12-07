@@ -56,7 +56,7 @@ class ConsumerBillPaymentsState extends State<ConsumerBillPayments> {
                 textAlign: TextAlign.start,
                 style: TextStyle(
                     color: Colors.blue,
-                    fontSize: 7,
+                    fontSize: 6,
                     fontWeight: FontWeight.bold))),
         Container(
             width: 85,
@@ -68,7 +68,7 @@ class ConsumerBillPaymentsState extends State<ConsumerBillPayments> {
               textScaleFactor: 3,
               style: TextStyle(
                 color: Colors.blue,
-                fontSize: 7,
+                fontSize: 6,
               ),
             )),
       ],
