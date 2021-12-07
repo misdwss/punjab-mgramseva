@@ -59,10 +59,10 @@ class ConsumerBillPaymentsState extends State<ConsumerBillPayments> {
                     fontSize: 6,
                     fontWeight: FontWeight.bold))),
         SizedBox(
-          width: 10,
+          width: 2,
         ),
         Container(
-            width: MediaQuery.of(context).size.width / 1.8,
+            width: MediaQuery.of(context).size.width / 1.75,
             child: Text(
               ApplicationLocalizations.of(navigatorKey.currentContext!)
                   .translate(value),
@@ -172,7 +172,7 @@ class ConsumerBillPaymentsState extends State<ConsumerBillPayments> {
                               .translate(commonProvider
                                   .userDetails!.selectedtenant!.code!)),
                   SizedBox(
-                    height: 10,
+                    height: 5,
                   ),
                   getprinterlabel(i18.consumer.SERVICE_TYPE,
                       widget.waterconnection?.connectionType),
@@ -196,7 +196,7 @@ class ConsumerBillPaymentsState extends State<ConsumerBillPayments> {
                                   format: "dd/MM/yyyy")
                               .toString()),
                   SizedBox(
-                    height: 10,
+                    height: 5,
                   ),
                   getprinterlabel(i18.consumerReciepts.RECEIPT_AMOUNT_PAID,
                       ('₹' + (item.totalAmountPaid).toString())),
@@ -208,18 +208,18 @@ class ConsumerBillPaymentsState extends State<ConsumerBillPayments> {
                               .toString()) +
                           ' only')),
                   Text('- - *** - -',
-                      textScaleFactor: 4,
+                      textScaleFactor: 3,
                       textAlign: TextAlign.start,
                       style: TextStyle(
                           color: Colors.blue,
-                          fontSize: 7,
+                          fontSize: 6,
                           fontWeight: FontWeight.bold)),
                   Text('Powered by DIGIT',
-                      textScaleFactor: 4,
+                      textScaleFactor: 3,
                       textAlign: TextAlign.start,
                       style: TextStyle(
                           color: Colors.blue,
-                          fontSize: 7,
+                          fontSize: 6,
                           fontWeight: FontWeight.bold))
                 ],
               )),
