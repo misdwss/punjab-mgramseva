@@ -42,35 +42,39 @@ class ConsumerBillPaymentsState extends State<ConsumerBillPayments> {
   }
 
   getprinterlabel(key, value) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.start,
-      crossAxisAlignment: CrossAxisAlignment.start,
+    return Container(
+        width: 550,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
 // set spacing here
-      children: [
-        Container(
-          width: 250,
-          child: Flexible(
-              child: Text(ApplicationLocalizations.of(context).translate(key),
-                  textScaleFactor: 3,
-                  textAlign: TextAlign.start,
-                  style: TextStyle(
+          children: [
+            Container(
+              width: 250,
+              child: Flexible(
+                  child: Text(
+                      ApplicationLocalizations.of(context).translate(key),
+                      textScaleFactor: 3,
+                      textAlign: TextAlign.start,
+                      style: TextStyle(
+                          color: Colors.blue,
+                          fontSize: 7,
+                          fontWeight: FontWeight.bold))),
+            ),
+            SizedBox(width: 50),
+            Container(
+                width: 250,
+                child: Text(
+                    ApplicationLocalizations.of(navigatorKey.currentContext!)
+                        .translate(value),
+                    textScaleFactor: 3,
+                    textAlign: TextAlign.start,
+                    style: TextStyle(
                       color: Colors.blue,
                       fontSize: 7,
-                      fontWeight: FontWeight.bold))),
-        ),
-        SizedBox(width: 50),
-        Flexible(
-            child: Text(
-                ApplicationLocalizations.of(navigatorKey.currentContext!)
-                    .translate(value),
-                textScaleFactor: 3,
-                textAlign: TextAlign.start,
-                style: TextStyle(
-                  color: Colors.blue,
-                  fontSize: 7,
-                ))),
-      ],
-    );
+                    ))),
+          ],
+        ));
   }
 
   Future<Uint8List?> _capturePng(item) async {
