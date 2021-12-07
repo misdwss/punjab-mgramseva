@@ -34,6 +34,8 @@ class ConsumerBillPayments extends StatefulWidget {
 }
 
 class ConsumerBillPaymentsState extends State<ConsumerBillPayments> {
+  Uint8List? _imageFile;
+
   ScreenshotController screenshotController = ScreenshotController();
   @override
   void initState() {
@@ -42,39 +44,35 @@ class ConsumerBillPaymentsState extends State<ConsumerBillPayments> {
   }
 
   getprinterlabel(key, value) {
-    return Container(
-        width: 550,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
-// set spacing here
-          children: [
-            Container(
-              width: 250,
-              child: Flexible(
-                  child: Text(
-                      ApplicationLocalizations.of(context).translate(key),
-                      textScaleFactor: 3,
-                      textAlign: TextAlign.start,
-                      style: TextStyle(
-                          color: Colors.blue,
-                          fontSize: 7,
-                          fontWeight: FontWeight.bold))),
-            ),
-            SizedBox(width: 50),
-            Container(
-                width: 250,
-                child: Text(
-                    ApplicationLocalizations.of(navigatorKey.currentContext!)
-                        .translate(value),
-                    textScaleFactor: 3,
-                    textAlign: TextAlign.start,
-                    style: TextStyle(
-                      color: Colors.blue,
-                      fontSize: 7,
-                    ))),
-          ],
-        ));
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+            width: 250,
+            child: Text(ApplicationLocalizations.of(context).translate(key),
+                textScaleFactor: 3,
+                textAlign: TextAlign.start,
+                style: TextStyle(
+                    color: Colors.blue,
+                    fontSize: 7,
+                    fontWeight: FontWeight.bold))),
+        SizedBox(
+          width: 20,
+        ),
+        Container(
+            width: 250,
+            child: Text(
+                ApplicationLocalizations.of(navigatorKey.currentContext!)
+                    .translate(value),
+                textScaleFactor: 3,
+                textAlign: TextAlign.start,
+                style: TextStyle(
+                  color: Colors.blue,
+                  fontSize: 7,
+                ))),
+      ],
+    );
   }
 
   Future<Uint8List?> _capturePng(item) async {
@@ -100,24 +98,24 @@ class ConsumerBillPaymentsState extends State<ConsumerBillPayments> {
                           apiBaseUrl +
                               '/mgramseva-dev-assets/logo/punjab-logo.png',
                         )),
-                    Flexible(
-                        child: Container(
-                            margin: EdgeInsets.all(10),
-                            child: Text(
-                              ApplicationLocalizations.of(
-                                      navigatorKey.currentContext!)
-                                  .translate(i18.consumerReciepts
-                                      .GRAM_PANCHAYAT_WATER_SUPPLY_AND_SANITATION),
-                              maxLines: 3,
-                              textScaleFactor: 3,
-                              style: TextStyle(
-                                  color: Colors.blue,
-                                  fontSize: 12,
-                                  height: 1,
-                                  fontWeight: FontWeight.bold,
-                                  fontStyle: FontStyle.italic),
-                              textAlign: TextAlign.left,
-                            ))),
+                    Container(
+                      margin: EdgeInsets.all(5),
+                      child: Text(
+                        ApplicationLocalizations.of(
+                                navigatorKey.currentContext!)
+                            .translate(i18.consumerReciepts
+                                .GRAM_PANCHAYAT_WATER_SUPPLY_AND_SANITATION),
+                        textScaleFactor: 3.5,
+                        maxLines: 3,
+                        style: TextStyle(
+                            color: Colors.blue,
+                            fontSize: 12,
+                            height: 1,
+                            fontWeight: FontWeight.bold,
+                            fontStyle: FontStyle.italic),
+                        textAlign: TextAlign.left,
+                      ),
+                    )
                   ],
                 ),
                 SizedBox(
@@ -130,7 +128,7 @@ class ConsumerBillPaymentsState extends State<ConsumerBillPayments> {
                         ApplicationLocalizations.of(
                                 navigatorKey.currentContext!)
                             .translate(i18.consumerReciepts.WATER_RECEIPT),
-                        textScaleFactor: 3,
+                        textScaleFactor: 3.5,
                         style: TextStyle(
                           color: Colors.blue,
                           fontSize: 10,
@@ -207,7 +205,7 @@ class ConsumerBillPaymentsState extends State<ConsumerBillPayments> {
                             .convert('en-in', item.totalAmountPaid.toInt())
                             .toString()) +
                         ' only')),
-                Text('- - *** - - ',
+                Text('--***--',
                     textScaleFactor: 4,
                     textAlign: TextAlign.start,
                     style: TextStyle(
