@@ -148,8 +148,10 @@
         // Canvas dimensions need to be a multiple of 40 for this printer
         canvas.width = 360;
         canvas.height = 680;
-
+        const image2 = new Image();
+        image2.src = 'https://mgramseva-qa.egov.org.in/mgramseva-dev-assets/logo/punjab-logo.png';
         context.drawImage(image, 0, 0, canvas.width, canvas.height);
+        context.drawImage(image2, 0, 0, 70,70 );
         let imageData = context.getImageData(0, 0, canvas.width, canvas.height).data;
         if (imageData == null) {
           console.log('No image to print!');
@@ -181,15 +183,7 @@
         }
         console.log(printData);
         console.log("print data");
-        let arr=new Uint8Array([29, 118, 48, 0, 45, 0, 168, 2, 3, 255, 255, 255, 255, 255, 255, 248, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 63, 248, 7, 255, 3, 255, 255, 255, 255, 255, 255, 248, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 63, 240, 7, 255, 3, 255]);
-
-        var mergedArray = new Uint8Array(arr.length + printData.subarray(100, printData.length).length);
-        mergedArray.set(arr);
-        mergedArray.set(printData.subarray(100, printData.length), arr.length)
- 
-        console.log("unshifting data");
-        console.log(mergedArray);
-        return mergedArray;
+        return printData;
       }
 
 
@@ -278,7 +272,7 @@
             base64Data = btoa(new Uint8Array(value).reduce(function (data, byte) {
               return data + String.fromCharCode(byte);
             }, ''));
-
+            console.log(base64Data);
             var img = new Image();
             img.src = 'data:image/png;base64, ' + base64Data;
             image.src = img.src;
