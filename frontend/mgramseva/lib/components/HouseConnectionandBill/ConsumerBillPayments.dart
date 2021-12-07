@@ -45,21 +45,26 @@ class ConsumerBillPaymentsState extends State<ConsumerBillPayments> {
 
   getprinterlabel(key, value) {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(ApplicationLocalizations.of(context).translate(key),
-            textScaleFactor: 3,
-            textAlign: TextAlign.start,
-            style: TextStyle(
-                color: Colors.blue, fontSize: 6, fontWeight: FontWeight.bold)),
+        Container(
+            width: 570 / 2,
+            child: Text(ApplicationLocalizations.of(context).translate(key),
+                textScaleFactor: 3,
+                textAlign: TextAlign.start,
+                style: TextStyle(
+                    color: Colors.blue,
+                    fontSize: 7,
+                    fontWeight: FontWeight.bold))),
         Text(
             ApplicationLocalizations.of(navigatorKey.currentContext!)
                 .translate(value),
             textScaleFactor: 3,
+            textAlign: TextAlign.start,
             style: TextStyle(
               color: Colors.blue,
-              fontSize: 6,
+              fontSize: 7,
             )),
       ],
     );
@@ -82,24 +87,28 @@ class ConsumerBillPaymentsState extends State<ConsumerBillPayments> {
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
                     Image(
-                        width: 170,
+                        width: 70,
                         height: 70,
                         image: NetworkImage(
                           apiBaseUrl +
                               '/mgramseva-dev-assets/logo/punjab-logo.png',
                         )),
-                    Text(
-                      ApplicationLocalizations.of(navigatorKey.currentContext!)
-                          .translate(i18.consumerReciepts
-                              .GRAM_PANCHAYAT_WATER_SUPPLY_AND_SANITATION),
-                      textScaleFactor: 3.5,
-                      style: TextStyle(
-                          color: Colors.blue,
-                          fontSize: 12,
-                          height: 1,
-                          fontWeight: FontWeight.bold,
-                          fontStyle: FontStyle.italic),
-                      textAlign: TextAlign.left,
+                    Container(
+                      margin: EdgeInsets.all(5),
+                      child: Text(
+                        ApplicationLocalizations.of(
+                                navigatorKey.currentContext!)
+                            .translate(i18.consumerReciepts
+                                .GRAM_PANCHAYAT_WATER_SUPPLY_AND_SANITATION),
+                        textScaleFactor: 3.5,
+                        style: TextStyle(
+                            color: Colors.blue,
+                            fontSize: 12,
+                            height: 1,
+                            fontWeight: FontWeight.bold,
+                            fontStyle: FontStyle.italic),
+                        textAlign: TextAlign.left,
+                      ),
                     )
                   ],
                 ),
