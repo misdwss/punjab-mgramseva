@@ -177,7 +177,7 @@ class _LandingPageState extends State<LandingPage> {
 
   void checkVersion() async {
     final newVersion = NewVersion(
-      androidId: "com.snapchat.android",
+      androidId: "com.dwss.mgramseva",
       //iOSId: "com.dwss.mgramseva",
     );
     //newVersion.showAlertIfNecessary(context: context); //Use this if you want the update alert with default settings
