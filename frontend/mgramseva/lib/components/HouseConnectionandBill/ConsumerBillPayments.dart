@@ -48,17 +48,21 @@ class ConsumerBillPaymentsState extends State<ConsumerBillPayments> {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(ApplicationLocalizations.of(context).translate(key),
-            textScaleFactor: 3,
-            textAlign: TextAlign.start,
-            style: TextStyle(
-                color: Colors.blue, fontSize: 7, fontWeight: FontWeight.bold)),
+        Container(
+            width: 200,
+            child: Text(ApplicationLocalizations.of(context).translate(key),
+                textScaleFactor: 3,
+                textAlign: TextAlign.start,
+                style: TextStyle(
+                    color: Colors.blue,
+                    fontSize: 7,
+                    fontWeight: FontWeight.bold))),
         SizedBox(
           width: 20,
           height: 20,
         ),
         Container(
-          width: 250,
+          width: 200,
           child: Text(
               ApplicationLocalizations.of(navigatorKey.currentContext!)
                   .translate(value),
