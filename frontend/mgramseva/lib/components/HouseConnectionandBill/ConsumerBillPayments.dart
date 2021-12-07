@@ -57,12 +57,8 @@ class ConsumerBillPaymentsState extends State<ConsumerBillPayments> {
                     color: Colors.blue,
                     fontSize: 7,
                     fontWeight: FontWeight.bold))),
-        SizedBox(
-          width: 20,
-          height: 20,
-        ),
         Container(
-          width: 200,
+          width: 250,
           child: Text(
               ApplicationLocalizations.of(navigatorKey.currentContext!)
                   .translate(value),
@@ -108,7 +104,7 @@ class ConsumerBillPaymentsState extends State<ConsumerBillPayments> {
                                 navigatorKey.currentContext!)
                             .translate(i18.consumerReciepts
                                 .GRAM_PANCHAYAT_WATER_SUPPLY_AND_SANITATION),
-                        textScaleFactor: 3.5,
+                        textScaleFactor: 3,
                         maxLines: 3,
                         style: TextStyle(
                             color: Colors.blue,
