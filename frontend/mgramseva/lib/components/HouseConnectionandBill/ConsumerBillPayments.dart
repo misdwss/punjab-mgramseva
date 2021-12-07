@@ -49,8 +49,9 @@ class ConsumerBillPaymentsState extends State<ConsumerBillPayments> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Container(
-            width: 180,
+            width: 730 / 2,
             child: Text(ApplicationLocalizations.of(context).translate(key),
+                maxLines: 3,
                 textScaleFactor: 3,
                 textAlign: TextAlign.start,
                 style: TextStyle(
@@ -60,17 +61,19 @@ class ConsumerBillPaymentsState extends State<ConsumerBillPayments> {
         SizedBox(
           width: 20,
         ),
-        Text(
-          ApplicationLocalizations.of(navigatorKey.currentContext!)
-              .translate(value),
-          maxLines: 3,
-          textScaleFactor: 3,
-          textAlign: TextAlign.start,
-          style: TextStyle(
-            color: Colors.blue,
-            fontSize: 7,
-          ),
-        ),
+        Container(
+            width: 730 / 2,
+            child: Text(
+              ApplicationLocalizations.of(navigatorKey.currentContext!)
+                  .translate(value),
+              maxLines: 3,
+              textAlign: TextAlign.start,
+              textScaleFactor: 3,
+              style: TextStyle(
+                color: Colors.blue,
+                fontSize: 7,
+              ),
+            )),
       ],
     );
   }
@@ -81,10 +84,9 @@ class ConsumerBillPaymentsState extends State<ConsumerBillPayments> {
         listen: false);
     screenshotController
         .captureFromWidget(Container(
+            width: 750,
             margin: EdgeInsets.zero,
             padding: EdgeInsets.zero,
-            width: 570,
-            height: 1600,
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
