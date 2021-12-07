@@ -57,17 +57,19 @@ class ConsumerBillPaymentsState extends State<ConsumerBillPayments> {
                     color: Colors.blue,
                     fontSize: 7,
                     fontWeight: FontWeight.bold))),
-        Container(
-          width: 250,
-          child: Text(
-              ApplicationLocalizations.of(navigatorKey.currentContext!)
-                  .translate(value),
-              textScaleFactor: 3,
-              textAlign: TextAlign.start,
-              style: TextStyle(
-                color: Colors.blue,
-                fontSize: 7,
-              )),
+        SizedBox(
+          width: 20,
+        ),
+        Text(
+          ApplicationLocalizations.of(navigatorKey.currentContext!)
+              .translate(value),
+          maxLines: 3,
+          textScaleFactor: 3,
+          textAlign: TextAlign.start,
+          style: TextStyle(
+            color: Colors.blue,
+            fontSize: 7,
+          ),
         ),
       ],
     );
@@ -93,8 +95,7 @@ class ConsumerBillPaymentsState extends State<ConsumerBillPayments> {
                         width: 70,
                         height: 70,
                         image: NetworkImage(
-                          apiBaseUrl +
-                              '/mgramseva-dev-assets/logo/punjab-logo.png',
+                          'https://mgramseva-qa.egov.org.in/mgramseva-dev-assets/logo/punjab-logo.png',
                         )),
                     Container(
                       width: 400,
