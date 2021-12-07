@@ -62,7 +62,7 @@ class ConsumerBillPaymentsState extends State<ConsumerBillPayments> {
           width: 10,
         ),
         Container(
-            width: MediaQuery.of(context).size.width / 2.1,
+            width: MediaQuery.of(context).size.width / 1.8,
             child: Text(
               ApplicationLocalizations.of(navigatorKey.currentContext!)
                   .translate(value),
