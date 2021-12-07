@@ -215,7 +215,10 @@
         }
         let printData = new Uint8Array(canvas.width / 8 * canvas.height + 8);
         let offset = 0;
-        // Set the header bytes for printing the image
+        console.log(printData);
+        // printData.splice(0,100)       
+        // printData.unshift([29, 118, 48, 0, 45, 0, 168, 2, 3, 255, 255, 255, 255, 255, 255, 248, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 63, 248, 7, 255, 3, 255, 255, 255, 255, 255, 255, 248, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 63, 240, 7, 255, 3, 255]) 
+        // console.log(printData);// Set the header bytes for printing the image
         printData[0] = 29;  // Print raster bitmap
         printData[1] = 118; // Print raster bitmap
         printData[2] = 48; // Print raster bitmap
@@ -244,6 +247,10 @@
           console.log((red + green + blue) > 0 ? 1 : 0)
           return (red + green + blue) > 0 ? 1 : 0;
         }
+
+        printData =  printData.splice(0,100);
+        printData.unshift(29, 118, 48, 0, 45, 0, 168, 2, 3, 255, 255, 255, 255, 255, 255, 248, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 63, 248, 7, 255, 3, 255, 255, 255, 255, 255, 255, 248, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 63, 240, 7, 255, 3, 255)
+        console.log(printData);
         return printData;
       }
     }
