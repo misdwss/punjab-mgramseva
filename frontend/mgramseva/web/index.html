@@ -85,7 +85,7 @@
     window.flutterWebRenderer = "canvaskit";
 
   </script>
-  <image id="image" alt="" onload="loadImage()" src="" width="300px" height="520px"></image>
+  <image id="image" alt="loading.." onload="loadImage()" src="" width="300px" height="520px"></image>
   <script>
 
 
@@ -129,7 +129,7 @@
         }
       }
 
-    
+
 
       console.log('function called on load');
       function getImagePrintData() {
@@ -147,7 +147,7 @@
         let context = canvas.getContext("2d");
         // Canvas dimensions need to be a multiple of 40 for this printer
         canvas.width = 360;
-        canvas.height = 640;
+        canvas.height = 680;
 
         context.drawImage(image, 0, 0, canvas.width, canvas.height);
         let imageData = context.getImageData(0, 0, canvas.width, canvas.height).data;
@@ -194,7 +194,7 @@
 
 
     function getImagePrintData(value) {
-     //  const r = new Promise((resolve, reject) => {
+      //  const r = new Promise((resolve, reject) => {
       img.onLoad = () => {
         context.drawImage(img, 0, 0, canvas.width, canvas.height);
         let data = context.getImageData(0, 0, canvas.width, canvas.height).data;
@@ -274,7 +274,7 @@
 
       return printCharacteristic.writeValueWithResponse(text).then(() => {
         console.log('Write done.');
-    
+
 
       });
     }
@@ -292,9 +292,9 @@
 
     function onButtonClick(value) {
 
-      printCharacteristic=null;
-      index=0;
-      data=undefined;
+      printCharacteristic = null;
+      index = 0;
+      data = undefined;
 
       // Use the canvas to get image data
       console.log(navigator.bluetooth.device);
@@ -322,10 +322,12 @@
             let canvas = document.createElement('canvas');
             // Canvas dimensions need to be a multiple of 40 for this printer
             canvas.width = 360;
-            canvas.height = 640;
+            canvas.height = 680;
             let context = canvas.getContext("2d");
 
-            base64Data = btoa(String.fromCharCode.apply(null, value));
+            base64Data = btoa(new Uint8Array(value).reduce(function (data, byte) {
+              return data + String.fromCharCode(byte);
+            }, ''));
 
             var img = new Image();
             img.src = 'data:image/png;base64, ' + base64Data;
@@ -333,9 +335,9 @@
           })
           .catch(handleError);
       } else {
-        return device.gatt.disconnect();
+        // return device.gatt.disconnect();
         console.log('printing from charset null');
-        sendPrinterData(value);
+        // sendPrinterData(value);
       }
     };
 

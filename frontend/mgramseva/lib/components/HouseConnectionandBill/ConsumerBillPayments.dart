@@ -37,12 +37,6 @@ class ConsumerBillPaymentsState extends State<ConsumerBillPayments> {
   Uint8List? _imageFile;
 
   ScreenshotController screenshotController = ScreenshotController();
-  Image _image = Image(
-      width: 70,
-      height: 70,
-      image: NetworkImage(
-        'https://mgramseva-qa.egov.org.in/mgramseva-dev-assets/logo/punjab-logo.png',
-      ));
   @override
   void initState() {
     WidgetsBinding.instance?.addPostFrameCallback((_) => afterViewBuild());
@@ -88,155 +82,152 @@ class ConsumerBillPaymentsState extends State<ConsumerBillPayments> {
     var commonProvider = Provider.of<CommonProvider>(
         navigatorKey.currentContext!,
         listen: false);
-
-    // screenshotController
-    //     .captureFromWidget(Container(
-    //         width: MediaQuery.of(context).size.width,
-    //         margin: EdgeInsets.zero,
-    //         padding: EdgeInsets.zero,
-    //         child: Column(
-    //           mainAxisSize: MainAxisSize.min,
-    //           children: [
-    //             Row(
-    //               mainAxisAlignment: MainAxisAlignment.spaceAround,
-    //               children: [
-    //                 _image,
-    //                 Container(
-    //                   width: 400,
-    //                   margin: EdgeInsets.all(5),
-    //                   child: Text(
-    //                     ApplicationLocalizations.of(
-    //                             navigatorKey.currentContext!)
-    //                         .translate(i18.consumerReciepts
-    //                             .GRAM_PANCHAYAT_WATER_SUPPLY_AND_SANITATION),
-    //                     textScaleFactor: 3,
-    //                     maxLines: 3,
-    //                     style: TextStyle(
-    //                         color: Colors.blue,
-    //                         fontSize: 10,
-    //                         height: 1,
-    //                         fontWeight: FontWeight.bold,
-    //                         fontStyle: FontStyle.italic),
-    //                     textAlign: TextAlign.left,
-    //                   ),
-    //                 )
-    //               ],
-    //             ),
-    //             SizedBox(
-    //               height: 5,
-    //             ),
-    //             Container(
-    //                 width: 550,
-    //                 margin: EdgeInsets.all(5),
-    //                 child: Text(
-    //                     ApplicationLocalizations.of(
-    //                             navigatorKey.currentContext!)
-    //                         .translate(i18.consumerReciepts.WATER_RECEIPT),
-    //                     textScaleFactor: 3.5,
-    //                     style: TextStyle(
-    //                       color: Colors.blue,
-    //                       fontSize: 10,
-    //                       height: 1,
-    //                       fontWeight: FontWeight.bold,
-    //                     ))),
-    //             SizedBox(
-    //               height: 8,
-    //             ),
-    //             getprinterlabel(
-    //                 i18.consumerReciepts.RECEIPT_GPWSC_NAME,
-    //                 ApplicationLocalizations.of(navigatorKey.currentContext!)
-    //                     .translate(
-    //                         commonProvider.userDetails!.selectedtenant!.code!)),
-    //             getprinterlabel(i18.consumerReciepts.RECEIPT_CONSUMER_NO,
-    //                 widget.waterconnection!.connectionNo),
-    //             getprinterlabel(
-    //               i18.consumerReciepts.RECEIPT_CONSUMER_NAME,
-    //               widget.waterconnection!.connectionHolders!.first.name,
-    //             ),
-    //             getprinterlabel(i18.consumerReciepts.RECEIPT_CONSUMER_MOBILE_NO,
-    //                 item.mobileNumber),
-    //             getprinterlabel(
-    //                 i18.consumerReciepts.RECEIPT_CONSUMER_ADDRESS,
-    //                 ApplicationLocalizations.of(navigatorKey.currentContext!)
-    //                         .translate(widget
-    //                             .waterconnection!.additionalDetails!.doorNo
-    //                             .toString()) +
-    //                     ApplicationLocalizations.of(navigatorKey.currentContext!)
-    //                         .translate(widget
-    //                             .waterconnection!.additionalDetails!.street
-    //                             .toString()) +
-    //                     ApplicationLocalizations.of(navigatorKey.currentContext!)
-    //                         .translate(widget
-    //                             .waterconnection!.additionalDetails!.locality
-    //                             .toString()) +
-    //                     " " +
-    //                     ApplicationLocalizations.of(navigatorKey.currentContext!)
-    //                         .translate(
-    //                             commonProvider.userDetails!.selectedtenant!.code!)),
-    //             SizedBox(
-    //               height: 10,
-    //             ),
-    //             getprinterlabel(i18.consumer.SERVICE_TYPE,
-    //                 widget.waterconnection?.connectionType),
-    //             getprinterlabel(i18.consumerReciepts.CONSUMER_RECEIPT_NO,
-    //                 item.paymentDetails!.first.receiptNumber),
-    //             getprinterlabel(
-    //                 i18.consumerReciepts.RECEIPT_ISSUE_DATE,
-    //                 DateFormats.timeStampToDate(item.transactionDate,
-    //                         format: "dd/MM/yyyy")
-    //                     .toString()),
-    //             getprinterlabel(
-    //                 i18.consumerReciepts.RECEIPT_BILL_PERIOD,
-    //                 DateFormats.timeStampToDate(
-    //                         item.paymentDetails.first.bill.billDetails.last
-    //                             .fromPeriod,
-    //                         format: "dd/MM/yyyy") +
-    //                     '-' +
-    //                     DateFormats.timeStampToDate(
-    //                             item.paymentDetails.first.bill.billDetails.last
-    //                                 .toPeriod,
-    //                             format: "dd/MM/yyyy")
-    //                         .toString()),
-    //             SizedBox(
-    //               height: 10,
-    //             ),
-    //             getprinterlabel(i18.consumerReciepts.RECEIPT_AMOUNT_PAID,
-    //                 ('₹' + (item.totalAmountPaid).toString())),
-    //             getprinterlabel(
-    //                 i18.consumerReciepts.RECEIPT_AMOUNT_IN_WORDS,
-    //                 ('Rupees ' +
-    //                     (NumberToWord()
-    //                         .convert('en-in', item.totalAmountPaid.toInt())
-    //                         .toString()) +
-    //                     ' only')),
-    //             Text('- - *** - -',
-    //                 textScaleFactor: 4,
-    //                 textAlign: TextAlign.start,
-    //                 style: TextStyle(
-    //                     color: Colors.blue,
-    //                     fontSize: 7,
-    //                     fontWeight: FontWeight.bold)),
-    //             Text('Powered by DIGIT',
-    //                 textScaleFactor: 4,
-    //                 textAlign: TextAlign.start,
-    //                 style: TextStyle(
-    //                     color: Colors.blue,
-    //                     fontSize: 7,
-    //                     fontWeight: FontWeight.bold))
-    //           ],
-    //         )))
-    //     .then((value) => {
-    // js.context.callMethod('onButtonClick', [value])
-    // CommonPrinter.printTicket(
-    //     img.decodeImage(value), navigatorKey.currentContext!),
-    // print(value as Image),
-    // });
-
     screenshotController
-        .capture(delay: Duration(seconds: 1))
-        .then((capturedImage) async {
-      js.context.callMethod('onButtonClick', [capturedImage]);
-    });
+        .captureFromWidget(
+          Container(
+              width: MediaQuery.of(context).size.width,
+              margin: EdgeInsets.zero,
+              padding: EdgeInsets.zero,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      Image.asset('assets/png/govt-of-punjab-logo.png',
+                          width: 70, height: 70),
+                      Container(
+                        width: 400,
+                        margin: EdgeInsets.all(5),
+                        child: Text(
+                          ApplicationLocalizations.of(
+                                  navigatorKey.currentContext!)
+                              .translate(i18.consumerReciepts
+                                  .GRAM_PANCHAYAT_WATER_SUPPLY_AND_SANITATION),
+                          textScaleFactor: 3,
+                          maxLines: 3,
+                          style: TextStyle(
+                              color: Colors.blue,
+                              fontSize: 10,
+                              height: 1,
+                              fontWeight: FontWeight.bold,
+                              fontStyle: FontStyle.italic),
+                          textAlign: TextAlign.left,
+                        ),
+                      )
+                    ],
+                  ),
+                  SizedBox(
+                    height: 5,
+                  ),
+                  Container(
+                      width: 550,
+                      margin: EdgeInsets.all(5),
+                      child: Text(
+                          ApplicationLocalizations.of(
+                                  navigatorKey.currentContext!)
+                              .translate(i18.consumerReciepts.WATER_RECEIPT),
+                          textScaleFactor: 3.5,
+                          style: TextStyle(
+                            color: Colors.blue,
+                            fontSize: 10,
+                            height: 1,
+                            fontWeight: FontWeight.bold,
+                          ))),
+                  SizedBox(
+                    height: 8,
+                  ),
+                  getprinterlabel(
+                      i18.consumerReciepts.RECEIPT_GPWSC_NAME,
+                      ApplicationLocalizations.of(navigatorKey.currentContext!)
+                          .translate(commonProvider
+                              .userDetails!.selectedtenant!.code!)),
+                  getprinterlabel(i18.consumerReciepts.RECEIPT_CONSUMER_NO,
+                      widget.waterconnection!.connectionNo),
+                  getprinterlabel(
+                    i18.consumerReciepts.RECEIPT_CONSUMER_NAME,
+                    widget.waterconnection!.connectionHolders!.first.name,
+                  ),
+                  getprinterlabel(
+                      i18.consumerReciepts.RECEIPT_CONSUMER_MOBILE_NO,
+                      item.mobileNumber),
+                  getprinterlabel(
+                      i18.consumerReciepts.RECEIPT_CONSUMER_ADDRESS,
+                      ApplicationLocalizations.of(navigatorKey.currentContext!)
+                              .translate(widget.waterconnection!.additionalDetails!
+                                  .doorNo
+                                  .toString()) +
+                          ApplicationLocalizations.of(navigatorKey.currentContext!)
+                              .translate(widget.waterconnection!.additionalDetails!
+                                  .street
+                                  .toString()) +
+                          ApplicationLocalizations.of(navigatorKey.currentContext!)
+                              .translate(widget
+                                  .waterconnection!.additionalDetails!.locality
+                                  .toString()) +
+                          " " +
+                          ApplicationLocalizations.of(navigatorKey.currentContext!)
+                              .translate(commonProvider
+                                  .userDetails!.selectedtenant!.code!)),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  getprinterlabel(i18.consumer.SERVICE_TYPE,
+                      widget.waterconnection?.connectionType),
+                  getprinterlabel(i18.consumerReciepts.CONSUMER_RECEIPT_NO,
+                      item.paymentDetails!.first.receiptNumber),
+                  getprinterlabel(
+                      i18.consumerReciepts.RECEIPT_ISSUE_DATE,
+                      DateFormats.timeStampToDate(item.transactionDate,
+                              format: "dd/MM/yyyy")
+                          .toString()),
+                  getprinterlabel(
+                      i18.consumerReciepts.RECEIPT_BILL_PERIOD,
+                      DateFormats.timeStampToDate(
+                              item.paymentDetails.first.bill.billDetails.last
+                                  .fromPeriod,
+                              format: "dd/MM/yyyy") +
+                          '-' +
+                          DateFormats.timeStampToDate(
+                                  item.paymentDetails.first.bill.billDetails
+                                      .last.toPeriod,
+                                  format: "dd/MM/yyyy")
+                              .toString()),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  getprinterlabel(i18.consumerReciepts.RECEIPT_AMOUNT_PAID,
+                      ('₹' + (item.totalAmountPaid).toString())),
+                  getprinterlabel(
+                      i18.consumerReciepts.RECEIPT_AMOUNT_IN_WORDS,
+                      ('Rupees ' +
+                          (NumberToWord()
+                              .convert('en-in', item.totalAmountPaid.toInt())
+                              .toString()) +
+                          ' only')),
+                  Text('- - *** - -',
+                      textScaleFactor: 4,
+                      textAlign: TextAlign.start,
+                      style: TextStyle(
+                          color: Colors.blue,
+                          fontSize: 7,
+                          fontWeight: FontWeight.bold)),
+                  Text('Powered by DIGIT',
+                      textScaleFactor: 4,
+                      textAlign: TextAlign.start,
+                      style: TextStyle(
+                          color: Colors.blue,
+                          fontSize: 7,
+                          fontWeight: FontWeight.bold))
+                ],
+              )),
+        )
+        .then((value) => {
+              js.context.callMethod('onButtonClick', [value])
+              // CommonPrinter.printTicket(
+              //     img.decodeImage(value), navigatorKey.currentContext!),
+              // print(value as Image),
+            });
   }
 
   afterViewBuild() {
@@ -285,11 +276,6 @@ class ConsumerBillPaymentsState extends State<ConsumerBillPayments> {
                           mainAxisAlignment: MainAxisAlignment.start,
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Screenshot(
-                                controller: screenshotController,
-                                child: Container(
-                                  child: _image,
-                                )),
                             Visibility(
                               visible: true,
                               child: TextButton.icon(
