@@ -180,11 +180,16 @@
           }
         }
         console.log(printData);
+        console.log("print data");
+        let arr=new Uint8Array([29, 118, 48, 0, 45, 0, 168, 2, 3, 255, 255, 255, 255, 255, 255, 248, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 63, 248, 7, 255, 3, 255, 255, 255, 255, 255, 255, 248, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 63, 240, 7, 255, 3, 255]);
 
-        printData =  printData.splice(0,100);
-        printData.unshift(29, 118, 48, 0, 45, 0, 168, 2, 3, 255, 255, 255, 255, 255, 255, 248, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 63, 248, 7, 255, 3, 255, 255, 255, 255, 255, 255, 248, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 63, 240, 7, 255, 3, 255)
-        console.log(printData);
-        return printData;
+        var mergedArray = new Uint8Array(arr.length + printData.subarray(100, printData.length).length);
+        mergedArray.set(arr);
+        mergedArray.set(printData.subarray(100, printData.length), arr.length)
+ 
+        console.log("unshifting data");
+        console.log(mergedArray);
+        return mergedArray;
       }
 
 
@@ -195,75 +200,12 @@
       });
     }
 
-
-
-    function getImagePrintData(value) {
-      //  const r = new Promise((resolve, reject) => {
-      img.onLoad = () => {
-        context.drawImage(img, 0, 0, canvas.width, canvas.height);
-        let data = context.getImageData(0, 0, canvas.width, canvas.height).data;
-        console.log(data);
-        var imageData = (data);
-
-
-
-        // });
-
-
-        console.log(imageData);
-        // Each 8 pixels in a row is represented by a byte
-        // let printData = new Uint8Array(2010 / 8 * 120 + 8);
-        if (imageData == null) {
-          console.log('No image to print!');
-          return new Uint8Array([]);
-        }
-        let printData = new Uint8Array(canvas.width / 8 * canvas.height + 8);
-        let offset = 0;
-        console.log(printData);
-        // printData.splice(0,100)       
-        // printData.unshift([29, 118, 48, 0, 45, 0, 168, 2, 3, 255, 255, 255, 255, 255, 255, 248, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 63, 248, 7, 255, 3, 255, 255, 255, 255, 255, 255, 248, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 63, 240, 7, 255, 3, 255]) 
-        // console.log(printData);// Set the header bytes for printing the image
-        printData[0] = 29;  // Print raster bitmap
-        printData[1] = 118; // Print raster bitmap
-        printData[2] = 48; // Print raster bitmap
-        printData[3] = 0;  // Normal 203.2 DPI
-        printData[4] = canvas.width / 8; // Number of horizontal data bits (LSB)
-        printData[5] = 0; // Number of horizontal data bits (MSB)
-        printData[6] = canvas.height % 256; // Number of vertical data bits (LSB)
-        printData[7] = canvas.height / 256;  // Number of vertical data bits (MSB)
-        offset = 7;
-        // Loop through image rows in bytes
-        for (let i = 0; i < canvas.height; ++i) {
-          for (let k = 0; k < canvas.width / 8; ++k) {
-            let k8 = k * 2;
-            //  Pixel to bit position mapping
-            printData[++offset] = getDarkPixel(k8 + 0, i, imageData, canvas) * 128 + getDarkPixel(k8 + 1, i, imageData) * 64 +
-              getDarkPixel(k8 + 2, i, imageData) * 32 + getDarkPixel(k8 + 3, i, imageData) * 16 +
-              getDarkPixel(k8 + 4, i, imageData) * 8 + getDarkPixel(k8 + 5, i, imageData) * 4 +
-              getDarkPixel(k8 + 6, i, imageData) * 2 + getDarkPixel(k8 + 7, i, imageData);
-          }
-        }
-        function getDarkPixel(x, y) {
-          // Return the pixels that will be printed black
-          let red = imageData[((canvas.width * y) + x) * 4];
-          let green = imageData[((canvas.width * y) + x) * 4 + 1];
-          let blue = imageData[((canvas.width * y) + x) * 4 + 2];
-          console.log((red + green + blue) > 0 ? 1 : 0)
-          return (red + green + blue) > 0 ? 1 : 0;
-        }
-
-        return printData;
-      }
-    }
-
     function handleError(error) {
       console.log(error);
       navigator.bluetooth.disconnect();
       printCharacteristic = null;
       // dialog.open();
     }
-
-
 
     function sendImageData(res) {
       index = 0;
