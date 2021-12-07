@@ -94,8 +94,10 @@ class ConsumerBillPaymentsState extends State<ConsumerBillPayments> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
-                      Image.asset('assets/png/govt-of-punjab-logo.png',
-                          width: 70, height: 70),
+                      SizedBox(
+                        width: 70,
+                        height: 70,
+                      ),
                       Container(
                         width: 400,
                         margin: EdgeInsets.all(5),
@@ -127,7 +129,7 @@ class ConsumerBillPaymentsState extends State<ConsumerBillPayments> {
                           ApplicationLocalizations.of(
                                   navigatorKey.currentContext!)
                               .translate(i18.consumerReciepts.WATER_RECEIPT),
-                          textScaleFactor: 3.5,
+                          textScaleFactor: 3,
                           style: TextStyle(
                             color: Colors.blue,
                             fontSize: 10,
@@ -223,6 +225,7 @@ class ConsumerBillPaymentsState extends State<ConsumerBillPayments> {
               )),
         )
         .then((value) => {
+              print(value),
               js.context.callMethod('onButtonClick', [value])
               // CommonPrinter.printTicket(
               //     img.decodeImage(value), navigatorKey.currentContext!),

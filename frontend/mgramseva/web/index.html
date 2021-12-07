@@ -85,7 +85,9 @@
     window.flutterWebRenderer = "canvaskit";
 
   </script>
+    <image id="image1" alt="loading.." src="" width="300px" height="520px"></image>
   <image id="image" alt="loading.." onload="loadImage()" src="" width="300px" height="520px"></image>
+
   <script>
 
 
@@ -142,16 +144,19 @@
         }
 
         let image = document.querySelector('#image');
+        let image1 = document.querySelector('#image1');
         // Use the canvas to get image data
         let canvas = document.createElement('canvas');
         let context = canvas.getContext("2d");
         // Canvas dimensions need to be a multiple of 40 for this printer
         canvas.width = 360;
         canvas.height = 680;
-        const image2 = new Image();
-        image2.src = 'https://mgramseva-qa.egov.org.in/mgramseva-dev-assets/logo/punjab-logo.png';
+        let image2 = new Image();
+        
+        
+  
         context.drawImage(image, 0, 0, canvas.width, canvas.height);
-        context.drawImage(image2, 0, 0, 70,70 );
+        context.drawImage(image1, 0, 0, 70, 70);
         let imageData = context.getImageData(0, 0, canvas.width, canvas.height).data;
         if (imageData == null) {
           console.log('No image to print!');
@@ -181,14 +186,12 @@
               getDarkPixel(k8 + 6, i) * 2 + getDarkPixel(k8 + 7, i);
           }
         }
-        console.log(printData);
         console.log("print data");
         return printData;
       }
 
 
       data = getImagePrintData();
-      console.log(data);
       return new Promise(function (resolve, reject) {
         sendNextImageDataBatch(resolve, reject);
       });
@@ -204,7 +207,6 @@
     function sendImageData(res) {
       index = 0;
       data = getImagePrintData(res);
-      console.log(data);
       return new Promise(function (resolve, reject) {
         sendNextImageDataBatch(resolve, reject);
       });
@@ -260,8 +262,8 @@
           .then(characteristic => {
             // Cache the characteristic
             printCharacteristic = characteristic;
-            console.log(printCharacteristic);
             let image = document.querySelector('#image');
+            let image1 = document.querySelector('#image1');
             // Use the canvas to get image data
             let canvas = document.createElement('canvas');
             // Canvas dimensions need to be a multiple of 40 for this printer
@@ -272,10 +274,13 @@
             base64Data = btoa(new Uint8Array(value).reduce(function (data, byte) {
               return data + String.fromCharCode(byte);
             }, ''));
-            console.log(base64Data);
+         
+            var img1 = new Image();
+            image1.src = 'https://mgramseva-qa.egov.org.in/mgramseva-dev-assets/logo/punjab-logo.png';
             var img = new Image();
             img.src = 'data:image/png;base64, ' + base64Data;
             image.src = img.src;
+           
           })
           .catch(handleError);
       } else {
