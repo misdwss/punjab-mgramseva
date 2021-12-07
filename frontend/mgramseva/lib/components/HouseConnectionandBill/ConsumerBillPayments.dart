@@ -48,25 +48,19 @@ class ConsumerBillPaymentsState extends State<ConsumerBillPayments> {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Container(
-            child: Text(ApplicationLocalizations.of(context).translate(key),
-                textScaleFactor: 4,
-                textAlign: TextAlign.start,
-                style: TextStyle(
-                    color: Colors.blue,
-                    fontSize: 6,
-                    fontWeight: FontWeight.bold))),
-        Container(
-          width: 570 / 2,
-          child: Text(
-              ApplicationLocalizations.of(navigatorKey.currentContext!)
-                  .translate(value),
-              textScaleFactor: 4,
-              style: TextStyle(
-                color: Colors.blue,
-                fontSize: 6,
-              )),
-        ),
+        Text(ApplicationLocalizations.of(context).translate(key),
+            textScaleFactor: 3,
+            textAlign: TextAlign.start,
+            style: TextStyle(
+                color: Colors.blue, fontSize: 6, fontWeight: FontWeight.bold)),
+        Text(
+            ApplicationLocalizations.of(navigatorKey.currentContext!)
+                .translate(value),
+            textScaleFactor: 3,
+            style: TextStyle(
+              color: Colors.blue,
+              fontSize: 6,
+            )),
       ],
     );
   }
@@ -88,29 +82,24 @@ class ConsumerBillPaymentsState extends State<ConsumerBillPayments> {
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
                     Image(
-                        width: 160,
+                        width: 170,
                         height: 70,
                         image: NetworkImage(
                           apiBaseUrl +
                               '/mgramseva-dev-assets/logo/punjab-logo.png',
                         )),
-                    Container(
-                      width: 420,
-                      margin: EdgeInsets.all(5),
-                      child: Text(
-                        ApplicationLocalizations.of(
-                                navigatorKey.currentContext!)
-                            .translate(i18.consumerReciepts
-                                .GRAM_PANCHAYAT_WATER_SUPPLY_AND_SANITATION),
-                        textScaleFactor: 3.5,
-                        style: TextStyle(
-                            color: Colors.blue,
-                            fontSize: 12,
-                            height: 1,
-                            fontWeight: FontWeight.bold,
-                            fontStyle: FontStyle.italic),
-                        textAlign: TextAlign.left,
-                      ),
+                    Text(
+                      ApplicationLocalizations.of(navigatorKey.currentContext!)
+                          .translate(i18.consumerReciepts
+                              .GRAM_PANCHAYAT_WATER_SUPPLY_AND_SANITATION),
+                      textScaleFactor: 3.5,
+                      style: TextStyle(
+                          color: Colors.blue,
+                          fontSize: 12,
+                          height: 1,
+                          fontWeight: FontWeight.bold,
+                          fontStyle: FontStyle.italic),
+                      textAlign: TextAlign.left,
                     )
                   ],
                 ),

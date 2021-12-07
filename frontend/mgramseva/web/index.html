@@ -12,7 +12,7 @@
     For more details:
     * https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base
   -->
-  <base href="/mgramseva/">
+  <base href="/">
 
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
@@ -106,11 +106,9 @@
       function sendNextImageDataBatch(resolve, reject) {
         // Can only write 512 bytes at a time to the characteristic
         // Need to send the image data in 512 byte batches
-        console.log(index);
         printCharacteristic
         if (index + 512 < data.length) {
           printCharacteristic.writeValueWithResponse(data.slice(index, index + 512)).then(() => {
-            console.log(index);
             index += 512;
             sendNextImageDataBatch(resolve, reject);
           })
