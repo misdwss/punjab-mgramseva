@@ -85,9 +85,9 @@
     window.flutterWebRenderer = "canvaskit";
 
   </script>
-  <image id="image1" alt="loading.." src="" onerror="this.style.display='none'" width="300px" height="520px"></image>
-  <image id="image" alt="loading.." onload="loadImage()" onerror="this.style.display='none'" src="" width="300px"
-    height="520px"></image>
+  <image id="image1" alt="loading.." src="" onerror="this.style.display='none'" width="300px" height="640px"></image>
+  <image id="image" alt="loading.." onload="loadImage()" onerror="this.style.display='none'" src="" width="520px"
+    height="640px"></image>
 
   <script>
 
@@ -103,13 +103,10 @@
 
 
     function loadImage() {
-
-
-
       function sendNextImageDataBatch(resolve, reject) {
         // Can only write 512 bytes at a time to the characteristic
         // Need to send the image data in 512 byte batches
-        printCharacteristic
+        
         if (index + 512 < data.length) {
           printCharacteristic.writeValueWithResponse(data.slice(index, index + 512)).then(() => {
             index += 512;
@@ -118,11 +115,14 @@
             .catch(error => reject(error));;
 
         } else {
+       
           // Send the last bytes
           if (index < data.length) {
-            console.log("ist completed");
+            console.log("ist completed");        
             printCharacteristic.writeValueWithResponse(data.slice(index, data.length)).then(() => {
-              resolve();
+                console.log(index, data.length);
+                printCharacteristic.writeValueWithResponse(data.slice(index, data.length))
+                resolve();
             })
               .catch(error => reject(error));
 
@@ -151,13 +151,13 @@
         let context = canvas.getContext("2d");
         // Canvas dimensions need to be a multiple of 40 for this printer
         canvas.width = 360;
-        canvas.height = 720;
+        canvas.height = 640;
         let image2 = new Image();
 
 
 
         context.drawImage(image, 0, 0, canvas.width, canvas.height);
-        context.drawImage(image1, 0, 0, 70, 70);
+        context.drawImage(image1, 0, 10, 40, 40);
         let imageData = context.getImageData(0, 0, canvas.width, canvas.height).data;
         if (imageData == null) {
           console.log('No image to print!');
@@ -269,7 +269,7 @@
             let canvas = document.createElement('canvas');
             // Canvas dimensions need to be a multiple of 40 for this printer
             canvas.width = 360;
-            canvas.height = 720;
+            canvas.height = 640;
             let context = canvas.getContext("2d");
 
             base64Data = btoa(new Uint8Array(value).reduce(function (data, byte) {

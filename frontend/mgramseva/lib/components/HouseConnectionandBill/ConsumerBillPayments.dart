@@ -51,7 +51,7 @@ class ConsumerBillPaymentsState extends State<ConsumerBillPayments> {
             width: kIsWeb ? MediaQuery.of(context).size.width / 2.1 : 65,
             child: Text(ApplicationLocalizations.of(context).translate(key),
                 maxLines: 3,
-                textScaleFactor: kIsWeb ? 3 : 1,
+                textScaleFactor: kIsWeb ? 2.5 : 1,
                 textAlign: TextAlign.start,
                 style: TextStyle(
                     color: Colors.red,
@@ -64,7 +64,7 @@ class ConsumerBillPaymentsState extends State<ConsumerBillPayments> {
                   .translate(value),
               maxLines: 3,
               textAlign: TextAlign.start,
-              textScaleFactor: kIsWeb ? 3 : 1,
+              textScaleFactor: kIsWeb ? 2.5 : 1,
               style: TextStyle(
                   color: Colors.red, fontSize: 6, fontWeight: FontWeight.w900),
             )),
@@ -90,8 +90,8 @@ class ConsumerBillPaymentsState extends State<ConsumerBillPayments> {
                     children: [
                       kIsWeb
                           ? SizedBox(
-                              width: 70,
-                              height: 70,
+                              width: 40,
+                              height: 40,
                             )
                           : Image(
                               width: 40,
@@ -122,7 +122,7 @@ class ConsumerBillPaymentsState extends State<ConsumerBillPayments> {
                     ],
                   ),
                   SizedBox(
-                    height: 5,
+                    height: 8,
                   ),
                   Container(
                       width: kIsWeb ? MediaQuery.of(context).size.width : 90,
@@ -200,7 +200,7 @@ class ConsumerBillPaymentsState extends State<ConsumerBillPayments> {
                                   format: "dd/MM/yyyy")
                               .toString()),
                   SizedBox(
-                    height: 10,
+                    height: 8,
                   ),
                   getprinterlabel(i18.consumerReciepts.RECEIPT_AMOUNT_PAID,
                       ('₹' + (item.totalAmountPaid).toString())),
@@ -211,9 +211,6 @@ class ConsumerBillPaymentsState extends State<ConsumerBillPayments> {
                               .convert('en-in', item.totalAmountPaid.toInt())
                               .toString()) +
                           ' only')),
-                  SizedBox(
-                    height: 5,
-                  ),
                   Text('- - *** - -',
                       textScaleFactor: kIsWeb ? 3 : 1,
                       textAlign: TextAlign.start,
@@ -221,9 +218,6 @@ class ConsumerBillPaymentsState extends State<ConsumerBillPayments> {
                           color: Colors.red,
                           fontSize: 6,
                           fontWeight: FontWeight.bold)),
-                  SizedBox(
-                    height: 10,
-                  ),
                   Text(
                       "${ApplicationLocalizations.of(navigatorKey.currentContext!).translate(i18.common.RECEIPT_FOOTER)}",
                       textScaleFactor: kIsWeb ? 3 : 1,
@@ -231,7 +225,7 @@ class ConsumerBillPaymentsState extends State<ConsumerBillPayments> {
                       style: TextStyle(
                           color: Colors.red,
                           fontSize: 6,
-                          fontWeight: FontWeight.bold))
+                          fontWeight: FontWeight.bold)),
                 ],
               )),
         )

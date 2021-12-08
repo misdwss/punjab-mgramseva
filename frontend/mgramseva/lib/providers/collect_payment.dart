@@ -87,7 +87,7 @@ class CollectPaymentProvider with ChangeNotifier {
                 textAlign: TextAlign.start,
                 style: TextStyle(
                     color: Colors.red,
-                    fontSize: 6,
+                    fontSize: kIsWeb ? 5 : 6,
                     fontWeight: FontWeight.w900))),
         Container(
             width: kIsWeb
@@ -101,7 +101,9 @@ class CollectPaymentProvider with ChangeNotifier {
               textAlign: TextAlign.start,
               textScaleFactor: kIsWeb ? 3 : 1,
               style: TextStyle(
-                  color: Colors.red, fontSize: 6, fontWeight: FontWeight.w900),
+                  color: Colors.red,
+                  fontSize: kIsWeb ? 5 : 6,
+                  fontWeight: FontWeight.w900),
             )),
       ],
     );
