@@ -42,7 +42,7 @@ class ConsumerBillPaymentsState extends State<ConsumerBillPayments> {
 
   getprinterlabel(key, value) {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      mainAxisAlignment: MainAxisAlignment.spaceAround,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Container(
@@ -104,7 +104,7 @@ class ConsumerBillPaymentsState extends State<ConsumerBillPayments> {
                                     '/mgramseva-dev-assets/logo/govt-of-punjab-logo.png',
                               )),
                       Container(
-                        width: kIsWeb ? MediaQuery.of(context).size.width : 90,
+                        width: kIsWeb ? 400 : 90,
                         margin: EdgeInsets.all(5),
                         child: Text(
                           ApplicationLocalizations.of(

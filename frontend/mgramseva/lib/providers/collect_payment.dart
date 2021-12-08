@@ -143,11 +143,7 @@ class CollectPaymentProvider with ChangeNotifier {
                                   '/mgramseva-dev-assets/logo/govt-of-punjab-logo.png',
                             )),
                     Container(
-                      width: kIsWeb
-                          ? MediaQuery.of(navigatorKey.currentContext!)
-                              .size
-                              .width
-                          : 90,
+                      width: kIsWeb ? 400 : 90,
                       margin: EdgeInsets.all(5),
                       child: Text(
                         ApplicationLocalizations.of(
