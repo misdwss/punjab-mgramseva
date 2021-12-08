@@ -79,23 +79,21 @@ class CollectPaymentProvider with ChangeNotifier {
             width: kIsWeb
                 ? MediaQuery.of(navigatorKey.currentContext!).size.width / 2.1
                 : 65,
-            child: Flexible(
-                child: Text(
-                    ApplicationLocalizations.of(navigatorKey.currentContext!)
-                        .translate(key),
-                    maxLines: 3,
-                    textScaleFactor: kIsWeb ? 3 : 1,
-                    textAlign: TextAlign.start,
-                    style: TextStyle(
-                        color: Colors.red,
-                        fontSize: 6,
-                        fontWeight: FontWeight.w900)))),
+            child: Text(
+                ApplicationLocalizations.of(navigatorKey.currentContext!)
+                    .translate(key),
+                maxLines: 3,
+                textScaleFactor: kIsWeb ? 3 : 1,
+                textAlign: TextAlign.start,
+                style: TextStyle(
+                    color: Colors.red,
+                    fontSize: 6,
+                    fontWeight: FontWeight.w900))),
         Container(
             width: kIsWeb
                 ? MediaQuery.of(navigatorKey.currentContext!).size.width / 1.75
                 : 85,
-            child: Flexible(
-                child: Text(
+            child: Text(
               ApplicationLocalizations.of(navigatorKey.currentContext!)
                   .translate(value),
               maxLines: 3,
@@ -104,7 +102,7 @@ class CollectPaymentProvider with ChangeNotifier {
               textScaleFactor: kIsWeb ? 3 : 1,
               style: TextStyle(
                   color: Colors.red, fontSize: 6, fontWeight: FontWeight.w900),
-            ))),
+            )),
       ],
     );
   }
