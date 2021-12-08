@@ -89,14 +89,26 @@ class CoreRepository extends BaseService {
           var path = _paths[i];
           http.MultipartFile multipartFile = http.MultipartFile.fromBytes(
               'file', path.bytes!,
+              contentType: CommonMethods().getMediaType(path.path),
               filename: '${path.name}.${path.extension?.toLowerCase()}');
           request.files.add(multipartFile);
         }
       } else if (_paths is List<File>) {
         _paths.forEach((file) async {
           request.files.add(await http.MultipartFile.fromPath('file', file.path,
+              contentType: CommonMethods().getMediaType(file.path),
               filename: '${file.path.split('/').last}'));
         });
+      } else if (_paths is List<CustomFile>) {
+        for (var i = 0; i < _paths.length; i++) {
+          var path = _paths[i];
+          var fileName = '${path.name}.${path.extension.toLowerCase()}';
+          http.MultipartFile multipartFile = http.MultipartFile.fromBytes(
+              'file', path.bytes,
+              contentType: CommonMethods().getMediaType(fileName),
+              filename: fileName);
+          request.files.add(multipartFile);
+        }
       }
       request.fields['tenantId'] =
           commonProvider.userDetails!.selectedtenant!.code!;
@@ -240,8 +252,7 @@ class CoreRepository extends BaseService {
 
       if (res != null) {
         return true;
-      }
-      else {
+      } else {
         return false;
       }
     } catch (e, s) {
