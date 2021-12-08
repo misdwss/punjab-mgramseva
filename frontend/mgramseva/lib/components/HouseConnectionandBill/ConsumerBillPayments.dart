@@ -81,7 +81,7 @@ class ConsumerBillPaymentsState extends State<ConsumerBillPayments> {
     screenshotController
         .captureFromWidget(
           Container(
-              width: 375,
+              width: kIsWeb ? 375 : 150,
               margin: EdgeInsets.zero,
               padding: EdgeInsets.zero,
               child: Column(
@@ -213,6 +213,9 @@ class ConsumerBillPaymentsState extends State<ConsumerBillPayments> {
                               .convert('en-in', item.totalAmountPaid.toInt())
                               .toString()) +
                           ' only')),
+                  SizedBox(
+                    height: 8,
+                  ),
                   Text('- - *** - -',
                       textScaleFactor: kIsWeb ? 3 : 1,
                       textAlign: TextAlign.start,
