@@ -183,26 +183,29 @@ class _LandingPageState extends State<LandingPage> {
     //newVersion.showAlertIfNecessary(context: context); //Use this if you want the update alert with default settings
     final status = await newVersion.getVersionStatus();
 
-    int.parse(status!.storeVersion.split('.').first) >
-        int.parse(status.localVersion.split('.').first)
-        ?
-    newVersion.showUpdateDialog(
-      context: context,
-      versionStatus: status,
-      dialogTitle: 'UPDATE AVAILABLE',
-      updateButtonText: 'Update Now',
-      allowDismissal: false,
-      dismissButtonText: '',
-      dialogText: 'Please update the app from ${status.localVersion} to ${status.storeVersion}',
-    ) :
-    newVersion.showUpdateDialog(
-      context: context,
-      versionStatus: status,
-      dialogTitle: 'UPDATE AVAILABLE',
-      updateButtonText: 'Update Now',
-      dismissButtonText: 'Skip',
-      dialogText: 'Please update the app from ${status.localVersion} to ${status.storeVersion}',
-    );
+    if (status != null && status.canUpdate) {
+      int.parse(status.storeVersion.split('.').first) >
+              int.parse(status.localVersion.split('.').first)
+          ? newVersion.showUpdateDialog(
+              context: context,
+              versionStatus: status,
+              dialogTitle: 'UPDATE AVAILABLE',
+              updateButtonText: 'Update Now',
+              allowDismissal: false,
+              dismissButtonText: '',
+              dialogText:
+                  'Please update the app from ${status.localVersion} to ${status.storeVersion}',
+            )
+          : newVersion.showUpdateDialog(
+              context: context,
+              versionStatus: status,
+              dialogTitle: 'UPDATE AVAILABLE',
+              updateButtonText: 'Update Now',
+              dismissButtonText: 'Skip',
+              dialogText:
+                  'Please update the app from ${status.localVersion} to ${status.storeVersion}',
+            );
+    }
   }
 
   @override
