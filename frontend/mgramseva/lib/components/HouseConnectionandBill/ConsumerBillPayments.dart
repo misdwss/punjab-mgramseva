@@ -48,17 +48,17 @@ class ConsumerBillPaymentsState extends State<ConsumerBillPayments> {
         Container(
             margin: EdgeInsets.zero,
             padding: EdgeInsets.zero,
-            width: kIsWeb ? MediaQuery.of(context).size.width / 2.1 : 65,
+            width: kIsWeb ? 150 : 65,
             child: Text(ApplicationLocalizations.of(context).translate(key),
                 maxLines: 3,
                 textScaleFactor: kIsWeb ? 2.5 : 1,
                 textAlign: TextAlign.start,
                 style: TextStyle(
                     color: Colors.red,
-                    fontSize: 6,
+                    fontSize: kIsWeb ? 5 : 6,
                     fontWeight: FontWeight.w900))),
         Container(
-            width: kIsWeb ? MediaQuery.of(context).size.width / 1.75 : 85,
+            width: kIsWeb ? 215 : 85,
             child: Text(
               ApplicationLocalizations.of(navigatorKey.currentContext!)
                   .translate(value),
@@ -66,7 +66,9 @@ class ConsumerBillPaymentsState extends State<ConsumerBillPayments> {
               textAlign: TextAlign.start,
               textScaleFactor: kIsWeb ? 2.5 : 1,
               style: TextStyle(
-                  color: Colors.red, fontSize: 6, fontWeight: FontWeight.w900),
+                  color: Colors.red,
+                  fontSize: kIsWeb ? 5 : 6,
+                  fontWeight: FontWeight.w900),
             )),
       ],
     );
@@ -79,7 +81,7 @@ class ConsumerBillPaymentsState extends State<ConsumerBillPayments> {
     screenshotController
         .captureFromWidget(
           Container(
-              width: kIsWeb ? MediaQuery.of(context).size.width : 150,
+              width: 375,
               margin: EdgeInsets.zero,
               padding: EdgeInsets.zero,
               child: Column(
@@ -90,8 +92,8 @@ class ConsumerBillPaymentsState extends State<ConsumerBillPayments> {
                     children: [
                       kIsWeb
                           ? SizedBox(
-                              width: 40,
-                              height: 40,
+                              width: 70,
+                              height: 70,
                             )
                           : Image(
                               width: 40,
@@ -101,7 +103,7 @@ class ConsumerBillPaymentsState extends State<ConsumerBillPayments> {
                                     '/mgramseva-dev-assets/logo/govt-of-punjab-logo.png',
                               )),
                       Container(
-                        width: kIsWeb ? 400 : 90,
+                        width: kIsWeb ? 290 : 90,
                         margin: EdgeInsets.all(5),
                         child: Text(
                           ApplicationLocalizations.of(
@@ -125,7 +127,7 @@ class ConsumerBillPaymentsState extends State<ConsumerBillPayments> {
                     height: 8,
                   ),
                   Container(
-                      width: kIsWeb ? MediaQuery.of(context).size.width : 90,
+                      width: kIsWeb ? 375 : 90,
                       margin: EdgeInsets.all(5),
                       child: Text(
                           ApplicationLocalizations.of(
@@ -190,13 +192,13 @@ class ConsumerBillPaymentsState extends State<ConsumerBillPayments> {
                   getprinterlabel(
                       i18.consumerReciepts.RECEIPT_BILL_PERIOD,
                       DateFormats.timeStampToDate(
-                              item.paymentDetails.first.bill.billDetails.last
+                              item.paymentDetails.last.bill.billDetails.first
                                   .fromPeriod,
                               format: "dd/MM/yyyy") +
                           '-' +
                           DateFormats.timeStampToDate(
-                                  item.paymentDetails.first.bill.billDetails
-                                      .last.toPeriod,
+                                  item.paymentDetails.last.bill.billDetails
+                                      .first.toPeriod,
                                   format: "dd/MM/yyyy")
                               .toString()),
                   SizedBox(
@@ -216,7 +218,7 @@ class ConsumerBillPaymentsState extends State<ConsumerBillPayments> {
                       textAlign: TextAlign.start,
                       style: TextStyle(
                           color: Colors.red,
-                          fontSize: 6,
+                          fontSize: kIsWeb ? 5 : 6,
                           fontWeight: FontWeight.bold)),
                   Text(
                       "${ApplicationLocalizations.of(navigatorKey.currentContext!).translate(i18.common.RECEIPT_FOOTER)}",
@@ -224,13 +226,12 @@ class ConsumerBillPaymentsState extends State<ConsumerBillPayments> {
                       textAlign: TextAlign.start,
                       style: TextStyle(
                           color: Colors.red,
-                          fontSize: 6,
+                          fontSize: kIsWeb ? 5 : 6,
                           fontWeight: FontWeight.bold)),
                 ],
               )),
         )
         .then((value) => {
-              print(value),
               kIsWeb
                   ? js.onButtonClick(value)
                   : CommonPrinter.printTicket(

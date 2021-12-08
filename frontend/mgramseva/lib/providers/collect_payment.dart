@@ -76,30 +76,26 @@ class CollectPaymentProvider with ChangeNotifier {
         Container(
             margin: EdgeInsets.zero,
             padding: EdgeInsets.zero,
-            width: kIsWeb
-                ? MediaQuery.of(navigatorKey.currentContext!).size.width / 2.1
-                : 65,
+            width: kIsWeb ? 150 : 65,
             child: Text(
                 ApplicationLocalizations.of(navigatorKey.currentContext!)
                     .translate(key),
                 maxLines: 3,
-                textScaleFactor: kIsWeb ? 3 : 1,
+                textScaleFactor: kIsWeb ? 2.5 : 1,
                 textAlign: TextAlign.start,
                 style: TextStyle(
                     color: Colors.red,
                     fontSize: kIsWeb ? 5 : 6,
                     fontWeight: FontWeight.w900))),
         Container(
-            width: kIsWeb
-                ? MediaQuery.of(navigatorKey.currentContext!).size.width / 1.75
-                : 85,
+            width: kIsWeb ? 215 : 85,
             child: Text(
               ApplicationLocalizations.of(navigatorKey.currentContext!)
                   .translate(value),
               maxLines: 3,
               overflow: TextOverflow.fade,
               textAlign: TextAlign.start,
-              textScaleFactor: kIsWeb ? 3 : 1,
+              textScaleFactor: kIsWeb ? 2.5 : 1,
               style: TextStyle(
                   color: Colors.red,
                   fontSize: kIsWeb ? 5 : 6,
@@ -121,9 +117,9 @@ class CollectPaymentProvider with ChangeNotifier {
     // getBluetooth();
     screenshotController
         .captureFromWidget(Container(
-            margin: EdgeInsets.zero,
-            padding: EdgeInsets.zero,
-            width: 150,
+            width: 375,
+            margin: EdgeInsets.all(10),
+            padding: EdgeInsets.all(10),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -143,7 +139,7 @@ class CollectPaymentProvider with ChangeNotifier {
                                   '/mgramseva-dev-assets/logo/govt-of-punjab-logo.png',
                             )),
                     Container(
-                      width: kIsWeb ? 400 : 90,
+                       width: kIsWeb ? 290 : 90,
                       margin: EdgeInsets.all(5),
                       child: Text(
                         ApplicationLocalizations.of(
@@ -235,12 +231,12 @@ class CollectPaymentProvider with ChangeNotifier {
                 getprinterlabel(
                     i18.consumerReciepts.RECEIPT_BILL_PERIOD,
                     DateFormats.timeStampToDate(
-                            item.paymentDetails.first.bill.billDetails.last
+                            item.paymentDetails.first.bill.billDetails.first
                                 .fromPeriod,
                             format: "dd/MM/yyyy") +
                         '-' +
                         DateFormats.timeStampToDate(
-                                item.paymentDetails.first.bill.billDetails.last
+                                item.paymentDetails.first.bill.billDetails.first
                                     .toPeriod,
                                 format: "dd/MM/yyyy")
                             .toString()),
@@ -280,7 +276,6 @@ class CollectPaymentProvider with ChangeNotifier {
               ],
             )))
         .then((value) => {
-              print(value),
               kIsWeb
                   ? js.onButtonClick(value)
                   : CommonPrinter.printTicket(
