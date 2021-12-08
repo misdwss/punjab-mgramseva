@@ -87,10 +87,11 @@ class CoreRepository extends BaseService {
       if (_paths is List<PlatformFile>) {
         for (var i = 0; i < _paths.length; i++) {
           var path = _paths[i];
+          var fileName = '${path.name}.${path.extension?.toLowerCase()}';
           http.MultipartFile multipartFile = http.MultipartFile.fromBytes(
               'file', path.bytes!,
-              contentType: CommonMethods().getMediaType(path.path),
-              filename: '${path.name}.${path.extension?.toLowerCase()}');
+              contentType: CommonMethods().getMediaType(fileName),
+              filename: fileName);
           request.files.add(multipartFile);
         }
       } else if (_paths is List<File>) {
