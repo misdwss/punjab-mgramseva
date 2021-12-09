@@ -114,9 +114,9 @@ public class WSCalculationValidator {
 		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 		Date billingStrartDate = null;
 		Date billingEndDate = null;
-		Calendar startCal = Calendar.getInstance();
+		Calendar startCal = Calendar.getInstance(TimeZone.getTimeZone("Asia/Kolkata"));
 
-		Calendar endCal = Calendar.getInstance();
+		Calendar endCal = Calendar.getInstance(TimeZone.getTimeZone("Asia/Kolkata"));
 		try {
 			billingStrartDate = sdf.parse(meterReading.getBillingPeriod().split("-")[0].trim());
 			billingEndDate = sdf.parse(meterReading.getBillingPeriod().split("-")[1].trim());
@@ -176,9 +176,9 @@ public class WSCalculationValidator {
 			String tenantId, String billingFrequency) {
 		DateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
 
-		Calendar startCal = Calendar.getInstance();
+		Calendar startCal = Calendar.getInstance(TimeZone.getTimeZone("Asia/Kolkata"));
 		startCal.setTimeInMillis(startTime);
-		Calendar endCal = Calendar.getInstance();
+		Calendar endCal = Calendar.getInstance(TimeZone.getTimeZone("Asia/Kolkata"));
 		endCal.setTimeInMillis(endTime);
 		System.out.println(formatter.format(startCal.getTime()));
 		if (billingFrequency.equalsIgnoreCase(WSCalculationConstant.Monthly_Billing_Period)) {
@@ -203,7 +203,7 @@ public class WSCalculationValidator {
 		endTime = endCal.getTimeInMillis();
 		System.out.println("StartTime to check the billing period::" + startTime);
 		System.out.println("endTime to check the billing period::" + endTime);
-		
+
 		if (!wSCalculationDao.isDemandExists(tenantId, startTime, endTime, connectionNos)) {
 			if (!wSCalculationDao.isConnectionExists(tenantId, startTime, endTime, connectionNos)) {
 
@@ -213,14 +213,14 @@ public class WSCalculationValidator {
 						"No Demand exists for previous billing cycle, please generated demand for previous billing cycle ("
 								+ month.getDisplayName(TextStyle.FULL, locale) + ")!!");
 			}
-			
+
 //			Select * from eg_ws_connection where priviousmeterreadingdate between starttime and endtime and tenantid=tenatID and connectionno IN (connectionnos);
 //			if()
-			
+
 		}
 
 	}
-	
+
 
 	public static void setTimeToEndofDay(Calendar calendar) {
 	    calendar.set(Calendar.HOUR_OF_DAY, 23);

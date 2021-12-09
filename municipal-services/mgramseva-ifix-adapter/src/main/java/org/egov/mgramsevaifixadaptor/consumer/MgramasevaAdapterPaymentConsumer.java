@@ -1,13 +1,9 @@
 package org.egov.mgramsevaifixadaptor.consumer;
 
 import java.math.BigDecimal;
-import java.util.Collections;
 import java.util.HashMap;
 
-import org.egov.mgramsevaifixadaptor.config.PropertyConfiguration;
 import org.egov.mgramsevaifixadaptor.contract.PaymentRequest;
-import org.egov.mgramsevaifixadaptor.models.Bill;
-import org.egov.mgramsevaifixadaptor.models.BillDetail;
 import org.egov.mgramsevaifixadaptor.models.EventTypeEnum;
 import org.egov.mgramsevaifixadaptor.models.PaymentDetail;
 import org.egov.mgramsevaifixadaptor.util.Constants;
@@ -46,7 +42,7 @@ public class MgramasevaAdapterPaymentConsumer {
 			}else {
 				eventType=EventTypeEnum.RECEIPT.toString();
 			}
-			
+
 			if(paymentRequest != null && paymentRequest.getPayment() != null &&
 					!CollectionUtils.isEmpty(paymentRequest.getPayment().getPaymentDetails())) {
 				for(PaymentDetail pd : paymentRequest.getPayment().getPaymentDetails()) {
@@ -60,7 +56,7 @@ public class MgramasevaAdapterPaymentConsumer {
 
 		// TODO enable after implementation
 	}
-	
+
 	@KafkaListener(topics = { "${kafka.topics.cancel.payment}" })
 	public void listenForCancel(final HashMap<String, Object> record, @Header(KafkaHeaders.RECEIVED_TOPIC) String topic)
 			throws Exception {
@@ -70,7 +66,6 @@ public class MgramasevaAdapterPaymentConsumer {
 		try {
 			log.debug("Consuming record: " + record);
 			paymentRequest = mapper.convertValue(record, PaymentRequest.class);
-			log.info("paymentRequest: "+paymentRequest);
 			String eventType=null;
 			if(paymentRequest.getPayment().getPaymentDetails().get(0).getBusinessService().contains(Constants.EXPENSE))
 			{
@@ -78,15 +73,12 @@ public class MgramasevaAdapterPaymentConsumer {
 			}else {
 				eventType=EventTypeEnum.RECEIPT.toString();
 			}
-
-			
-			
+			paymentRequest.getPayment().getPaymentDetails().get(0).getBill().getBillDetails().get(0).getBillAccountDetails().get(0).setAmount(paymentRequest.getPayment().getPaymentDetails().get(0).getBill().getBillDetails().get(0).getBillAccountDetails().get(0).getAmount().negate());
+			paymentRequest.getPayment().getPaymentDetails().get(0).getBill().getBillDetails().get(0).getBillAccountDetails().get(0).setAdjustedAmount(paymentRequest.getPayment().getPaymentDetails().get(0).getBill().getBillDetails().get(0).getBillAccountDetails().get(0).getAdjustedAmount().negate());
 			util.callIFIXAdapter(paymentRequest, eventType, paymentRequest.getPayment().getTenantId(),paymentRequest.getRequestInfo());
 		} catch (final Exception e) {
 			log.error("Error while listening to value: " + record + " on topic: " + topic + ": " + e);
 		}
-
-		// TODO enable after implementation
 	}
-	
+
 }

@@ -103,7 +103,7 @@ public class DemandGenerationConsumer {
 
 	@Autowired
 	private WSCalculationValidator wsCalculationValidator;
-	
+
 	@Autowired
 	private DemandService demandService;
 
@@ -216,7 +216,7 @@ public class DemandGenerationConsumer {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param tenantId TenantId for getting master data.
 	 */
 	@KafkaListener(topics = {
@@ -231,12 +231,12 @@ public class DemandGenerationConsumer {
 		requestInfo = mapper.convertValue(demandData.get("requestInfo"), RequestInfo.class);
 		requestInfo.getUserInfo().setTenantId(tenantId);
 		Map<String, Object> billingMasterData = calculatorUtils.loadBillingFrequencyMasterData(requestInfo, tenantId);
-		
+
 		generateDemandForULB(billingMasterData, requestInfo, tenantId, isSendMessage);
 	}
 
 	/**
-	 * 
+	 *
 	 * @param master      Master MDMS Data
 	 * @param requestInfo Request Info
 	 * @param tenantId    Tenant Id
@@ -280,24 +280,24 @@ public class DemandGenerationConsumer {
 				.of(toDate.getYear(), toDate.getMonth(), toDate.getDayOfMonth(), 23, 59, 59, 999000000)
 				.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
 
-		
+
 		List<String> connectionNos = waterCalculatorDao.getNonMeterConnectionsList(tenantId, dayStartTime, dayEndTime);
 
 		List<String> meteredConnectionNos = waterCalculatorDao.getConnectionsNoList(tenantId,
 				WSCalculationConstant.meteredConnectionType);
-		
-		
+
+
 		Calendar previousFromDate = Calendar.getInstance();
 		Calendar previousToDate = Calendar.getInstance();
-		
+
 		previousFromDate.setTimeInMillis(dayStartTime);
 		previousToDate.setTimeInMillis(dayEndTime);
 
 		previousFromDate.add(Calendar.MONTH, -1); //assuming billing cycle will be first day of month
-		previousToDate.add(Calendar.MONTH, -1); 
+		previousToDate.add(Calendar.MONTH, -1);
 		int max = previousToDate.getActualMaximum(Calendar.DAY_OF_MONTH);
 		previousToDate.set(Calendar.DAY_OF_MONTH, max);
-		
+
 		String assessmentYear = estimationService.getAssessmentYear();
 		ArrayList<String> failedConnectionNos = new ArrayList<String>();
 		for (String connectionNo : connectionNos) {
@@ -321,7 +321,7 @@ public class DemandGenerationConsumer {
 				failedConnectionNos.add(connectionNo);
 				continue;
 			}
-			
+
 			/*
 			 * List<Demand> demands = demandService.searchDemand(tenantId, consumerCodes,
 			 * previousFromDate.getTimeInMillis(), previousToDate.getTimeInMillis(),
@@ -353,7 +353,7 @@ public class DemandGenerationConsumer {
 					WSCalculationConstant.GENERATE_DEMAND_EVENT, tenantId);
 			String messages = failedMessage.get(WSCalculationConstant.MSG_KEY);
 			messages = messages.replace("{BILLING_CYCLE}", LocalDate.now().getMonth().toString());
-			
+
 			additionals.put("localizationCode", WSCalculationConstant.GENERATE_DEMAND_EVENT);
 			HashMap<String, String> attributes = new HashMap<String, String>();
 			attributes.put("{BILLING_CYCLE}", LocalDate.now().getMonth().toString());
@@ -485,7 +485,7 @@ public class DemandGenerationConsumer {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param billingFrequency Billing Frequency details
 	 * @param dayOfMonth       Day of the given month
 	 * @return true if current day is for generation of demand
@@ -534,7 +534,7 @@ public class DemandGenerationConsumer {
 
 		generateDemandAndSendnotification(bulkDemand.getRequestInfo(), bulkDemand.getTenantId(), billingPeriod, billingMasterData,
 				isSendMessage, isManual);
-		
+
 	}
 
 }

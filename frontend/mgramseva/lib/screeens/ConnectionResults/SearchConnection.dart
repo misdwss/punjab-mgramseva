@@ -44,19 +44,19 @@ class _SearchConsumerConnectionState extends State<SearchConsumerConnection> {
     return FocusWatcher(
         child: Scaffold(
       backgroundColor: Theme.of(context).backgroundColor,
-          appBar: CustomAppBar(),
-          drawer: DrawerWrapper(
-            Drawer(child: SideBar()),
-          ),
-          body: SingleChildScrollView(
-            child: Column(children: [
-              FormWrapper(Consumer<SearchConnectionProvider>(
-                builder: (_, searchConnectionProvider, child) => Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  HomeBack(),
-                  Card(
+      appBar: CustomAppBar(),
+      drawer: DrawerWrapper(
+        Drawer(child: SideBar()),
+      ),
+      body: SingleChildScrollView(
+          child: Column(children: [
+        FormWrapper(Consumer<SearchConnectionProvider>(
+          builder: (_, searchConnectionProvider, child) => Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                HomeBack(),
+                Card(
                     child: Form(
                         key: searchConnectionProvider.formKey,
                         autovalidateMode:

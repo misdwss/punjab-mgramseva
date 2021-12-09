@@ -1,16 +1,11 @@
 package org.egov.mgramsevaifixadaptor.consumer;
 
 import java.math.BigDecimal;
-import java.text.Bidi;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.List;
 
-import org.egov.mgramsevaifixadaptor.config.PropertyConfiguration;
 import org.egov.mgramsevaifixadaptor.contract.DemandRequest;
-import org.egov.mgramsevaifixadaptor.models.AuditDetails;
-import org.egov.mgramsevaifixadaptor.models.Bill.StatusEnum;
 import org.egov.mgramsevaifixadaptor.models.Demand;
 import org.egov.mgramsevaifixadaptor.models.DemandDetail;
 import org.egov.mgramsevaifixadaptor.models.EventTypeEnum;
@@ -18,12 +13,10 @@ import org.egov.mgramsevaifixadaptor.util.Constants;
 import org.egov.mgramsevaifixadaptor.util.MgramasevaAdapterWrapperUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.support.KafkaHeaders;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.stereotype.Component;
-import org.springframework.util.CollectionUtils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -38,7 +31,7 @@ public class MgramsevaAdapterDemandConsumer {
 	
 	@Autowired
 	JdbcTemplate jdbcTemplate;
-	
+
 	@KafkaListener(topics = { "${kafka.topics.create.demand}"})
 	public void listen(final HashMap<String, Object> record, @Header(KafkaHeaders.RECEIVED_TOPIC) String topic) throws Exception {
 		ObjectMapper mapper = new ObjectMapper();
@@ -59,10 +52,10 @@ public class MgramsevaAdapterDemandConsumer {
 		} catch (final Exception e) {
 			log.error("Error while listening to value: " + record + " on topic: " + topic + ": " + e);
 		}
-		
+
 		 //TODO enable after implementation
 	}
-	
+
 	@KafkaListener(topics = { "${kafka.topics.update.demand}"})
 	public void listenUpdate(final HashMap<String, Object> record, @Header(KafkaHeaders.RECEIVED_TOPIC) String topic) throws Exception {
 		ObjectMapper mapper = new ObjectMapper();
@@ -110,7 +103,7 @@ public class MgramsevaAdapterDemandConsumer {
 			log.error("Error while listening to value: " + record + " on topic: " + topic + ": " + e);
 		}
 	}
-	
+
 	public static Comparator<Demand> getCreatedTimeComparatorForDemand() {
 		return new Comparator<Demand>() {
 			@Override
@@ -119,12 +112,12 @@ public class MgramsevaAdapterDemandConsumer {
 			}
 		};
 	}
-	
-	public Integer getCountByDemandDetailsId(String demanddetailid) {  
+
+	public Integer getCountByDemandDetailsId(String demanddetailid) {
 		String sql = "SELECT count(*) FROM egbs_demanddetail_v1_audit WHERE demanddetailid = '"+demanddetailid+"' ";
 		Integer count = jdbcTemplate.queryForObject(sql, Integer.class);
 		System.out.println("count: "+count);
 		return count;
 	}
-	
+
 }
