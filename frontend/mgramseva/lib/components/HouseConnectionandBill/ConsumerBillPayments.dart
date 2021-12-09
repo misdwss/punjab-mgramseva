@@ -1,4 +1,6 @@
 import 'dart:typed_data';
+import 'package:mgramseva/providers/language.dart';
+
 import './jsconnnector.dart' as js;
 import 'package:flutter/foundation.dart';
 import 'package:image/image.dart' as img;
@@ -74,10 +76,18 @@ class ConsumerBillPaymentsState extends State<ConsumerBillPayments> {
     );
   }
 
-  Future<Uint8List?> _capturePng(item) async {
+  Future<Uint8List?> _capturePng(Payments item) async {
+    item.paymentDetails!.last.bill!.billDetails
+        ?.sort((a, b) => b.fromPeriod!.compareTo(a.fromPeriod!));
+
     var commonProvider = Provider.of<CommonProvider>(
         navigatorKey.currentContext!,
         listen: false);
+
+    var stateProvider = Provider.of<LanguageProvider>(
+        navigatorKey.currentContext!,
+        listen: false);
+
     screenshotController
         .captureFromWidget(
           Container(
@@ -192,12 +202,12 @@ class ConsumerBillPaymentsState extends State<ConsumerBillPayments> {
                   getprinterlabel(
                       i18.consumerReciepts.RECEIPT_BILL_PERIOD,
                       DateFormats.timeStampToDate(
-                              item.paymentDetails.last.bill.billDetails.first
+                              item.paymentDetails?.last.bill!.billDetails!.first
                                   .fromPeriod,
                               format: "dd/MM/yyyy") +
                           '-' +
                           DateFormats.timeStampToDate(
-                                  item.paymentDetails.last.bill.billDetails
+                                  item.paymentDetails?.last.bill?.billDetails!
                                       .first.toPeriod,
                                   format: "dd/MM/yyyy")
                               .toString()),
@@ -210,7 +220,7 @@ class ConsumerBillPaymentsState extends State<ConsumerBillPayments> {
                       i18.consumerReciepts.RECEIPT_AMOUNT_IN_WORDS,
                       ('Rupees ' +
                           (NumberToWord()
-                              .convert('en-in', item.totalAmountPaid.toInt())
+                              .convert('en-in', item.totalAmountPaid!.toInt())
                               .toString()) +
                           ' only')),
                   SizedBox(
@@ -236,7 +246,8 @@ class ConsumerBillPaymentsState extends State<ConsumerBillPayments> {
         )
         .then((value) => {
               kIsWeb
-                  ? js.onButtonClick(value)
+                  ? js.onButtonClick(
+                      value, stateProvider.stateInfo!.stateLogoURL.toString())
                   : CommonPrinter.printTicket(
                       img.decodeImage(value), navigatorKey.currentContext!)
             });
