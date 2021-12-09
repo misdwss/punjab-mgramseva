@@ -696,7 +696,7 @@ class DashBoardProvider with ChangeNotifier {
 
     var query = {
       'tenantId': commonProvider.userDetails?.selectedtenant?.code,
-      'offset': '0',
+      'limit': '-1',
       'fromDate':
       '${selectedMonth.startDate.millisecondsSinceEpoch}',
       'toDate':
