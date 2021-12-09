@@ -22,10 +22,10 @@ class FilePickerDemo extends StatefulWidget {
 
   const FilePickerDemo({Key? key, required this.callBack, this.moduleName, this.extensions, this.contextkey}) : super(key: key);
   @override
-  _FilePickerDemoState createState() => _FilePickerDemoState();
+  FilePickerDemoState createState() => FilePickerDemoState();
 }
 
-class _FilePickerDemoState extends State<FilePickerDemo> {
+class FilePickerDemoState extends State<FilePickerDemo> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   List<dynamic> _selectedFiles = <dynamic>[];
   List<FileStore> _fileStoreList = <FileStore>[];
@@ -343,4 +343,12 @@ class _FilePickerDemoState extends State<FilePickerDemo> {
       ],
     );
   }
+
+  void clearSelectedMedia() {
+    setState(() {
+       _selectedFiles = <dynamic>[];
+       _fileStoreList = <FileStore>[];
+    });
+  }
+
 }

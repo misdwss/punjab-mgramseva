@@ -66,6 +66,7 @@ class _ExpenseDetailsState extends State<ExpenseDetails> {
       ..getExpensesDetails(context, widget.expensesDetails, widget.id)
       ..getExpenses()
       ..fetchVendors()
+      ..filePickerKey = GlobalKey()
       ..setwalkthrough(ExpenseWalkThrough().expenseWalkThrough.map((e) {
         e.key = GlobalKey();
         return e;
@@ -397,6 +398,7 @@ class _ExpenseDetailsState extends State<ExpenseDetails> {
                               ),
                             if (expenseDetails.allowEdit ?? true)
                               FilePickerDemo(
+                                key: expenseProvider.filePickerKey,
                                 callBack:
                                     expensesDetailsProvider.fileStoreIdCallBack,
                                 extensions: ['jpg', 'pdf', 'png'],

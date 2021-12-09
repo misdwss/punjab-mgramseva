@@ -26,6 +26,7 @@ import 'package:mgramseva/utils/loaders.dart';
 import 'package:mgramseva/utils/models.dart';
 import 'package:mgramseva/utils/notifyers.dart';
 import 'package:mgramseva/widgets/CommonSuccessPage.dart';
+import 'package:mgramseva/widgets/FilePicker.dart';
 import 'package:provider/provider.dart';
 import 'package:mgramseva/utils/Constants/I18KeyConstants.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -44,6 +45,8 @@ class ExpensesDetailsProvider with ChangeNotifier {
   var vendorList = <Vendor>[];
   late SuggestionsBoxController suggestionsBoxController;
   var phoneNumberAutoValidation = false;
+  GlobalKey<FilePickerDemoState> filePickerKey = GlobalKey();
+
 
   dispose() {
     streamController.close();
@@ -174,11 +177,13 @@ class ExpensesDetailsProvider with ChangeNotifier {
   }
 
   void onClickOfBackButton() {
+    filePickerKey.currentState?.clearSelectedMedia();
     suggestionsBoxController = SuggestionsBoxController();
     expenditureDetails = ExpensesDetailsModel();
     getExpensesDetails(navigatorKey.currentContext!, null, null);
     autoValidation = false;
     phoneNumberAutoValidation = false;
+    filePickerKey = GlobalKey();
     notifyListeners();
     Navigator.pop(navigatorKey.currentContext!);
   }
