@@ -42,6 +42,7 @@ class HouseholdPdfCreator {
 
     pdf.addPage(
         pw.MultiPage(
+            maxPages: 100,
             pageFormat: PdfPageFormat.a4,
             footer: (_) => PdfUtils.pdfFooter(digitLogo),
             build: (pw.Context context) {
