@@ -131,7 +131,6 @@ class WaterConnection {
     OldConnectionCtrl.text = oldConnectionNo ?? "";
     meterIdCtrl.text = meterId ?? "";
     arrearsCtrl.text = (arrears == null ? '' : getFilteredAmount(arrears!));
-    arrearsCtrl.text = arrears.toString();
     categoryCtrl.text = additionalDetails?.category ?? "";
     subCategoryCtrl.text = additionalDetails?.subCategory ?? "";
     addharCtrl.text = additionalDetails?.aadharNumber ?? "";
