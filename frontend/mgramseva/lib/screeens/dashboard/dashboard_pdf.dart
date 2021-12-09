@@ -7,6 +7,7 @@ import 'package:mgramseva/providers/common_provider.dart';
 import 'package:mgramseva/providers/dashboard_provider.dart';
 import 'package:mgramseva/utils/Constants/I18KeyConstants.dart';
 import 'package:mgramseva/utils/Locilization/application_localizations.dart';
+import 'package:mgramseva/utils/constants.dart';
 import 'package:mgramseva/utils/date_formats.dart';
 import 'package:mgramseva/utils/global_variables.dart';
 import 'package:mgramseva/utils/models.dart';
@@ -54,7 +55,7 @@ class DashboardPdfCreator {
     }
 
     pdf.addPage(
-        pw.MultiPage(maxPages: 100,
+        pw.MultiPage(maxPages: Constants.MAX_PDF_PAGES,
         pageFormat: PdfPageFormat.a4,
         margin: pw.EdgeInsets.symmetric(horizontal: 16, vertical: 25),
         footer: (_) => PdfUtils.pdfFooter(digitLogo),
