@@ -143,10 +143,9 @@ class CollectPaymentProvider with ChangeNotifier {
                         : Image(
                             width: 40,
                             height: 40,
-                            image: NetworkImage(
-                              apiBaseUrl +
-                                  '/mgramseva-dev-assets/logo/govt-of-punjab-logo.png',
-                            )),
+                            image: NetworkImage(stateProvider
+                                .stateInfo!.stateLogoURL
+                                .toString())),
                     Container(
                       width: kIsWeb ? 290 : 90,
                       margin: EdgeInsets.all(5),
