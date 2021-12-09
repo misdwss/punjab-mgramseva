@@ -5,6 +5,7 @@ import 'package:mgramseva/providers/common_provider.dart';
 import 'package:mgramseva/providers/household_register_provider.dart';
 import 'package:mgramseva/utils/Constants/I18KeyConstants.dart';
 import 'package:mgramseva/utils/Locilization/application_localizations.dart';
+import 'package:mgramseva/utils/constants.dart';
 import 'package:mgramseva/utils/date_formats.dart';
 import 'package:mgramseva/utils/global_variables.dart';
 import 'package:mgramseva/utils/pdf.dart';
@@ -42,6 +43,7 @@ class HouseholdPdfCreator {
 
     pdf.addPage(
         pw.MultiPage(
+            maxPages: Constants.MAX_PDF_PAGES,
             pageFormat: PdfPageFormat.a4,
             footer: (_) => PdfUtils.pdfFooter(digitLogo),
             build: (pw.Context context) {
