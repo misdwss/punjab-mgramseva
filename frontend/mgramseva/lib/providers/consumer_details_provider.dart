@@ -220,8 +220,8 @@ class ConsumerProvider with ChangeNotifier {
           "initialMeterReading": waterconnection.previousReading,
           "propertyType": property.propertyType,
           "meterReading": waterconnection.previousReading,
-          "category": waterconnection.categoryCtrl.text.trim().isEmpty ? null : waterconnection.categoryCtrl.text.trim(),
-          "subCategory": waterconnection.subCategoryCtrl.text.trim().isEmpty ? null : waterconnection.subCategoryCtrl.text.trim(),
+          "category": waterconnection.categoryCtrl.text.trim().isEmpty ? null : waterconnection.additionalDetails?.category,
+          "subCategory": waterconnection.subCategoryCtrl.text.trim().isEmpty ? null : waterconnection.additionalDetails?.subCategory,
           "aadharNumber": waterconnection.addharCtrl.text.trim().isEmpty ? null : waterconnection.addharCtrl.text.trim()
         });
       } else {
@@ -230,9 +230,9 @@ class ConsumerProvider with ChangeNotifier {
         waterconnection.additionalDetails!.initialMeterReading =
             waterconnection.previousReading;
         waterconnection.additionalDetails!.category =
-            waterconnection.categoryCtrl.text.trim().isEmpty ? null : waterconnection.categoryCtrl.text.trim();
+            waterconnection.categoryCtrl.text.trim().isEmpty ? null : waterconnection.additionalDetails?.category;
         waterconnection.additionalDetails!.subCategory =
-            waterconnection.subCategoryCtrl.text.trim().isEmpty ? null : waterconnection.subCategoryCtrl.text.trim();
+            waterconnection.subCategoryCtrl.text.trim().isEmpty ? null :  waterconnection.additionalDetails?.subCategory;
         waterconnection.additionalDetails!.aadharNumber =
             waterconnection.addharCtrl.text.trim().isEmpty ? null : waterconnection.addharCtrl.text.trim();
         waterconnection.additionalDetails!.street = property.address.street;
@@ -375,11 +375,13 @@ class ConsumerProvider with ChangeNotifier {
   }
 
   void onChangeOfCategory(val) {
+    waterconnection.additionalDetails ??= addition.AdditionalDetails();
     waterconnection.additionalDetails?.category = val;
     notifyListeners();
   }
 
   void onChangeOfSubCategory(val) {
+    waterconnection.additionalDetails ??= addition.AdditionalDetails();
     waterconnection.additionalDetails?.subCategory = val;
     notifyListeners();
   }
