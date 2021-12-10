@@ -678,9 +678,9 @@ class DashBoardProvider with ChangeNotifier {
    var hearList = [i18.dashboard.BILL_ID_VENDOR, i18.expense.EXPENSE_TYPE, i18.common.AMOUNT, i18.expense.BILL_DATE, i18.common.PAID_DATE];
 
     var tableData = expenseDashboardDetails.expenseDetailList?.map<List<String>>((expense) => [
-     '${expense.challanNo} \n ${expense.vendorName}',
+     '${expense.challanNo} \n${expense.vendorName}',
      '${ApplicationLocalizations.of(context).translate(expense.expenseType ?? '')}',
-     '₹ ${expense.totalAmount ?? '-'}',
+     expense.totalAmount != null ? '₹ ${expense.totalAmount}' : '-',
      '${DateFormats.timeStampToDate(expense.billDate)}',
      '${expense.paidDate != null && expense.paidDate != 0 ? DateFormats.timeStampToDate(expense.paidDate) : (ApplicationLocalizations.of(navigatorKey.currentContext!).translate(i18.dashboard.PENDING))}',
    ]).toList() ?? [];
