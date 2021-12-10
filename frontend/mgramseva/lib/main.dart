@@ -73,7 +73,6 @@ void main() {
         options: FirebaseOptions(
             apiKey: 'AIzaSyAgUhHU8wSJgO5MVNy95tMT07NEjzMOfz0',
             authDomain: 'sample-mgramseva.firebaseapp.com',
-            // databaseURL: 'https://react-native-firebase-testing.firebaseio.com',
             projectId: 'sample-mgramseva',
             storageBucket: 'sample-mgramseva.appspot.com',
             messagingSenderId: '1026518772539',
