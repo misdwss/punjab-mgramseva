@@ -273,6 +273,7 @@ class DashboardPdfCreator {
             headerStyle:
             pw.TextStyle(font: ttf, fontWeight: pw.FontWeight.bold),
             cellPadding: pw.EdgeInsets.symmetric(vertical: 10),
+            defaultColumnWidth: pw.FlexColumnWidth(4.0),
             cellStyle: pw.TextStyle(
               font: ttf,
               fontSize: 12,
