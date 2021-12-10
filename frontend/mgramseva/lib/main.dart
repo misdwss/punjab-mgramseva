@@ -3,6 +3,7 @@ import 'dart:io';
 import 'dart:isolate';
 import 'dart:ui';
 
+import 'package:firebase_analytics/observer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
 
@@ -50,6 +51,8 @@ import 'providers/collect_payment.dart';
 import 'providers/dashboard_provider.dart';
 import 'providers/revenuedashboard_provider.dart';
 import 'screeens/common/collect_payment.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:firebase_core/firebase_core.dart';
 
 void main() {
   HttpOverrides.global = new MyHttpOverrides();
@@ -64,6 +67,22 @@ void main() {
     };
 
     WidgetsFlutterBinding.ensureInitialized();
+
+    if(Firebase.apps.length == 0) {
+      await Firebase.initializeApp(
+        options: FirebaseOptions(
+            apiKey: 'AIzaSyAgUhHU8wSJgO5MVNy95tMT07NEjzMOfz0',
+            authDomain: 'sample-mgramseva.firebaseapp.com',
+            // databaseURL: 'https://react-native-firebase-testing.firebaseio.com',
+            projectId: 'sample-mgramseva',
+            storageBucket: 'sample-mgramseva.appspot.com',
+            messagingSenderId: '1026518772539',
+            appId: '1:1026518772539:android:bfa7ff7ef250f28789251e',
+            measurementId: "G-H2F8HT25X1"
+        ),
+      );
+    }
+
     await FlutterDownloader.initialize(
         debug: true // optional: set false to disable printing logs to console
         );
@@ -74,7 +93,7 @@ void main() {
     // exit(1); /// to close the app smoothly
   });
 
-  runApp(new MyApp());
+  // runApp(new MyApp());
 }
 
 _MyAppState myAppstate = '' as _MyAppState;
@@ -89,6 +108,9 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   late Locale _locale = Locale('en', 'IN');
+  static FirebaseAnalytics analytics = FirebaseAnalytics();
+  static FirebaseAnalyticsObserver observer =
+  FirebaseAnalyticsObserver(analytics: analytics);
 
   void setLocale(Locale value) {
     setState(() {
@@ -163,6 +185,7 @@ class _MyAppState extends State<MyApp> {
                     return supportedLocales.first;
                   },
                   navigatorKey: navigatorKey,
+                  navigatorObservers: <NavigatorObserver>[observer],
                   initialRoute: Routes.LANDING_PAGE,
                   onGenerateRoute: router.generateRoute,
                   theme: theme,
