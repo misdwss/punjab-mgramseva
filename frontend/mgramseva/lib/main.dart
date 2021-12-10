@@ -93,7 +93,7 @@ void main() {
     // exit(1); /// to close the app smoothly
   });
 
-  // runApp(new MyApp());
+  runApp(new MyApp());
 }
 
 _MyAppState myAppstate = '' as _MyAppState;
