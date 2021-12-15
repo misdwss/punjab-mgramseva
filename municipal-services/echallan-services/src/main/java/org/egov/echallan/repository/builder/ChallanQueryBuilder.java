@@ -72,7 +72,17 @@ public class ChallanQueryBuilder {
 	
 	  public static final String ACTUALEXPCOLLECTION = " SELECT coalesce(SUM(PY.TOTALAMOUNTPAID),0) FROM EGCL_PAYMENT PY INNER JOIN EGCL_PAYMENTDETAIL PYD ON PYD.PAYMENTID = PY.ID WHERE PYD.BUSINESSSERVICE LIKE '%EXPENSE%' ";
 
+	  public static final String TOTALBILLS = " select count(*) from eg_echallan where applicationstatus not in ('CANCELLED') ";
 
+	  public static final String PAIDBILLS = " select count(*) from eg_echallan where applicationstatus in ('PAID')  ";
+	  
+	  public static final String PENDINGBILLS = " select count(*) from eg_echallan where applicationstatus in ('ACTIVE')  ";
+
+	  public static final String ELECTRICITYBILLS = " select sum(py.totalAmountPaid) FROM egcl_payment py INNER JOIN egcl_paymentdetail pyd ON pyd.paymentid = py.id INNER JOIN egcl_bill bill ON bill.id = pyd.billid INNER JOIN eg_echallan challan ON challan.challanno = bill.consumercode  where pyd.businessservice='EXPENSE.ELECTRICITY_BILL' and challan.applicationstatus not in ('CANCELLED') ";
+
+	  public static final String OMMISCBILLS = "select sum(py.totalAmountPaid) FROM egcl_payment py INNER JOIN egcl_paymentdetail pyd ON pyd.paymentid = py.id INNER JOIN egcl_bill bill ON bill.id = pyd.billid INNER JOIN eg_echallan challan ON challan.challanno = bill.consumercode  where pyd.businessservice='EXPENSE.OM' and challan.applicationstatus not in ('CANCELLED') ";
+	  
+	  public static final String SALARYBILLS = " select sum(py.totalAmountPaid) FROM egcl_payment py INNER JOIN egcl_paymentdetail pyd ON pyd.paymentid = py.id INNER JOIN egcl_bill bill ON bill.id = pyd.billid INNER JOIN eg_echallan challan ON challan.challanno = bill.consumercode  where pyd.businessservice='EXPENSE.SALARY' and challan.applicationstatus not in ('CANCELLED')";
 
 
 		public String getChallanSearchQuery(SearchCriteria criteria, List<Object> preparedStmtList) {

@@ -481,6 +481,30 @@ public class WaterServiceImpl implements WaterService {
 		if (null != unpaidAmount) {
 			dashboardData.setPendingCollection(unpaidAmount.toString());
 		}
+		Integer residentialCollection = waterDaoImpl.getResidentialCollectionAmount(criteria);
+		if (null != residentialCollection) {
+			dashboardData.setResidetialColllection(residentialCollection.toString());
+		}
+		Integer commeritialCollection = waterDaoImpl.getCommercialCollectionAmount(criteria);
+		if (null != commeritialCollection) {
+			dashboardData.setComercialCollection(commeritialCollection.toString());
+		}
+		Integer othersCollection = waterDaoImpl.getResidentialCollectionAmount(criteria);
+		if (null != othersCollection) {
+			dashboardData.setOthersCollection(othersCollection.toString());
+		}
+		Map<String, Object> residentialsPaid = waterDaoImpl.getResidentialPaid(criteria);
+		if (null != residentialsPaid) {
+			dashboardData.setResidentialsCount(residentialsPaid.toString());
+		}
+		Map<String, Object> comercialsPaid = waterDaoImpl.getCommercialPaid(criteria);
+		if (null != comercialsPaid) {
+			dashboardData.setComercialsCount(comercialsPaid.toString());
+		}
+		Map<String, Object> totalApplicationsPaid = waterDaoImpl.getAllPaid(criteria);
+		if (null != totalApplicationsPaid) {
+			dashboardData.setTotalApplicationsCount(totalApplicationsPaid.toString());
+		}
 
 		return dashboardData;
 
