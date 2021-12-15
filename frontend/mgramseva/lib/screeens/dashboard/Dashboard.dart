@@ -51,29 +51,12 @@ class _Dashboard extends State<Dashboard> with SingleTickerProviderStateMixin {
               CommonMethods.getPastMonthUntilFinancialYear().reversed.toList();
     dashBoardProvider.selectedMonth = dashBoardProvider.dateList.first;
     dashBoardProvider.debounce = null;
-<<<<<<< HEAD
     _tabController = new TabController(
         vsync: this, length: 2, initialIndex: widget.initialTabIndex);
-=======
-    dashBoardProvider.userFeedBackInformation = null;
-    dashBoardProvider.selectedDashboardType = DashBoardType.collections;
-    _tabController = new TabController(vsync: this, length: 2, initialIndex: widget.initialTabIndex);
->>>>>>> a4fd2678 (IFIX-659-Removed icon in pdf app bar)
     _tabController.addListener(() {
       FocusScope.of(context).unfocus();
       dashBoardProvider.debounce = null;
     });
-<<<<<<< HEAD
-=======
-    WidgetsBinding.instance?.addPostFrameCallback((_) => afterViewBuild());
-  }
-
-  afterViewBuild(){
-    var dashBoardProvider =
-    Provider.of<DashBoardProvider>(context, listen: false);
-    dashBoardProvider.onChangeOfMainTab(context, dashBoardProvider.selectedDashboardType);
-    dashBoardProvider.fetchUserFeedbackDetails(context);
->>>>>>> a4fd2678 (IFIX-659-Removed icon in pdf app bar)
   }
 
   @override
