@@ -235,7 +235,31 @@ public class ChallanService {
 		if (null != amountUnpaid) {
 			dashboardData.setAmountUnpaid(amountUnpaid.toString());
 		}
-
+		Long totalBills = repository.getTotalBill(criteria);
+		if (null != totalBills) {
+			dashboardData.setTotalBills(totalBills.toString());
+		}
+		Long billsPaid = repository.getBillsPaid(criteria);
+		if (null != billsPaid) {
+			dashboardData.setBillsPaid(billsPaid.toString());
+		}
+		Long pendingBills = repository.getPendingBills(criteria);
+		if (null != pendingBills) {
+			dashboardData.setPendingBills(pendingBills.toString());
+		}
+		Long electricityBill = repository.getElectricityBill(criteria);
+		if (null != electricityBill) {
+			dashboardData.setElectricityBill(electricityBill.toString());
+		}
+		Long omMisc = repository.getOmMiscBills(criteria);
+		if (null != omMisc) {
+			dashboardData.setOMMisc(omMisc.toString());
+		}
+		Long salary = repository.getSalary(criteria);
+		if (null != salary) {
+			dashboardData.setSalary(salary.toString());
+		}
+		
 		return dashboardData;
 	}
 	
