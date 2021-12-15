@@ -3,7 +3,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:mgramseva/providers/revenuedashboard_provider.dart';
+import 'package:mgramseva/screeens/dashboard/revenue_dashboard/revenue.dart';
 import 'package:mgramseva/utils/Locilization/application_localizations.dart';
+import 'package:mgramseva/utils/common_widgets.dart';
+import 'package:mgramseva/utils/constants.dart';
+import 'package:mgramseva/utils/loaders.dart';
 import 'package:mgramseva/utils/models.dart';
 import 'package:mgramseva/widgets/LabelText.dart';
 import 'package:provider/provider.dart';
@@ -17,6 +21,18 @@ class RevenueCharts extends StatefulWidget {
 }
 
 class _RevenueChartsState extends State<RevenueCharts> {
+
+  @override
+  void initState() {
+    WidgetsBinding.instance?.addPostFrameCallback((_) => afterViewBuild());
+    super.initState();
+  }
+
+  afterViewBuild(){
+    var revenueProvider = Provider.of<RevenueDashboard>(context, listen: false);
+    revenueProvider.loadGraphicalDashboard(context);
+  }
+
   @override
   Widget build(BuildContext context) {
     return  LayoutBuilder(
@@ -26,8 +42,8 @@ class _RevenueChartsState extends State<RevenueCharts> {
           ),
     );
   }
-  
-  
+
+
   Widget _buildMobileView() {
     return _buildChartWithCardView(
       Consumer<RevenueDashboard>(
@@ -157,7 +173,10 @@ class _RevenueChartsState extends State<RevenueCharts> {
     return Column(children : [
       Container(
           height: 250,
-        child : SimpleLineChart.withSampleData()
+        child : Consumer<RevenueDashboard>(
+            builder : (_, revenue, child) => revenue.revenueDataHolder.trendLineLoader ? Loaders.circularLoader() :  (revenue.revenueDataHolder.trendLine?.graphData == null
+                ? CommonWidgets.buildEmptyMessage('no data', context)
+                : SimpleLineChart(revenue.revenueDataHolder.trendLine!.graphData!)))
       ),
     Container(
         padding: const EdgeInsets.only(top : 16.0),
@@ -231,7 +250,7 @@ class _RevenueChartsState extends State<RevenueCharts> {
 
 
 class StackedBarChart extends StatelessWidget {
-  final dynamic seriesList;
+  final List<charts.Series<OrdinalSales, String>> seriesList;
   final bool? animate;
 
   StackedBarChart(this.seriesList, {this.animate});
@@ -263,7 +282,6 @@ class StackedBarChart extends StatelessWidget {
   /// Create series list with multiple series
   static List<charts.Series<OrdinalSales, String>> createSampleData() {
     final desktopSalesDataA = [
-      new OrdinalSales('2014', 5),
       new OrdinalSales('2015', 25),
       new OrdinalSales('2016', 100),
       new OrdinalSales('2017', 75),
@@ -273,11 +291,11 @@ class StackedBarChart extends StatelessWidget {
       new OrdinalSales('2014', 25),
       new OrdinalSales('2015', 50),
       new OrdinalSales('2016', 10),
-      new OrdinalSales('2017', 20),
+      new OrdinalSales('2017', 0),
     ];
 
     final mobileSalesDataA = [
-      new OrdinalSales('2014', 10),
+      new OrdinalSales('2014', 5),
       new OrdinalSales('2015', 15),
       new OrdinalSales('2016', 50),
       new OrdinalSales('2017', 45),
@@ -310,6 +328,7 @@ class StackedBarChart extends StatelessWidget {
         seriesCategory: 'A',
         domainFn: (OrdinalSales sales, _) => sales.year,
         measureFn: (OrdinalSales sales, _) => sales.sales,
+        colorFn: (OrdinalSales sales, _) => sales.color ??  charts.MaterialPalette.red.shadeDefault,
         data: desktopSalesDataA,
       ),
       new charts.Series<OrdinalSales, String>(
@@ -317,6 +336,7 @@ class StackedBarChart extends StatelessWidget {
         seriesCategory: 'A',
         domainFn: (OrdinalSales sales, _) => sales.year,
         measureFn: (OrdinalSales sales, _) => sales.sales,
+        colorFn: (OrdinalSales sales, _) => sales.color ??  charts.MaterialPalette.blue.shadeDefault,
         data: tableSalesDataA,
       ),
       new charts.Series<OrdinalSales, String>(
@@ -324,102 +344,118 @@ class StackedBarChart extends StatelessWidget {
         seriesCategory: 'A',
         domainFn: (OrdinalSales sales, _) => sales.year,
         measureFn: (OrdinalSales sales, _) => sales.sales,
+        colorFn: (OrdinalSales sales, _) => sales.color ?? charts.MaterialPalette.green.shadeDefault,
         data: mobileSalesDataA,
       ),
-      new charts.Series<OrdinalSales, String>(
-        id: 'Desktop B',
-        seriesCategory: 'B',
-        domainFn: (OrdinalSales sales, _) => sales.year,
-        measureFn: (OrdinalSales sales, _) => sales.sales,
-        data: desktopSalesDataB,
-      ),
-      new charts.Series<OrdinalSales, String>(
-        id: 'Tablet B',
-        seriesCategory: 'B',
-        domainFn: (OrdinalSales sales, _) => sales.year,
-        measureFn: (OrdinalSales sales, _) => sales.sales,
-        data: tableSalesDataB,
-      ),
-      new charts.Series<OrdinalSales, String>(
-        id: 'Mobile B',
-        seriesCategory: 'B',
-        domainFn: (OrdinalSales sales, _) => sales.year,
-        measureFn: (OrdinalSales sales, _) => sales.sales,
-        data: mobileSalesDataB,
-      ),
+      // new charts.Series<OrdinalSales, String>(
+      //   id: 'Desktop B',
+      //   seriesCategory: 'B',
+      //   domainFn: (OrdinalSales sales, _) => sales.year,
+      //   measureFn: (OrdinalSales sales, _) => sales.sales,
+      //   data: desktopSalesDataB,
+      // ),
+      // new charts.Series<OrdinalSales, String>(
+      //   id: 'Tablet B',
+      //   seriesCategory: 'B',
+      //   domainFn: (OrdinalSales sales, _) => sales.year,
+      //   measureFn: (OrdinalSales sales, _) => sales.sales,
+      //   data: tableSalesDataB,
+      // ),
+      // new charts.Series<OrdinalSales, String>(
+      //   id: 'Mobile B',
+      //   seriesCategory: 'B',
+      //   domainFn: (OrdinalSales sales, _) => sales.year,
+      //   measureFn: (OrdinalSales sales, _) => sales.sales,
+      //   data: mobileSalesDataB,
+      // ),
     ];
   }
 }
 
 
 class SimpleLineChart extends StatelessWidget {
-  final dynamic seriesList;
+  final List<charts.Series<RevenueGraphModel, int>> seriesList;
   final bool? animate;
 
   SimpleLineChart(this.seriesList, {this.animate});
 
-  /// Creates a [LineChart] with sample data and no transition.
-  factory SimpleLineChart.withSampleData() {
-    return new SimpleLineChart(
-      _createSampleData(),
-      // Disable animations for image tests.
-      animate: false,
-    );
-  }
+  // /// Creates a [LineChart] with sample data and no transition.
+  // factory SimpleLineChart.withSampleData() {
+  //   return new SimpleLineChart(
+  //     _createSampleData(),
+  //     // Disable animations for image tests.
+  //     animate: false,
+  //   );
+  // }
 
 
   @override
   Widget build(BuildContext context) {
-    return new charts.LineChart(seriesList, animate: animate);
+    var revenueDashboard = Provider.of<RevenueDashboard>(context, listen: false);
+
+    final customTickFormatter =
+    charts.BasicNumericTickFormatterSpec((num? value) {
+
+     var dateList =  revenueDashboard.revenueDataHolder.trendLine?.waterService?.buckets?.map((e) => e.key).toList() ?? [];
+      var index = value?.toInt() ?? 0;
+     if(index < dateList.length){
+       return Constants.MONTHS_SHORT_CODES[index];
+     }else{
+       return "dd";
+     }
+    });
+
+    return new charts.LineChart(seriesList,
+          animate: animate,
+        domainAxis: charts.NumericAxisSpec(
+          tickProviderSpec:
+          charts.BasicNumericTickProviderSpec(desiredTickCount: 1),
+          tickFormatterSpec: customTickFormatter,
+        ),
+    );
   }
 
-  /// Create one series with sample hard coded data.
-  static List<charts.Series<LinearSales, int>> _createSampleData() {
-    final data = [
-      new LinearSales(0, 5),
-      new LinearSales(1, 25),
-      new LinearSales(2, 100),
-      new LinearSales(3, 75),
-    ];
-
-    final data1 = [
-      new LinearSales(0, 8),
-      new LinearSales(1, 12),
-      new LinearSales(2, 80),
-      new LinearSales(3, 70),
-    ];
-
-    return [
-      new charts.Series<LinearSales, int>(
-        id: 'Sales',
-        colorFn: (_, __) => charts.MaterialPalette.blue.shadeDefault,
-        domainFn: (LinearSales sales, _) => sales.year,
-        measureFn: (LinearSales sales, _) => sales.sales,
-        data: data,
-      ),
-      new charts.Series<LinearSales, int>(
-        id: 'Sales',
-        colorFn: (_, __) => charts.MaterialPalette.red.shadeDefault,
-        domainFn: (LinearSales sales, _) => sales.year,
-        measureFn: (LinearSales sales, _) => sales.sales,
-        data: data1,
-      )
-    ];
-  }
+  // /// Create one series with sample hard coded data.
+  // static List<charts.Series<RevenueGraphModel, int>> _createSampleData() {
+  //   final data = [
+  //     new RevenueGraphModel(1, 5),
+  //     new RevenueGraphModel(2, 25),
+  //     new RevenueGraphModel(3, 100),
+  //     new RevenueGraphModel(4, 75),
+  //   ];
+  //
+  //   final data1 = [
+  //     new RevenueGraphModel(1, 8),
+  //     new RevenueGraphModel(2, 12),
+  //     new RevenueGraphModel(3, 80),
+  //     new RevenueGraphModel(4, 70),
+  //   ];
+  //
+  //   return [
+  //     new charts.Series<RevenueGraphModel, int>(
+  //       id: 'Sales',
+  //       colorFn: (_, __) => charts.MaterialPalette.blue.shadeDefault,
+  //       domainFn: (RevenueGraphModel sales, _) => sales.year,
+  //       measureFn: (RevenueGraphModel sales, _) => sales.trend,
+  //       data: data,
+  //     ),
+  //     new charts.Series<RevenueGraphModel, int>(
+  //       id: 'Sales',
+  //       colorFn: (_, __) => charts.MaterialPalette.red.shadeDefault,
+  //       domainFn: (RevenueGraphModel sales, _) => sales.year,
+  //       measureFn: (RevenueGraphModel sales, _) => sales.trend,
+  //       data: data1,
+  //     )
+  //   ];
+  // }
 }
 
-/// Sample linear data type.
-class LinearSales {
-  final int year;
-  final int sales;
-
-  LinearSales(this.year, this.sales);
-}
 
 /// Sample ordinal data type.
 class OrdinalSales {
   final String year;
   final int sales;
+  charts.Color? color;
 
-  OrdinalSales(this.year, this.sales);
+  OrdinalSales(this.year, this.sales, [this.color]);
 }
