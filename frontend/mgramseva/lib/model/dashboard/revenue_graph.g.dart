@@ -12,13 +12,17 @@ RevenueGraph _$RevenueGraphFromJson(Map<String, dynamic> json) {
     ..waterService = json['WaterService'] == null
         ? null
         : RevenueWaterService.fromJson(
-            json['WaterService'] as Map<String, dynamic>);
+            json['WaterService'] as Map<String, dynamic>)
+    ..expense = json['Expense'] == null
+        ? null
+        : RevenueWaterService.fromJson(json['Expense'] as Map<String, dynamic>);
 }
 
 Map<String, dynamic> _$RevenueGraphToJson(RevenueGraph instance) =>
     <String, dynamic>{
       'doc_count': instance.docCount,
       'WaterService': instance.waterService,
+      'Expense': instance.expense,
     };
 
 RevenueWaterService _$RevenueWaterServiceFromJson(Map<String, dynamic> json) {
@@ -40,13 +44,17 @@ Bucket _$BucketFromJson(Map<String, dynamic> json) {
     ..docCount = json['doc_count'] as int?
     ..propertyType = json['Property Type'] == null
         ? null
-        : PropertyType.fromJson(json['Property Type'] as Map<String, dynamic>);
+        : PropertyType.fromJson(json['Property Type'] as Map<String, dynamic>)
+    ..expenseType = json['ExpenseType'] == null
+        ? null
+        : PropertyType.fromJson(json['ExpenseType'] as Map<String, dynamic>);
 }
 
 Map<String, dynamic> _$BucketToJson(Bucket instance) => <String, dynamic>{
       'key': instance.key,
       'doc_count': instance.docCount,
       'Property Type': instance.propertyType,
+      'ExpenseType': instance.expenseType,
     };
 
 PropertyType _$PropertyTypeFromJson(Map<String, dynamic> json) {
@@ -66,11 +74,13 @@ Map<String, dynamic> _$PropertyTypeToJson(PropertyType instance) =>
 InternalBucket _$InternalBucketFromJson(Map<String, dynamic> json) {
   return InternalBucket()
     ..key = json['key'] as String?
-    ..docCount = json['doc_count'] as int?;
+    ..docCount = json['doc_count'] as int?
+    ..count = json['Count'] as Map<String, dynamic>?;
 }
 
 Map<String, dynamic> _$InternalBucketToJson(InternalBucket instance) =>
     <String, dynamic>{
       'key': instance.key,
       'doc_count': instance.docCount,
+      'Count': instance.count,
     };

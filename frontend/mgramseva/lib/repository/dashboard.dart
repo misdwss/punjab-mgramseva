@@ -75,38 +75,28 @@ class DashBoardRepository extends BaseService {
     return response;
   }
 
-  Future<RevenueGraph?> getGraphicalDashboard(Map<String, dynamic> query) async {
+  Future<RevenueGraph?> getGraphicalDashboard(Map<dynamic, dynamic> body) async {
     var commonProvider = Provider.of<CommonProvider>(
         navigatorKey.currentContext!,
         listen: false);
     RevenueGraph? revenueGraph;
 
     // var res = await makeRequest(
-    //     url: Url.GET_USERS_PAYMENT_FEEDBACK,
+    //     url: Url.GRAPHICAL_DASHBOARD,
     //     method: RequestType.POST,
-    //     queryParameters: query,
-    //     body: {},
-    //     requestInfo:  RequestInfo(
-    //       APIConstants.API_MODULE_NAME,
-    //       APIConstants.API_VERSION,
-    //       APIConstants.API_TS,
-    //       "_search",
-    //       APIConstants.API_DID,
-    //       APIConstants.API_KEY,
-    //       APIConstants.API_MESSAGE_ID,
-    //       commonProvider.userDetails!.accessToken,
-    //     ));
+    //     body: body,
+    // );
 
     await Future.delayed(Duration(seconds: 2));
-    if (b != null) {
-      revenueGraph = RevenueGraph.fromJson(b['aggregations']['AGGR']);
+     var res = b;
+    if (res != null) {
+      revenueGraph = RevenueGraph.fromJson(res['aggregations']['AGGR']);
     }
     return revenueGraph;
   }
 
-
   dynamic b = {
-    "took" : 6,
+    "took" : 12,
     "timed_out" : false,
     "_shards" : {
       "total" : 5,
@@ -115,130 +105,69 @@ class DashBoardRepository extends BaseService {
       "failed" : 0
     },
     "hits" : {
-      "total" : 26,
+      "total" : 55,
       "max_score" : 0.0,
       "hits" : [ ]
     },
     "aggregations" : {
       "AGGR" : {
-        "doc_count" : 26,
+        "doc_count" : 49,
+        "Expense" : {
+          "buckets" : [
+            {
+              "key" : 1638316800000,
+              "doc_count" : 49,
+              "ExpenseType" : {
+                "doc_count_error_upper_bound" : 0,
+                "sum_other_doc_count" : 0,
+                "buckets" : [
+                  {
+                    "key" : "SALARY",
+                    "doc_count" : 5,
+                    "Count" : {
+                      "value" : 1190.0
+                    }
+                  },
+                  {
+                    "key" : "OM",
+                    "doc_count" : 1,
+                    "Count" : {
+                      "value" : 1190.0
+                    }
+                  },
+                  {
+                    "key" : "ELECTRICITY_BILL",
+                    "doc_count" : 2,
+                    "Count" : {
+                      "value" : 1190.0
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
         "WaterService" : {
           "buckets" : [
             {
-              "key" : 1609439400000,
-              "doc_count" : 26,
+              "key" : 1638316800000,
+              "doc_count" : 49,
               "Property Type" : {
                 "doc_count_error_upper_bound" : 0,
                 "sum_other_doc_count" : 0,
                 "buckets" : [
                   {
                     "key" : "RESIDENTIAL",
-                    "doc_count" : 16,
+                    "doc_count" : 32,
                     "Count" : {
-                      "value" : 350.0
+                      "value" : 927.0
                     }
                   },
                   {
                     "key" : "COMMERCIAL",
-                    "doc_count" : 1,
+                    "doc_count" : 2,
                     "Count" : {
-                      "value" : 100.0
-                    }
-                  }
-                ]
-              }
-            },
-            {
-              "key" : 1614191400000,
-              "doc_count" : 26,
-              "Property Type" : {
-                "doc_count_error_upper_bound" : 0,
-                "sum_other_doc_count" : 0,
-                "buckets" : [
-                  {
-                    "key" : "RESIDENTIAL",
-                    "doc_count" : 30,
-                    "Count" : {
-                      "value" : 350.0
-                    }
-                  },
-                  {
-                    "key" : "COMMERCIAL",
-                    "doc_count" : 10,
-                    "Count" : {
-                      "value" : 100.0
-                    }
-                  }
-                ]
-              }
-            },
-            {
-              "key" : 1621881000000,
-              "doc_count" : 26,
-              "Property Type" : {
-                "doc_count_error_upper_bound" : 0,
-                "sum_other_doc_count" : 0,
-                "buckets" : [
-                  {
-                    "key" : "RESIDENTIAL",
-                    "doc_count" : 30,
-                    "Count" : {
-                      "value" : 350.0
-                    }
-                  },
-                  {
-                    "key" : "COMMERCIAL",
-                    "doc_count" : 5,
-                    "Count" : {
-                      "value" : 100.0
-                    }
-                  }
-                ]
-              }
-            },
-            {
-              "key" : 1624559400000,
-              "doc_count" : 26,
-              "Property Type" : {
-                "doc_count_error_upper_bound" : 0,
-                "sum_other_doc_count" : 0,
-                "buckets" : [
-                  {
-                    "key" : "RESIDENTIAL",
-                    "doc_count" : 30,
-                    "Count" : {
-                      "value" : 350.0
-                    }
-                  },
-                  {
-                    "key" : "COMMERCIAL",
-                    "doc_count" : 5,
-                    "Count" : {
-                      "value" : 100.0
-                    }
-                  }
-                ]
-              }
-            },
-            {
-              "key" : 1627151400000,
-              "doc_count" : 26,
-              "Property Type" : {
-                "doc_count_error_upper_bound" : 0,
-                "sum_other_doc_count" : 0,
-                "buckets" : [
-                  {
-                    "key" : "RESIDENTIAL",
-                    "doc_count" : 30,
-                    "Count" : {
-                      "value" : 350.0
-                    }
-                  },
-                  {
-                    "key" : "COMMERCIAL",
-                    "doc_count" : 5,
-                    "Count" : {
-                      "value" : 100.0
+                      "value" : 150.0
                     }
                   }
                 ]

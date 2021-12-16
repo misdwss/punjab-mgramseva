@@ -180,6 +180,19 @@ class Common {
   String get NOV => 'NOV';
   String get DEC => 'DEC';
 
+  String get JAN_CODE => 'JAN_CODE';
+  String get FEB_CODE => 'FEB_CODE';
+  String get MAR_CODE => 'MAR_CODE';
+  String get APR_CODE => 'APR_CODE';
+  String get MAY_CODE => 'MAY_CODE';
+  String get JUN_CODE => 'JUN_CODE';
+  String get JULY_CODE => 'JULY_CODE';
+  String get AUG_CODE => 'AUG_CODE';
+  String get SEP_CODE => 'SEP_CODE';
+  String get OCT_CODE => 'OCT_CODE';
+  String get NOV_CODE => 'NOV_CODE';
+  String get DEC_CODE => 'DEC_CODE';
+
   String get OF => 'OF';
   String get NOTE => 'NOTE';
   String get MONTH => 'MONTH';

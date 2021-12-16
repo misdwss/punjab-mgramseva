@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:mgramseva/model/dashboard/revenue_graph.dart';
+import 'package:mgramseva/providers/common_provider.dart';
 import 'package:mgramseva/repository/dashboard.dart';
 import 'package:mgramseva/routers/Routers.dart';
 import 'package:mgramseva/screeens/dashboard/revenue_dashboard/revenue.dart';
@@ -28,40 +29,80 @@ class RevenueDashboard with ChangeNotifier {
   }
 
   void loadGraphicalDashboard(BuildContext context) {
-    loadRevenueDetails(context);
-    loadRevenueGraphDetails();
+    loadRevenueTableDetails(context);
+    loadRevenueTrendGraphDetails(context);
+    loadRevenueStackedGraphDetails(context);
+  }
+
+  Map requestQuery([bool isLineChart = false]){
+    var commonProvider = Provider.of<CommonProvider>(
+        navigatorKey.currentContext!,
+        listen: false);
+    var dashBoardProvider = Provider.of<DashBoardProvider>(
+        navigatorKey.currentContext!, listen: false);
+
+      return {
+        "aggregationRequestDto": {
+          "visualizationType": "METRIC",
+          "visualizationCode": isLineChart ? "revenueAndExpenditureTrendTwo" : "revenueAndExpenditureTrendOne",
+          "queryType": "",
+          "filters": {
+            "tenantId": []
+          },
+          "moduleLevel": "",
+          "aggregationFactors": null,
+          "requestDate": {
+            "startDate": dashBoardProvider.selectedMonth.startDate.millisecondsSinceEpoch,
+            "endDate": dashBoardProvider.selectedMonth.endDate.millisecondsSinceEpoch,
+            "interval": "month",
+            "title": ""
+          }
+        },
+        "headers": {
+          "tenantId": commonProvider.userDetails?.selectedtenant?.code
+        },
+        "RequestInfo": {
+          "apiId": "Rainmaker",
+          "authToken": commonProvider.userDetails?.accessToken,
+        }
+      };
   }
 
 
-  Future<void> loadRevenueGraphDetails() async {
+  Future<void> loadRevenueTrendGraphDetails(BuildContext context) async {
     revenueDataHolder.trendLineLoader = true;
     notifyListeners();
     try {
-      var res = await DashBoardRepository().getGraphicalDashboard({});
+      var res = await DashBoardRepository().getGraphicalDashboard(requestQuery(true));
       if (res != null) {
         revenueDataHolder.trendLine = res;
-        revenueDataHolder.trendLine?.graphData = trendGraphInfo(res);
+        revenueDataHolder.trendLine?.graphData = trendGraphDataBinding(res);
       }
-    } catch (e, s) {}
+    } catch (e, s) {
+      ErrorHandler().allExceptionsHandler(context, e, s);
+    }
     revenueDataHolder.trendLineLoader = false;
     notifyListeners();
   }
 
-  Future<void> loadRevenueStackedGraphDetails() async {
+  Future<void> loadRevenueStackedGraphDetails(BuildContext context) async {
     revenueDataHolder.stackLoader = true;
+    revenueDataHolder.resetData();
     notifyListeners();
     try {
-      var res = await DashBoardRepository().getGraphicalDashboard({});
+      var res = await DashBoardRepository().getGraphicalDashboard(requestQuery());
       if (res != null) {
         revenueDataHolder.stackedBar = res;
-        revenueDataHolder.stackedBar?.graphData = stackedGraphInfo(res);
+        revenueDataHolder.stackedBar?.graphData = stackedGraphDataBinding(res);
       }
-    } catch (e, s) {}
+    } catch (e, s) {
+      ErrorHandler().allExceptionsHandler(context, e, s);
+    }
     revenueDataHolder.stackLoader = false;
     notifyListeners();
   }
 
-  Future<void> loadRevenueDetails(BuildContext context) async {
+  Future<void> loadRevenueTableDetails(BuildContext context) async {
     try {
       var res = await DashBoardRepository().fetchRevenueDetails();
       var filteredList = <TableDataRow>[];
@@ -125,16 +166,20 @@ class RevenueDashboard with ChangeNotifier {
   }
 
 
-  List<charts.Series<RevenueGraphModel, int>>? trendGraphInfo(
+  List<charts.Series<RevenueGraphModel, int>>? trendGraphDataBinding(
       RevenueGraph revenueGraph) {
     Map filteredData = {};
     var list = <charts.Series<RevenueGraphModel, int>>[];
     revenueGraph.waterService?.buckets?.forEach((e) {
       var date = DateTime.fromMillisecondsSinceEpoch(e.key ?? 0);
-      e.propertyType?.bucket?.forEach((bucket) {
-        filteredData[bucket.key] ??= {};
-        filteredData[bucket.key][date.month] = bucket.docCount;
-      });
+      filteredData[i18.dashboard.RESIDENTIAL] ??= {};
+      filteredData[i18.dashboard.RESIDENTIAL][date.month] = e.docCount;
+    });
+
+    revenueGraph.expense?.buckets?.forEach((e) {
+      var date = DateTime.fromMillisecondsSinceEpoch(e.key ?? 0);
+      filteredData[i18.dashboard.EXPENDITURE] ??= {};
+      filteredData[i18.dashboard.EXPENDITURE][date.month] = e.docCount;
     });
 
     filteredData.forEach((key, value) {
@@ -156,33 +201,70 @@ class RevenueDashboard with ChangeNotifier {
   }
 
 
-  List<charts.Series<RevenueGraphModel, String>>? stackedGraphInfo(
+  List<charts.Series<RevenueGraphModel, String>>? stackedGraphDataBinding(
       RevenueGraph revenueGraph) {
-    Map filteredData = {};
+    Map revenueData = {};
+    Map expenseData = {};
+
+    var color = {
+      'RESIDENTIAL' :  '#4069bb',
+      'COMMERCIAL' : '#bcd3ff',
+      'SALARY' : '#2fc5e5',
+      "OM" : '#fbc02d',
+      "ELECTRICITY_BILL" : '#13d8cc'
+    };
+
     var list = <charts.Series<RevenueGraphModel, String>>[];
+
     revenueGraph.waterService?.buckets?.forEach((e) {
       var date = DateTime.fromMillisecondsSinceEpoch(e.key ?? 0);
       e.propertyType?.bucket?.forEach((bucket) {
-        filteredData[bucket.key] ??= {};
-        filteredData[bucket.key][date.month] = bucket.docCount;
+        revenueData[bucket.key] ??= {};
+        revenueData[bucket.key][date.year] = bucket.count?['value'] ?? '';
       });
     });
 
-    filteredData.forEach((key, value) {
+    revenueData.forEach((key, value) {
       var data = <RevenueGraphModel>[];
-      value.forEach((key, value) {
-        data.add(RevenueGraphModel(year : key, trend : value));
+      value.forEach((year, value) {
+        var legendColor = charts.Color.fromHex(code: color[key] ?? '#4069bb');
+        revenueDataHolder.revenueLabels.add(Legend(key, color[key] ?? '#4069bb'));
+        data.add(RevenueGraphModel(year : year.toString(), trend : value.toInt(), color: legendColor));
       });
       list.add(charts.Series<RevenueGraphModel, String>(
         id: 'Tablet A',
-        seriesCategory: 'A',
+        seriesCategory: 'Revenue',
         domainFn: (RevenueGraphModel sales, _) => sales.year,
         measureFn: (RevenueGraphModel sales, _) => sales.trend,
-        // colorFn: (RevenueGraphModel sales, _) => sales.color ??  charts.MaterialPalette.blue.shadeDefault,
+        colorFn: (RevenueGraphModel sales, _) => sales.color ??  charts.MaterialPalette.yellow.shadeDefault,
         data: data,
       ));
     });
 
+    revenueGraph.expense?.buckets?.forEach((e) {
+      var date = DateTime.fromMillisecondsSinceEpoch(e.key ?? 0);
+      e.expenseType?.bucket?.forEach((bucket) {
+        expenseData[bucket.key] ??= {};
+        expenseData[bucket.key][date.year] = bucket.count?['value'] ?? '';
+      });
+    });
+
+    expenseData.forEach((key, value) {
+      var data = <RevenueGraphModel>[];
+      value.forEach((year, value) {
+        var legendColor = charts.Color.fromHex(code: color[key] ?? '#4069bb');
+        revenueDataHolder.expenseLabels.add(Legend(key,  color[key] ?? '#4069bb'));
+        data.add(RevenueGraphModel(year : year.toString(), trend : value.toInt(), color: legendColor));
+      });
+      list.add(charts.Series<RevenueGraphModel, String>(
+        id: 'Tablet B',
+        seriesCategory: 'expense',
+        domainFn: (RevenueGraphModel sales, _) => sales.year,
+        measureFn: (RevenueGraphModel sales, _) => sales.trend,
+        colorFn: (RevenueGraphModel sales, _) => sales.color ??  charts.MaterialPalette.red.shadeDefault,
+        data: data,
+      ));
+    });
 
     return list;
   }
