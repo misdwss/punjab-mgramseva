@@ -109,13 +109,15 @@ public class ChallanRepository {
 			StringBuilder paidQuery = new StringBuilder(queryBuilder.bill_count);
 			paidQuery = queryBuilder.applyFilters(paidQuery, preparedStmnt, criteria);
 			paidQuery.append(" AND isbillpaid=true ");
+			System.out.println("Final Paid Query" + paidQuery);
 			List<Map<String, Object>> paidCountdata = jdbcTemplate.queryForList(paidQuery.toString(),
 					preparedStmnt.toArray());
 			List<Object> prpstmnt = new ArrayList<>();
 			StringBuilder notPaidQuery = new StringBuilder(queryBuilder.bill_count);
 			notPaidQuery = queryBuilder.applyFilters(notPaidQuery, prpstmnt, criteria);
 			notPaidQuery.append(" AND isbillpaid=false ");
-			
+			System.out.println("Final Not Paid Query" + notPaidQuery);
+
 			List<Map<String, Object>> notPaidCountdata = jdbcTemplate.queryForList(notPaidQuery.toString(),
 					preparedStmnt.toArray());
 		
@@ -273,7 +275,7 @@ public class ChallanRepository {
 	
 	public Long getTotalBill(@Valid SearchCriteria criteria) {
 		StringBuilder query = new StringBuilder(queryBuilder.TOTALBILLS);
-		query.append(" and createdtime between " + criteria.getFromDate() + " and " + criteria.getToDate())
+		query.append(" and taxperiodto between " + criteria.getFromDate() + " and " + criteria.getToDate())
 				.append(" and tenantId = '").append(criteria.getTenantId()).append("'");
 		log.info("TotalBills Final Query : " + query);
 		return jdbcTemplate.queryForObject(query.toString(), Long.class);
@@ -281,7 +283,7 @@ public class ChallanRepository {
 
 	public Long getBillsPaid(@Valid SearchCriteria criteria) {
 		StringBuilder query = new StringBuilder(queryBuilder.PAIDBILLS);
-		query.append(" and createdtime between " + criteria.getFromDate() + " and " + criteria.getToDate())
+		query.append(" and taxperiodto between " + criteria.getFromDate() + " and " + criteria.getToDate())
 				.append(" and tenantId = '").append(criteria.getTenantId()).append("'");
 		log.info("paid bills Final Query : " + query);
 		return jdbcTemplate.queryForObject(query.toString(), Long.class);
@@ -289,7 +291,7 @@ public class ChallanRepository {
 
 	public Long getPendingBills(@Valid SearchCriteria criteria) {
 		StringBuilder query = new StringBuilder(queryBuilder.PENDINGBILLS);
-		query.append(" and createdtime between " + criteria.getFromDate() + " and " + criteria.getToDate())
+		query.append(" and taxperiodto between " + criteria.getFromDate() + " and " + criteria.getToDate())
 				.append(" and tenantId = '").append(criteria.getTenantId()).append("'");
 		log.info("pending bills Final Query : " + query);
 		return jdbcTemplate.queryForObject(query.toString(), Long.class);
@@ -298,7 +300,7 @@ public class ChallanRepository {
 
 	public Long getElectricityBill(@Valid SearchCriteria criteria) {
 		StringBuilder query = new StringBuilder(queryBuilder.ELECTRICITYBILLS);
-		query.append(" and challan.createdtime between " + criteria.getFromDate() + " and " + criteria.getToDate())
+		query.append(" and challan.taxperiodto between " + criteria.getFromDate() + " and " + criteria.getToDate())
 				.append(" and challan.tenantId = '").append(criteria.getTenantId()).append("'");
 		log.info("electricity Final Query : " + query);
 		return jdbcTemplate.queryForObject(query.toString(), Long.class);
@@ -306,7 +308,7 @@ public class ChallanRepository {
 
 	public Long getOmMiscBills(@Valid SearchCriteria criteria) {
 		StringBuilder query = new StringBuilder(queryBuilder.OMMISCBILLS);
-		query.append(" and challan.createdtime between " + criteria.getFromDate() + " and " + criteria.getToDate())
+		query.append(" and challan.taxperiodto between " + criteria.getFromDate() + " and " + criteria.getToDate())
 		.append(" and challan.tenantId = '").append(criteria.getTenantId()).append("'");
 		log.info("O&M Final Query : " + query);
 		return jdbcTemplate.queryForObject(query.toString(), Long.class);
@@ -314,7 +316,7 @@ public class ChallanRepository {
 
 	public Long getSalary(@Valid SearchCriteria criteria) {
 		StringBuilder query = new StringBuilder(queryBuilder.SALARYBILLS);
-		query.append(" and challan.createdtime between " + criteria.getFromDate() + " and " + criteria.getToDate())
+		query.append(" and challan.taxperiodto between " + criteria.getFromDate() + " and " + criteria.getToDate())
 		.append(" and challan.tenantId = '").append(criteria.getTenantId()).append("'");
 		log.info("salary Final Query : " + query);
 		return jdbcTemplate.queryForObject(query.toString(), Long.class);
