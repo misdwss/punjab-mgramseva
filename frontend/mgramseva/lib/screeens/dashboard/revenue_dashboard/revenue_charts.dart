@@ -118,28 +118,39 @@ class _RevenueChartsState extends State<RevenueCharts> {
       Legend('Others', Color.fromRGBO(244, 119, 56, 1)),
     ];
 
-    return Column(children : [
-      Container(
-          height: 250,
-          child : StackedBarChart.withSampleData()
-      ),
-     Container(
-       padding: const EdgeInsets.only(top: 8),
-       height: 90,
-       child: Row(
-         mainAxisAlignment: MainAxisAlignment.start,
-         crossAxisAlignment: CrossAxisAlignment.start,
-         children: [
-           _buildStackedLegends(i18.dashboard.REVENUE, revenue),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: VerticalDivider(color: Colors.grey, width: 2, thickness: 2,),
+    return Consumer<RevenueDashboard>(
+        builder : (_, revenueProvider, child) {
+          return Column(children: [
+            Container(
+                height: 250,
+                child: revenueProvider.revenueDataHolder.stackLoader ? Loaders
+                    .circularLoader() : (revenueProvider.revenueDataHolder
+                    .stackedBar?.graphData == null
+                    ? CommonWidgets.buildEmptyMessage('no data', context)
+                    : StackedBarChart(
+                    revenueProvider.revenueDataHolder.stackedBar!.graphData!))
             ),
-           Expanded(child: _buildStackedLegends(i18.dashboard.EXPENDITURE, expense))
-         ],
-       ),
-     )
-    ]);
+            Container(
+              padding: const EdgeInsets.only(top: 8),
+              height: 90,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildStackedLegends(i18.dashboard.REVENUE, revenue),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: VerticalDivider(
+                      color: Colors.grey, width: 2, thickness: 2,),
+                  ),
+                  Expanded(child: _buildStackedLegends(
+                      i18.dashboard.EXPENDITURE, expense))
+                ],
+              ),
+            )
+          ]);
+        }
+    );
   }
 
   Widget _buildStackedLegends(String label, List<Legend> legends){
@@ -170,27 +181,27 @@ class _RevenueChartsState extends State<RevenueCharts> {
 
 
   Widget _buildLineCharts([bool isDeskTopView = false]){
-    return Column(children : [
+    return Consumer<RevenueDashboard>(
+      builder : (_, revenue, child) =>  Column(children : [
+        Container(
+            height: 250,
+          child :  revenue.revenueDataHolder.trendLineLoader ? Loaders.circularLoader() :  (revenue.revenueDataHolder.trendLine?.graphData == null
+                  ? CommonWidgets.buildEmptyMessage('no data', context)
+                  : SimpleLineChart(revenue.revenueDataHolder.trendLine!.graphData!))),
       Container(
-          height: 250,
-        child : Consumer<RevenueDashboard>(
-            builder : (_, revenue, child) => revenue.revenueDataHolder.trendLineLoader ? Loaders.circularLoader() :  (revenue.revenueDataHolder.trendLine?.graphData == null
-                ? CommonWidgets.buildEmptyMessage('no data', context)
-                : SimpleLineChart(revenue.revenueDataHolder.trendLine!.graphData!)))
-      ),
-    Container(
-        padding: const EdgeInsets.only(top : 16.0),
-        height: isDeskTopView ? 90 : null,
-        alignment: isDeskTopView ? Alignment.center : null,
-        child: Wrap(
-          spacing: 20,
-          children: [
-            _buildLegend(i18.dashboard.REVENUE, Color.fromRGBO(64, 106, 187, 1)),
-            _buildLegend(i18.dashboard.EXPENDITURE, Color.fromRGBO(11, 12, 12, 1)),
-          ],
-        ),
-    )
-    ]);
+          padding: const EdgeInsets.only(top : 16.0),
+          height: isDeskTopView ? 90 : null,
+          alignment: isDeskTopView ? Alignment.center : null,
+          child: Wrap(
+            spacing: 20,
+            children: [
+              _buildLegend(i18.dashboard.REVENUE, Color.fromRGBO(64, 106, 187, 1)),
+              _buildLegend(i18.dashboard.EXPENDITURE, Color.fromRGBO(11, 12, 12, 1)),
+            ],
+          ),
+      )
+      ]),
+    );
   }
 
   Widget getGraphView(int index){
@@ -250,20 +261,10 @@ class _RevenueChartsState extends State<RevenueCharts> {
 
 
 class StackedBarChart extends StatelessWidget {
-  final List<charts.Series<OrdinalSales, String>> seriesList;
+  final dynamic seriesList;
   final bool? animate;
 
   StackedBarChart(this.seriesList, {this.animate});
-
-  /// Creates a stacked [BarChart] with sample data and no transition.
-  factory StackedBarChart.withSampleData() {
-    return new StackedBarChart(
-      createSampleData(),
-      // Disable animations for image tests.
-      animate: false,
-
-    );
-  }
 
 
   @override
@@ -277,99 +278,6 @@ class StackedBarChart extends StatelessWidget {
           cornerStrategy: const charts.ConstCornerStrategy(30),
       ),
     );
-  }
-
-  /// Create series list with multiple series
-  static List<charts.Series<OrdinalSales, String>> createSampleData() {
-    final desktopSalesDataA = [
-      new OrdinalSales('2014', 25),
-      new OrdinalSales('2015', 25),
-      new OrdinalSales('2016', 100),
-      new OrdinalSales('2017', 75),
-    ];
-
-    final tableSalesDataA = [
-      new OrdinalSales('2014', 25),
-      new OrdinalSales('2015', 50),
-      new OrdinalSales('2016', 10),
-      new OrdinalSales('2017', 0),
-    ];
-
-    final mobileSalesDataA = [
-      new OrdinalSales('2014', 5),
-      new OrdinalSales('2015', 15),
-      new OrdinalSales('2016', 50),
-      new OrdinalSales('2017', 45),
-    ];
-
-    final desktopSalesDataB = [
-      new OrdinalSales('2014', 5),
-      new OrdinalSales('2015', 25),
-      new OrdinalSales('2016', 100),
-      new OrdinalSales('2017', 75),
-    ];
-
-    final tableSalesDataB = [
-      new OrdinalSales('2014', 25),
-      new OrdinalSales('2015', 50),
-      new OrdinalSales('2016', 10),
-      new OrdinalSales('2017', 20),
-    ];
-
-    final mobileSalesDataB = [
-      new OrdinalSales('2014', 10),
-      new OrdinalSales('2015', 15),
-      new OrdinalSales('2016', 50),
-      new OrdinalSales('2017', 45),
-    ];
-
-    return [
-      new charts.Series<OrdinalSales, String>(
-        id: 'Desktop A',
-        seriesCategory: 'A',
-        domainFn: (OrdinalSales sales, _) => sales.year,
-        measureFn: (OrdinalSales sales, _) => sales.sales,
-        colorFn: (OrdinalSales sales, _) => sales.color ??  charts.MaterialPalette.red.shadeDefault,
-        data: desktopSalesDataA,
-      ),
-      new charts.Series<OrdinalSales, String>(
-        id: 'Tablet A',
-        seriesCategory: 'A',
-        domainFn: (OrdinalSales sales, _) => sales.year,
-        measureFn: (OrdinalSales sales, _) => sales.sales,
-        colorFn: (OrdinalSales sales, _) => sales.color ??  charts.MaterialPalette.blue.shadeDefault,
-        data: tableSalesDataA,
-      ),
-      new charts.Series<OrdinalSales, String>(
-        id: 'Mobile A',
-        seriesCategory: 'A',
-        domainFn: (OrdinalSales sales, _) => sales.year,
-        measureFn: (OrdinalSales sales, _) => sales.sales,
-        colorFn: (OrdinalSales sales, _) => sales.color ?? charts.MaterialPalette.green.shadeDefault,
-        data: mobileSalesDataA,
-      ),
-      // new charts.Series<OrdinalSales, String>(
-      //   id: 'Desktop B',
-      //   seriesCategory: 'B',
-      //   domainFn: (OrdinalSales sales, _) => sales.year,
-      //   measureFn: (OrdinalSales sales, _) => sales.sales,
-      //   data: desktopSalesDataB,
-      // ),
-      // new charts.Series<OrdinalSales, String>(
-      //   id: 'Tablet B',
-      //   seriesCategory: 'B',
-      //   domainFn: (OrdinalSales sales, _) => sales.year,
-      //   measureFn: (OrdinalSales sales, _) => sales.sales,
-      //   data: tableSalesDataB,
-      // ),
-      // new charts.Series<OrdinalSales, String>(
-      //   id: 'Mobile B',
-      //   seriesCategory: 'B',
-      //   domainFn: (OrdinalSales sales, _) => sales.year,
-      //   measureFn: (OrdinalSales sales, _) => sales.sales,
-      //   data: mobileSalesDataB,
-      // ),
-    ];
   }
 }
 
@@ -406,14 +314,4 @@ class SimpleLineChart extends StatelessWidget {
         ),
     );
   }
-}
-
-
-/// Sample ordinal data type.
-class OrdinalSales {
-  final String year;
-  final int sales;
-  charts.Color? color;
-
-  OrdinalSales(this.year, this.sales, [this.color]);
 }

@@ -30,6 +30,7 @@ class RevenueDashboard with ChangeNotifier {
   void loadGraphicalDashboard(BuildContext context) {
     loadRevenueDetails(context);
     loadRevenueGraphDetails();
+    loadRevenueStackedGraphDetails();
   }
 
 
@@ -56,7 +57,9 @@ class RevenueDashboard with ChangeNotifier {
         revenueDataHolder.stackedBar = res;
         revenueDataHolder.stackedBar?.graphData = stackedGraphInfo(res);
       }
-    } catch (e, s) {}
+    } catch (e, s) {
+      print('error');
+    }
     revenueDataHolder.stackLoader = false;
     notifyListeners();
   }
@@ -158,24 +161,27 @@ class RevenueDashboard with ChangeNotifier {
 
   List<charts.Series<RevenueGraphModel, String>>? stackedGraphInfo(
       RevenueGraph revenueGraph) {
-    Map filteredData = {};
+    Map revenueData = {};
+    Map expenseData = {};
+
     var list = <charts.Series<RevenueGraphModel, String>>[];
+
     revenueGraph.waterService?.buckets?.forEach((e) {
       var date = DateTime.fromMillisecondsSinceEpoch(e.key ?? 0);
       e.propertyType?.bucket?.forEach((bucket) {
-        filteredData[bucket.key] ??= {};
-        filteredData[bucket.key][date.month] = bucket.docCount;
+        revenueData[bucket.key] ??= {};
+        revenueData[bucket.key][date.year] = bucket.count?['value'] ?? '';
       });
     });
 
-    filteredData.forEach((key, value) {
+    revenueData.forEach((key, value) {
       var data = <RevenueGraphModel>[];
       value.forEach((key, value) {
-        data.add(RevenueGraphModel(year : key, trend : value));
+        data.add(RevenueGraphModel(year : key.toString(), trend : value.toInt()));
       });
       list.add(charts.Series<RevenueGraphModel, String>(
         id: 'Tablet A',
-        seriesCategory: 'A',
+        seriesCategory: 'Revenue',
         domainFn: (RevenueGraphModel sales, _) => sales.year,
         measureFn: (RevenueGraphModel sales, _) => sales.trend,
         // colorFn: (RevenueGraphModel sales, _) => sales.color ??  charts.MaterialPalette.blue.shadeDefault,
@@ -183,6 +189,28 @@ class RevenueDashboard with ChangeNotifier {
       ));
     });
 
+    revenueGraph.expense?.buckets?.forEach((e) {
+      var date = DateTime.fromMillisecondsSinceEpoch(e.key ?? 0);
+      e.expenseType?.bucket?.forEach((bucket) {
+        expenseData[bucket.key] ??= {};
+        expenseData[bucket.key][date.year] = bucket.count?['value'] ?? '';
+      });
+    });
+
+    expenseData.forEach((key, value) {
+      var data = <RevenueGraphModel>[];
+      value.forEach((key, value) {
+        data.add(RevenueGraphModel(year : key.toString(), trend : value.toInt()));
+      });
+      list.add(charts.Series<RevenueGraphModel, String>(
+        id: 'Tablet B',
+        seriesCategory: 'expense',
+        domainFn: (RevenueGraphModel sales, _) => sales.year,
+        measureFn: (RevenueGraphModel sales, _) => sales.trend,
+        // colorFn: (RevenueGraphModel sales, _) => sales.color ??  charts.MaterialPalette.blue.shadeDefault,
+        data: data,
+      ));
+    });
 
     return list;
   }

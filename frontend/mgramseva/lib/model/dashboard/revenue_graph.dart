@@ -12,6 +12,9 @@ class RevenueGraph {
   @JsonKey(name: "WaterService")
   RevenueWaterService? waterService;
 
+  @JsonKey(name: "Expense")
+  RevenueWaterService? expense;
+
   @JsonKey(ignore: true)
   List<charts.Series<RevenueGraphModel, dynamic>>? graphData;
 
@@ -44,6 +47,9 @@ class Bucket {
   @JsonKey(name: "Property Type")
   PropertyType? propertyType;
 
+  @JsonKey(name: "ExpenseType")
+  PropertyType? expenseType;
+
   Bucket();
 
   factory Bucket.fromJson(Map<String, dynamic> json) =>
@@ -72,6 +78,9 @@ class InternalBucket {
 
   @JsonKey(name: "doc_count")
   int? docCount;
+
+  @JsonKey(name: "Count")
+  Map? count;
 
   InternalBucket();
 
