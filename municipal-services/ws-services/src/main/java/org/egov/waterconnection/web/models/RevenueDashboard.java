@@ -1,6 +1,8 @@
 package org.egov.waterconnection.web.models;
 
 
+import java.util.Map;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.AllArgsConstructor;
@@ -35,12 +37,12 @@ public class RevenueDashboard {
 	private String othersCollection = "0";
 
 	@JsonProperty("totalApplicationsCount")
-	private String totalApplicationsCount = "0";
+	private Map<String, Object> totalApplicationsCount;
 
 	@JsonProperty("residentialsCount")
-	private String residentialsCount = "0";
+	private Map<String, Object> residentialsCount;
 
 	@JsonProperty("comercialsCount")
-	private String comercialsCount = "0";
+	private Map<String, Object> comercialsCount;
 
 }
