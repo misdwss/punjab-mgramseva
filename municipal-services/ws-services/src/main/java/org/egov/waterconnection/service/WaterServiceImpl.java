@@ -489,7 +489,7 @@ public class WaterServiceImpl implements WaterService {
 		if (null != commeritialCollection) {
 			dashboardData.setComercialCollection(commeritialCollection.toString());
 		}
-		Integer othersCollection = waterDaoImpl.getResidentialCollectionAmount(criteria);
+		Integer othersCollection = waterDaoImpl.getOthersCollectionAmount(criteria);
 		if (null != othersCollection) {
 			dashboardData.setOthersCollection(othersCollection.toString());
 		}
