@@ -50,6 +50,7 @@ class RevenueDashboard with ChangeNotifier {
 
   Future<void> loadRevenueStackedGraphDetails() async {
     revenueDataHolder.stackLoader = true;
+    revenueDataHolder.resetData();
     notifyListeners();
     try {
       var res = await DashBoardRepository().getGraphicalDashboard({});
@@ -164,6 +165,14 @@ class RevenueDashboard with ChangeNotifier {
     Map revenueData = {};
     Map expenseData = {};
 
+    var color = {
+      'RESIDENTIAL' :  '#4069bb',
+      'COMMERCIAL' : '#bcd3ff',
+      'SALARY' : '#2fc5e5',
+      "OM" : '#fbc02d',
+      "ELECTRICITY_BILL" : '#13d8cc'
+    };
+
     var list = <charts.Series<RevenueGraphModel, String>>[];
 
     revenueGraph.waterService?.buckets?.forEach((e) {
@@ -176,15 +185,17 @@ class RevenueDashboard with ChangeNotifier {
 
     revenueData.forEach((key, value) {
       var data = <RevenueGraphModel>[];
-      value.forEach((key, value) {
-        data.add(RevenueGraphModel(year : key.toString(), trend : value.toInt()));
+      value.forEach((year, value) {
+        var legendColor = charts.Color.fromHex(code: color[key] ?? '#4069bb');
+        revenueDataHolder.revenueLabels.add(Legend(key, color[key] ?? '#4069bb'));
+        data.add(RevenueGraphModel(year : year.toString(), trend : value.toInt(), color: legendColor));
       });
       list.add(charts.Series<RevenueGraphModel, String>(
         id: 'Tablet A',
         seriesCategory: 'Revenue',
         domainFn: (RevenueGraphModel sales, _) => sales.year,
         measureFn: (RevenueGraphModel sales, _) => sales.trend,
-        // colorFn: (RevenueGraphModel sales, _) => sales.color ??  charts.MaterialPalette.blue.shadeDefault,
+        colorFn: (RevenueGraphModel sales, _) => sales.color ??  charts.MaterialPalette.yellow.shadeDefault,
         data: data,
       ));
     });
@@ -199,15 +210,17 @@ class RevenueDashboard with ChangeNotifier {
 
     expenseData.forEach((key, value) {
       var data = <RevenueGraphModel>[];
-      value.forEach((key, value) {
-        data.add(RevenueGraphModel(year : key.toString(), trend : value.toInt()));
+      value.forEach((year, value) {
+        var legendColor = charts.Color.fromHex(code: color[key] ?? '#4069bb');
+        revenueDataHolder.expenseLabels.add(Legend(key,  color[key] ?? '#4069bb'));
+        data.add(RevenueGraphModel(year : year.toString(), trend : value.toInt(), color: legendColor));
       });
       list.add(charts.Series<RevenueGraphModel, String>(
         id: 'Tablet B',
         seriesCategory: 'expense',
         domainFn: (RevenueGraphModel sales, _) => sales.year,
         measureFn: (RevenueGraphModel sales, _) => sales.trend,
-        // colorFn: (RevenueGraphModel sales, _) => sales.color ??  charts.MaterialPalette.blue.shadeDefault,
+        colorFn: (RevenueGraphModel sales, _) => sales.color ??  charts.MaterialPalette.red.shadeDefault,
         data: data,
       ));
     });

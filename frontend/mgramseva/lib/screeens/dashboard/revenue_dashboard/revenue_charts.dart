@@ -107,29 +107,24 @@ class _RevenueChartsState extends State<RevenueCharts> {
   }
 
   Widget _buildStackedCharts(){
-    var revenue = [
-      Legend('Residential', Color.fromRGBO(64, 106, 187, 1)),
-      Legend('Commercial', Color.fromRGBO(188, 211, 255, 1))];
-
-    var expense = [
-      Legend('Electricity', Color.fromRGBO(19, 216, 204, 1)),
-      Legend('Salaries', Color.fromRGBO(47, 197, 229, 1)),
-      Legend('Operations', Color.fromRGBO(251, 192, 45, 1)),
-      Legend('Others', Color.fromRGBO(244, 119, 56, 1)),
-    ];
+    // var expense = [
+    //   Legend('Electricity', Color.fromRGBO(19, 216, 204, 1)),
+    //   Legend('Salaries', Color.fromRGBO(47, 197, 229, 1)),
+    //   Legend('Operations', Color.fromRGBO(251, 192, 45, 1)),
+    //   Legend('Others', Color.fromRGBO(244, 119, 56, 1)),
+    // ];
 
     return Consumer<RevenueDashboard>(
         builder : (_, revenueProvider, child) {
-          return Column(children: [
+          return revenueProvider.revenueDataHolder.stackLoader ? Loaders
+              .circularLoader() : (revenueProvider.revenueDataHolder
+              .stackedBar?.graphData == null
+              ? CommonWidgets.buildEmptyMessage('no data', context)
+              : Column(children: [
             Container(
                 height: 250,
-                child: revenueProvider.revenueDataHolder.stackLoader ? Loaders
-                    .circularLoader() : (revenueProvider.revenueDataHolder
-                    .stackedBar?.graphData == null
-                    ? CommonWidgets.buildEmptyMessage('no data', context)
-                    : StackedBarChart(
-                    revenueProvider.revenueDataHolder.stackedBar!.graphData!))
-            ),
+                child: StackedBarChart(
+                    revenueProvider.revenueDataHolder.stackedBar!.graphData!)),
             Container(
               padding: const EdgeInsets.only(top: 8),
               height: 90,
@@ -137,18 +132,18 @@ class _RevenueChartsState extends State<RevenueCharts> {
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _buildStackedLegends(i18.dashboard.REVENUE, revenue),
+                  _buildStackedLegends(i18.dashboard.REVENUE, revenueProvider.revenueDataHolder.revenueLabels),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16),
                     child: VerticalDivider(
                       color: Colors.grey, width: 2, thickness: 2,),
                   ),
                   Expanded(child: _buildStackedLegends(
-                      i18.dashboard.EXPENDITURE, expense))
+                      i18.dashboard.EXPENDITURE, revenueProvider.revenueDataHolder.expenseLabels))
                 ],
               ),
             )
-          ]);
+          ]));
         }
     );
   }
@@ -172,7 +167,7 @@ class _RevenueChartsState extends State<RevenueCharts> {
             direction: Axis.vertical,
             spacing: 8,
             runSpacing: 10,
-            children: legends.map((e) => _buildLegend(e.label, e.color)).toList()
+            children: legends.map((e) => _buildLegend(e.label,  HexColor(e.hexColor))).toList()
           ),
         )
       ]
