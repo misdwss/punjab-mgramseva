@@ -1,8 +1,9 @@
 import 'dart:async';
 import 'dart:typed_data';
-import 'package:pdf/widgets.dart' as pw;
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_share_me/flutter_share_me.dart';
 import 'package:mgramseva/model/bill/bill_payments.dart';
 import 'package:mgramseva/model/file/file_store.dart';
 import 'package:mgramseva/model/localization/language.dart';
@@ -23,12 +24,14 @@ import 'package:mgramseva/utils/global_variables.dart';
 import 'package:mgramseva/utils/loaders.dart';
 import 'package:mgramseva/utils/models.dart';
 import 'package:mgramseva/utils/notifyers.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/foundation.dart';
 import 'package:universal_html/html.dart' as html;
 import 'package:universal_html/html.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:url_launcher/url_launcher.dart';
+import 'package:pdf/widgets.dart' as pw;
 
 class CommonProvider with ChangeNotifier {
   List<LocalizationLabel> localizedStrings = <LocalizationLabel>[];
@@ -270,17 +273,33 @@ class CommonProvider with ChangeNotifier {
 
   void shareonwatsapp(FileStore store, mobileNumber, input) async {
     if (store.url == null) return;
+    late html.AnchorElement anchorElement;
     try {
       var res = await CoreRepository().urlShotner(store.url as String);
       if (kIsWeb) {
-        html.AnchorElement anchorElement = new html.AnchorElement(
-            href: "https://wa.me/+91$mobileNumber?text=" +
-                input.toString().replaceFirst('<link>', res!));
+        if (mobileNumber == null) {
+          anchorElement = new html.AnchorElement(
+              href: "https://wa.me/send?text=" +
+                  input.toString().replaceFirst('<link>', res!));
+        } else {
+          anchorElement = new html.AnchorElement(
+              href: "https://wa.me/+91$mobileNumber?text=" +
+                  input.toString().replaceFirst('<link>', res!));
+        }
+
         anchorElement.target = "_blank";
         anchorElement.click();
       } else {
-        var link = "https://wa.me/+91$mobileNumber?text=" +
-            input.toString().replaceFirst('<link>', res!);
+        var link;
+        if (mobileNumber == null) {
+          final FlutterShareMe flutterShareMe = FlutterShareMe();
+          flutterShareMe.shareToWhatsApp(
+              msg: input.toString().replaceFirst('<link>', res!));
+          return;
+        } else {
+          link = "https://wa.me/+91$mobileNumber?text=" +
+              input.toString().replaceFirst('<link>', res!);
+        }
         await canLaunch(link)
             ? launch(link)
             : ErrorHandler.logError('failed to launch the url ${link}');
