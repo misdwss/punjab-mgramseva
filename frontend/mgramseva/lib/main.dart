@@ -252,10 +252,6 @@ class _LandingPageState extends State<LandingPage> {
     super.dispose();
   }
 
-  void showCustomDialog(){
-
-  }
-
   static void downloadCallback(
       String id, DownloadTaskStatus status, int progress) {
     final SendPort send =
