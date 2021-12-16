@@ -495,15 +495,15 @@ public class WaterServiceImpl implements WaterService {
 		}
 		Map<String, Object> residentialsPaid = waterDaoImpl.getResidentialPaid(criteria);
 		if (null != residentialsPaid) {
-			dashboardData.setResidentialsCount(residentialsPaid.toString());
+			dashboardData.setResidentialsCount(residentialsPaid);
 		}
 		Map<String, Object> comercialsPaid = waterDaoImpl.getCommercialPaid(criteria);
 		if (null != comercialsPaid) {
-			dashboardData.setComercialsCount(comercialsPaid.toString());
+			dashboardData.setComercialsCount(comercialsPaid);
 		}
 		Map<String, Object> totalApplicationsPaid = waterDaoImpl.getAllPaid(criteria);
 		if (null != totalApplicationsPaid) {
-			dashboardData.setTotalApplicationsCount(totalApplicationsPaid.toString());
+			dashboardData.setTotalApplicationsCount(totalApplicationsPaid);
 		}
 
 		return dashboardData;
