@@ -6,7 +6,7 @@ import 'package:charts_flutter/flutter.dart' as charts;
 
 class RevenueDataHolder {
 
-  List<charts.Series<RevenueGraphModel, int>>? stackedBar;
+  RevenueGraph? stackedBar;
   RevenueGraph? trendLine;
   List<Revenue>? revenueTable;
   var stackLoader = false;
@@ -21,7 +21,8 @@ class RevenueDataHolder {
 }
 
 class RevenueGraphModel {
-  final int year;
+  final int month;
   final int trend;
-  RevenueGraphModel(this.year, this.trend);
+  final String year;
+  RevenueGraphModel({this.month = 1, required this.trend, this.year = ''});
 }

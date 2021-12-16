@@ -13,7 +13,7 @@ class RevenueGraph {
   RevenueWaterService? waterService;
 
   @JsonKey(ignore: true)
-  List<charts.Series<RevenueGraphModel, int>>? graphData;
+  List<charts.Series<RevenueGraphModel, dynamic>>? graphData;
 
   RevenueGraph();
 
@@ -26,12 +26,6 @@ class RevenueGraph {
 class RevenueWaterService {
   @JsonKey(name: "buckets")
   List<Bucket>? buckets;
-
-  @JsonKey(ignore: true)
-  DateTime? trendMonthDate;
-
-  @JsonKey(ignore: true)
-  int? trendMonthCount = 1;
 
   RevenueWaterService();
 

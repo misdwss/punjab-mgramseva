@@ -282,6 +282,7 @@ class StackedBarChart extends StatelessWidget {
   /// Create series list with multiple series
   static List<charts.Series<OrdinalSales, String>> createSampleData() {
     final desktopSalesDataA = [
+      new OrdinalSales('2014', 25),
       new OrdinalSales('2015', 25),
       new OrdinalSales('2016', 100),
       new OrdinalSales('2017', 75),
@@ -374,19 +375,10 @@ class StackedBarChart extends StatelessWidget {
 
 
 class SimpleLineChart extends StatelessWidget {
-  final List<charts.Series<RevenueGraphModel, int>> seriesList;
+  final dynamic seriesList;
   final bool? animate;
 
   SimpleLineChart(this.seriesList, {this.animate});
-
-  // /// Creates a [LineChart] with sample data and no transition.
-  // factory SimpleLineChart.withSampleData() {
-  //   return new SimpleLineChart(
-  //     _createSampleData(),
-  //     // Disable animations for image tests.
-  //     animate: false,
-  //   );
-  // }
 
 
   @override
@@ -399,9 +391,9 @@ class SimpleLineChart extends StatelessWidget {
      var dateList =  revenueDashboard.revenueDataHolder.trendLine?.waterService?.buckets?.map((e) => e.key).toList() ?? [];
       var index = value?.toInt() ?? 0;
      if(index < dateList.length){
-       return Constants.MONTHS_SHORT_CODES[index];
+       return Constants.MONTHS_SHORT_CODES[DateTime.fromMillisecondsSinceEpoch(dateList[index]!).month];
      }else{
-       return "dd";
+       return "";
      }
     });
 
@@ -414,40 +406,6 @@ class SimpleLineChart extends StatelessWidget {
         ),
     );
   }
-
-  // /// Create one series with sample hard coded data.
-  // static List<charts.Series<RevenueGraphModel, int>> _createSampleData() {
-  //   final data = [
-  //     new RevenueGraphModel(1, 5),
-  //     new RevenueGraphModel(2, 25),
-  //     new RevenueGraphModel(3, 100),
-  //     new RevenueGraphModel(4, 75),
-  //   ];
-  //
-  //   final data1 = [
-  //     new RevenueGraphModel(1, 8),
-  //     new RevenueGraphModel(2, 12),
-  //     new RevenueGraphModel(3, 80),
-  //     new RevenueGraphModel(4, 70),
-  //   ];
-  //
-  //   return [
-  //     new charts.Series<RevenueGraphModel, int>(
-  //       id: 'Sales',
-  //       colorFn: (_, __) => charts.MaterialPalette.blue.shadeDefault,
-  //       domainFn: (RevenueGraphModel sales, _) => sales.year,
-  //       measureFn: (RevenueGraphModel sales, _) => sales.trend,
-  //       data: data,
-  //     ),
-  //     new charts.Series<RevenueGraphModel, int>(
-  //       id: 'Sales',
-  //       colorFn: (_, __) => charts.MaterialPalette.red.shadeDefault,
-  //       domainFn: (RevenueGraphModel sales, _) => sales.year,
-  //       measureFn: (RevenueGraphModel sales, _) => sales.trend,
-  //       data: data1,
-  //     )
-  //   ];
-  // }
 }
 
 
