@@ -631,17 +631,16 @@ class DashBoardProvider with ChangeNotifier {
         if(isExpenditure){
           var keys = ['totalBills', 'billsPaid', 'pendingBills'];
           response.forEach((key, value) {
-            // print( 'dashboard_$key');
-            metricList.add(Metric(label: value, value: 'dashboard_$key', type: keys.contains(key) ? '' : 'amount'));
+            metricList.add(Metric(label: value, value: 'dashboard_$key'.toUpperCase(), type: keys.contains(key) ? '' : 'amount'));
           });
         }else{
           response.forEach((key, value) {
             if(value is Map){
               var filteredValue = '${value['paid']}/${value['count']}';
-              metricList.add(Metric(label: filteredValue, value: 'dashboard_$key', type: ''));
+              metricList.add(Metric(label: filteredValue, value: 'dashboard_$key'.toUpperCase(), type: ''));
             }else {
               metricList.add(Metric(
-                  label: value, value: 'dashboard_$key', type: 'amount'));
+                  label: value, value: 'dashboard_$key'.toUpperCase(), type: 'amount'));
             }
           });
         }
