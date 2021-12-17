@@ -1,10 +1,10 @@
 For local setup:
-  install python version3.
-    refer link for installing python 3 on linux system--> https://computingforgeeks.com/how-to-install-python-on-ubuntu-linux-system/
-  install pip3
-  install required libraries like request, pandas, psycopg2-binary etc. mentiond in requirnments.txt file using pip command.
-    ex. pip3 install requests
-  for running app.py use command 
-    ex. python3.py
+  1. install python version3.
+       refer link for installing python 3 on linux system--> https://computingforgeeks.com/how-to-install-python-on-ubuntu-linux-system/
+  2. install pip3
+  3. install required libraries like request, pandas, psycopg2-binary etc. mentiond in requirnments.txt file using pip command.
+      ex. pip3 install requests
+  4. for running app.py use command 
+      ex. python3.py
     
     
