@@ -557,7 +557,7 @@ class DashBoardProvider with ChangeNotifier {
   }
 
   void onChangeOfPageLimit(PaginationResponse response, BuildContext context) {
-    fetchDetails(context, response.limit, response.offset);
+    fetchDetails(context, response.limit, response.offset, response.isPageChange);
   }
 
   fetchDetails(BuildContext context,
