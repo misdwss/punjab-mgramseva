@@ -29,12 +29,12 @@ class RevenueDashboard with ChangeNotifier {
 
   void loadGraphicalDashboard(BuildContext context) {
     loadRevenueDetails(context);
-    loadRevenueGraphDetails();
-    loadRevenueStackedGraphDetails();
+    loadRevenueGraphDetails(context);
+    loadRevenueStackedGraphDetails(context);
   }
 
 
-  Future<void> loadRevenueGraphDetails() async {
+  Future<void> loadRevenueGraphDetails(BuildContext context) async {
     revenueDataHolder.trendLineLoader = true;
     notifyListeners();
     try {
@@ -43,12 +43,14 @@ class RevenueDashboard with ChangeNotifier {
         revenueDataHolder.trendLine = res;
         revenueDataHolder.trendLine?.graphData = trendGraphInfo(res);
       }
-    } catch (e, s) {}
+    } catch (e, s) {
+      ErrorHandler().allExceptionsHandler(context, e, s);
+    }
     revenueDataHolder.trendLineLoader = false;
     notifyListeners();
   }
 
-  Future<void> loadRevenueStackedGraphDetails() async {
+  Future<void> loadRevenueStackedGraphDetails(BuildContext context) async {
     revenueDataHolder.stackLoader = true;
     revenueDataHolder.resetData();
     notifyListeners();
@@ -59,7 +61,7 @@ class RevenueDashboard with ChangeNotifier {
         revenueDataHolder.stackedBar?.graphData = stackedGraphInfo(res);
       }
     } catch (e, s) {
-      print('error');
+      ErrorHandler().allExceptionsHandler(context, e, s);
     }
     revenueDataHolder.stackLoader = false;
     notifyListeners();

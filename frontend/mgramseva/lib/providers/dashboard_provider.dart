@@ -23,6 +23,8 @@ import 'package:mgramseva/utils/loaders.dart';
 import 'package:mgramseva/utils/models.dart';
 import 'package:provider/provider.dart';
 
+import 'revenuedashboard_provider.dart';
+
 class DashBoardProvider with ChangeNotifier {
   var streamController = StreamController.broadcast();
   var initialStreamController = StreamController.broadcast();
@@ -548,11 +550,19 @@ class DashBoardProvider with ChangeNotifier {
   }
 
   void onChangeOfDate(DatePeriod? date, BuildContext context) {
+    var previousDateType = selectedMonth.dateType;
     selectedMonth = date ?? DatePeriod(DateTime.now(),DateTime.now(), DateType.MONTH);
     notifyListeners();
-    fetchDashboardMetricInformation(context, selectedDashboardType == DashBoardType.Expenditure ? true : false);
+
     fetchUserFeedbackDetails(context);
-    fetchDetails(context, limit, 1, true);
+    if(selectedMonth.dateType == DateType.MONTH && previousDateType == selectedMonth.dateType) {
+      fetchDashboardMetricInformation(context,
+          selectedDashboardType == DashBoardType.Expenditure ? true : false);
+      fetchDetails(context, limit, 1, true);
+    }else if(previousDateType == selectedMonth.dateType){
+      var revenueProvider = Provider.of<RevenueDashboard>(context, listen: false);
+      revenueProvider.loadGraphicalDashboard(context);
+    }
   }
 
   void onChangeOfPageLimit(PaginationResponse response, BuildContext context) {
