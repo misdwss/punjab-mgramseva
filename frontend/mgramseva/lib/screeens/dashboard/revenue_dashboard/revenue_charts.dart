@@ -107,6 +107,7 @@ class _RevenueChartsState extends State<RevenueCharts> {
   }
 
   Widget _buildStackedCharts(){
+    var height = 250.0;
     // var expense = [
     //   Legend('Electricity', Color.fromRGBO(19, 216, 204, 1)),
     //   Legend('Salaries', Color.fromRGBO(47, 197, 229, 1)),
@@ -117,12 +118,12 @@ class _RevenueChartsState extends State<RevenueCharts> {
     return Consumer<RevenueDashboard>(
         builder : (_, revenueProvider, child) {
           return revenueProvider.revenueDataHolder.stackLoader ? Loaders
-              .circularLoader() : (revenueProvider.revenueDataHolder
+              .circularLoader(height: height) : (revenueProvider.revenueDataHolder
               .stackedBar?.graphData == null
-              ? CommonWidgets.buildEmptyMessage('no data', context)
+              ? CommonWidgets.buildEmptyMessage(i18.dashboard.NO_RECORDS_MSG, context)
               : Column(children: [
             Container(
-                height: 250,
+                height: height,
                 child: StackedBarChart(
                     revenueProvider.revenueDataHolder.stackedBar!.graphData!)),
             Container(
@@ -176,13 +177,15 @@ class _RevenueChartsState extends State<RevenueCharts> {
 
 
   Widget _buildLineCharts([bool isDeskTopView = false]){
+    var height = 250.0;
     return Consumer<RevenueDashboard>(
-      builder : (_, revenue, child) =>  Column(children : [
+      builder : (_, revenue, child) =>
+      revenue.revenueDataHolder.trendLineLoader ? Loaders.circularLoader(height: height) :  revenue.revenueDataHolder.trendLine?.graphData == null
+          ? CommonWidgets.buildEmptyMessage(i18.dashboard.NO_RECORDS_MSG, context)
+          : Column(children : [
         Container(
-            height: 250,
-          child :  revenue.revenueDataHolder.trendLineLoader ? Loaders.circularLoader() :  (revenue.revenueDataHolder.trendLine?.graphData == null
-                  ? CommonWidgets.buildEmptyMessage('no data', context)
-                  : SimpleLineChart(revenue.revenueDataHolder.trendLine!.graphData!))),
+            height: height,
+          child : SimpleLineChart(revenue.revenueDataHolder.trendLine!.graphData!)),
       Container(
           padding: const EdgeInsets.only(top : 16.0),
           height: isDeskTopView ? 90 : null,
@@ -195,7 +198,7 @@ class _RevenueChartsState extends State<RevenueCharts> {
             ],
           ),
       )
-      ]),
+      ])
     );
   }
 
