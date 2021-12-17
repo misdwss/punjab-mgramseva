@@ -5,7 +5,7 @@ For local setup:
       ex. apt install python3-pip
       for version check -> pip3 --version
       refer link: https://digit-discuss.atlassian.net/wiki/spaces/DD/pages/1865777171/DIGIT+Internal+Datamart+deployment+steps 
-  3. install required libraries like request, pandas, psycopg2-binary etc. mentiond in requirnments.txt file using pip command.
+  3. install required libraries like requests, pandas, psycopg2-binary etc. mentiond in requirnments.txt file using pip command.
       ex. pip3 install requests
   4. for running app.py use command 
       ex. python3.py
