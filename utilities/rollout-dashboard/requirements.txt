@@ -8,3 +8,6 @@ keyrings.alt==3.0
 pyxdg==0.25
 SecretStorage==2.3.1
 six==1.16.0
+requests
+psycopg2
+jproperties
