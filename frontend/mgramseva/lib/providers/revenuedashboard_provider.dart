@@ -135,10 +135,14 @@ class RevenueDashboard with ChangeNotifier {
     var list = <charts.Series<RevenueGraphModel, int>>[];
     revenueGraph.waterService?.buckets?.forEach((e) {
       var date = DateTime.fromMillisecondsSinceEpoch(e.key ?? 0);
-      e.propertyType?.bucket?.forEach((bucket) {
-        filteredData[bucket.key] ??= {};
-        filteredData[bucket.key][date.month] = bucket.docCount;
-      });
+      filteredData[i18.dashboard.RESIDENTIAL] ??= {};
+      filteredData[i18.dashboard.RESIDENTIAL][date.month] = e.docCount;
+    });
+
+    revenueGraph.expense?.buckets?.forEach((e) {
+      var date = DateTime.fromMillisecondsSinceEpoch(e.key ?? 0);
+      filteredData[i18.dashboard.EXPENDITURE] ??= {};
+      filteredData[i18.dashboard.EXPENDITURE][date.month] = e.docCount;
     });
 
     filteredData.forEach((key, value) {

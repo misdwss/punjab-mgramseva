@@ -75,7 +75,7 @@ class DashBoardRepository extends BaseService {
     return response;
   }
 
-  Future<RevenueGraph?> getGraphicalDashboard(Map<String, dynamic> query) async {
+  Future<RevenueGraph?> getGraphicalDashboard(Map<String, dynamic> query, [bool isTrend = false]) async {
     var commonProvider = Provider.of<CommonProvider>(
         navigatorKey.currentContext!,
         listen: false);
@@ -98,12 +98,12 @@ class DashBoardRepository extends BaseService {
     //     ));
 
     await Future.delayed(Duration(seconds: 2));
-    if (b != null) {
-      revenueGraph = RevenueGraph.fromJson(b['aggregations']['AGGR']);
+    var res = isTrend ? b : b;
+    if (res != null) {
+      revenueGraph = RevenueGraph.fromJson(res['aggregations']['AGGR']);
     }
     return revenueGraph;
   }
-
 
   dynamic b = {
     "took" : 12,

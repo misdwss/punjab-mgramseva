@@ -294,7 +294,7 @@ class SimpleLineChart extends StatelessWidget {
      var dateList =  revenueDashboard.revenueDataHolder.trendLine?.waterService?.buckets?.map((e) => e.key).toList() ?? [];
       var index = value?.toInt() ?? 0;
      if(index < dateList.length){
-       return Constants.MONTHS_SHORT_CODES[DateTime.fromMillisecondsSinceEpoch(dateList[index]!).month];
+       return Constants.MONTHS_SHORT_CODES[DateTime.fromMillisecondsSinceEpoch(dateList[index]!).month - 1];
      }else{
        return "";
      }
