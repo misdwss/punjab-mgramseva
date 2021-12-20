@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:mgramseva/model/dashboard/revenue_graph.dart';
+import 'package:mgramseva/providers/common_provider.dart';
 import 'package:mgramseva/repository/dashboard.dart';
 import 'package:mgramseva/routers/Routers.dart';
 import 'package:mgramseva/screeens/dashboard/revenue_dashboard/revenue.dart';
@@ -28,20 +29,54 @@ class RevenueDashboard with ChangeNotifier {
   }
 
   void loadGraphicalDashboard(BuildContext context) {
-    loadRevenueDetails(context);
-    loadRevenueGraphDetails(context);
+    loadRevenueTableDetails(context);
+    loadRevenueTrendGraphDetails(context);
     loadRevenueStackedGraphDetails(context);
   }
 
+  Map requestQuery([bool isLineChart = false]){
+    var commonProvider = Provider.of<CommonProvider>(
+        navigatorKey.currentContext!,
+        listen: false);
+    var dashBoardProvider = Provider.of<DashBoardProvider>(
+        navigatorKey.currentContext!, listen: false);
 
-  Future<void> loadRevenueGraphDetails(BuildContext context) async {
+      return {
+        "aggregationRequestDto": {
+          "visualizationType": "METRIC",
+          "visualizationCode": isLineChart ? "revenueAndExpenditureTrendTwo" : "revenueAndExpenditureTrendOne",
+          "queryType": "",
+          "filters": {
+            "tenantId": []
+          },
+          "moduleLevel": "",
+          "aggregationFactors": null,
+          "requestDate": {
+            "startDate": dashBoardProvider.selectedMonth.startDate.millisecondsSinceEpoch,
+            "endDate": dashBoardProvider.selectedMonth.endDate.millisecondsSinceEpoch,
+            "interval": "month",
+            "title": ""
+          }
+        },
+        "headers": {
+          "tenantId": commonProvider.userDetails?.selectedtenant?.code
+        },
+        "RequestInfo": {
+          "apiId": "Rainmaker",
+          "authToken": commonProvider.userDetails?.accessToken,
+        }
+      };
+  }
+
+
+  Future<void> loadRevenueTrendGraphDetails(BuildContext context) async {
     revenueDataHolder.trendLineLoader = true;
     notifyListeners();
     try {
-      var res = await DashBoardRepository().getGraphicalDashboard({});
+      var res = await DashBoardRepository().getGraphicalDashboard(requestQuery(true));
       if (res != null) {
         revenueDataHolder.trendLine = res;
-        revenueDataHolder.trendLine?.graphData = trendGraphInfo(res);
+        revenueDataHolder.trendLine?.graphData = trendGraphDataBinding(res);
       }
     } catch (e, s) {
       ErrorHandler().allExceptionsHandler(context, e, s);
@@ -55,10 +90,10 @@ class RevenueDashboard with ChangeNotifier {
     revenueDataHolder.resetData();
     notifyListeners();
     try {
-      var res = await DashBoardRepository().getGraphicalDashboard({});
+      var res = await DashBoardRepository().getGraphicalDashboard(requestQuery());
       if (res != null) {
         revenueDataHolder.stackedBar = res;
-        revenueDataHolder.stackedBar?.graphData = stackedGraphInfo(res);
+        revenueDataHolder.stackedBar?.graphData = stackedGraphDataBinding(res);
       }
     } catch (e, s) {
       ErrorHandler().allExceptionsHandler(context, e, s);
@@ -67,7 +102,7 @@ class RevenueDashboard with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> loadRevenueDetails(BuildContext context) async {
+  Future<void> loadRevenueTableDetails(BuildContext context) async {
     try {
       var res = await DashBoardRepository().fetchRevenueDetails();
       var filteredList = <TableDataRow>[];
@@ -131,7 +166,7 @@ class RevenueDashboard with ChangeNotifier {
   }
 
 
-  List<charts.Series<RevenueGraphModel, int>>? trendGraphInfo(
+  List<charts.Series<RevenueGraphModel, int>>? trendGraphDataBinding(
       RevenueGraph revenueGraph) {
     Map filteredData = {};
     var list = <charts.Series<RevenueGraphModel, int>>[];
@@ -166,7 +201,7 @@ class RevenueDashboard with ChangeNotifier {
   }
 
 
-  List<charts.Series<RevenueGraphModel, String>>? stackedGraphInfo(
+  List<charts.Series<RevenueGraphModel, String>>? stackedGraphDataBinding(
       RevenueGraph revenueGraph) {
     Map revenueData = {};
     Map expenseData = {};

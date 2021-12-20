@@ -75,30 +75,20 @@ class DashBoardRepository extends BaseService {
     return response;
   }
 
-  Future<RevenueGraph?> getGraphicalDashboard(Map<String, dynamic> query, [bool isTrend = false]) async {
+  Future<RevenueGraph?> getGraphicalDashboard(Map<dynamic, dynamic> body) async {
     var commonProvider = Provider.of<CommonProvider>(
         navigatorKey.currentContext!,
         listen: false);
     RevenueGraph? revenueGraph;
 
     // var res = await makeRequest(
-    //     url: Url.GET_USERS_PAYMENT_FEEDBACK,
+    //     url: Url.GRAPHICAL_DASHBOARD,
     //     method: RequestType.POST,
-    //     queryParameters: query,
-    //     body: {},
-    //     requestInfo:  RequestInfo(
-    //       APIConstants.API_MODULE_NAME,
-    //       APIConstants.API_VERSION,
-    //       APIConstants.API_TS,
-    //       "_search",
-    //       APIConstants.API_DID,
-    //       APIConstants.API_KEY,
-    //       APIConstants.API_MESSAGE_ID,
-    //       commonProvider.userDetails!.accessToken,
-    //     ));
+    //     body: body,
+    // );
 
     await Future.delayed(Duration(seconds: 2));
-    var res = isTrend ? b : b;
+     var res = b;
     if (res != null) {
       revenueGraph = RevenueGraph.fromJson(res['aggregations']['AGGR']);
     }
