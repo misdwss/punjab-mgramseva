@@ -17,6 +17,8 @@ import org.egov.waterconnection.web.models.LastMonthSummary;
 import org.egov.waterconnection.web.models.LastMonthSummaryResponse;
 
 import org.egov.waterconnection.web.models.RequestInfoWrapper;
+import org.egov.waterconnection.web.models.RevenueCollectionData;
+import org.egov.waterconnection.web.models.RevenueCollectionDataResponse;
 import org.egov.waterconnection.web.models.RevenueDashboard;
 import org.egov.waterconnection.web.models.RevenueDashboardResponse;
 import org.egov.waterconnection.web.models.SearchCriteria;
@@ -114,7 +116,7 @@ public class WaterController {
 		return new ResponseEntity<>(feedbackResponse, HttpStatus.OK);
 	}
 	@PostMapping("/_revenueDashboard")
-	public ResponseEntity<RevenueDashboardResponse> _expenseDashboard(
+	public ResponseEntity<RevenueDashboardResponse> _revenueDashboard(
 			@RequestBody @Valid final RequestInfoWrapper requestInfoWrapper,
 			@Valid @ModelAttribute SearchCriteria criteria) {
 		RevenueDashboard dashboardData = waterService.getRevenueDashboardData(criteria,
@@ -166,4 +168,18 @@ public class WaterController {
 					responseInfoFactory.createResponseInfoFromRequestInfo(requestInfoWrapper.getRequestInfo(), true));
 			return new ResponseEntity<>(response, HttpStatus.OK);
 	    }
+	 
+	 @PostMapping("/_revenueCollectionData")
+		public ResponseEntity<RevenueCollectionDataResponse> _revenueCollectionData(
+				@RequestBody @Valid final RequestInfoWrapper requestInfoWrapper,
+				@Valid @ModelAttribute SearchCriteria criteria) {
+			List<RevenueCollectionData> collectionData = waterService.getRevenueCollectionData(criteria,
+					requestInfoWrapper.getRequestInfo());
+
+			RevenueCollectionDataResponse response = RevenueCollectionDataResponse.builder().RevenueCollectionData(collectionData)
+					.responseInfo(responseInfoFactory.createResponseInfoFromRequestInfo(requestInfoWrapper.getRequestInfo(),
+							true))
+					.build();
+			return new ResponseEntity<>(response, HttpStatus.OK);
+		}
 }
