@@ -307,8 +307,7 @@ public class WaterDaoImpl implements WaterDao {
 		String finalQuery = wsQueryBuilder.RESIDENTIALSPAID;
 		finalQuery = finalQuery.replace("{paidCount}", paidCountQuesry);
 		StringBuilder query = new StringBuilder(finalQuery);
-		query.append(" and createdtime  >= ").append(criteria.getFromDate()).append(" and createdtime <= ")
-				.append(criteria.getToDate()).append(" and tenantId = '").append(criteria.getTenantId()).append("'");
+		query.append(" and tenantId = '").append(criteria.getTenantId()).append("'");
 		System.out.println("Residential count Final Query: " + query);
 		return jdbcTemplate.queryForMap(query.toString());
 
@@ -324,8 +323,7 @@ public class WaterDaoImpl implements WaterDao {
 		String finalQuery = wsQueryBuilder.COMMERCIALSPAID;
 		finalQuery = finalQuery.replace("{paidCount}", paidCountQuesry);
 		StringBuilder query = new StringBuilder(finalQuery);
-		query.append(" and createdtime  >= ").append(criteria.getFromDate()).append(" and createdtime <= ")
-				.append(criteria.getToDate()).append(" and tenantId = '").append(criteria.getTenantId()).append("'");
+		query.append(" and tenantId = '").append(criteria.getTenantId()).append("'");
 		System.out.println("Comercial count Final Query: " + query);
 		return jdbcTemplate.queryForMap(query.toString());
 
@@ -340,8 +338,7 @@ public class WaterDaoImpl implements WaterDao {
 		String finalQuery = wsQueryBuilder.TOTALAPPLICATIONSPAID;
 		finalQuery = finalQuery.replace("{paidCount}", paidCountQuesry);
 		StringBuilder query = new StringBuilder(finalQuery);
-		query.append(" and createdtime  >= ").append(criteria.getFromDate()).append(" and createdtime <= ")
-				.append(criteria.getToDate()).append(" and tenantId = '").append(criteria.getTenantId()).append("'");
+		query.append(" and tenantId = '").append(criteria.getTenantId()).append("'");
 		System.out.println("Total Count Final Query: " + query);
 		return jdbcTemplate.queryForMap(query.toString());
 
@@ -362,4 +359,24 @@ public class WaterDaoImpl implements WaterDao {
 		}
 		
 	}
+	
+	
+	public Integer getPendingCollectionAmountTillDate(@Valid SearchCriteria criteria) {
+		StringBuilder query = new StringBuilder(wsQueryBuilder.PENDINGCOLLECTIONTILLDATE);
+		query.append(" and dmd.taxperiodto <= " +  criteria.getToDate())
+				.append(" and dmd.tenantId = '").append(criteria.getTenantId()).append("'");
+		log.info("Active pending collection query : " + query);
+		return jdbcTemplate.queryForObject(query.toString(), Integer.class);
+
+	}
+	
+	public Integer getArrearsAmount(@Valid SearchCriteria criteria) {
+		StringBuilder query = new StringBuilder(wsQueryBuilder.PENDINGCOLLECTION);
+		query.append(" and dmd.taxperiodto <= " + criteria.getFromDate())
+				.append(" and dmd.tenantId = '").append(criteria.getTenantId()).append("'");
+		log.info("Active pending collection query : " + query);
+		return jdbcTemplate.queryForObject(query.toString(), Integer.class);
+
+	}
+	
 }
