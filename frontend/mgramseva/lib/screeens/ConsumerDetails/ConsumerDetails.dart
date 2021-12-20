@@ -258,6 +258,7 @@ class _ConsumerDetailsState extends State<ConsumerDetails> {
                                   .waterconnection.OldConnectionCtrl,
                               contextkey:
                                   consumerProvider.consmerWalkthrougList[4].key,
+                                  isDisabled: consumerProvider.isfirstdemand,
                             ),
                           ),
                           Consumer<ConsumerProvider>(

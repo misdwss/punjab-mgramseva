@@ -83,7 +83,26 @@ public class WsQueryBuilder {
 	public static final String NEWDEMAND = "select sum(dmdl.taxamount) FROM egbs_demand_v1 dmd INNER JOIN egbs_demanddetail_v1 dmdl ON dmd.id=dmdl.demandid AND dmd.tenantid=dmdl.tenantid WHERE dmd.businessservice='WS' and dmd.status = 'ACTIVE' ";
 
 	public static final String ACTUALCOLLECTION = " select sum(py.totalAmountPaid) FROM egcl_payment py INNER JOIN egcl_paymentdetail pyd ON pyd.paymentid = py.id where pyd.businessservice='WS' ";
+	
+	public static final String RESIDENTIALCOLLECTION = "select sum(py.totalAmountPaid) FROM egcl_payment py INNER JOIN egcl_paymentdetail pyd ON pyd.paymentid = py.id INNER JOIN egcl_bill bill ON bill.id = pyd.billid INNER JOIN eg_ws_connection wc ON wc.connectionno = bill.consumercode  where pyd.businessservice='WS' and wc.additionaldetails->>'propertyType' IN ('RESIDENTIAL') and wc.status='Active' ";
+	
+	public static final String COMMERCIALCOLLECTION = "select sum(py.totalAmountPaid) FROM egcl_payment py INNER JOIN egcl_paymentdetail pyd ON pyd.paymentid = py.id INNER JOIN egcl_bill bill ON bill.id = pyd.billid INNER JOIN eg_ws_connection wc ON wc.connectionno = bill.consumercode  where pyd.businessservice='WS' and wc.additionaldetails->>'propertyType' IN ('COMMERCIAL') and wc.status='Active' ";
+	
+	public static final String OTHERSCOLLECTION = "select sum(py.totalAmountPaid) FROM egcl_payment py INNER JOIN egcl_paymentdetail pyd ON pyd.paymentid = py.id INNER JOIN egcl_bill bill ON bill.id = pyd.billid INNER JOIN eg_ws_connection wc ON wc.connectionno = bill.consumercode  where pyd.businessservice='WS' and wc.additionaldetails->>'propertyType' not IN ('RESIDENTIAL','COMMERCIAL') and wc.status='Active' ";
+	
+	public static final String TOTALAPPLICATIONSPAID = "select count(*), ({paidCount}) as paid from eg_ws_connection where status='Active' ";
 
+	public static final String RESIDENTIALSPAID = "select count(*), ({paidCount}) as paid from eg_ws_connection where additionaldetails->>'propertyType' IN ('RESIDENTIAL') and status='Active' ";
+
+	public static final String COMMERCIALSPAID = "select count(*), ({paidCount}) as paid from eg_ws_connection where additionaldetails->>'propertyType' IN ('COMMERCIAL') and status='Active' ";
+
+	public static final String RESIDENTIALSPAIDCOUNT = "select count(*)FROM egcl_payment py INNER JOIN egcl_paymentdetail pyd ON pyd.paymentid = py.id INNER JOIN egcl_bill bill ON bill.id = pyd.billid INNER JOIN eg_ws_connection wc ON wc.connectionno = bill.consumercode  where pyd.businessservice='WS' and wc.additionaldetails->>'propertyType' IN ('RESIDENTIAL') ";
+	
+	public static final String COMMERCIALSPAIDCOUNT = "select count(*)FROM egcl_payment py INNER JOIN egcl_paymentdetail pyd ON pyd.paymentid = py.id INNER JOIN egcl_bill bill ON bill.id = pyd.billid INNER JOIN eg_ws_connection wc ON wc.connectionno = bill.consumercode  where pyd.businessservice='WS' and wc.additionaldetails->>'propertyType' IN ('COMMERCIAL') ";
+
+	public static final String TOTALAPPLICATIONSPAIDCOUNT = "select count(*)FROM egcl_payment py INNER JOIN egcl_paymentdetail pyd ON pyd.paymentid = py.id INNER JOIN egcl_bill bill ON bill.id = pyd.billid INNER JOIN eg_ws_connection wc ON wc.connectionno = bill.consumercode  where pyd.businessservice='WS' ";
+
+			
 	public static final String ID_QUERY = "select conn.id FROM eg_ws_connection conn " + INNER_JOIN_STRING
 			+ " eg_ws_service wc ON wc.connection_id = conn.id" + LEFT_OUTER_JOIN_STRING
 			+ "eg_ws_applicationdocument document ON document.wsid = conn.id" + LEFT_OUTER_JOIN_STRING

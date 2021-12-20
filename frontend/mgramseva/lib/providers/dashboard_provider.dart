@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:mgramseva/model/common/metric.dart';
@@ -556,7 +557,7 @@ class DashBoardProvider with ChangeNotifier {
   }
 
   void onChangeOfPageLimit(PaginationResponse response, BuildContext context) {
-    fetchDetails(context, response.limit, response.offset);
+    fetchDetails(context, response.limit, response.offset, response.isPageChange);
   }
 
   fetchDetails(BuildContext context,
@@ -617,9 +618,22 @@ class DashBoardProvider with ChangeNotifier {
       var response = await DashBoardRepository().getMetricInformation(isExpenditure, query);
       if(response != null){
         var metricList = <Metric>[];
-        response.forEach((key, value) {
-          metricList.add(Metric(label: value, value: 'dashboard_$key', type: 'amount'));
-        });
+        if(isExpenditure){
+          var keys = ['totalBills', 'billsPaid', 'pendingBills'];
+          response.forEach((key, value) {
+            metricList.add(Metric(label: value, value: 'dashboard_$key'.toUpperCase(), type: keys.contains(key) ? '' : 'amount'));
+          });
+        }else{
+          response.forEach((key, value) {
+            if(value is Map){
+              var filteredValue = '${value['paid']}/${value['count']}';
+              metricList.add(Metric(label: filteredValue, value: 'dashboard_$key'.toUpperCase(), type: ''));
+            }else {
+              metricList.add(Metric(
+                  label: value, value: 'dashboard_$key'.toUpperCase(), type: 'amount'));
+            }
+          });
+        }
         metricInformation = metricList;
       }
       notifyListeners();
@@ -678,9 +692,9 @@ class DashBoardProvider with ChangeNotifier {
    var hearList = [i18.dashboard.BILL_ID_VENDOR, i18.expense.EXPENSE_TYPE, i18.common.AMOUNT, i18.expense.BILL_DATE, i18.common.PAID_DATE];
 
     var tableData = expenseDashboardDetails.expenseDetailList?.map<List<String>>((expense) => [
-     '${expense.challanNo} \n ${expense.vendorName}',
+     '${expense.challanNo} \n${expense.vendorName}',
      '${ApplicationLocalizations.of(context).translate(expense.expenseType ?? '')}',
-     '₹ ${expense.totalAmount ?? '-'}',
+     expense.totalAmount != null ? '₹ ${expense.totalAmount}' : '-',
      '${DateFormats.timeStampToDate(expense.billDate)}',
      '${expense.paidDate != null && expense.paidDate != 0 ? DateFormats.timeStampToDate(expense.paidDate) : (ApplicationLocalizations.of(navigatorKey.currentContext!).translate(i18.dashboard.PENDING))}',
    ]).toList() ?? [];
@@ -696,7 +710,7 @@ class DashBoardProvider with ChangeNotifier {
 
     var query = {
       'tenantId': commonProvider.userDetails?.selectedtenant?.code,
-      'offset': '0',
+      'limit': '-1',
       'fromDate':
       '${selectedMonth.startDate.millisecondsSinceEpoch}',
       'toDate':

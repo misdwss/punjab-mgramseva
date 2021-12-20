@@ -8,6 +8,8 @@ import 'package:mgramseva/utils/global_variables.dart';
 import 'package:provider/provider.dart';
 
 import 'models.dart';
+import 'package:mime/mime.dart';
+import 'package:http_parser/http_parser.dart';
 
 class CommonMethods {
 
@@ -95,5 +97,16 @@ class CommonMethods {
     var commonProvider = Provider.of<CommonProvider>(navigatorKey.currentContext!, listen: false);
 
     return '${commonProvider.userDetails?.userRequest?.id}${Random().nextInt(3)}';
+  }
+
+  MediaType getMediaType(String? path) {
+    if(path == null) return MediaType('', '');
+    String? mimeStr = lookupMimeType(path);
+    var fileType = mimeStr?.split('/');
+    if(fileType != null && fileType.length > 0) {
+      return MediaType(fileType.first, fileType.last);
+    }else{
+      return MediaType('', '');
+    }
   }
 }
