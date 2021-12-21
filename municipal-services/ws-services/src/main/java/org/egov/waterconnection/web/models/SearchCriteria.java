@@ -1,5 +1,6 @@
 package org.egov.waterconnection.web.models;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -119,7 +120,7 @@ public class SearchCriteria {
 	@JsonProperty("textSearch")
 	private String textSearch;
 	
-	private Set<String> dataList;
+	private Set<String> dataSet;
 	
 	public enum SortOrder {
 	    ASC,

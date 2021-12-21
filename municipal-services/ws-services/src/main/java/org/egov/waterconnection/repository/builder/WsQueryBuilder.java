@@ -200,8 +200,8 @@ public class WsQueryBuilder {
 			WaterConnectionResponse response = waterServiceImpl.getWCListFuzzySearch(criteria, requestInfo);
 			
 			if(!CollectionUtils.isEmpty(response.getWaterConnectionData())) {
-				Set<String> list = response.getWaterConnectionData().stream().map(data -> (String)data.get("connectionNo")).collect(Collectors.toSet());			
-				criteria.setDataList(list);
+				Set<String> set = response.getWaterConnectionData().stream().map(data -> (String)data.get("connectionNo")).collect(Collectors.toSet());			
+				criteria.setDataSet(set);
 			}
 		}
 		
@@ -246,9 +246,9 @@ public class WsQueryBuilder {
 				preparedStatement.add(criteria.getTextSearch());
 			}
 			
-			if(!CollectionUtils.isEmpty(criteria.getDataList())) {
-				query.append(" or conn.connectionno in (").append(createQuery(criteria.getDataList())).append(" )");
-				preparedStatement.add(criteria.getDataList().toString());
+			if(!CollectionUtils.isEmpty(criteria.getDataSet())) {
+				query.append(" or conn.connectionno in (").append(createQuery(criteria.getDataSet())).append(" )");
+				addToPreparedStatement(preparedStatement, criteria.getDataSet());
 			}
 		}
 
