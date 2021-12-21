@@ -529,7 +529,7 @@ public class WaterServiceImpl implements WaterService {
 	
 	private void validateFuzzySearchCriteria(SearchCriteria criteria){
 
-        if(org.apache.commons.lang3.StringUtils.isBlank(criteria.getName()) && org.apache.commons.lang3.StringUtils.isBlank(criteria.getMobileNumber()))
+        if(org.apache.commons.lang3.StringUtils.isBlank(criteria.getTextSearch()) && org.apache.commons.lang3.StringUtils.isBlank(criteria.getName()) && org.apache.commons.lang3.StringUtils.isBlank(criteria.getMobileNumber()))
             throw new CustomException("EG_WC_SEARCH_ERROR"," No criteria given for the WC search");
     }
 	

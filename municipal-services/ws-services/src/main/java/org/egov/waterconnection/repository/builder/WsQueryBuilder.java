@@ -2,22 +2,29 @@ package org.egov.waterconnection.repository.builder;
 
 import static org.egov.waterconnection.constants.WCConstants.SEARCH_TYPE_CONNECTION;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.egov.common.contract.request.RequestInfo;
 import org.egov.tracer.model.CustomException;
 import org.egov.waterconnection.config.WSConfiguration;
 import org.egov.waterconnection.service.UserService;
+import org.egov.waterconnection.service.WaterServiceImpl;
 import org.egov.waterconnection.util.WaterServicesUtil;
+import org.egov.waterconnection.web.controller.WaterController;
 import org.egov.waterconnection.web.models.FeedbackSearchCriteria;
 import org.egov.waterconnection.web.models.Property;
 import org.egov.waterconnection.web.models.SearchCriteria;
+import org.egov.waterconnection.web.models.WaterConnectionResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
+import org.springframework.web.client.RestTemplate;
 
 @Component
 public class WsQueryBuilder {
@@ -30,6 +37,9 @@ public class WsQueryBuilder {
 
 	@Autowired
 	private UserService userService;
+	
+	@Autowired
+	WaterServiceImpl waterServiceImpl;
 
 	private static final String INNER_JOIN_STRING = "INNER JOIN";
 	private static final String LEFT_OUTER_JOIN_STRING = " LEFT OUTER JOIN ";
@@ -186,6 +196,15 @@ public class WsQueryBuilder {
 				preparedStatement.add(criteria.getPropertyId());
 			}
 		}
+		if(!StringUtils.isEmpty(criteria.getTextSearch())) {
+			WaterConnectionResponse response = waterServiceImpl.getWCListFuzzySearch(criteria, requestInfo);
+			
+			if(!CollectionUtils.isEmpty(response.getWaterConnectionData())) {
+				Set<String> list = response.getWaterConnectionData().stream().map(data -> (String)data.get("connectionNo")).collect(Collectors.toSet());			
+				criteria.setDataList(list);
+			}
+		}
+		
 		query = applyFilters(query, preparedStatement, criteria);
 
 //		query.append(ORDER_BY_CLAUSE);
@@ -215,10 +234,22 @@ public class WsQueryBuilder {
 			preparedStatement.add(criteria.getOldConnectionNumber());
 		}
 
-		if (!StringUtils.isEmpty(criteria.getConnectionNumber())) {
+		if (!StringUtils.isEmpty(criteria.getConnectionNumber()) || !StringUtils.isEmpty(criteria.getTextSearch())) {
 			addClauseIfRequired(preparedStatement, query);
-			query.append(" conn.connectionno ~*  ? ");
-			preparedStatement.add(criteria.getConnectionNumber());
+			
+			if(!StringUtils.isEmpty(criteria.getConnectionNumber())) {
+				query.append(" conn.connectionno ~*  ? ");
+				preparedStatement.add(criteria.getConnectionNumber());
+			}
+			else {
+				query.append(" conn.connectionno ~*  ? ");
+				preparedStatement.add(criteria.getTextSearch());
+			}
+			
+			if(!CollectionUtils.isEmpty(criteria.getDataList())) {
+				query.append(" or conn.connectionno in (").append(createQuery(criteria.getDataList())).append(" )");
+				preparedStatement.add(criteria.getDataList().toString());
+			}
 		}
 
 		if (!StringUtils.isEmpty(criteria.getStatus())) {

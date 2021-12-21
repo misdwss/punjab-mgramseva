@@ -116,6 +116,11 @@ public class SearchCriteria {
 	@JsonProperty("currentDate")
 	private Long currentDate;
 	
+	@JsonProperty("textSearch")
+	private String textSearch;
+	
+	private Set<String> dataList;
+	
 	public enum SortOrder {
 	    ASC,
 	    DESC
