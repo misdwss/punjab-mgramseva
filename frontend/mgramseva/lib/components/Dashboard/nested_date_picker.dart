@@ -35,6 +35,7 @@ class _NestedDatePickerState extends State<NestedDatePicker> {
 
   @override
   void initState() {
+    // print(widget.selectedMonth?.dateType);
     if (widget.dateType == DateType.YEAR) {
       yearsWithMonths = widget.yearsWithMonths ??
           CommonMethods.getFinancialYearList(widget.maximumYears);
@@ -62,7 +63,8 @@ class _NestedDatePickerState extends State<NestedDatePicker> {
     } else {
       DatePeriod? date;
       for (var month in yearsWithMonths) {
-        if (widget.selectedMonth == month) {
+        if (widget.selectedMonth?.endDate.toString() ==
+            month.endDate.toString()) {
           date = month;
         }
       }
