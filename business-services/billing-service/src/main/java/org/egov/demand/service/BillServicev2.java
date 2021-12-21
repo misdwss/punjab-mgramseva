@@ -450,7 +450,7 @@ public class BillServicev2 {
 		if (appProps.getIsTenantLevelBillNumberingEnabled())
 			billNumberFormat = billNumberFormat.replace(appProps.getTenantIdReplaceString(), "_".concat(tenantId.split("\\.")[1]));
 		else
-			billNumberFormat = billNumberFormat.replace(appProps.getTenantIdReplaceString(), "");
+			billNumberFormat = billNumberFormat.replace(appProps.getTenantIdReplaceString(), "_".concat(tenantId.split("\\.")[1]));
 
 		return idGenRepo.getId(requestInfo, tenantId, "billnumberid", billNumberFormat, count);
 	}
