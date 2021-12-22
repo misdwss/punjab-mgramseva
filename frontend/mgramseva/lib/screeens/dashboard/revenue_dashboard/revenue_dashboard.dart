@@ -26,7 +26,7 @@ class _RevenueDashBoardState extends State<RevenueDashBoard> {
   @override
   void initState() {
     var revenueProvider = Provider.of<RevenueDashboard>(context, listen: false);
-    revenueProvider.loadRevenueDetails(context);
+    revenueProvider.loadRevenueTableDetails(context);
     super.initState();
   }
 
