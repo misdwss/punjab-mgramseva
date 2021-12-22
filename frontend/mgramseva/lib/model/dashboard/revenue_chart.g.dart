@@ -10,9 +10,9 @@ RevenueGraph _$RevenueGraphFromJson(Map<String, dynamic> json) {
   return RevenueGraph()
     ..chartType = json['chartType'] as String?
     ..visualizationCode = json['visualizationCode'] as String?
-    ..data = json['data'] == null
-        ? null
-        : RevenueGraphData.fromJson(json['data'] as Map<String, dynamic>);
+    ..data = (json['data'] as List<dynamic>?)
+        ?.map((e) => RevenueGraphData.fromJson(e as Map<String, dynamic>))
+        .toList();
 }
 
 Map<String, dynamic> _$RevenueGraphToJson(RevenueGraph instance) =>
@@ -27,9 +27,9 @@ RevenueGraphData _$RevenueGraphDataFromJson(Map<String, dynamic> json) {
     ..headerName = json['headerName'] as String?
     ..headerValue = json['headerValue'] as num?
     ..headerSymbol = json['headerSymbol'] as String?
-    ..plots = json['plots'] == null
-        ? null
-        : RevenuePlot.fromJson(json['plots'] as Map<String, dynamic>);
+    ..plots = (json['plots'] as List<dynamic>?)
+        ?.map((e) => RevenuePlot.fromJson(e as Map<String, dynamic>))
+        .toList();
 }
 
 Map<String, dynamic> _$RevenueGraphDataToJson(RevenueGraphData instance) =>
@@ -44,12 +44,12 @@ RevenuePlot _$RevenuePlotFromJson(Map<String, dynamic> json) {
   return RevenuePlot()
     ..name = json['name'] as String?
     ..value = json['value'] as num?
-    ..number = json['number'] as String?;
+    ..symbol = json['symbol'] as String?;
 }
 
 Map<String, dynamic> _$RevenuePlotToJson(RevenuePlot instance) =>
     <String, dynamic>{
       'name': instance.name,
       'value': instance.value,
-      'number': instance.number,
+      'symbol': instance.symbol,
     };

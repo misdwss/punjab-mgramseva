@@ -2,7 +2,7 @@
 
 import 'package:charts_flutter/flutter.dart';
 import 'package:mgramseva/model/dashboard/revenue_dashboard.dart';
-import 'package:mgramseva/model/dashboard/revenue_graph.dart';
+import 'package:mgramseva/model/dashboard/revenue_chart.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:mgramseva/utils/models.dart';
 
