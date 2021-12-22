@@ -67,6 +67,9 @@ class Url {
   /// Dashboard
   static const String EXPENDITURE_METRIC = 'echallan-services/eChallan/v1/_expenseDashboard';
   static const String REVENUE_METRIC = 'ws-services/wc/_revenueDashboard';
+  static const String GRAPHICAL_DASHBOARD = 'dashboard-analytics/dashboard/getChartV2';
+  static const String DASHBOARD_COLLECTION_TABLE_DATA = 'ws-services/wc/_revenueCollectionData';
+  static const String DASHBOARD_EXPENSE_TABLE_DATA = 'echallan-services/eChallan/v1/_chalanCollectionData';
 
 }
 
