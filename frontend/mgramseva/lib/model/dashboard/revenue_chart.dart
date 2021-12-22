@@ -13,7 +13,10 @@ class RevenueGraph {
   String? visualizationCode;
 
   @JsonKey(name: "data")
-  RevenueGraphData? data;
+  List<RevenueGraphData>? data;
+
+  @JsonKey(ignore: true)
+  List<charts.Series<RevenueGraphModel, dynamic>>? graphData;
 
 
   RevenueGraph();
@@ -35,7 +38,8 @@ class RevenueGraphData {
   String? headerSymbol;
 
   @JsonKey(name: "plots")
-  RevenuePlot? plots;
+  List<RevenuePlot>? plots;
+
 
   RevenueGraphData();
 
@@ -52,8 +56,8 @@ class RevenuePlot {
   @JsonKey(name: "value")
   num? value;
 
-  @JsonKey(name: "number")
-  String? number;
+  @JsonKey(name: "symbol")
+  String? symbol;
 
   RevenuePlot();
 

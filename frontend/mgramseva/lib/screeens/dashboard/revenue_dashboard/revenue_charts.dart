@@ -61,8 +61,9 @@ class _RevenueChartsState extends State<RevenueCharts> {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Expanded(child: _buildChartWithCardView(_buildStackedCharts(), _buildButton(revenueProvider.getTabs(context).first))),
-        SizedBox(width: 8),
+        /// Stacked Graph not implemented due to Backend API response finalization is pending
+        // Expanded(child: _buildChartWithCardView(_buildStackedCharts(), _buildButton(revenueProvider.getTabs(context).first))),
+        // SizedBox(width: 8),
         Expanded(child: _buildChartWithCardView(_buildLineCharts(true), _buildButton(revenueProvider.getTabs(context).last))),
       ],
     );
@@ -194,7 +195,7 @@ class _RevenueChartsState extends State<RevenueCharts> {
             spacing: 20,
             children: [
               _buildLegend(i18.dashboard.REVENUE, Color.fromRGBO(64, 106, 187, 1)),
-              _buildLegend(i18.dashboard.EXPENDITURE, Color.fromRGBO(11, 12, 12, 1)),
+              _buildLegend(i18.dashboard.EXPENDITURE, Color.fromRGBO(255, 0, 0, 1)),
             ],
           ),
       )
@@ -294,10 +295,10 @@ class SimpleLineChart extends StatelessWidget {
     final customTickFormatter =
     charts.BasicNumericTickFormatterSpec((num? value) {
 
-     var dateList =  revenueDashboard.revenueDataHolder.trendLine?.waterService?.buckets?.map((e) => e.key).toList() ?? [];
+     var dateList =  revenueDashboard.revenueDataHolder.trendLine?.data!.first.plots?.map((e) => e.name).toList() ?? [];
       var index = value?.toInt() ?? 0;
      if(index < dateList.length){
-       return Constants.MONTHS_SHORT_CODES[DateTime.fromMillisecondsSinceEpoch(dateList[index]!).month - 1];
+       return dateList[index].toString();
      }else{
        return "";
      }
