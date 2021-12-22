@@ -115,7 +115,7 @@ class DashboardPdfCreator {
               child:
                   pw.Text('${ApplicationLocalizations.of(context).translate('${dashBoardProvider.selectedDashboardType == DashBoardType.Expenditure ? i18.dashboard.EXPENDITURE : i18.dashboard.COLLECTIONS}')}', style: pw.TextStyle(fontSize: 14, font: font, fontWeight: pw.FontWeight.bold))),
       pw.Container(
-          height: 60,
+          height: ((gridList.length / 3).ceil()) * 60,
           color: PdfColor.fromHex('#fafafa'),
           child: pw.GridView(
               crossAxisCount: crossAxisCount,
@@ -126,12 +126,11 @@ class DashboardPdfCreator {
                 }
                 return pw.Container(
                     decoration: pw.BoxDecoration(
-                      border: index == (incrementer - crossAxisCount) ? null : pw.Border(
-                        left: pw.BorderSide(
-                          width: 1.0, /*color: Colors.grey*/
-                        ),
-                      ),
-                      // color: Colors.white,
+                      border: pw.Border(
+                        left: pw.BorderSide(width: index == (incrementer - crossAxisCount) ? 0 : 1.0, color: index == (incrementer - crossAxisCount) ? PdfColor.fromHex('#FFFFFF') :  PdfColor.fromHex('#808080')),
+                            bottom:  pw.BorderSide(width: index < gridList.length - (gridList.length % crossAxisCount == 0 ? crossAxisCount : gridList.length % crossAxisCount) ? 1.0 : 0,
+                                color: index < gridList.length - (gridList.length % crossAxisCount == 0 ? crossAxisCount : gridList.length % crossAxisCount) ? PdfColor.fromHex('#808080') : PdfColor.fromHex('#FFFFFF')),
+                          ),
                     ),
                     alignment: pw.Alignment.center,
                     padding:

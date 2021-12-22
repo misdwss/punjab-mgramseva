@@ -60,6 +60,11 @@ class _IndividualTabState extends State<IndividualTab> {
         builder : (context, constraints) {
           var width = constraints.maxWidth < 760 ?  (expenseList is List<ExpensesDetailsModel> ? 180.0 : 145.0)  : (constraints.maxWidth / (expenseList is List<ExpensesDetailsModel> ? 5 : 3));
           var tableData = expenseList is List<ExpensesDetailsModel> ? dashBoardProvider.getExpenseData(expenseList as List<ExpensesDetailsModel>) : dashBoardProvider.getCollectionsData( expenseList  as List<WaterConnection>);
+          var extraHeight = 0.0;
+          tableData.forEach((e) {
+            if(e.tableRow.first.label.length > 28)
+            extraHeight += e.tableRow.first.label.substring(28).length.toDouble();
+          });
           return tableData == null || tableData.isEmpty ?
           SizedBox(
               height: 100,
@@ -68,7 +73,7 @@ class _IndividualTabState extends State<IndividualTab> {
             (headerList: expenseList is List<ExpensesDetailsModel> ? dashBoardProvider.expenseHeaderList : dashBoardProvider.collectionHeaderList,
             tableData:  tableData,
             leftColumnWidth: width,
-            height: 68 + (52.0 * tableData.length),
+            height: 68 + (52.0 * tableData.length) + extraHeight,
             rightColumnWidth: expenseList is List<ExpensesDetailsModel> ? width * 4 : width * 2,
           );
         }

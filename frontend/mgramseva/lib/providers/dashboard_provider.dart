@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:mgramseva/model/common/metric.dart';
@@ -566,7 +567,7 @@ class DashBoardProvider with ChangeNotifier {
   }
 
   void onChangeOfPageLimit(PaginationResponse response, BuildContext context) {
-    fetchDetails(context, response.limit, response.offset);
+    fetchDetails(context, response.limit, response.offset, response.isPageChange);
   }
 
   fetchDetails(BuildContext context,
@@ -627,9 +628,22 @@ class DashBoardProvider with ChangeNotifier {
       var response = await DashBoardRepository().getMetricInformation(isExpenditure, query);
       if(response != null){
         var metricList = <Metric>[];
-        response.forEach((key, value) {
-          metricList.add(Metric(label: value, value: 'dashboard_$key', type: 'amount'));
-        });
+        if(isExpenditure){
+          var keys = ['totalBills', 'billsPaid', 'pendingBills'];
+          response.forEach((key, value) {
+            metricList.add(Metric(label: value, value: 'dashboard_$key'.toUpperCase(), type: keys.contains(key) ? '' : 'amount'));
+          });
+        }else{
+          response.forEach((key, value) {
+            if(value is Map){
+              var filteredValue = '${value['paid']}/${value['count']}';
+              metricList.add(Metric(label: filteredValue, value: 'dashboard_$key'.toUpperCase(), type: ''));
+            }else {
+              metricList.add(Metric(
+                  label: value, value: 'dashboard_$key'.toUpperCase(), type: 'amount'));
+            }
+          });
+        }
         metricInformation = metricList;
       }
       notifyListeners();

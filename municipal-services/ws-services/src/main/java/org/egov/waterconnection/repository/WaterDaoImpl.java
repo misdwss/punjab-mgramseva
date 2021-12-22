@@ -267,6 +267,84 @@ public class WaterDaoImpl implements WaterDao {
 
 	}
 
+
+	public Integer getResidentialCollectionAmount(@Valid SearchCriteria criteria) {
+		StringBuilder query = new StringBuilder(wsQueryBuilder.RESIDENTIALCOLLECTION);
+		query.append(" and py.transactionDate  >= ").append(criteria.getFromDate()).append(" and py.transactionDate <= ")
+				.append(criteria.getToDate()).append(" and py.tenantId = '").append(criteria.getTenantId()).append("'");
+		System.out.println("Residential Final Query: " + query);
+		return jdbcTemplate.queryForObject(query.toString(), Integer.class);
+
+	}
+
+
+	public Integer getCommercialCollectionAmount(@Valid SearchCriteria criteria) {
+		StringBuilder query = new StringBuilder(wsQueryBuilder.COMMERCIALCOLLECTION);
+		query.append(" and py.transactionDate  >= ").append(criteria.getFromDate()).append(" and py.transactionDate <= ")
+				.append(criteria.getToDate()).append(" and py.tenantId = '").append(criteria.getTenantId()).append("'");
+		System.out.println("Comercial Final Query: " + query);
+		return jdbcTemplate.queryForObject(query.toString(), Integer.class);
+
+	}
+
+
+	public Integer getOthersCollectionAmount(@Valid SearchCriteria criteria) {
+		StringBuilder query = new StringBuilder(wsQueryBuilder.OTHERSCOLLECTION);
+		query.append(" and py.transactionDate  >= ").append(criteria.getFromDate()).append(" and py.transactionDate <= ")
+				.append(criteria.getToDate()).append(" and py.tenantId = '").append(criteria.getTenantId()).append("'");
+		System.out.println("Others Final Query: " + query);
+		return jdbcTemplate.queryForObject(query.toString(), Integer.class);
+
+	}
+
+
+	public Map<String, Object> getResidentialPaid(@Valid SearchCriteria criteria) {
+
+		StringBuilder paidCountQuesry = new StringBuilder(wsQueryBuilder.RESIDENTIALSPAIDCOUNT);
+		paidCountQuesry.append(" and py.transactionDate  >= ").append(criteria.getFromDate())
+				.append(" and py.transactionDate <= ").append(criteria.getToDate()).append(" and py.tenantId = '")
+				.append(criteria.getTenantId()).append("'");
+		String finalQuery = wsQueryBuilder.RESIDENTIALSPAID;
+		finalQuery = finalQuery.replace("{paidCount}", paidCountQuesry);
+		StringBuilder query = new StringBuilder(finalQuery);
+		query.append(" and tenantId = '").append(criteria.getTenantId()).append("'");
+		System.out.println("Residential count Final Query: " + query);
+		return jdbcTemplate.queryForMap(query.toString());
+
+	}
+
+
+	public Map<String, Object> getCommercialPaid(@Valid SearchCriteria criteria) {
+		
+		StringBuilder paidCountQuesry = new StringBuilder(wsQueryBuilder.COMMERCIALSPAIDCOUNT);
+		paidCountQuesry.append(" and py.transactionDate  >= ").append(criteria.getFromDate())
+				.append(" and py.transactionDate <= ").append(criteria.getToDate()).append(" and py.tenantId = '")
+				.append(criteria.getTenantId()).append("'");
+		String finalQuery = wsQueryBuilder.COMMERCIALSPAID;
+		finalQuery = finalQuery.replace("{paidCount}", paidCountQuesry);
+		StringBuilder query = new StringBuilder(finalQuery);
+		query.append(" and tenantId = '").append(criteria.getTenantId()).append("'");
+		System.out.println("Comercial count Final Query: " + query);
+		return jdbcTemplate.queryForMap(query.toString());
+
+	}
+
+
+	public Map<String, Object> getAllPaid(@Valid SearchCriteria criteria) {
+		StringBuilder paidCountQuesry = new StringBuilder(wsQueryBuilder.TOTALAPPLICATIONSPAIDCOUNT);
+		paidCountQuesry.append(" and py.transactionDate  >= ").append(criteria.getFromDate())
+				.append(" and py.transactionDate <= ").append(criteria.getToDate()).append(" and py.tenantId = '")
+				.append(criteria.getTenantId()).append("'");
+		String finalQuery = wsQueryBuilder.TOTALAPPLICATIONSPAID;
+		finalQuery = finalQuery.replace("{paidCount}", paidCountQuesry);
+		StringBuilder query = new StringBuilder(finalQuery);
+		query.append(" and tenantId = '").append(criteria.getTenantId()).append("'");
+		System.out.println("Total Count Final Query: " + query);
+		return jdbcTemplate.queryForMap(query.toString());
+
+	}
+
+	
 	@Override
 	public List<String> getWCListFuzzySearch(SearchCriteria criteria) {
 		List<Object> preparedStatementList = new ArrayList<>();
@@ -281,4 +359,24 @@ public class WaterDaoImpl implements WaterDao {
 		}
 		
 	}
+	
+	
+	public Integer getPendingCollectionAmountTillDate(@Valid SearchCriteria criteria) {
+		StringBuilder query = new StringBuilder(wsQueryBuilder.PENDINGCOLLECTIONTILLDATE);
+		query.append(" and dmd.taxperiodto <= " +  criteria.getToDate())
+				.append(" and dmd.tenantId = '").append(criteria.getTenantId()).append("'");
+		log.info("Active pending collection query : " + query);
+		return jdbcTemplate.queryForObject(query.toString(), Integer.class);
+
+	}
+	
+	public Integer getArrearsAmount(@Valid SearchCriteria criteria) {
+		StringBuilder query = new StringBuilder(wsQueryBuilder.PENDINGCOLLECTION);
+		query.append(" and dmd.taxperiodto <= " + criteria.getFromDate())
+				.append(" and dmd.tenantId = '").append(criteria.getTenantId()).append("'");
+		log.info("Active pending collection query : " + query);
+		return jdbcTemplate.queryForObject(query.toString(), Integer.class);
+
+	}
+	
 }

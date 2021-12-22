@@ -5,15 +5,18 @@ import static org.egov.waterconnection.constants.WCConstants.SEARCH_TYPE_CONNECT
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.egov.common.contract.request.RequestInfo;
 import org.egov.tracer.model.CustomException;
 import org.egov.waterconnection.config.WSConfiguration;
 import org.egov.waterconnection.service.UserService;
+import org.egov.waterconnection.service.WaterServiceImpl;
 import org.egov.waterconnection.util.WaterServicesUtil;
 import org.egov.waterconnection.web.models.FeedbackSearchCriteria;
 import org.egov.waterconnection.web.models.Property;
 import org.egov.waterconnection.web.models.SearchCriteria;
+import org.egov.waterconnection.web.models.WaterConnectionResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
@@ -30,6 +33,9 @@ public class WsQueryBuilder {
 
 	@Autowired
 	private UserService userService;
+	
+	@Autowired
+	WaterServiceImpl waterServiceImpl;
 
 	private static final String INNER_JOIN_STRING = "INNER JOIN";
 	private static final String LEFT_OUTER_JOIN_STRING = " LEFT OUTER JOIN ";
@@ -76,13 +82,33 @@ public class WsQueryBuilder {
 
 	public static final String PREVIOUSMONTHEXPENSE = " select sum(billdtl.totalamount) from eg_echallan challan, egbs_billdetail_v1 billdtl, egbs_bill_v1 bill  where challan.challanno= billdtl.consumercode  and billdtl.billid = bill.id and challan.isbillpaid ='true'  ";
 
-	public static final String PREVIOUSDAYCASHCOLLECTION = "select  count(*), sum(totalamountpaid) from egcl_payment where paymentmode='CASH' ";
+	public static final String PREVIOUSDAYCASHCOLLECTION = "select count(*), sum(p.totalamountpaid) from egcl_payment p join egcl_paymentdetail pd on p.id = pd.paymentid where p.paymentmode='CASH' and pd.businessservice = 'WS' ";
 
-	public static final String PREVIOUSDAYONLINECOLLECTION = "select  count(*), sum(totalamountpaid) from egcl_payment where paymentmode='ONLINE' ";
+	public static final String PREVIOUSDAYONLINECOLLECTION = "select count(*), sum(p.totalamountpaid) from egcl_payment p join egcl_paymentdetail pd on p.id = pd.paymentid where p.paymentmode='ONLINE' and pd.businessservice = 'WS' ";
 
 	public static final String NEWDEMAND = "select sum(dmdl.taxamount) FROM egbs_demand_v1 dmd INNER JOIN egbs_demanddetail_v1 dmdl ON dmd.id=dmdl.demandid AND dmd.tenantid=dmdl.tenantid WHERE dmd.businessservice='WS' and dmd.status = 'ACTIVE' ";
 
 	public static final String ACTUALCOLLECTION = " select sum(py.totalAmountPaid) FROM egcl_payment py INNER JOIN egcl_paymentdetail pyd ON pyd.paymentid = py.id where pyd.businessservice='WS' ";
+	
+	public static final String RESIDENTIALCOLLECTION = "select sum(py.totalAmountPaid) FROM egcl_payment py INNER JOIN egcl_paymentdetail pyd ON pyd.paymentid = py.id INNER JOIN egcl_bill bill ON bill.id = pyd.billid INNER JOIN eg_ws_connection wc ON wc.connectionno = bill.consumercode  where pyd.businessservice='WS' and wc.additionaldetails->>'propertyType' IN ('RESIDENTIAL') and wc.status='Active' ";
+	
+	public static final String COMMERCIALCOLLECTION = "select sum(py.totalAmountPaid) FROM egcl_payment py INNER JOIN egcl_paymentdetail pyd ON pyd.paymentid = py.id INNER JOIN egcl_bill bill ON bill.id = pyd.billid INNER JOIN eg_ws_connection wc ON wc.connectionno = bill.consumercode  where pyd.businessservice='WS' and wc.additionaldetails->>'propertyType' IN ('COMMERCIAL') and wc.status='Active' ";
+	
+	public static final String OTHERSCOLLECTION = "select sum(py.totalAmountPaid) FROM egcl_payment py INNER JOIN egcl_paymentdetail pyd ON pyd.paymentid = py.id INNER JOIN egcl_bill bill ON bill.id = pyd.billid INNER JOIN eg_ws_connection wc ON wc.connectionno = bill.consumercode  where pyd.businessservice='WS' and wc.additionaldetails->>'propertyType' not IN ('RESIDENTIAL','COMMERCIAL') and wc.status='Active' ";
+	
+	public static final String TOTALAPPLICATIONSPAID = "select count(*), ({paidCount}) as paid from eg_ws_connection where status='Active' ";
+
+	public static final String RESIDENTIALSPAID = "select count(*), ({paidCount}) as paid from eg_ws_connection where additionaldetails->>'propertyType' IN ('RESIDENTIAL') and status='Active' ";
+
+	public static final String COMMERCIALSPAID = "select count(*), ({paidCount}) as paid from eg_ws_connection where additionaldetails->>'propertyType' IN ('COMMERCIAL') and status='Active' ";
+
+	public static final String RESIDENTIALSPAIDCOUNT = "select count(*)FROM egcl_payment py INNER JOIN egcl_paymentdetail pyd ON pyd.paymentid = py.id INNER JOIN egcl_bill bill ON bill.id = pyd.billid INNER JOIN eg_ws_connection wc ON wc.connectionno = bill.consumercode  where pyd.businessservice='WS' and wc.additionaldetails->>'propertyType' IN ('RESIDENTIAL') ";
+	
+	public static final String COMMERCIALSPAIDCOUNT = "select count(*)FROM egcl_payment py INNER JOIN egcl_paymentdetail pyd ON pyd.paymentid = py.id INNER JOIN egcl_bill bill ON bill.id = pyd.billid INNER JOIN eg_ws_connection wc ON wc.connectionno = bill.consumercode  where pyd.businessservice='WS' and wc.additionaldetails->>'propertyType' IN ('COMMERCIAL') ";
+
+	public static final String TOTALAPPLICATIONSPAIDCOUNT = "select count(*)FROM egcl_payment py INNER JOIN egcl_paymentdetail pyd ON pyd.paymentid = py.id INNER JOIN egcl_bill bill ON bill.id = pyd.billid INNER JOIN eg_ws_connection wc ON wc.connectionno = bill.consumercode  where pyd.businessservice='WS' ";
+
+	public static final String PENDINGCOLLECTIONTILLDATE = "SELECT SUM(DMDL.TAXAMOUNT - DMDL.COLLECTIONAMOUNT) FROM EGBS_DEMAND_V1 DMD INNER JOIN EGBS_DEMANDDETAIL_V1 DMDL ON DMD.ID=DMDL.DEMANDID AND DMD.TENANTID=DMDL.TENANTID WHERE DMD.BUSINESSSERVICE = 'WS' and DMD.status = 'ACTIVE' ";
 
 	public static final String ID_QUERY = "select conn.id FROM eg_ws_connection conn " + INNER_JOIN_STRING
 			+ " eg_ws_service wc ON wc.connection_id = conn.id" + LEFT_OUTER_JOIN_STRING
@@ -167,6 +193,13 @@ public class WsQueryBuilder {
 				preparedStatement.add(criteria.getPropertyId());
 			}
 		}
+		if(!StringUtils.isEmpty(criteria.getTextSearch())) {
+			WaterConnectionResponse response = waterServiceImpl.getWCListFuzzySearch(criteria, requestInfo);
+			if(!CollectionUtils.isEmpty(response.getWaterConnectionData())) {
+				Set<String> connectionNoSet = response.getWaterConnectionData().stream().map(data -> (String)data.get("connectionNo")).collect(Collectors.toSet());			
+				criteria.setConnectionNoSet(connectionNoSet);
+			}
+		}
 		query = applyFilters(query, preparedStatement, criteria);
 
 //		query.append(ORDER_BY_CLAUSE);
@@ -196,10 +229,22 @@ public class WsQueryBuilder {
 			preparedStatement.add(criteria.getOldConnectionNumber());
 		}
 
-		if (!StringUtils.isEmpty(criteria.getConnectionNumber())) {
+		if (!StringUtils.isEmpty(criteria.getConnectionNumber()) || !StringUtils.isEmpty(criteria.getTextSearch())) {
 			addClauseIfRequired(preparedStatement, query);
-			query.append(" conn.connectionno ~*  ? ");
-			preparedStatement.add(criteria.getConnectionNumber());
+			
+			if(!StringUtils.isEmpty(criteria.getConnectionNumber())) {
+				query.append(" conn.connectionno ~*  ? ");
+				preparedStatement.add(criteria.getConnectionNumber());
+			}
+			else {
+				query.append(" conn.connectionno ~*  ? ");
+				preparedStatement.add(criteria.getTextSearch());
+			}
+			
+			if(!CollectionUtils.isEmpty(criteria.getConnectionNoSet())) {
+				query.append(" or conn.connectionno in (").append(createQuery(criteria.getConnectionNoSet())).append(" )");
+				addToPreparedStatement(preparedStatement, criteria.getConnectionNoSet());
+			}
 		}
 
 		if (!StringUtils.isEmpty(criteria.getStatus())) {
@@ -399,7 +444,7 @@ public class WsQueryBuilder {
 		} else {
 			finalQuery = finalQuery.replace("{pagination}", " offset ?  limit ?  ");
 			preparedStmtList.add(offset);
-			preparedStmtList.add(limit + offset);
+			preparedStmtList.add(limit);
 		}
 		System.out.println("Final Query ::" + finalQuery);
 		return finalQuery;
