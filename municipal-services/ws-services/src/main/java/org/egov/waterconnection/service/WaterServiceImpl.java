@@ -45,6 +45,7 @@ import org.egov.waterconnection.validator.WaterConnectionValidator;
 import org.egov.waterconnection.web.models.AuditDetails;
 import org.egov.waterconnection.web.models.BillingCycle;
 import org.egov.waterconnection.web.models.CheckList;
+import org.egov.waterconnection.web.models.Connection.StatusEnum;
 import org.egov.waterconnection.web.models.Feedback;
 import org.egov.waterconnection.web.models.FeedbackRequest;
 import org.egov.waterconnection.web.models.FeedbackSearchCriteria;
@@ -56,6 +57,7 @@ import org.egov.waterconnection.web.models.SearchCriteria;
 import org.egov.waterconnection.web.models.WaterConnection;
 import org.egov.waterconnection.web.models.WaterConnectionRequest;
 import org.egov.waterconnection.web.models.WaterConnectionResponse;
+import org.egov.waterconnection.web.models.enums.Status;
 import org.egov.waterconnection.web.models.workflow.BusinessService;
 import org.egov.waterconnection.workflow.WorkflowIntegrator;
 import org.egov.waterconnection.workflow.WorkflowService;
@@ -306,6 +308,10 @@ public class WaterServiceImpl implements WaterService {
 //		wfIntegrator.callWorkFlow(waterConnectionRequest, property);
 		boolean isStateUpdatable = waterServiceUtil.getStatusForUpdate(businessService, previousApplicationStatus);
 		waterDao.updateWaterConnection(waterConnectionRequest, isStateUpdatable);
+		
+		if(waterConnectionRequest.getWaterConnection().getStatus().equals(StatusEnum.INACTIVE)) {
+			waterConnectionRequest.getWaterConnection().setApplicationStatus("INACTIVE");
+		}
 		// setting oldApplication Flag
 		markOldApplication(waterConnectionRequest);
 		// check for edit and send edit notification
@@ -533,9 +539,8 @@ public class WaterServiceImpl implements WaterService {
 	}
 	
 	private void validateFuzzySearchCriteria(SearchCriteria criteria){
-
 		if(org.apache.commons.lang3.StringUtils.isBlank(criteria.getTextSearch()) && org.apache.commons.lang3.StringUtils.isBlank(criteria.getName()) && org.apache.commons.lang3.StringUtils.isBlank(criteria.getMobileNumber()))
-            throw new CustomException("EG_WC_SEARCH_ERROR"," No criteria given for the WC search");
+          throw new CustomException("EG_WC_SEARCH_ERROR"," No criteria given for the WC search");
     }
 	
 	private List<Map<String, Object>> wsDataResponse(Object esResponse) {
@@ -549,6 +554,18 @@ public class WaterServiceImpl implements WaterService {
 
 	        return data;
 	    }
+	
+	public WaterConnectionResponse planeSearch(SearchCriteria criteria, RequestInfo requestInfo) {
+		WaterConnectionResponse waterConnection = getWaterConnectionsListForPlaneSearch(criteria, requestInfo);
+		waterConnectionValidator.validatePropertyForConnection(waterConnection.getWaterConnection());
+		enrichmentService.enrichConnectionHolderDeatils(waterConnection.getWaterConnection(), criteria, requestInfo);
+		return waterConnection;
+	}
+	
+	public WaterConnectionResponse getWaterConnectionsListForPlaneSearch(SearchCriteria criteria,
+			RequestInfo requestInfo) {
+		return waterDao.getWaterConnectionListForPlaneSearch(criteria, requestInfo);
+	}
 
 	@Override
 	public List<RevenueCollectionData> getRevenueCollectionData(@Valid SearchCriteria criteria,
@@ -620,5 +637,6 @@ public class WaterServiceImpl implements WaterService {
 		}
 		System.out.println("datadatadatadata" + data);
 		return data;
+
 	}
 }

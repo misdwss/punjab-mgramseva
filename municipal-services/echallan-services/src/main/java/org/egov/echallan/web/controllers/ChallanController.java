@@ -133,6 +133,19 @@ public class ChallanController {
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 	
+
+	 @RequestMapping(value = "/plane/_search", method = RequestMethod.POST)
+	 public ResponseEntity<ChallanResponse> planeSearch(@Valid @RequestBody RequestInfoWrapper requestInfoWrapper,
+	                                                       @Valid @ModelAttribute SearchCriteria criteria) {
+		 Map<String, String> finalData = new HashMap<String, String>();
+	     List<Challan> challans = challanService.planeSearch(criteria, requestInfoWrapper.getRequestInfo(), finalData);
+	     ChallanResponse response = ChallanResponse.builder().challans(challans).totalCount(mapper.getFull_count()).billData(finalData).responseInfo(
+	               responseInfoFactory.createResponseInfoFromRequestInfo(requestInfoWrapper.getRequestInfo(), true))
+	              .build();
+	     return new ResponseEntity<>(response, HttpStatus.OK);
+	}
+
+
 	 @PostMapping("/_chalanCollectionData")
 		public ResponseEntity<ChallanCollectionDataResponse> _expenseCollectionData(
 				@RequestBody @Valid final RequestInfoWrapper requestInfoWrapper,
@@ -146,5 +159,6 @@ public class ChallanController {
 					.build();
 			return new ResponseEntity<>(response, HttpStatus.OK);
 		}
+
 
 }

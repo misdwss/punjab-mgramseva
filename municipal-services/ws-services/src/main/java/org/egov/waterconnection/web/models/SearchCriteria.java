@@ -1,5 +1,6 @@
 package org.egov.waterconnection.web.models;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 

@@ -74,9 +74,9 @@ public class ChallanQueryBuilder {
 
 	  public static final String TOTALBILLS = " select count(*) from eg_echallan where applicationstatus not in ('CANCELLED') ";
 
-	  public static final String PAIDBILLS = " select count(*) from eg_echallan where applicationstatus in ('PAID')  ";
+	  public static final String PAIDBILLS = " select count(*) from eg_echallan where isbillpaid = 'true' and applicationstatus not in ('CANCELLED') ";
 	  
-	  public static final String PENDINGBILLS = " select count(*) from eg_echallan where applicationstatus in ('ACTIVE')  ";
+	  public static final String PENDINGBILLS = " select count(*) from eg_echallan where isbillpaid = 'false' and applicationstatus not in ('CANCELLED') ";
 
 	  public static final String ELECTRICITYBILLS = " select sum(py.totalAmountPaid) FROM egcl_payment py INNER JOIN egcl_paymentdetail pyd ON pyd.paymentid = py.id INNER JOIN egcl_bill bill ON bill.id = pyd.billid INNER JOIN eg_echallan challan ON challan.challanno = bill.consumercode  where pyd.businessservice='EXPENSE.ELECTRICITY_BILL' and challan.applicationstatus not in ('CANCELLED') ";
 
@@ -290,4 +290,27 @@ public class ChallanQueryBuilder {
 		return builder.toString();
 	}
 
+	public String getChallanSearchQueryForPlaneSearch(SearchCriteria criteria, List<Object> preparedStmtList) {
+
+		StringBuilder builder = new StringBuilder(QUERY);
+		builder = applyFiltersForPlaneSearch(builder, preparedStmtList, criteria);
+		return addPaginationWrapper(builder.toString(), preparedStmtList, criteria);
+	}
+	
+	public StringBuilder applyFiltersForPlaneSearch(StringBuilder builder, List<Object> preparedStmtList,
+			SearchCriteria criteria) {
+
+		if (criteria.getTenantId() != null) {
+			addClauseIfRequired(preparedStmtList, builder);
+			builder.append(" challan.tenantid=? ");
+			preparedStmtList.add(criteria.getTenantId());
+		}
+		if (criteria.getIsBillPaid() != null) {
+			addClauseIfRequired(preparedStmtList, builder);
+			builder.append("  challan.isBillPaid = ? ");
+			preparedStmtList.add(criteria.getIsBillPaid());
+		}
+		return builder;
+	}
+	
 }

@@ -333,4 +333,18 @@ public class ChallanService {
 		return data;
 	}
 	
+	public List<Challan> planeSearch(SearchCriteria criteria, RequestInfo requestInfo, Map<String, String> finalData){
+        List<Challan> challans;
+        challans = getChallansWithOwnerInfoForPlaneSearch(criteria,requestInfo, finalData);
+       return challans;
+    }
+	
+	 public List<Challan> getChallansWithOwnerInfoForPlaneSearch(SearchCriteria criteria,RequestInfo requestInfo, Map<String, String> finalData){
+		 List<Challan> challans = repository.getChallansForPlaneSearch(criteria, finalData);
+	        if(challans.isEmpty())
+	            return Collections.emptyList();
+	        challans = enrichmentService.enrichChallanSearch(challans,criteria,requestInfo);
+	        return challans;
+	    }
+	
 }

@@ -332,4 +332,29 @@ public class ChallanRepository {
 		return jdbcTemplate.queryForObject(query.toString(), Long.class);
 	}
     
+	public List<Challan> getChallansForPlaneSearch(SearchCriteria criteria, Map<String, String> finalData) {
+        List<Object> preparedStmtList = new ArrayList<>();
+        String query = queryBuilder.getChallanSearchQueryForPlaneSearch(criteria, preparedStmtList);
+        List<Challan> challans =  jdbcTemplate.query(query, preparedStmtList.toArray(), rowMapper); 
+        if (criteria.getIsBillCount()) {
+			List<Object> preparedStmnt = new ArrayList<>();
+			StringBuilder paidQuery = new StringBuilder(queryBuilder.bill_count);
+			paidQuery = queryBuilder.applyFiltersForPlaneSearch(paidQuery, preparedStmnt, criteria);
+			paidQuery.append(" AND isbillpaid=true ");
+			List<Map<String, Object>> paidCountdata = jdbcTemplate.queryForList(paidQuery.toString(),
+					preparedStmnt.toArray());
+			List<Object> prpstmnt = new ArrayList<>();
+			StringBuilder notPaidQuery = new StringBuilder(queryBuilder.bill_count);
+			notPaidQuery = queryBuilder.applyFiltersForPlaneSearch(notPaidQuery, prpstmnt, criteria);
+			notPaidQuery.append(" AND isbillpaid=false ");
+			
+			List<Map<String, Object>> notPaidCountdata = jdbcTemplate.queryForList(notPaidQuery.toString(),
+					preparedStmnt.toArray());
+		
+			finalData.put("paidcount", paidCountdata.get(0).get("count").toString());
+			finalData.put("notPaidcount", notPaidCountdata.get(0).get("count").toString());
+			System.out.println("Map Data Insertion :: " + finalData);
+		}
+        return challans;
+    }
 }
