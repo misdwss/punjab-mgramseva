@@ -1,13 +1,10 @@
-from typing import List
-import csv
-import pandas as pd
-import numpy as np
+from typing import BinaryIO, List
 import requests
-import json
 from datetime import datetime
 from dateutil import parser
 import time
 import os
+import psycopg2
 
 def getGPWSCHeirarchy(authToken):
 
