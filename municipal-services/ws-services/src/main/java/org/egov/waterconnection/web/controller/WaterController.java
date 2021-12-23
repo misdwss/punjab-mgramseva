@@ -6,7 +6,6 @@ import javax.validation.Valid;
 
 import org.egov.waterconnection.constants.WCConstants;
 import org.egov.waterconnection.repository.WaterDaoImpl;
-
 import org.egov.waterconnection.service.SchedulerService;
 import org.egov.waterconnection.service.WaterService;
 import org.egov.waterconnection.util.ResponseInfoFactory;
@@ -15,7 +14,6 @@ import org.egov.waterconnection.web.models.FeedbackResponse;
 import org.egov.waterconnection.web.models.FeedbackSearchCriteria;
 import org.egov.waterconnection.web.models.LastMonthSummary;
 import org.egov.waterconnection.web.models.LastMonthSummaryResponse;
-
 import org.egov.waterconnection.web.models.RequestInfoWrapper;
 import org.egov.waterconnection.web.models.RevenueDashboard;
 import org.egov.waterconnection.web.models.RevenueDashboardResponse;
@@ -167,8 +165,9 @@ public class WaterController {
 			return new ResponseEntity<>(response, HttpStatus.OK);
 	    }
 	 
-	 @RequestMapping(value = "/plane/_search", method = RequestMethod.POST)
-		public ResponseEntity<WaterConnectionResponse> planeSearch(@Valid @RequestBody RequestInfoWrapper requestInfoWrapper,
+	 @RequestMapping(value = "/_plainsearch", method = RequestMethod.POST)
+		public ResponseEntity<WaterConnectionResponse> planeSearch(
+				@Valid @RequestBody RequestInfoWrapper requestInfoWrapper,
 				@Valid @ModelAttribute SearchCriteria criteria) {
 			WaterConnectionResponse response = waterService.planeSearch(criteria, requestInfoWrapper.getRequestInfo());
 			response.setResponseInfo(

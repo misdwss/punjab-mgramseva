@@ -41,6 +41,7 @@ import org.egov.waterconnection.validator.WaterConnectionValidator;
 import org.egov.waterconnection.web.models.AuditDetails;
 import org.egov.waterconnection.web.models.BillingCycle;
 import org.egov.waterconnection.web.models.CheckList;
+import org.egov.waterconnection.web.models.Connection.StatusEnum;
 import org.egov.waterconnection.web.models.Feedback;
 import org.egov.waterconnection.web.models.FeedbackRequest;
 import org.egov.waterconnection.web.models.FeedbackSearchCriteria;
@@ -51,6 +52,7 @@ import org.egov.waterconnection.web.models.SearchCriteria;
 import org.egov.waterconnection.web.models.WaterConnection;
 import org.egov.waterconnection.web.models.WaterConnectionRequest;
 import org.egov.waterconnection.web.models.WaterConnectionResponse;
+import org.egov.waterconnection.web.models.enums.Status;
 import org.egov.waterconnection.web.models.workflow.BusinessService;
 import org.egov.waterconnection.workflow.WorkflowIntegrator;
 import org.egov.waterconnection.workflow.WorkflowService;
@@ -301,6 +303,10 @@ public class WaterServiceImpl implements WaterService {
 //		wfIntegrator.callWorkFlow(waterConnectionRequest, property);
 		boolean isStateUpdatable = waterServiceUtil.getStatusForUpdate(businessService, previousApplicationStatus);
 		waterDao.updateWaterConnection(waterConnectionRequest, isStateUpdatable);
+		
+		if(waterConnectionRequest.getWaterConnection().getStatus().equals(StatusEnum.INACTIVE)) {
+			waterConnectionRequest.getWaterConnection().setApplicationStatus("INACTIVE");
+		}
 		// setting oldApplication Flag
 		markOldApplication(waterConnectionRequest);
 		// check for edit and send edit notification

@@ -389,4 +389,50 @@ public class WaterDaoImpl implements WaterDao {
 	}
 	
 	
+
+	public List<String> fetchWaterConIds(SearchCriteria criteria) {
+		List<Object> preparedStmtList = new ArrayList<>();
+		preparedStmtList.add(criteria.getOffset());
+		preparedStmtList.add(criteria.getLimit());
+
+		List<String> ids = jdbcTemplate.query("SELECT id from eg_ws_connection ORDER BY createdtime offset " +
+						" ? " +
+						"limit ? ",
+				preparedStmtList.toArray(),
+				new SingleColumnRowMapper<>(String.class));
+		return ids;
+	}
+
+
+	public List<WaterConnection> getWSPlainSearch(SearchCriteria criteria, RequestInfo requestInfo) {
+		if(criteria.getIds() == null || criteria.getIds().isEmpty())
+			throw new CustomException("PLAIN_SEARCH_ERROR", "Search only allowed by ids!");
+
+		List<WaterConnection> waterConnectionList = new ArrayList<>();
+
+		List<Object> preparedStmtList = new ArrayList<>();
+		String query = wsQueryBuilder.getSearchQueryStringForPlaneSearch(criteria, preparedStmtList, requestInfo);
+		log.info("Query: "+query);
+		log.info("PS: "+preparedStmtList);
+		Boolean isOpenSearch = isSearchOpen(requestInfo.getUserInfo());
+		WaterConnectionResponse connectionResponse = new WaterConnectionResponse();
+		if (isOpenSearch) {
+			waterConnectionList = jdbcTemplate.query(query, preparedStmtList.toArray(), openWaterRowMapper);
+			connectionResponse = WaterConnectionResponse.builder().waterConnection(waterConnectionList)
+					.totalCount(openWaterRowMapper.getFull_count()).build();
+		} else {
+			waterConnectionList = jdbcTemplate.query(query, preparedStmtList.toArray(), waterRowMapper);
+			connectionResponse = WaterConnectionResponse.builder().waterConnection(waterConnectionList)
+					.totalCount(waterRowMapper.getFull_count()).build();
+		}
+		
+		return connectionResponse.getWaterConnection();
+		
+	}
+	
+	
+	
+	
+	
+	
 }
