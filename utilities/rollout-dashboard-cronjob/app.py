@@ -19,7 +19,6 @@ def getGPWSCHeirarchy(authToken):
             
                 
             url = os.getenv('API_URL')
-            print(url);
             requestData = {
                 "RequestInfo": {
                     "apiId": "mgramseva-common",
@@ -46,7 +45,7 @@ def getGPWSCHeirarchy(authToken):
                 }
             }
             
-            response = requests.post(url, json=requestData)
+            response = requests.post(url+'egov-mdms-service/v1/_search', json=requestData)
             
             responseData = response.json()
             projectModuleList = responseData['MdmsRes']['tenant']['projectmodule']
@@ -139,7 +138,7 @@ def getRateMasters(tenantId, authToken):
                 }
             }
 
-            response = requests.post(url, json=requestData)
+            response = requests.post(url+'egov-mdms-service/v1/_search', json=requestData)
         
             responseData = response.json()
             wcBillingSlabList = responseData['MdmsRes']['ws-services-calculation']['WCBillingSlab']
@@ -423,7 +422,7 @@ def getConnection():
     
     dbHost = os.getenv('DB_HOST')
     dbSchema =  os.getenv('DB_SCHEMA')
-    dbUser =  os.getenv('DB_User')
+    dbUser =  os.getenv('DB_USER')
     dbPassword =  os.getenv('DB_PWD')
     dbPort =  os.getenv('DB_PORT')
     
@@ -445,10 +444,10 @@ def accessToken():
  
     
     try:
-        query = {'username': os.getenv('token.username').data,'password': os.getenv('token.password').data,'userType':'EMPLOYEE',"scope":"read","grant_type":"password"}
-        query['tenantId']="pb"
+        query = {'username': os.getenv('TOKEN_USERNAME'),'password': os.getenv('TOKEN_PASSWORD'),'userType':'EMPLOYEE',"scope":"read","grant_type":"password"}
+        query['tenantId']=os.getenv('TOKEN_TENANTID')
    
-        response = requests.post( os.getenv('token_url').data, data=query, headers={
+        response = requests.post( os.getenv('TOKEN_URL')+'user/oauth/token', data=query, headers={
         "Connection":"keep-alive","content-type":"application/x-www-form-urlencoded","Authorization": "Basic ZWdvdi11c2VyLWNsaWVudDo="})
         
         jsondata = response.json()
