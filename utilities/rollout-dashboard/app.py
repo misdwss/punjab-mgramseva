@@ -1,14 +1,13 @@
 from typing import List
-from jproperties import Properties
 import csv
 import pandas as pd
 import numpy as np
 import requests
 import json
-import psycopg2
 from datetime import datetime
 from dateutil import parser
 import time
+import os
 
 def getGPWSCHeirarchy(authToken):
 
@@ -17,12 +16,10 @@ def getGPWSCHeirarchy(authToken):
         # https://realpython.com/python-requests/ helps on how make ajax calls. url put it in app.properties and read through configs
         
         try:
-            configs = Properties()
-            with open('app.properties', 'rb') as read_prop:
-                configs.load(read_prop)
-                
-            url = configs.get('API_URL').data
             
+                
+            url = os.getenv('API_URL')
+            print(url);
             requestData = {
                 "RequestInfo": {
                     "apiId": "mgramseva-common",
@@ -112,11 +109,9 @@ def getRateMasters(tenantId, authToken):
         # make mdms call to get the rate unique rate masters i.e billig slab . count the unique billing slabs and return the number
         print("Rate master count returned")
         try:
-            configs = Properties()
-            with open('app.properties', 'rb') as read_prop:
-                configs.load(read_prop)
+            
                 
-            url = configs.get('API_URL').data
+            url = os.getenv('API_URL')
         
             requestData = {
                 "RequestInfo": {
@@ -376,13 +371,7 @@ def createEntryForRollout(tenant, consumersCreated,countOfRateMaster, lastDemand
 
 def process():
     print("continue is the process")
-    configs = Properties()
-    with open('app.properties', 'rb') as read_prop:
-        configs.load(read_prop)
     
-    prop_view = configs.items()
-    print(type(prop_view))
-    print(configs.get('DB_SCHEMA').data)
     
     authToken = accessToken()
     
@@ -431,15 +420,12 @@ def process():
 
         
 def getConnection():
-    configs = Properties()
-    with open('app.properties', 'rb') as read_prop:
-        configs.load(read_prop)
-    prop_view = configs.items()
-    dbHost = configs.get('DB_HOST').data
-    dbSchema = configs.get('DB_SCHEMA').data
-    dbUser = configs.get('DB_User').data
-    dbPassword = configs.get('DB_PWD').data
-    dbPort = configs.get('DB_PORT').data
+    
+    dbHost = os.getenv('DB_HOST')
+    dbSchema =  os.getenv('DB_SCHEMA')
+    dbUser =  os.getenv('DB_User')
+    dbPassword =  os.getenv('DB_PWD')
+    dbPort =  os.getenv('DB_PORT')
     
     connection = psycopg2.connect(user=dbUser,
                             password=dbPassword,
@@ -457,14 +443,12 @@ def getCurrentDate():
     
 def accessToken():
  
-    configs = Properties()
-    with open('app.properties', 'rb') as read_prop:
-        configs.load(read_prop)
+    
     try:
-        query = {'username':configs.get('token.username').data,'password':configs.get('token.password').data,'userType':'EMPLOYEE',"scope":"read","grant_type":"password"}
+        query = {'username': os.getenv('token.username').data,'password': os.getenv('token.password').data,'userType':'EMPLOYEE',"scope":"read","grant_type":"password"}
         query['tenantId']="pb"
    
-        response = requests.post(configs.get('token_url').data, data=query, headers={
+        response = requests.post( os.getenv('token_url').data, data=query, headers={
         "Connection":"keep-alive","content-type":"application/x-www-form-urlencoded","Authorization": "Basic ZWdvdi11c2VyLWNsaWVudDo="})
         
         jsondata = response.json()
@@ -500,280 +484,4 @@ def createTable():
     return CREATE_TABLE_QUERY
     
 if __name__ == '__main__':
-    process()
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+    getGPWSCHeirarchy(123)
