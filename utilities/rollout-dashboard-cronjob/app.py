@@ -483,4 +483,4 @@ def createTable():
     return CREATE_TABLE_QUERY
     
 if __name__ == '__main__':
-    getGPWSCHeirarchy(123)
+    process()
