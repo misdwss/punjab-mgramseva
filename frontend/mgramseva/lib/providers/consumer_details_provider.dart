@@ -263,6 +263,8 @@ class ConsumerProvider with ChangeNotifier {
             streamController.add(property);
             Notifiers.getToastMessage(
                 context, i18.consumer.REGISTER_SUCCESS, 'SUCCESS');
+            selectedcycle = '';
+            waterconnection.connectionType = '';
             Navigator.pop(context);
           }
         } else {
@@ -460,8 +462,8 @@ class ConsumerProvider with ChangeNotifier {
   onChangeBillingcycle(val) {
     selectedcycle = val;
     var date = val;
-    waterconnection.BillingCycleCtrl.text = selectedcycle;
-    waterconnection.meterInstallationDateCtrl.text = selectedcycle;
+    waterconnection.BillingCycleCtrl.text = selectedcycle ?? '';
+    waterconnection.meterInstallationDateCtrl.text = selectedcycle ?? '';
     notifyListeners();
   }
 

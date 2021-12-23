@@ -321,6 +321,16 @@ public class ChallanRepository {
 		log.info("salary Final Query : " + query);
 		return jdbcTemplate.queryForObject(query.toString(), Long.class);
 	}
+	
+	public Long getPendingAmountTillDate(@Valid SearchCriteria criteria) {
+		StringBuilder query = new StringBuilder(queryBuilder.PENDINGEXPCOLLTILLDATE);
+		query.append(" and dmd.taxperiodto <= " + criteria.getToDate())
+		.append(" and dmd.tenantId = '").append(criteria.getTenantId()).append("'");
+//		query.append(" and dmd.taxperiodto between " + criteria.getFromDate() + " and " + criteria.getToDate())
+//				.append(" and dmd.tenantId = '").append(criteria.getTenantId()).append("'");
+		log.info("Active pending collection query : " + query);
+		return jdbcTemplate.queryForObject(query.toString(), Long.class);
+	}
     
 	public List<Challan> getChallansForPlaneSearch(SearchCriteria criteria, Map<String, String> finalData) {
         List<Object> preparedStmtList = new ArrayList<>();

@@ -1,11 +1,14 @@
 package org.egov.echallan.service;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Month;
 import java.time.YearMonth;
 import java.time.ZoneId;
 import java.time.temporal.TemporalAdjusters;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -25,6 +28,7 @@ import org.egov.echallan.model.SearchCriteria;
 import org.egov.echallan.repository.ChallanRepository;
 import org.egov.echallan.util.CommonUtils;
 import org.egov.echallan.validator.ChallanValidator;
+import org.egov.echallan.web.models.ChallanCollectionData;
 import org.egov.echallan.web.models.ExpenseDashboard;
 import org.egov.echallan.web.models.user.UserDetailResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -261,6 +265,72 @@ public class ChallanService {
 		}
 		
 		return dashboardData;
+	}
+
+	public List<ChallanCollectionData> getChallanCollectionData(@Valid SearchCriteria criteria,
+			RequestInfo requestInfo) {
+
+		long endDate = criteria.getToDate();
+		DateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+
+		LocalDate currentMonthDate = LocalDate.now();
+
+		Calendar currentDate = Calendar.getInstance();
+		int currentMonthNumber = currentDate.get(Calendar.MONTH);
+
+		int totalMonthsTillDate;
+		LocalDate finYearStarting;
+		if (currentMonthNumber < 3) {
+			totalMonthsTillDate = 9 + currentMonthNumber;
+			currentDate.setTimeInMillis(criteria.getFromDate());
+
+			currentMonthDate = LocalDate.of(currentDate.get(Calendar.YEAR) - 1, currentDate.get(Calendar.MONTH) + 1,
+					currentDate.get(Calendar.DAY_OF_MONTH));
+
+			finYearStarting = currentMonthDate;
+		} else {
+			totalMonthsTillDate = currentMonthNumber - 2;
+			currentDate.setTimeInMillis(criteria.getFromDate());
+			currentMonthDate = LocalDate.of(currentDate.get(Calendar.YEAR), currentDate.get(Calendar.MONTH) + 1,
+					currentDate.get(Calendar.DAY_OF_MONTH));
+
+			finYearStarting = currentMonthDate;
+		}
+		ArrayList<ChallanCollectionData> data = new ArrayList<ChallanCollectionData>();
+
+		for (int i = 0; i <= totalMonthsTillDate; i++) {
+			LocalDate monthStart = currentMonthDate.minusMonths(0).with(TemporalAdjusters.firstDayOfMonth());
+			LocalDate monthEnd = currentMonthDate.minusMonths(0).with(TemporalAdjusters.lastDayOfMonth());
+
+			LocalDateTime monthStartDateTime = LocalDateTime.of(monthStart.getYear(), monthStart.getMonth(),
+					monthStart.getDayOfMonth(), 0, 0, 0);
+			LocalDateTime monthEndDateTime = LocalDateTime.of(monthEnd.getYear(), monthEnd.getMonth(),
+					monthEnd.getDayOfMonth(), 23, 59, 59, 999000000);
+			criteria.setFromDate((Long) monthStartDateTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli());
+			criteria.setToDate((Long) monthEndDateTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli());
+
+			String tenantId = criteria.getTenantId();
+			ChallanCollectionData challanData = new ChallanCollectionData();
+
+			Long totalExpenses = repository.getTotalExpense(criteria);
+			if (null != totalExpenses) {
+				challanData.setTotalExpenditure(totalExpenses.toString());
+			}
+			Long paidAmount = repository.getPaidAmountDetails(criteria);
+			if (null != paidAmount) {
+				challanData.setAmountPaid(paidAmount.toString());
+			}
+			Long amountUnpaid = repository.getPendingAmountTillDate(criteria);
+			if (null != amountUnpaid) {
+				challanData.setAmountUnpaid(amountUnpaid.toString());
+			}
+			challanData.setMonth(criteria.getFromDate());
+			data.add(i, challanData);
+			System.out.println("collectionData:: " + challanData.toString());
+
+			currentMonthDate = currentMonthDate.plusMonths(1);
+		}
+		return data;
 	}
 	
 	public List<Challan> planeSearch(SearchCriteria criteria, RequestInfo requestInfo, Map<String, String> finalData){

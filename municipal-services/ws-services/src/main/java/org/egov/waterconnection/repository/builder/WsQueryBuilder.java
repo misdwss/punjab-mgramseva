@@ -112,7 +112,8 @@ public class WsQueryBuilder {
 
 	public static final String TOTALAPPLICATIONSPAIDCOUNT = "select count(*)FROM egcl_payment py INNER JOIN egcl_paymentdetail pyd ON pyd.paymentid = py.id INNER JOIN egcl_bill bill ON bill.id = pyd.billid INNER JOIN eg_ws_connection wc ON wc.connectionno = bill.consumercode  where pyd.businessservice='WS' ";
 
-			
+	public static final String PENDINGCOLLECTIONTILLDATE = "SELECT SUM(DMDL.TAXAMOUNT - DMDL.COLLECTIONAMOUNT) FROM EGBS_DEMAND_V1 DMD INNER JOIN EGBS_DEMANDDETAIL_V1 DMDL ON DMD.ID=DMDL.DEMANDID AND DMD.TENANTID=DMDL.TENANTID WHERE DMD.BUSINESSSERVICE = 'WS' and DMD.status = 'ACTIVE' ";
+
 	public static final String ID_QUERY = "select conn.id FROM eg_ws_connection conn " + INNER_JOIN_STRING
 			+ " eg_ws_service wc ON wc.connection_id = conn.id" + LEFT_OUTER_JOIN_STRING
 			+ "eg_ws_applicationdocument document ON document.wsid = conn.id" + LEFT_OUTER_JOIN_STRING
@@ -198,13 +199,13 @@ public class WsQueryBuilder {
 		}
 		if(!StringUtils.isEmpty(criteria.getTextSearch())) {
 			WaterConnectionResponse response = waterServiceImpl.getWCListFuzzySearch(criteria, requestInfo);
-			
+
 			if(!CollectionUtils.isEmpty(response.getWaterConnectionData())) {
-				Set<String> set = response.getWaterConnectionData().stream().map(data -> (String)data.get("connectionNo")).collect(Collectors.toSet());			
-				criteria.setDataSet(set);
+				Set<String> connectionNoSet = response.getWaterConnectionData().stream().map(data -> (String)data.get("connectionNo")).collect(Collectors.toSet());			
+				criteria.setConnectionNoSet(connectionNoSet);
 			}
 		}
-		
+
 		query = applyFilters(query, preparedStatement, criteria);
 
 //		query.append(ORDER_BY_CLAUSE);
@@ -246,9 +247,10 @@ public class WsQueryBuilder {
 				preparedStatement.add(criteria.getTextSearch());
 			}
 			
-			if(!CollectionUtils.isEmpty(criteria.getDataSet())) {
-				query.append(" or conn.connectionno in (").append(createQuery(criteria.getDataSet())).append(" )");
-				addToPreparedStatement(preparedStatement, criteria.getDataSet());
+
+			if(!CollectionUtils.isEmpty(criteria.getConnectionNoSet())) {
+				query.append(" or conn.connectionno in (").append(createQuery(criteria.getConnectionNoSet())).append(" )");
+				addToPreparedStatement(preparedStatement, criteria.getConnectionNoSet());
 			}
 		}
 
@@ -449,7 +451,7 @@ public class WsQueryBuilder {
 		} else {
 			finalQuery = finalQuery.replace("{pagination}", " offset ?  limit ?  ");
 			preparedStmtList.add(offset);
-			preparedStmtList.add(limit + offset);
+			preparedStmtList.add(limit);
 		}
 		System.out.println("Final Query ::" + finalQuery);
 		return finalQuery;

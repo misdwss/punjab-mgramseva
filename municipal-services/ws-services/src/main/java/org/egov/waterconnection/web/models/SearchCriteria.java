@@ -120,7 +120,7 @@ public class SearchCriteria {
 	@JsonProperty("textSearch")
 	private String textSearch;
 	
-	private Set<String> dataSet;
+	private Set<String> connectionNoSet;
 	
 	public enum SortOrder {
 	    ASC,

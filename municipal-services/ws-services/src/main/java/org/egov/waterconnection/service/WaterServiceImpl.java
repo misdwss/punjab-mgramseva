@@ -2,10 +2,12 @@ package org.egov.waterconnection.service;
 
 import static org.egov.waterconnection.constants.WCConstants.APPROVE_CONNECTION;
 
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Month;
+import java.time.Period;
 import java.time.YearMonth;
 import java.time.ZoneId;
 import java.time.temporal.TemporalAdjusters;
@@ -19,7 +21,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TimeZone;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import javax.validation.Valid;
@@ -47,6 +51,7 @@ import org.egov.waterconnection.web.models.FeedbackRequest;
 import org.egov.waterconnection.web.models.FeedbackSearchCriteria;
 import org.egov.waterconnection.web.models.LastMonthSummary;
 import org.egov.waterconnection.web.models.Property;
+import org.egov.waterconnection.web.models.RevenueCollectionData;
 import org.egov.waterconnection.web.models.RevenueDashboard;
 import org.egov.waterconnection.web.models.SearchCriteria;
 import org.egov.waterconnection.web.models.WaterConnection;
@@ -534,9 +539,8 @@ public class WaterServiceImpl implements WaterService {
 	}
 	
 	private void validateFuzzySearchCriteria(SearchCriteria criteria){
-
-        if(org.apache.commons.lang3.StringUtils.isBlank(criteria.getTextSearch()) && org.apache.commons.lang3.StringUtils.isBlank(criteria.getName()) && org.apache.commons.lang3.StringUtils.isBlank(criteria.getMobileNumber()))
-            throw new CustomException("EG_WC_SEARCH_ERROR"," No criteria given for the WC search");
+		if(org.apache.commons.lang3.StringUtils.isBlank(criteria.getTextSearch()) && org.apache.commons.lang3.StringUtils.isBlank(criteria.getName()) && org.apache.commons.lang3.StringUtils.isBlank(criteria.getMobileNumber()))
+          throw new CustomException("EG_WC_SEARCH_ERROR"," No criteria given for the WC search");
     }
 	
 	private List<Map<String, Object>> wsDataResponse(Object esResponse) {
@@ -558,7 +562,81 @@ public class WaterServiceImpl implements WaterService {
 		return waterConnection;
 	}
 	
-	public WaterConnectionResponse getWaterConnectionsListForPlaneSearch(SearchCriteria criteria, RequestInfo requestInfo) {
+	public WaterConnectionResponse getWaterConnectionsListForPlaneSearch(SearchCriteria criteria,
+			RequestInfo requestInfo) {
 		return waterDao.getWaterConnectionListForPlaneSearch(criteria, requestInfo);
+	}
+
+	@Override
+	public List<RevenueCollectionData> getRevenueCollectionData(@Valid SearchCriteria criteria,
+			RequestInfo requestInfo) {
+
+		long endDate = criteria.getToDate();
+		DateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+
+		LocalDate currentMonthDate = LocalDate.now();
+
+		Calendar currentDate = Calendar.getInstance();
+		int currentMonthNumber = currentDate.get(Calendar.MONTH);
+
+		int totalMonthsTillDate;
+		LocalDate finYearStarting;
+		if (currentMonthNumber < 3) {
+			totalMonthsTillDate = 9 + currentMonthNumber;
+			currentDate.setTimeInMillis(criteria.getFromDate());
+
+			currentMonthDate = LocalDate.of(currentDate.get(Calendar.YEAR) - 1, currentDate.get(Calendar.MONTH) + 1,
+					currentDate.get(Calendar.DAY_OF_MONTH));
+
+			finYearStarting = currentMonthDate;
+		} else {
+			totalMonthsTillDate = currentMonthNumber - 2;
+			currentDate.setTimeInMillis(criteria.getFromDate());
+			currentMonthDate = LocalDate.of(currentDate.get(Calendar.YEAR), currentDate.get(Calendar.MONTH) + 1,
+					currentDate.get(Calendar.DAY_OF_MONTH));
+
+			finYearStarting = currentMonthDate;
+		}
+		ArrayList<RevenueCollectionData> data = new ArrayList<RevenueCollectionData>();
+
+		for (int i = 0; i <= totalMonthsTillDate; i++) {
+			LocalDate monthStart = currentMonthDate.minusMonths(0).with(TemporalAdjusters.firstDayOfMonth());
+			LocalDate monthEnd = currentMonthDate.minusMonths(0).with(TemporalAdjusters.lastDayOfMonth());
+
+			LocalDateTime monthStartDateTime = LocalDateTime.of(monthStart.getYear(), monthStart.getMonth(),
+					monthStart.getDayOfMonth(), 0, 0, 0);
+			LocalDateTime monthEndDateTime = LocalDateTime.of(monthEnd.getYear(), monthEnd.getMonth(),
+					monthEnd.getDayOfMonth(), 23, 59, 59, 999000000);
+			criteria.setFromDate((Long) monthStartDateTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli());
+			criteria.setToDate((Long) monthEndDateTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli());
+
+			String tenantId = criteria.getTenantId();
+			Integer demand = waterDaoImpl.getTotalDemandAmount(criteria);
+			RevenueCollectionData collectionData = new RevenueCollectionData();
+
+			if (null != demand) {
+				collectionData.setDemand(demand.toString());
+			}
+			Integer paidAmount = waterDaoImpl.getActualCollectionAmount(criteria);
+			if (null != paidAmount) {
+				collectionData.setActualCollection(paidAmount.toString());
+			}
+			Integer unpaidAmount = waterDaoImpl.getPendingCollectionAmountTillDate(criteria);
+			if (null != unpaidAmount) {
+				collectionData.setPendingCollection(unpaidAmount.toString());
+			}
+			Integer arrears = waterDaoImpl.getArrearsAmount(criteria);
+			if (null != arrears) {
+				collectionData.setArrears(arrears.toString());
+			}
+			collectionData.setMonth(criteria.getFromDate());
+			data.add(i, collectionData);
+			System.out.println("collectionData:: " + collectionData.toString());
+
+			currentMonthDate = currentMonthDate.plusMonths(1);
+		}
+		System.out.println("datadatadatadata" + data);
+		return data;
+
 	}
 }

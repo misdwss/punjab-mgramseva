@@ -84,6 +84,8 @@ public class ChallanQueryBuilder {
 	  
 	  public static final String SALARYBILLS = " select sum(py.totalAmountPaid) FROM egcl_payment py INNER JOIN egcl_paymentdetail pyd ON pyd.paymentid = py.id INNER JOIN egcl_bill bill ON bill.id = pyd.billid INNER JOIN eg_echallan challan ON challan.challanno = bill.consumercode  where pyd.businessservice='EXPENSE.SALARY' and challan.applicationstatus not in ('CANCELLED')";
 
+	  public static final String PENDINGEXPCOLLTILLDATE = "SELECT coalesce(SUM(DMDL.TAXAMOUNT - DMDL.COLLECTIONAMOUNT),0) FROM EGBS_DEMAND_V1 DMD INNER JOIN EGBS_DEMANDDETAIL_V1 DMDL ON DMD.ID=DMDL.DEMANDID AND DMD.TENANTID=DMDL.TENANTID WHERE DMD.BUSINESSSERVICE LIKE '%EXPENSE%' and DMD.status='ACTIVE' ";
+
 
 		public String getChallanSearchQuery(SearchCriteria criteria, List<Object> preparedStmtList) {
 
@@ -232,7 +234,7 @@ public class ChallanQueryBuilder {
         
         finalQuery = finalQuery.replace("{pagination}", " offset ?  limit ?  ");
 	    preparedStmtList.add(offset);
-        preparedStmtList.add(limit+offset);
+        preparedStmtList.add(limit);
 
        return finalQuery;
     }
