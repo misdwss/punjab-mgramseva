@@ -300,6 +300,12 @@ public class ChallanQueryBuilder {
 	public StringBuilder applyFiltersForPlaneSearch(StringBuilder builder, List<Object> preparedStmtList,
 			SearchCriteria criteria) {
 
+		if (criteria.getIds() != null) {
+			List<String> ids = criteria.getIds();
+			addClauseIfRequired(preparedStmtList, builder);
+			builder.append(" challan.id IN (").append(createQuery(ids)).append(")");
+			addToPreparedStatement(preparedStmtList, ids);
+		}
 		if (criteria.getTenantId() != null) {
 			addClauseIfRequired(preparedStmtList, builder);
 			builder.append(" challan.tenantid=? ");

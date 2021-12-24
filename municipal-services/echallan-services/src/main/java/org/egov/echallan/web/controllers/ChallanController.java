@@ -134,7 +134,7 @@ public class ChallanController {
 	}
 	
 
-	 @RequestMapping(value = "/plane/_search", method = RequestMethod.POST)
+	 @RequestMapping(value = "/_plainsearch", method = RequestMethod.POST)
 	 public ResponseEntity<ChallanResponse> planeSearch(@Valid @RequestBody RequestInfoWrapper requestInfoWrapper,
 	                                                       @Valid @ModelAttribute SearchCriteria criteria) {
 		 Map<String, String> finalData = new HashMap<String, String>();

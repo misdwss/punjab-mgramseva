@@ -18,6 +18,7 @@ import java.util.Map;
 import javax.validation.Valid;
 
 import org.egov.common.contract.request.RequestInfo;
+import org.egov.echallan.config.ChallanConfiguration;
 import org.egov.echallan.expense.service.PaymentService;
 import org.egov.echallan.expense.validator.ExpenseValidator;
 import org.egov.echallan.model.Challan;
@@ -55,12 +56,14 @@ public class ChallanService {
     private CommonUtils utils;
     
     private PaymentService paymentService;
+    
+    private ChallanConfiguration config;
 
     
 	@Autowired
 	public ChallanService(EnrichmentService enrichmentService, UserService userService, ChallanRepository repository,
 			CalculationService calculationService, ChallanValidator validator, CommonUtils utils,
-			ExpenseValidator expenseValidator, PaymentService paymentService) {
+			ExpenseValidator expenseValidator, PaymentService paymentService, ChallanConfiguration config) {
 		this.enrichmentService = enrichmentService;
 		this.userService = userService;
 		this.repository = repository;
@@ -69,6 +72,7 @@ public class ChallanService {
 		this.utils = utils;
 		this.expenseValidator = expenseValidator;
 		this.paymentService = paymentService;
+		this.config= config;
 	}
     
 	/**
@@ -335,11 +339,34 @@ public class ChallanService {
 	
 	public List<Challan> planeSearch(SearchCriteria criteria, RequestInfo requestInfo, Map<String, String> finalData){
         List<Challan> challans;
-        challans = getChallansWithOwnerInfoForPlaneSearch(criteria,requestInfo, finalData);
-       return challans;
+        
+        List<Challan> challanList = getchallanPlainSearch(criteria, requestInfo, finalData);
+
+//        challans = getChallansWithOwnerInfoForPlaneSearch(criteria,requestInfo, finalData);
+       return challanList;
     }
 	
-	 public List<Challan> getChallansWithOwnerInfoForPlaneSearch(SearchCriteria criteria,RequestInfo requestInfo, Map<String, String> finalData){
+	 private List<Challan> getchallanPlainSearch(SearchCriteria criteria, RequestInfo requestInfo,  Map<String, String> finalData) {
+		 if (criteria.getLimit() != null && criteria.getLimit() > config.getMaxSearchLimit())
+				criteria.setLimit(config.getMaxSearchLimit());
+
+			List<String> ids = null;
+
+			if (criteria.getIds() != null && !criteria.getIds().isEmpty())
+				ids = criteria.getIds();
+			else
+				ids = repository.fetchESIds(criteria);
+
+			if (ids.isEmpty())
+				return Collections.emptyList();
+
+			SearchCriteria FSMcriteria = SearchCriteria.builder().ids(ids).build();
+
+			List<Challan> listFSM = repository.getChallansForPlaneSearch(FSMcriteria, finalData);
+			return listFSM;
+	}
+
+	public List<Challan> getChallansWithOwnerInfoForPlaneSearch(SearchCriteria criteria,RequestInfo requestInfo, Map<String, String> finalData){
 		 List<Challan> challans = repository.getChallansForPlaneSearch(criteria, finalData);
 	        if(challans.isEmpty())
 	            return Collections.emptyList();

@@ -28,6 +28,7 @@ import org.egov.echallan.web.models.collection.PaymentRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.SingleColumnRowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.client.RestTemplate;
@@ -336,25 +337,20 @@ public class ChallanRepository {
         List<Object> preparedStmtList = new ArrayList<>();
         String query = queryBuilder.getChallanSearchQueryForPlaneSearch(criteria, preparedStmtList);
         List<Challan> challans =  jdbcTemplate.query(query, preparedStmtList.toArray(), rowMapper); 
-        if (criteria.getIsBillCount()) {
-			List<Object> preparedStmnt = new ArrayList<>();
-			StringBuilder paidQuery = new StringBuilder(queryBuilder.bill_count);
-			paidQuery = queryBuilder.applyFiltersForPlaneSearch(paidQuery, preparedStmnt, criteria);
-			paidQuery.append(" AND isbillpaid=true ");
-			List<Map<String, Object>> paidCountdata = jdbcTemplate.queryForList(paidQuery.toString(),
-					preparedStmnt.toArray());
-			List<Object> prpstmnt = new ArrayList<>();
-			StringBuilder notPaidQuery = new StringBuilder(queryBuilder.bill_count);
-			notPaidQuery = queryBuilder.applyFiltersForPlaneSearch(notPaidQuery, prpstmnt, criteria);
-			notPaidQuery.append(" AND isbillpaid=false ");
-			
-			List<Map<String, Object>> notPaidCountdata = jdbcTemplate.queryForList(notPaidQuery.toString(),
-					preparedStmnt.toArray());
-		
-			finalData.put("paidcount", paidCountdata.get(0).get("count").toString());
-			finalData.put("notPaidcount", notPaidCountdata.get(0).get("count").toString());
-			System.out.println("Map Data Insertion :: " + finalData);
-		}
         return challans;
     }
+
+
+	public List<String> fetchESIds(SearchCriteria criteria) {
+		List<Object> preparedStmtList = new ArrayList<>();
+		preparedStmtList.add(criteria.getOffset());
+		preparedStmtList.add(criteria.getLimit());
+
+		List<String> ids = jdbcTemplate.query("SELECT id from eg_echallan ORDER BY createdtime offset " +
+						" ? " +
+						"limit ? ",
+				preparedStmtList.toArray(),
+				new SingleColumnRowMapper<>(String.class));
+		return ids;
+	}
 }
