@@ -360,9 +360,9 @@ public class ChallanService {
 			if (ids.isEmpty())
 				return Collections.emptyList();
 
-			SearchCriteria FSMcriteria = SearchCriteria.builder().ids(ids).build();
+			criteria.setIds(ids);
 
-			List<Challan> listFSM = repository.getChallansForPlaneSearch(FSMcriteria, finalData);
+			List<Challan> listFSM = repository.getChallansForPlaneSearch(criteria, finalData);
 			return listFSM;
 	}
 
