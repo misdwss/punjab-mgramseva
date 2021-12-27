@@ -5,6 +5,7 @@ import 'package:mgramseva/model/connection/water_connection.dart';
 import 'package:mgramseva/providers/bill_generation_details_provider.dart';
 import 'package:mgramseva/screeens/GenerateBill/widgets/MeterReading.dart';
 import 'package:mgramseva/utils/Constants/I18KeyConstants.dart';
+import 'package:mgramseva/utils/TestingKeys/testing_keys.dart';
 import 'package:mgramseva/utils/loaders.dart';
 import 'package:mgramseva/utils/notifyers.dart';
 import 'package:mgramseva/utils/validators/Validators.dart';
@@ -264,6 +265,7 @@ class _GenerateBillState extends State<GenerateBill> {
                                                             controller: billgenerationprovider
                                                                 .billGenerateDetails
                                                                 .billingyearCtrl,
+                                                            key: Keys.bulkDemand.BULK_DEMAND_BILLING_YEAR,
                                                           )),
                                                   Consumer<
                                                           BillGenerationProvider>(
@@ -286,6 +288,7 @@ class _GenerateBillState extends State<GenerateBill> {
                                                             controller: billgenerationprovider
                                                                 .billGenerateDetails
                                                                 .billingcycleCtrl,
+                                                            key: Keys.bulkDemand.BULK_DEMAND_BILLING_CYCLE,
                                                           )),
                                                 ])),
                                   ]))))))
@@ -332,6 +335,7 @@ class _GenerateBillState extends State<GenerateBill> {
         ]))),
         bottomNavigationBar: BottomButtonBar(
             '${widget.id == null ? i18.demandGenerate.GENERATE_DEMAND_BUTTON : i18.demandGenerate.GENERATE_BILL_BUTTON}',
-            () => {billgenerateProvider.onSubmit(context)})));
+            () => {billgenerateProvider.onSubmit(context)},
+        key: Keys.bulkDemand.GENERATE_BILL_BTN,)));
   }
 }
