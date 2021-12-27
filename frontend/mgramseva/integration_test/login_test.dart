@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
@@ -15,6 +16,14 @@ import 'forgot_password_test.dart' as forgot_password;
 import 'edit_profile_test.dart' as edit_profile;
 import 'change_password_test.dart' as change_password;
 import 'log_out_test.dart' as logout;
+// import 'search_Connection_test.dart' as search_Connection;
+// import 'create_consumer_test.dart' as create_consumer;
+import 'Test Inputs/test_inputs.dart';
+import 'update_expense.dart' as update_expense;
+import 'add_expense.dart' as add_expense;
+import 'dashboard_test.dart' as dashboard;
+import 'house_hold_test.dart' as houseHold;
+
 
 
 void main() {
@@ -26,6 +35,7 @@ void main() {
     forgot_password.main();
 
     ///Login Testing
+    /// Create your test case
     testWidgets("Login test", (tester) async {
 
       var loginTestData = getTestData();
@@ -80,5 +90,20 @@ void main() {
 
     ///Log Out
     logout.main();
+
+    ///Search Connection Testing
+    //search_Connection.main();
+
+    ///Create Consumer Testing
+    // create_consumer.main();
+
+    /// add expense
+    // add_expense.main();
+
+    /// update expense
+    dashboard.main();
+
+    /// House hold regisiter
+    // houseHold.main();
   });
 }

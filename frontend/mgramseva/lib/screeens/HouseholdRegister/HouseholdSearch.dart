@@ -5,6 +5,7 @@ import 'package:mgramseva/providers/household_register_provider.dart';
 import 'package:mgramseva/screeens/HouseholdRegister/HouseholdList.dart';
 import 'package:mgramseva/utils/Constants/I18KeyConstants.dart';
 import 'package:mgramseva/utils/Locilization/application_localizations.dart';
+import 'package:mgramseva/utils/TestingKeys/testing_keys.dart';
 import 'package:mgramseva/utils/models.dart';
 import 'package:mgramseva/widgets/TextFieldBuilder.dart';
 import 'package:mgramseva/widgets/footer.dart';
@@ -50,6 +51,7 @@ class _HouseholdSearchState extends State<HouseholdSearch> with SingleTickerProv
             isFilled: true,
             placeHolder: i18.dashboard.SEARCH_NAME_CONNECTION,
             onChange: (val) => householdRegisterProvider.onSearch(val, context),
+            key: Keys.household.HOUSEHOLD_SEARCH,
           ),
           SizedBox(height: 10,),
           _buildTabView(),

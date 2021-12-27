@@ -6,6 +6,7 @@ import 'package:mgramseva/components/HouseholdRegister/HouseholdCard.dart';
 import 'package:mgramseva/providers/household_register_provider.dart';
 import 'package:mgramseva/utils/Constants/I18KeyConstants.dart';
 import 'package:mgramseva/utils/Locilization/application_localizations.dart';
+import 'package:mgramseva/utils/TestingKeys/testing_keys.dart';
 import 'package:mgramseva/widgets/DrawerWrapper.dart';
 import 'package:mgramseva/widgets/HomeBack.dart';
 import 'package:mgramseva/widgets/SideBar.dart';
@@ -110,9 +111,10 @@ class _HouseholdRegister extends State<HouseholdRegister> with SingleTickerProvi
   }
 
   Widget get _buildShare => TextButton.icon(
+    key: Keys.common.SHARE,
       onPressed: () {
         Provider.of<HouseholdRegisterProvider>(context, listen: false)
-            ..createPdfForAllConnections(context, false);
+          ..createPdfForAllConnections(context, false);
       },
       icon: Image.asset('assets/png/whats_app.png'),
       label: Text(ApplicationLocalizations.of(context).translate(i18.common.SHARE)));

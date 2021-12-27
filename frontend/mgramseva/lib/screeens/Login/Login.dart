@@ -58,7 +58,7 @@ class _LoginState extends State<Login> {
 
   saveandLogin(context) async {
     var authProvider =
-        Provider.of<AuthenticationProvider>(context, listen: false);
+    Provider.of<AuthenticationProvider>(context, listen: false);
 
     if (formKey.currentState!.validate()) {
       authProvider.validateLogin(context, userNamecontroller.text.trim(),
@@ -123,9 +123,9 @@ class _LoginState extends State<Login> {
                           ))),
                 ),
                 Padding(
-                    padding: EdgeInsets.only(top: 15, bottom: 15, left: 8, right: 8),
-                    child: Button(
-                        i18.common.CONTINUE, buttonStatus ? () => saveandLogin(context) : null),
+                  padding: EdgeInsets.only(top: 15, bottom: 15, left: 8, right: 8),
+                  child: Button(
+                      i18.common.CONTINUE, buttonStatus ? () => saveandLogin(context) : null),
                   key: Keys.login.LOGIN_BTN_KEY,),
                 SizedBox(
                   height: 10,
@@ -154,12 +154,12 @@ class _LoginState extends State<Login> {
   Widget build(BuildContext context) {
     return FocusWatcher(
         child:Scaffold(body: LayoutBuilder(builder: (context, constraints) {
-      if (constraints.maxWidth < 760) {
-        return MobileView(getLoginCard());
-      } else {
-        return DesktopView(getLoginCard());
-      }
-    })));
+          if (constraints.maxWidth < 760) {
+            return MobileView(getLoginCard());
+          } else {
+            return DesktopView(getLoginCard());
+          }
+        })));
   }
 
   bool get buttonStatus => userNamecontroller.text.trim().length == 10 && passwordcontroller.text.trim().length > 1;

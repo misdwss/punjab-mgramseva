@@ -177,7 +177,8 @@ class HouseholdRegisterProvider with ChangeNotifier {
     return List.generate(
         list.length,
             (index) =>
-            '${ApplicationLocalizations.of(context).translate(list[index])} (${getCollectionsCount(index)})');
+        '${ApplicationLocalizations.of(context).translate(list[index])} (${getCollectionsCount(index)})');
+         
   }
 
   bool isTabSelected(int index){
@@ -270,8 +271,8 @@ class HouseholdRegisterProvider with ChangeNotifier {
     }
     sortBy = SortBy(header.apiKey ?? '', header.isAscendingOrder!);
     notifyListeners();
-      fetchHouseholdDetails(
-          navigatorKey.currentContext!, limit, 1, true);
+    fetchHouseholdDetails(
+        navigatorKey.currentContext!, limit, 1, true);
   }
 
 
@@ -291,8 +292,8 @@ class HouseholdRegisterProvider with ChangeNotifier {
       [int? localLimit, int? localOffSet, bool isSearch = false]) {
     if(isLoaderEnabled) return;
 
-      fetchHouseholdDetails(
-          context, localLimit ?? limit, localOffSet ?? 1, isSearch);
+    fetchHouseholdDetails(
+        context, localLimit ?? limit, localOffSet ?? 1, isSearch);
   }
 
   void createPdfForAllConnections(BuildContext context, bool isDownload) async {
