@@ -35,15 +35,19 @@ import 'package:mgramseva/routers/Routers.dart';
 import 'package:mgramseva/screeens/Home/Home.dart';
 
 import 'package:mgramseva/screeens/SelectLanguage/languageSelection.dart';
+import 'package:mgramseva/services/LocalStorage.dart';
 import 'package:mgramseva/theme.dart';
 import 'package:mgramseva/utils/Locilization/application_localizations.dart';
+import 'package:mgramseva/utils/constants.dart';
 import 'package:mgramseva/utils/error_logging.dart';
 import 'package:mgramseva/utils/global_variables.dart';
 import 'package:mgramseva/utils/loaders.dart';
 import 'package:mgramseva/utils/notifyers.dart';
+import 'package:new_version/new_version.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:url_strategy/url_strategy.dart';
 
 import 'providers/collect_payment.dart';
@@ -185,6 +189,74 @@ class _LandingPageState extends State<LandingPage> {
   void initState() {
     WidgetsBinding.instance?.addPostFrameCallback((_) => afterViewBuild());
     super.initState();
+    checkVersion();
+  }
+
+  void checkVersion() async {
+    final newVersion = NewVersion(
+      androidId: "com.dwss.mgramseva",
+      //iOSId: "com.dwss.mgramseva",
+    );
+    //newVersion.showAlertIfNecessary(context: context); //Use this if you want the update alert with default settings
+    final status = await newVersion.getVersionStatus();
+
+    var updateStatus = storage.read(key: Constants.UPDATE_STATUS_KEY);
+    if(updateStatus.toString() == 'updateInitiated' && !status!.canUpdate)
+    {
+      storage.deleteAll();
+    }
+
+    if (status != null && status.canUpdate) {
+      final uri =
+      Uri.https("play.google.com", "/store/apps/details", {"id": "com.dwss.mgramseva"});
+      int.parse(status.storeVersion.split('.').first) >
+          int.parse(status.localVersion.split('.').first)
+          ? showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (BuildContext context) {
+            return WillPopScope(
+                child: AlertDialog(
+                  title: Text('UPDATE AVAILABLE'),
+                  content: Text('Please update the app from ${status.localVersion} to ${status.storeVersion}'),
+                  actions: [
+                    TextButton(onPressed: () => launchPlayStore(uri.toString()),
+                        child: Text('Update'))
+                  ],
+                ),
+                onWillPop: () => Future.value(false)
+            );
+          }
+      )
+          : showDialog(
+          context: context,
+          barrierDismissible: true,
+          builder: (BuildContext context) {
+            return WillPopScope(
+                child: AlertDialog(
+                  title: Text('UPDATE AVAILABLE'),
+                  content: Text('Please update the app from ${status.localVersion} to ${status.storeVersion}'),
+                  actions: [
+                    TextButton(onPressed: () => launchPlayStore(uri.toString()),
+                        child: Text('Update')),
+                    TextButton(onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
+                        child: Text('Later'))
+                  ],
+                ),
+                onWillPop: () => Future.value(true)
+            );
+          }
+      );
+    }
+  }
+
+  void launchPlayStore(String appLink) async {
+    storage.write(key: Constants.UPDATE_STATUS_KEY, value: 'updateInitiated');
+    if (await canLaunch(appLink)) {
+      await launch(appLink);
+    } else {
+      throw 'Could not launch appStoreLink';
+    }
   }
 
   @override

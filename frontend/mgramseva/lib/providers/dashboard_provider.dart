@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:mgramseva/model/common/metric.dart';
@@ -13,18 +14,17 @@ import 'package:mgramseva/repository/expenses_repo.dart';
 import 'package:mgramseva/repository/search_connection_repo.dart';
 import 'package:mgramseva/routers/Routers.dart';
 import 'package:mgramseva/screeens/dashboard/dashboard_pdf.dart';
-import 'package:mgramseva/screeens/dashboard/search_expense.dart';
 import 'package:mgramseva/services/MDMS.dart';
 import 'package:mgramseva/utils/Constants/I18KeyConstants.dart';
 import 'package:mgramseva/utils/Locilization/application_localizations.dart';
-import 'package:mgramseva/utils/common_methods.dart';
 import 'package:mgramseva/utils/date_formats.dart';
 import 'package:mgramseva/utils/error_logging.dart';
 import 'package:mgramseva/utils/global_variables.dart';
 import 'package:mgramseva/utils/loaders.dart';
 import 'package:mgramseva/utils/models.dart';
-import 'package:mgramseva/utils/models.dart';
 import 'package:provider/provider.dart';
+
+import 'revenuedashboard_provider.dart';
 
 class DashBoardProvider with ChangeNotifier {
   var streamController = StreamController.broadcast();
@@ -472,7 +472,7 @@ class DashBoardProvider with ChangeNotifier {
 
   TableDataRow getExpenseRow(ExpensesDetailsModel expense) {
     return TableDataRow([
-      TableData('${expense.challanNo} \n ${expense.vendorName}',
+      TableData('${expense.challanNo} \n${expense.vendorName}',
           callBack: onClickOfChallanNo, apiKey: expense.challanNo),
       TableData('${expense.expenseType}'),
       TableData('₹ ${expense.totalAmount ?? '-'}'),
@@ -485,13 +485,20 @@ class DashBoardProvider with ChangeNotifier {
     ]);
   }
 
+  String? truncateWithEllipsis(String? myString) {
+    return (myString!.length <= 20)
+        ? myString
+        : '${myString.substring(0, 20)}...';
+  }
+
   TableDataRow getCollectionRow(WaterConnection connection) {
+    String? name = truncateWithEllipsis(connection.connectionHolders?.first.name);
     return TableDataRow([
       TableData(
           '${connection.connectionNo?.split('/').first ?? ''}/...${connection.connectionNo?.split('/').last ?? ''} ${connection.connectionType == 'Metered' ? '- M' : ''}',
           callBack: onClickOfCollectionNo,
           apiKey: connection.connectionNo),
-      TableData('${connection.connectionHolders?.first.name ?? ''}'),
+      TableData('${name ?? ''}'),
       TableData(
           '${connection.additionalDetails?.collectionAmount != null ? '₹ ${connection.additionalDetails?.collectionAmount}' : '-'}'),
     ]);
@@ -539,15 +546,23 @@ class DashBoardProvider with ChangeNotifier {
   }
 
   void onChangeOfDate(DatePeriod? date, BuildContext context) {
+    var previousDateType = selectedMonth.dateType;
     selectedMonth = date ?? DatePeriod(DateTime.now(),DateTime.now(), DateType.MONTH);
     notifyListeners();
-    fetchDashboardMetricInformation(context, selectedDashboardType == DashBoardType.Expenditure ? true : false);
+
     fetchUserFeedbackDetails(context);
-    fetchDetails(context, limit, 1, true);
+    if(selectedMonth.dateType == DateType.MONTH && previousDateType == selectedMonth.dateType) {
+      fetchDashboardMetricInformation(context,
+          selectedDashboardType == DashBoardType.Expenditure ? true : false);
+      fetchDetails(context, limit, 1, true);
+    }else if(previousDateType == selectedMonth.dateType){
+      var revenueProvider = Provider.of<RevenueDashboard>(context, listen: false);
+      revenueProvider.loadGraphicalDashboard(context);
+    }
   }
 
   void onChangeOfPageLimit(PaginationResponse response, BuildContext context) {
-    fetchDetails(context, response.limit, response.offset);
+    fetchDetails(context, response.limit, response.offset, response.isPageChange);
   }
 
   fetchDetails(BuildContext context,
@@ -608,9 +623,22 @@ class DashBoardProvider with ChangeNotifier {
       var response = await DashBoardRepository().getMetricInformation(isExpenditure, query);
       if(response != null){
         var metricList = <Metric>[];
-        response.forEach((key, value) {
-          metricList.add(Metric(label: value, value: 'dashboard_$key', type: 'amount'));
-        });
+        if(isExpenditure){
+          var keys = ['totalBills', 'billsPaid', 'pendingBills'];
+          response.forEach((key, value) {
+            metricList.add(Metric(label: value, value: 'dashboard_$key'.toUpperCase(), type: keys.contains(key) ? '' : 'amount'));
+          });
+        }else{
+          response.forEach((key, value) {
+            if(value is Map){
+              var filteredValue = '${value['paid']}/${value['count']}';
+              metricList.add(Metric(label: filteredValue, value: 'dashboard_$key'.toUpperCase(), type: ''));
+            }else {
+              metricList.add(Metric(
+                  label: value, value: 'dashboard_$key'.toUpperCase(), type: 'amount'));
+            }
+          });
+        }
         metricInformation = metricList;
       }
       notifyListeners();
@@ -669,9 +697,9 @@ class DashBoardProvider with ChangeNotifier {
    var hearList = [i18.dashboard.BILL_ID_VENDOR, i18.expense.EXPENSE_TYPE, i18.common.AMOUNT, i18.expense.BILL_DATE, i18.common.PAID_DATE];
 
     var tableData = expenseDashboardDetails.expenseDetailList?.map<List<String>>((expense) => [
-     '${expense.challanNo} \n ${expense.vendorName}',
+     '${expense.challanNo} \n${expense.vendorName}',
      '${ApplicationLocalizations.of(context).translate(expense.expenseType ?? '')}',
-     '₹ ${expense.totalAmount ?? '-'}',
+     expense.totalAmount != null ? '₹ ${expense.totalAmount}' : '-',
      '${DateFormats.timeStampToDate(expense.billDate)}',
      '${expense.paidDate != null && expense.paidDate != 0 ? DateFormats.timeStampToDate(expense.paidDate) : (ApplicationLocalizations.of(navigatorKey.currentContext!).translate(i18.dashboard.PENDING))}',
    ]).toList() ?? [];
@@ -687,7 +715,7 @@ class DashBoardProvider with ChangeNotifier {
 
     var query = {
       'tenantId': commonProvider.userDetails?.selectedtenant?.code,
-      'offset': '0',
+      'limit': '-1',
       'fromDate':
       '${selectedMonth.startDate.millisecondsSinceEpoch}',
       'toDate':

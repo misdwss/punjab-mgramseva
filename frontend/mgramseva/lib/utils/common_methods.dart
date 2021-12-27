@@ -8,6 +8,8 @@ import 'package:mgramseva/utils/global_variables.dart';
 import 'package:provider/provider.dart';
 
 import 'models.dart';
+import 'package:mime/mime.dart';
+import 'package:http_parser/http_parser.dart';
 
 class CommonMethods {
 
@@ -34,14 +36,14 @@ class CommonMethods {
         monthList.add(DateTime(yearDetails.year + 1, i));
       }
     }
-    return monthList.map((e) => DatePeriod(DateTime(e.year, e.month, 1), DateTime(e.year, e.month + 1, 0, 23,59, 59), DateType.MONTH)).toList().reversed.toList();
+    return monthList.map((e) => DatePeriod(DateTime(e.year, e.month, 1), DateTime(e.year, e.month + 1, 0, 23,59, 59, 999), DateType.MONTH)).toList().reversed.toList();
   }
 
   static List<YearWithMonths> getFinancialYearList([int count = 5]){
     var yearWithMonths = <YearWithMonths>[];
 
     if(DateTime.now().month >= 4) {
-      var year = DatePeriod(DateTime(DateTime.now().year, 4) , DateTime(DateTime.now().year + 1, 4, 0, 23,59, 59), DateType.YTD);
+      var year = DatePeriod(DateTime(DateTime.now().year, 4) , DateTime(DateTime.now().year + 1, 4, 0, 23,59, 59, 999), DateType.YTD);
       var monthList = getPastMonthUntilFinancialYear(DateTime.now().year);
       yearWithMonths.add(YearWithMonths(monthList, year));
     }else{
@@ -52,7 +54,7 @@ class CommonMethods {
 
     for(int i =0; i < count-1; i++){
       dynamic year = DateTime(DateTime.now().year - i);
-      year = DatePeriod(DateTime(year.year - 1, 4), DateTime(year.year, 4, 0, 23,59, 59), DateType.YEAR);
+      year = DatePeriod(DateTime(year.year - 1, 4), DateTime(year.year, 4, 0, 23,59, 59, 999), DateType.YEAR);
       var monthList = getPastMonthUntilFinancialYear(year.startDate.year);
       yearWithMonths.add(YearWithMonths(monthList, year));
     }
@@ -73,7 +75,7 @@ class CommonMethods {
         monthList.add(DateTime(DateTime.now().year, i));
       }
     }
-    return monthList.map((e) => DatePeriod(DateTime(e.year, e.month, 1), DateTime(e.year, e.month + 1, 0, 23,59, 59), DateType.MONTH)).toList().reversed.toList();
+    return monthList.map((e) => DatePeriod(DateTime(e.year, e.month, 1), DateTime(e.year, e.month + 1, 0, 23,59, 59, 999), DateType.MONTH)).toList().reversed.toList();
   }
 
   String truncateWithEllipsis(int cutoff, String myString) {
@@ -95,5 +97,16 @@ class CommonMethods {
     var commonProvider = Provider.of<CommonProvider>(navigatorKey.currentContext!, listen: false);
 
     return '${commonProvider.userDetails?.userRequest?.id}${Random().nextInt(3)}';
+  }
+
+  MediaType getMediaType(String? path) {
+    if(path == null) return MediaType('', '');
+    String? mimeStr = lookupMimeType(path);
+    var fileType = mimeStr?.split('/');
+    if(fileType != null && fileType.length > 0) {
+      return MediaType(fileType.first, fileType.last);
+    }else{
+      return MediaType('', '');
+    }
   }
 }

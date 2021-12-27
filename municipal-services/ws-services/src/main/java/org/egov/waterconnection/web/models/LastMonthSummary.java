@@ -15,9 +15,6 @@ import lombok.Setter;
 @Builder
 public class LastMonthSummary {
 
-	@JsonProperty("previousMonthCollection")
-	private String previousMonthCollection = "0";
-
 	@JsonProperty("cumulativePendingCollection")
 	private String cumulativePendingCollection = "0";
 

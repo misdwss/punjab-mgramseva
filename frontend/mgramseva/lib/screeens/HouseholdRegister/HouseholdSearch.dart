@@ -67,41 +67,39 @@ class _HouseholdSearchState extends State<HouseholdSearch> with SingleTickerProv
           var tabList = householdRegisterProvider.getCollectionsTabList(context);
 
           return  Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8),
-                child:  SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: List.generate(tabList.length, (index) => Padding(
-                          key: Key(index.toString()),
-                          padding: EdgeInsets.only(top: 16.0, right: 8.0, bottom: 16.0), child: TabButton(tabList[index], isSelected: householdRegisterProvider.isTabSelected(index), onPressed: () => householdRegisterProvider.onChangeOfTab(context, index))))           ),
-                ),
-              ),
-              SizedBox(height: 15,),
-              TextButton.icon(
-                onPressed: () {
-                  householdRegisterProvider.createPdfForAllConnections(context, true);
-                },
-                icon: Icon(Icons.download_sharp),
-                label: Text('${ApplicationLocalizations.of(context).translate(i18.common.DOWNLOAD)} '
-                    '(${householdRegisterProvider.getDownloadList()} '
-                    '${ApplicationLocalizations.of(context).translate(i18.householdRegister.RECORDS)})',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w400,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8),
+                  child:  SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: List.generate(tabList.length, (index) => Padding(padding: EdgeInsets.only(top: 16.0, right: 8.0, bottom: 16.0), child: TabButton(tabList[index], isSelected: householdRegisterProvider.isTabSelected(index), onPressed: () => householdRegisterProvider.onChangeOfTab(context, index))))           ),
                   ),
-                  textAlign: TextAlign.left,
                 ),
-              ),
-              SizedBox(height: 10,),
-              Consumer<HouseholdRegisterProvider>(
+                SizedBox(height: 15,),
+                TextButton.icon(
+                  onPressed: () {
+                    householdRegisterProvider.createPdfForAllConnections(context, true);
+                  },
+                  icon: Icon(Icons.download_sharp),
+                  label: Text('${ApplicationLocalizations.of(context).translate(i18.common.DOWNLOAD)} '
+                      '(${householdRegisterProvider.getDownloadList()} '
+                      '${ApplicationLocalizations.of(context).translate(i18.householdRegister.RECORDS)})',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w400,
+                    ),
+                    textAlign: TextAlign.left,
+                  ),
+                ),
+                SizedBox(height: 10,),
+                Consumer<HouseholdRegisterProvider>(
                   builder: (_, householdRegisterProvider, child) =>
-                      HouseholdList()
-              ),
-            ],
+                              HouseholdList()
+                      ),
+              ],
           );
         });
   }

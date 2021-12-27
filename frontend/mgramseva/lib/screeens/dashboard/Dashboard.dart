@@ -71,11 +71,11 @@ class _Dashboard extends State<Dashboard> with SingleTickerProviderStateMixin {
     super.initState();
     var dashBoardProvider =
     Provider.of<DashBoardProvider>(context, listen: false);
-    dashBoardProvider.selectedMonth = CommonMethods.getFinancialYearList().first.monthList.first;
+    dashBoardProvider.selectedMonth = CommonMethods.getFinancialYearList().first.year;
     dashBoardProvider.scrollController = ScrollController();
     dashBoardProvider.debounce = null;
     dashBoardProvider.userFeedBackInformation = null;
-    dashBoardProvider.selectedDashboardType = DashBoardType.collections;
+    dashBoardProvider.selectedDashboardType = widget.initialTabIndex == 0 ? DashBoardType.collections : DashBoardType.Expenditure;
     WidgetsBinding.instance?.addPostFrameCallback((_) => afterViewBuild());
   }
 

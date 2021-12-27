@@ -5,6 +5,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.egov.userevent.model.AuditDetails;
 import org.egov.userevent.model.enums.Source;
@@ -86,6 +87,16 @@ public class UserEventRowMapper implements ResultSetExtractor <List<Event>> {
 					}
 				}
 				
+				obj = (PGobject) resultSet.getObject("additionaldetails");
+				if(null != obj) {
+					if(!obj.getValue().equalsIgnoreCase("null")) {
+						 Type type = new TypeToken<Map<String, Object>>() {}.getType();
+							Gson gson = new Gson();
+							Map<String, Object> data = gson.fromJson(obj.getValue(), type);
+							event.setAdditionalDetails(data);
+					}
+				}
+						
 			}catch(Exception e) {
 				log.error("Error while adding jsonb fields: ", e);
 				continue;

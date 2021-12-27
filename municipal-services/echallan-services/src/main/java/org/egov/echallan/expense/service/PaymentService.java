@@ -73,6 +73,7 @@ public class PaymentService {
 
 			try {
 				response = mapper.convertValue(result, PaymentResponse.class);
+				challan.setApplicationStatus(StatusEnum.PAID);
 			} catch (IllegalArgumentException e) {
 				log.error("Error parsing payment response Challan id : " + challan.getId());
 				throw new CustomException("EXP_PAYMENT_PARSING_ERROR", "Unable to parse payment response");
@@ -119,6 +120,7 @@ public class PaymentService {
 			StringBuilder uri = new StringBuilder(config.getPaymentContextPath())
 					.append(config.getPaymentUpdateEndpoint());
 
+			System.out.println("URL to check the payment search::" + uri);
 			Object result = serviceRequestRepository.fetchResult(uri, PaymentWorkflowRequest.builder()
 					.paymentWorkflows(Arrays.asList(paymentWorkflow)).requestInfo(request.getRequestInfo()).build());
 			try {
@@ -137,7 +139,6 @@ public class PaymentService {
 				.append("/" + request.getChallan().getBusinessService()).append(config.getPaymentUpdateSearchEndpoint())
 				.append("?consumerCodes=").append(request.getChallan().getChallanNo()).append(" &tenantId=")
 				.append(request.getChallan().getTenantId());
-		System.out.println("URL to check the payment search::" + uri);
 		RequestInfoWrapper requestInfoWrapper = RequestInfoWrapper.builder().requestInfo(request.getRequestInfo())
 				.build();
 		Object response = serviceRequestRepository.fetchResult(uri, requestInfoWrapper);

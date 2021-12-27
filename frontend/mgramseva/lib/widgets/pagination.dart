@@ -96,6 +96,6 @@ class _PaginationState extends State<Pagination> {
   }
 
   onChangeOfPageCount(limit){
-    widget.callBack(PaginationResponse(limit, 1));
+    widget.callBack(PaginationResponse(limit, 1, true));
   }
 }

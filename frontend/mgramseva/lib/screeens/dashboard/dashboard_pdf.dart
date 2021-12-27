@@ -1,20 +1,17 @@
-import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mgramseva/model/common/metric.dart';
 import 'package:mgramseva/providers/common_provider.dart';
 import 'package:mgramseva/providers/dashboard_provider.dart';
-import 'package:mgramseva/providers/language.dart';
 import 'package:mgramseva/utils/Constants/I18KeyConstants.dart';
 import 'package:mgramseva/utils/Locilization/application_localizations.dart';
+import 'package:mgramseva/utils/constants.dart';
 import 'package:mgramseva/utils/date_formats.dart';
 import 'package:mgramseva/utils/global_variables.dart';
 import 'package:mgramseva/utils/models.dart';
 import 'package:mgramseva/utils/pdf.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:pdf/pdf.dart';
 import 'package:provider/provider.dart';
 import 'package:pdf/widgets.dart' as pw;
@@ -58,7 +55,7 @@ class DashboardPdfCreator {
     }
 
     pdf.addPage(
-        pw.MultiPage(
+        pw.MultiPage(maxPages: Constants.MAX_PDF_PAGES,
         pageFormat: PdfPageFormat.a4,
         margin: pw.EdgeInsets.symmetric(horizontal: 16, vertical: 25),
         footer: (_) => PdfUtils.pdfFooter(digitLogo),
@@ -118,7 +115,7 @@ class DashboardPdfCreator {
               child:
                   pw.Text('${ApplicationLocalizations.of(context).translate('${dashBoardProvider.selectedDashboardType == DashBoardType.Expenditure ? i18.dashboard.EXPENDITURE : i18.dashboard.COLLECTIONS}')}', style: pw.TextStyle(fontSize: 14, font: font, fontWeight: pw.FontWeight.bold))),
       pw.Container(
-          height: 60,
+          height: ((gridList.length / 3).ceil()) * 60,
           color: PdfColor.fromHex('#fafafa'),
           child: pw.GridView(
               crossAxisCount: crossAxisCount,
@@ -129,12 +126,11 @@ class DashboardPdfCreator {
                 }
                 return pw.Container(
                     decoration: pw.BoxDecoration(
-                      border: index == (incrementer - crossAxisCount) ? null : pw.Border(
-                        left: pw.BorderSide(
-                          width: 1.0, /*color: Colors.grey*/
-                        ),
-                      ),
-                      // color: Colors.white,
+                      border: pw.Border(
+                        left: pw.BorderSide(width: index == (incrementer - crossAxisCount) ? 0 : 1.0, color: index == (incrementer - crossAxisCount) ? PdfColor.fromHex('#FFFFFF') :  PdfColor.fromHex('#808080')),
+                            bottom:  pw.BorderSide(width: index < gridList.length - (gridList.length % crossAxisCount == 0 ? crossAxisCount : gridList.length % crossAxisCount) ? 1.0 : 0,
+                                color: index < gridList.length - (gridList.length % crossAxisCount == 0 ? crossAxisCount : gridList.length % crossAxisCount) ? PdfColor.fromHex('#808080') : PdfColor.fromHex('#FFFFFF')),
+                          ),
                     ),
                     alignment: pw.Alignment.center,
                     padding:
@@ -276,6 +272,7 @@ class DashboardPdfCreator {
             headerStyle:
             pw.TextStyle(font: ttf, fontWeight: pw.FontWeight.bold),
             cellPadding: pw.EdgeInsets.symmetric(vertical: 10),
+            defaultColumnWidth: pw.FlexColumnWidth(4.0),
             cellStyle: pw.TextStyle(
               font: ttf,
               fontSize: 12,

@@ -178,11 +178,12 @@ class HouseholdRegisterProvider with ChangeNotifier {
         list.length,
             (index) =>
         '${ApplicationLocalizations.of(context).translate(list[index])} (${getCollectionsCount(index)})');
+         
   }
 
   bool isTabSelected(int index){
     if(selectedTab == Constants.ALL && index == 0) return true;
-    if((selectedTab == Constants.PENDING && index == 2) || (selectedTab == Constants.PAID && index == 1)) return true;
+      if((selectedTab == Constants.PENDING && index == 2) || (selectedTab == Constants.PAID && index == 1)) return true;
     return false;
   }
 
@@ -284,7 +285,7 @@ class HouseholdRegisterProvider with ChangeNotifier {
 
 
   void onChangeOfPageLimit(PaginationResponse response, BuildContext context) {
-    fetchDetails(context, response.limit, response.offset);
+    fetchDetails(context, response.limit, response.offset, response.isPageChange);
   }
 
   fetchDetails(BuildContext context,
