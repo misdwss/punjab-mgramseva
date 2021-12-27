@@ -14,6 +14,7 @@ import 'package:mgramseva/providers/dashboard_provider.dart';
 import 'package:mgramseva/repository/core_repo.dart';
 import 'package:mgramseva/utils/Constants/I18KeyConstants.dart';
 import 'package:mgramseva/utils/Locilization/application_localizations.dart';
+import 'package:mgramseva/utils/TestingKeys/testing_keys.dart';
 import 'package:mgramseva/utils/common_methods.dart';
 import 'package:mgramseva/utils/common_widgets.dart';
 import 'package:mgramseva/utils/date_formats.dart';
@@ -217,6 +218,7 @@ class _Dashboard extends State<Dashboard> with SingleTickerProviderStateMixin {
   }
 
   Widget get _buildShare => TextButton.icon(
+      key: Keys.common.SHARE,
       onPressed: takeScreenShotOfDashboard,
       icon: Image.asset('assets/png/whats_app.png'),
       label: Text(ApplicationLocalizations.of(context).translate(i18.common.SHARE)));

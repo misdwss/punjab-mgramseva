@@ -6,7 +6,8 @@ import 'package:mgramseva/utils/common_styles.dart';
 class BottomButtonBar extends StatelessWidget {
   final String label;
   final Function()? callBack;
-  BottomButtonBar(this.label, this.callBack);
+  final Key? key;
+  BottomButtonBar(this.label, this.callBack, {this.key});
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(builder: (context, constraints) {
