@@ -12,7 +12,6 @@ class Keys{
   static CommonKeys common = const CommonKeys();
   static ExpenseKeys expense = const ExpenseKeys();
   static DashboardKeys dashboard = const DashboardKeys();
-  static Common common = const Common();
   static HouseholdKeys household = const HouseholdKeys();
 }
 
