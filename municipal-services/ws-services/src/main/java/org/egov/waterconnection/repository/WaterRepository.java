@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.egov.waterconnection.repository.builder.WsQueryBuilder;
-import org.egov.waterconnection.service.WaterService;
 import org.egov.waterconnection.util.WaterServicesUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -63,8 +62,8 @@ public class WaterRepository {
 		}else {
 			query = new StringBuilder(queryBuilder.PREVIOUSDAYONLINECOLLECTION);
 		}
-		query.append( " and transactiondate  >= ").append( startDate)  
-		.append(" and  transactiondate <= " ).append(endDate).append(" and tenantId = '").append(tenantId).append("'"); 
+		query.append( " and p.transactiondate  >= ").append( startDate)  
+		.append(" and  p.transactiondate <= " ).append(endDate).append(" and p.tenantId = '").append(tenantId).append("'"); 
 		log.info("Previous Day collection query : " + query);
 		List<Map<String, Object>> list =  jdbcTemplate.queryForList(query.toString());
 		return list;
@@ -98,7 +97,6 @@ public class WaterRepository {
 		return jdbcTemplate.queryForObject(query.toString(), Integer.class);
 
 	}
-	
 
 
 }

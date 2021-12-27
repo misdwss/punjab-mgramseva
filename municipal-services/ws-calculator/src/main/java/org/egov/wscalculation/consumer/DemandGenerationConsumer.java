@@ -271,7 +271,7 @@ public class DemandGenerationConsumer {
 
 
 		LocalDate fromDate = LocalDate.parse(billingCycle.split("-")[0].trim(), formatter);
-		LocalDate toDate = LocalDate.parse(billingCycle.split("-")[0].trim(), formatter);
+		LocalDate toDate = LocalDate.parse(billingCycle.split("-")[1].trim(), formatter);
 
 		Long dayStartTime = LocalDateTime
 				.of(fromDate.getYear(), fromDate.getMonth(), fromDate.getDayOfMonth(), 0, 0, 0)
@@ -313,8 +313,12 @@ public class DemandGenerationConsumer {
 			Set<String> consumerCodes = new LinkedHashSet<String>();
 			consumerCodes.add(connectionNo);
 
-			if (!waterCalculatorDao.isDemandExists(tenantId, previousFromDate.getTimeInMillis(), previousToDate.getTimeInMillis(), consumerCodes)) {
-				log.warn("this connection doen't have the demand in previous billing cycle :" + connectionNo );
+			if (!waterCalculatorDao.isDemandExists(tenantId, previousFromDate.getTimeInMillis(),
+					previousToDate.getTimeInMillis(), consumerCodes)
+					&& !waterCalculatorDao.isConnectionExists(tenantId, previousFromDate.getTimeInMillis(),
+							previousToDate.getTimeInMillis(), consumerCodes)) {
+				log.warn("this connection doen't have the demand in previous billing cycle :" + connectionNo);
+				failedConnectionNos.add(connectionNo);
 				continue;
 			}
 			

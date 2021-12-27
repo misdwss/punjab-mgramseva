@@ -52,27 +52,39 @@ public class ChallanQueryBuilder {
       
       public static final String ACTIVEEXPENSECOUNTQUERY =  "select count(*) from eg_echallan  where applicationstatus ='ACTIVE' ";
 
-	  public static final String PREVIOUSMONTHEXPENSE = " select sum(billdtl.totalamount) from eg_echallan challan, egbs_billdetail_v1 billdtl, egbs_bill_v1 bill  where challan.challanno= billdtl.consumercode  and billdtl.billid = bill.id and challan.isbillpaid ='true'  ";
+	  public static final String PREVIOUSMONTHEXPENSE = " select coalesce(sum(billdtl.totalamount),0) from eg_echallan challan, egbs_billdetail_v1 billdtl, egbs_bill_v1 bill  where challan.challanno= billdtl.consumercode  and billdtl.billid = bill.id and challan.isbillpaid ='true'  ";
 	  
-	  public static final String PREVIOUSMONTHEXPPAYMENT = "SELECT SUM(PAYMT.TOTALAMOUNTPAID) FROM EGCL_PAYMENT PAYMT JOIN EGCL_PAYMENTDETAIL PAYMTDTL ON (PAYMTDTL.PAYMENTID = PAYMT.ID) WHERE PAYMTDTL.BUSINESSSERVICE like '%EXPENSE%' ";
+	  public static final String PREVIOUSMONTHEXPPAYMENT = "SELECT coalesce(SUM(PAYMT.TOTALAMOUNTPAID),0) FROM EGCL_PAYMENT PAYMT JOIN EGCL_PAYMENTDETAIL PAYMTDTL ON (PAYMTDTL.PAYMENTID = PAYMT.ID) WHERE PAYMTDTL.BUSINESSSERVICE like '%EXPENSE%' ";
 
 	  public static final String PREVIOUSDAYCASHCOLLECTION = "select  count(*), sum(totalamountpaid) from egcl_payment where paymentmode='CASH' ";
 	  
 	  public static final String PREVIOUSDAYONLINECOLLECTION = "select  count(*), sum(totalamountpaid) from egcl_payment where paymentmode='ONLINE' ";
 
-	  public static final String PREVIOUSMONTHNEWEXPENSE = " SELECT SUM(DEMANDDTL.TAXAMOUNT) FROM EGBS_DEMANDDETAIL_V1 DEMANDDTL JOIN EGBS_DEMAND_V1 DEMAND ON(DEMANDDTL.DEMANDID = DEMAND.ID) JOIN EG_ECHALLAN CHALLAN ON(CHALLAN.CHALLANNO = DEMAND.CONSUMERCODE) where DEMAND.status = 'ACTIVE' ";
+	  public static final String PREVIOUSMONTHNEWEXPENSE = " SELECT coalesce(SUM(DEMANDDTL.TAXAMOUNT),0) FROM EGBS_DEMANDDETAIL_V1 DEMANDDTL JOIN EGBS_DEMAND_V1 DEMAND ON(DEMANDDTL.DEMANDID = DEMAND.ID) JOIN EG_ECHALLAN CHALLAN ON(CHALLAN.CHALLANNO = DEMAND.CONSUMERCODE) where DEMAND.status = 'ACTIVE' ";
 	  
-	  public static final String CUMULATIVEPENDINGEXPENSE = " SELECT SUM(DEMANDDTL.TAXAMOUNT) FROM EGBS_DEMANDDETAIL_V1 DEMANDDTL JOIN EGBS_DEMAND_V1 DEMAND ON(DEMANDDTL.DEMANDID = DEMAND.ID) JOIN EG_ECHALLAN CHALLAN ON(DEMAND.CONSUMERCODE = CHALLAN.CHALLANNO) WHERE DEMANDDTL.COLLECTIONAMOUNT <= 0 and DEMAND.status = 'ACTIVE' ";
+	  public static final String CUMULATIVEPENDINGEXPENSE = " SELECT coalesce(SUM(DEMANDDTL.TAXAMOUNT),0) FROM EGBS_DEMANDDETAIL_V1 DEMANDDTL JOIN EGBS_DEMAND_V1 DEMAND ON(DEMANDDTL.DEMANDID = DEMAND.ID) JOIN EG_ECHALLAN CHALLAN ON(DEMAND.CONSUMERCODE = CHALLAN.CHALLANNO) WHERE DEMANDDTL.COLLECTIONAMOUNT <= 0 and DEMAND.status = 'ACTIVE' ";
 
 	  public static final String bill_count = " select count(*) from eg_echallan as challan INNER JOIN eg_vendor vendor on vendor.id = challan.vendor ";
 
-	  public static final String NEWEXPDEMAND = "SELECT SUM(DMDL.TAXAMOUNT) FROM EGBS_DEMAND_V1 DMD INNER JOIN EGBS_DEMANDDETAIL_V1 DMDL ON DMD.ID=DMDL.DEMANDID AND DMD.TENANTID=DMDL.TENANTID WHERE DMD.BUSINESSSERVICE LIKE '%EXPENSE%' and DMD.status = 'ACTIVE' ";
+	  public static final String NEWEXPDEMAND = "SELECT coalesce(SUM(DMDL.TAXAMOUNT),0) FROM EGBS_DEMAND_V1 DMD INNER JOIN EGBS_DEMANDDETAIL_V1 DMDL ON DMD.ID=DMDL.DEMANDID AND DMD.TENANTID=DMDL.TENANTID WHERE DMD.BUSINESSSERVICE LIKE '%EXPENSE%' and DMD.status = 'ACTIVE' ";
 	
-	  public static final String PENDINGEXPCOLL = "SELECT SUM(DMDL.TAXAMOUNT - DMDL.COLLECTIONAMOUNT) FROM EGBS_DEMAND_V1 DMD INNER JOIN EGBS_DEMANDDETAIL_V1 DMDL ON DMD.ID=DMDL.DEMANDID AND DMD.TENANTID=DMDL.TENANTID WHERE DMD.BUSINESSSERVICE LIKE '%EXPENSE%' and DMD.status='ACTIVE' ";
+	  public static final String PENDINGEXPCOLL = "SELECT coalesce(SUM(DMDL.TAXAMOUNT - DMDL.COLLECTIONAMOUNT),0) FROM EGBS_DEMAND_V1 DMD INNER JOIN EGBS_DEMANDDETAIL_V1 DMDL ON DMD.ID=DMDL.DEMANDID AND DMD.TENANTID=DMDL.TENANTID WHERE DMD.BUSINESSSERVICE LIKE '%EXPENSE%' and DMD.status='ACTIVE' ";
 	
-	  public static final String ACTUALEXPCOLLECTION = " SELECT SUM(PY.TOTALAMOUNTPAID) FROM EGCL_PAYMENT PY INNER JOIN EGCL_PAYMENTDETAIL PYD ON PYD.PAYMENTID = PY.ID WHERE PYD.BUSINESSSERVICE LIKE '%EXPENSE%' ";
+	  public static final String ACTUALEXPCOLLECTION = " SELECT coalesce(SUM(PY.TOTALAMOUNTPAID),0) FROM EGCL_PAYMENT PY INNER JOIN EGCL_PAYMENTDETAIL PYD ON PYD.PAYMENTID = PY.ID WHERE PYD.BUSINESSSERVICE LIKE '%EXPENSE%' ";
 
+	  public static final String TOTALBILLS = " select count(*) from eg_echallan where applicationstatus not in ('CANCELLED') ";
 
+	  public static final String PAIDBILLS = " select count(*) from eg_echallan where isbillpaid = 'true' and applicationstatus not in ('CANCELLED') ";
+	  
+	  public static final String PENDINGBILLS = " select count(*) from eg_echallan where isbillpaid = 'false' and applicationstatus not in ('CANCELLED') ";
+
+	  public static final String ELECTRICITYBILLS = " select sum(py.totalAmountPaid) FROM egcl_payment py INNER JOIN egcl_paymentdetail pyd ON pyd.paymentid = py.id INNER JOIN egcl_bill bill ON bill.id = pyd.billid INNER JOIN eg_echallan challan ON challan.challanno = bill.consumercode  where pyd.businessservice='EXPENSE.ELECTRICITY_BILL' and challan.applicationstatus not in ('CANCELLED') ";
+
+	  public static final String OMMISCBILLS = "select sum(py.totalAmountPaid) FROM egcl_payment py INNER JOIN egcl_paymentdetail pyd ON pyd.paymentid = py.id INNER JOIN egcl_bill bill ON bill.id = pyd.billid INNER JOIN eg_echallan challan ON challan.challanno = bill.consumercode  where pyd.businessservice='EXPENSE.OM' and challan.applicationstatus not in ('CANCELLED') ";
+	  
+	  public static final String SALARYBILLS = " select sum(py.totalAmountPaid) FROM egcl_payment py INNER JOIN egcl_paymentdetail pyd ON pyd.paymentid = py.id INNER JOIN egcl_bill bill ON bill.id = pyd.billid INNER JOIN eg_echallan challan ON challan.challanno = bill.consumercode  where pyd.businessservice='EXPENSE.SALARY' and challan.applicationstatus not in ('CANCELLED')";
+
+	  public static final String PENDINGEXPCOLLTILLDATE = "SELECT coalesce(SUM(DMDL.TAXAMOUNT - DMDL.COLLECTIONAMOUNT),0) FROM EGBS_DEMAND_V1 DMD INNER JOIN EGBS_DEMANDDETAIL_V1 DMDL ON DMD.ID=DMDL.DEMANDID AND DMD.TENANTID=DMDL.TENANTID WHERE DMD.BUSINESSSERVICE LIKE '%EXPENSE%' and DMD.status='ACTIVE' ";
 
 
 		public String getChallanSearchQuery(SearchCriteria criteria, List<Object> preparedStmtList) {
@@ -222,7 +234,7 @@ public class ChallanQueryBuilder {
         
         finalQuery = finalQuery.replace("{pagination}", " offset ?  limit ?  ");
 	    preparedStmtList.add(offset);
-        preparedStmtList.add(limit+offset);
+        preparedStmtList.add(limit);
 
        return finalQuery;
     }
@@ -278,4 +290,69 @@ public class ChallanQueryBuilder {
 		return builder.toString();
 	}
 
+	public String getChallanSearchQueryForPlaneSearch(SearchCriteria criteria, List<Object> preparedStmtList) {
+
+		StringBuilder builder = new StringBuilder(QUERY);
+		builder = applyFiltersForPlaneSearch(builder, preparedStmtList, criteria);
+		return addPaginationWrapperPlainsearch(builder.toString(), preparedStmtList, criteria);
+	}
+	
+	private String addPaginationWrapperPlainsearch(String query, List<Object> preparedStmtList,
+			SearchCriteria criteria) {
+
+		String string = addOrderByClause(criteria);
+
+		String finalQuery = paginationWrapper.replace("{}", query);
+
+		finalQuery = finalQuery.replace("{orderby}", string);
+
+		finalQuery = finalQuery.replace("{amount}",
+				" (select nullif(sum(bi.totalamount),0) from egbs_billdetail_v1 bi join egbs_bill_v1 b on bi.billid=b.id where bi.businessservice = challan.businessservice and bi.consumercode = challan.challanno and b.status IN ('ACTIVE','PAID' ) group by bi.consumercode) as totalamount, ");
+
+		if (criteria.getLimit() != null && criteria.getLimit() != 0) {
+			int limit = 0, offset = 0;
+			if (criteria.getLimit() != null && criteria.getLimit() <= config.getMaxSearchLimit())
+				limit = criteria.getLimit();
+
+			if (criteria.getLimit() != null && criteria.getLimit() > config.getMaxSearchLimit())
+				limit = config.getMaxSearchLimit();
+
+			if (criteria.getOffset() != null)
+				offset = criteria.getOffset();
+
+			finalQuery = finalQuery.replace("{pagination}", " offset ?  limit ?  ");
+			preparedStmtList.add(offset);
+			preparedStmtList.add(limit);
+
+		} else {
+			finalQuery = finalQuery.replace("{pagination}", " ");
+		}
+
+		return finalQuery;
+	}
+	
+
+
+	public StringBuilder applyFiltersForPlaneSearch(StringBuilder builder, List<Object> preparedStmtList,
+			SearchCriteria criteria) {
+
+		if (criteria.getIds() != null) {
+			List<String> ids = criteria.getIds();
+			addClauseIfRequired(preparedStmtList, builder);
+			builder.append(" challan.id IN (").append(createQuery(ids)).append(")");
+			addToPreparedStatement(preparedStmtList, ids);
+		}
+		if (criteria.getTenantId() != null) {
+			addClauseIfRequired(preparedStmtList, builder);
+			builder.append(" challan.tenantid=? ");
+			preparedStmtList.add(criteria.getTenantId());
+		}
+		if (criteria.getIsBillPaid() != null) {
+			addClauseIfRequired(preparedStmtList, builder);
+			builder.append("  challan.isBillPaid = ? ");
+			preparedStmtList.add(criteria.getIsBillPaid());
+		}
+		return builder;
+	}
+	
 }

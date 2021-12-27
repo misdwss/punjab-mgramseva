@@ -263,6 +263,7 @@ class _ConsumerDetailsState extends State<ConsumerDetails> {
                               contextkey:
                                   consumerProvider.consmerWalkthrougList[4].key,
                                   key: Keys.createConsumer.CONSUMER_OLD_ID_KEY,
+                                  isDisabled: consumerProvider.isfirstdemand,
                             ),
                           ),
                           Consumer<ConsumerProvider>(
