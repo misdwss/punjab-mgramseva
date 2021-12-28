@@ -32,7 +32,7 @@ class RevenueGraphData {
   String? headerName;
 
   @JsonKey(name: "headerValue")
-  num? headerValue;
+  int? headerValue;
 
   @JsonKey(name: "headerSymbol")
   String? headerSymbol;
@@ -54,7 +54,7 @@ class RevenuePlot {
   String? name;
 
   @JsonKey(name: "value")
-  num? value;
+  int? value;
 
   @JsonKey(name: "symbol")
   String? symbol;
