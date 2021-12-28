@@ -11,6 +11,7 @@ import 'package:mgramseva/model/common/metric.dart';
 import 'package:mgramseva/model/file/file_store.dart';
 import 'package:mgramseva/providers/common_provider.dart';
 import 'package:mgramseva/providers/dashboard_provider.dart';
+import 'package:mgramseva/providers/language.dart';
 import 'package:mgramseva/repository/core_repo.dart';
 import 'package:mgramseva/utils/Constants/I18KeyConstants.dart';
 import 'package:mgramseva/utils/Locilization/application_localizations.dart';
@@ -201,7 +202,7 @@ class _Dashboard extends State<Dashboard> with SingleTickerProviderStateMixin {
                           child: Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 10),
                             child: Column(children: [
-                              CustomAppBar(),
+                              customRevenueAppBar(),
                               DashboardCard(() {}),
                               RevenueDashBoard(isFromScreenshot: true),
                             ]),
@@ -211,6 +212,50 @@ class _Dashboard extends State<Dashboard> with SingleTickerProviderStateMixin {
         : SliverToBoxAdapter(
             child: SearchExpenseDashboard(
                 dashBoardType: dashBoardProvider.selectedDashboardType));
+  }
+
+  Widget customRevenueAppBar() {
+    var languageProvider =
+    Provider.of<LanguageProvider>(context, listen: false);
+    var commonProvider = Provider.of<CommonProvider>(
+        navigatorKey.currentContext!,
+        listen: false);
+    var style = TextStyle(fontSize: 14, color: Colors.white);
+
+    return Container(
+        padding: EdgeInsets.symmetric(vertical: 12, horizontal: 8),
+        margin: EdgeInsets.only(bottom: 5),
+        decoration: BoxDecoration(color: Theme.of(context).appBarTheme.backgroundColor),
+        child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Wrap(
+                  crossAxisAlignment: WrapCrossAlignment.center,
+                  children : [
+                    SizedBox(width: 2),
+                    Image(
+                        width: 130,
+                        image: NetworkImage(
+                          languageProvider.stateInfo!.logoUrlWhite!,
+                        ))
+                  ]),
+              Wrap(
+                spacing: 3,
+                children: [
+                  Text(
+                      ApplicationLocalizations.of(context).translate(
+                          commonProvider.userDetails?.selectedtenant?.code ??
+                              ''),
+                      style: style),
+                  Text(
+                      ApplicationLocalizations.of(context).translate(
+                          commonProvider
+                              .userDetails?.selectedtenant?.city?.code ??
+                              ''),
+                      style: style)
+                ],
+              )
+            ]));
   }
 
   Widget _buildMainTabs() {
