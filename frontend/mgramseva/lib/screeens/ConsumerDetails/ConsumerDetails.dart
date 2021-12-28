@@ -510,7 +510,7 @@ class _ConsumerDetailsState extends State<ConsumerDetails> {
                                             ? false
                                             : true,
                                         onChanged: (_) => consumerProvider
-                                            .onChangeOfCheckBox(_)),
+                                            .onChangeOfCheckBox(_, context)),
                                   ),
                                   Text(
                                       ApplicationLocalizations.of(context)

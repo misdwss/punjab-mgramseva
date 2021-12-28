@@ -25,6 +25,7 @@ import 'package:mgramseva/utils/error_logging.dart';
 import 'package:mgramseva/utils/global_variables.dart';
 import 'package:mgramseva/utils/loaders.dart';
 import 'package:mgramseva/utils/notifyers.dart';
+import 'package:mgramseva/widgets/dialog.dart';
 import 'package:provider/provider.dart';
 import 'package:mgramseva/model/connection/water_connection.dart' as addition;
 
@@ -90,12 +91,31 @@ class ConsumerProvider with ChangeNotifier {
     super.dispose();
   }
 
-  void onChangeOfCheckBox(bool? value) {
+  void onChangeOfCheckBox(bool? value, BuildContext context) {
+   if(value ?? false) showInActiveAlert(context);
     if (value == true)
-      waterconnection.status = 'Inactive';
+      waterconnection.status = Constants.CONNECTION_STATUS.first;
     else
-      waterconnection.status = 'Active';
+      waterconnection.status = Constants.CONNECTION_STATUS[1];
     notifyListeners();
+  }
+
+  showInActiveAlert(BuildContext context) {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return CustomDialog(
+            title: i18.common.ALERT,
+              content: i18.consumer.ALL_DEMANDS_REVERSED,
+            actions: [
+              {
+                'label' : i18.common.OK,
+                'callBack' : () => Navigator.pop(context)
+              }
+            ],
+          );
+        },
+      );
   }
 
   Future<void> getWaterConnection(id) async {
