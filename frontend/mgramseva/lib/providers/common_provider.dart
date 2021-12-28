@@ -277,28 +277,28 @@ class CommonProvider with ChangeNotifier {
     try {
       var res = await CoreRepository().urlShotner(store.url as String);
       if (kIsWeb) {
-        if(mobileNumber == null){
+        if (mobileNumber == null) {
           anchorElement = new html.AnchorElement(
               href: "https://wa.me/send?text=" +
-                  input.toString().replaceFirst('<link>', res!));
-        }else{
-           anchorElement = new html.AnchorElement(
+                  input.toString().replaceFirst('{link}', res!));
+        } else {
+          anchorElement = new html.AnchorElement(
               href: "https://wa.me/+91$mobileNumber?text=" +
-                  input.toString().replaceFirst('<link>', res!));
+                  input.toString().replaceFirst('{link}', res!));
         }
 
         anchorElement.target = "_blank";
         anchorElement.click();
       } else {
-        var link ;
-        if(mobileNumber == null) {
+        var link;
+        if (mobileNumber == null) {
           final FlutterShareMe flutterShareMe = FlutterShareMe();
-          flutterShareMe.shareToWhatsApp(msg: input.toString().replaceFirst('<link>', res!));
+          flutterShareMe.shareToWhatsApp(
+              msg: input.toString().replaceFirst('{link}', res!));
           return;
-        }
-        else{
-         link = "https://wa.me/+91$mobileNumber?text=" +
-            input.toString().replaceFirst('<link>', res!);
+        } else {
+          link = "https://wa.me/+91$mobileNumber?text=" +
+              input.toString().replaceFirst('{link}', res!);
         }
         await canLaunch(link)
             ? launch(link)
@@ -332,11 +332,11 @@ class CommonProvider with ChangeNotifier {
       String link = (ApplicationLocalizations.of(navigatorKey.currentContext!)
           .translate(i18.common.SHARE_RECEIPT_LINK)
           .toString()
-          .replaceFirst('<user>', payments.paidBy!)
-          .replaceFirst('<Amount>', payments.totalAmountPaid.toString())
-          .replaceFirst('<new consumer id>',
+          .replaceFirst('{user}', payments.paidBy!)
+          .replaceFirst('{Amount}', payments.totalAmountPaid.toString())
+          .replaceFirst('{new consumer id}',
               payments.paymentDetails!.first.bill!.consumerCode.toString())
-          .replaceFirst('<Amount>',
+          .replaceFirst('{Amount}',
               (payments.totalDue! - payments.totalAmountPaid!).toString()));
       getStoreFileDetails(res!.filestoreIds!.first, mode, mobileNumber,
           navigatorKey.currentContext, link);
@@ -358,11 +358,11 @@ class CommonProvider with ChangeNotifier {
       String link = (ApplicationLocalizations.of(navigatorKey.currentContext!)
           .translate(i18.common.SHARE_BILL_LINK)
           .toString()
-          .replaceFirst('<user>', bill.payerName!.toString())
-          .replaceFirst('<cycle>',
+          .replaceFirst('{user}', bill.payerName!.toString())
+          .replaceFirst('{cycle}',
               '${DateFormats.getMonthWithDay(bill.billDetails?.first?.fromPeriod)} - ${DateFormats.getMonthWithDay(bill.billDetails?.first?.toPeriod)}')
-          .replaceFirst('<new consumer id>', bill.consumerCode!.toString())
-          .replaceFirst('<Amount>', bill.totalAmount.toString()));
+          .replaceFirst('{new consumer id}', bill.consumerCode!.toString())
+          .replaceFirst('{Amount}', bill.totalAmount.toString()));
       getStoreFileDetails(
         res!.filestoreIds!.first,
         mode,
@@ -398,11 +398,11 @@ class CommonProvider with ChangeNotifier {
     }
   }
 
-
-  Future<void> sharePdfOnWhatsApp(BuildContext context, pw.Document pdf, String fileName, String localizedText, {bool isDownload = false}) async {
+  Future<void> sharePdfOnWhatsApp(BuildContext context, pw.Document pdf,
+      String fileName, String localizedText,
+      {bool isDownload = false}) async {
     try {
-
-      if(isDownload && kIsWeb){
+      if (isDownload && kIsWeb) {
         final blob = html.Blob([await pdf.save()]);
         final url = html.Url.createObjectUrlFromBlob(blob);
         final anchor = html.document.createElement('a') as html.AnchorElement
@@ -413,7 +413,7 @@ class CommonProvider with ChangeNotifier {
         anchor.click();
         html.document.body?.children.remove(anchor);
         html.Url.revokeObjectUrl(url);
-      }else {
+      } else {
         /// Enable loader
         Loaders.showLoadingDialog(context, label: '');
 
@@ -421,52 +421,51 @@ class CommonProvider with ChangeNotifier {
 
         /// Uploading file to S3 bucket
         var file = CustomFile(data, fileName, 'pdf');
-        var response = await CoreRepository().uploadFiles(
-            <CustomFile>[file], APIConstants.API_MODULE_NAME);
+        var response = await CoreRepository()
+            .uploadFiles(<CustomFile>[file], APIConstants.API_MODULE_NAME);
 
         if (response.isNotEmpty) {
-          var commonProvider = Provider.of<CommonProvider>(
-              context, listen: false);
-          var res = await CoreRepository().fetchFiles(
-              [response.first.fileStoreId!]);
+          var commonProvider =
+              Provider.of<CommonProvider>(context, listen: false);
+          var res =
+              await CoreRepository().fetchFiles([response.first.fileStoreId!]);
           if (res != null && res.isNotEmpty) {
             if (isDownload) {
               CoreRepository().fileDownload(context, res.first.url ?? '');
             } else {
               var url = res.first.url ?? '';
               if (url.contains(',')) {
-                url = url
-                    .split(',')
-                    .first;
+                url = url.split(',').first;
               }
               response.first.url = url;
 
               commonProvider.shareonwatsapp(
-                  response.first, null,
-                  localizedText);
+                  response.first, null, localizedText);
             }
           }
         }
         navigatorKey.currentState?.pop();
       }
-    }catch(e,s){
+    } catch (e, s) {
       navigatorKey.currentState?.pop();
       ErrorHandler().allExceptionsHandler(context, e, s);
     }
   }
 
-
   Future<pw.Font> getPdfFontFamily() async {
     var language = Provider.of<LanguageProvider>(navigatorKey.currentContext!,
         listen: false);
 
-    switch(language.selectedLanguage!.value){
-      case 'en_IN' :
-        return pw.Font.ttf(await rootBundle.load('assets/fonts/Roboto/Roboto-Regular.ttf'));
-      case 'hi_IN' :
-        return pw.Font.ttf(await rootBundle.load('assets/fonts/Roboto/Hind-Regular.ttf'));
-      default :
-        return pw.Font.ttf(await rootBundle.load('assets/fonts/Roboto/punjabi.ttf'));
+    switch (language.selectedLanguage!.value) {
+      case 'en_IN':
+        return pw.Font.ttf(
+            await rootBundle.load('assets/fonts/Roboto/Roboto-Regular.ttf'));
+      case 'hi_IN':
+        return pw.Font.ttf(
+            await rootBundle.load('assets/fonts/Roboto/Hind-Regular.ttf'));
+      default:
+        return pw.Font.ttf(
+            await rootBundle.load('assets/fonts/Roboto/punjabi.ttf'));
     }
   }
 }
