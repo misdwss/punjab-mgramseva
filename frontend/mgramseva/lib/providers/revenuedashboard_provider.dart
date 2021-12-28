@@ -214,14 +214,15 @@ class RevenueDashboard with ChangeNotifier {
       var data = <RevenueGraphModel>[];
       var index = 0;
       value.forEach((month, value) {
-        data.add(RevenueGraphModel(month : index, trend : value));
+        data.add(RevenueGraphModel(month : index, trend : value, color: charts.Color.fromHex(code: '#406ABB')));
         index++;
       });
       list.add(charts.Series<RevenueGraphModel, int>(
         id: 'Trend1',
-         //colorFn: (_, __) => charts.MaterialPalette.red.shadeDefault,
+        colorFn: (RevenueGraphModel sales, _) => sales.color ?? charts.MaterialPalette.blue.shadeDefault ,
         domainFn: (RevenueGraphModel sales, _) => sales.month,
         measureFn: (RevenueGraphModel sales, _) => sales.trend,
+        labelAccessorFn: (RevenueGraphModel sales, _) => sales.trend.toString(),
         data: data,
       ));
     });
@@ -230,14 +231,15 @@ class RevenueDashboard with ChangeNotifier {
       var data = <RevenueGraphModel>[];
       var index = 0;
       value.forEach((month, value) {
-        data.add(RevenueGraphModel(month : index, trend : value));
+        data.add(RevenueGraphModel(month : index, trend : value, color: charts.Color.fromHex(code: '#FF0000')));
         index++;
       });
       list.add(charts.Series<RevenueGraphModel, int>(
         id: 'Trend2',
-        //colorFn: (_, __) => charts.MaterialPalette.red.shadeDefault,
+        colorFn: (RevenueGraphModel sales, _) => sales.color ?? charts.MaterialPalette.red.shadeDefault,
         domainFn: (RevenueGraphModel sales, _) => sales.month,
         measureFn: (RevenueGraphModel sales, _) => sales.trend,
+        labelAccessorFn: (RevenueGraphModel sales, _) => sales.trend.toString(),
         data: data,
       ));
     });
