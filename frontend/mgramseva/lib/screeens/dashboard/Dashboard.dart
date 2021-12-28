@@ -203,7 +203,7 @@ class _Dashboard extends State<Dashboard> with SingleTickerProviderStateMixin {
                             padding: const EdgeInsets.symmetric(horizontal: 10),
                             child: Column(children: [
                               customRevenueAppBar(),
-                              DashboardCard(() {}),
+                              DashboardCard(() {}, isFromScreenshot: true),
                               RevenueDashBoard(isFromScreenshot: true),
                             ]),
                           ))),

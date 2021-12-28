@@ -15,7 +15,8 @@ import 'package:provider/provider.dart';
 
 class DashboardCard extends StatelessWidget {
   final Function() onMonthSelection;
-  DashboardCard(this.onMonthSelection);
+  final bool isFromScreenshot;
+  DashboardCard(this.onMonthSelection, {this.isFromScreenshot = false});
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(builder: (context, constraints) {
@@ -48,7 +49,13 @@ class DashboardCard extends StatelessWidget {
                                       color: Theme.of(context).primaryColor),
                             ),
                           ),
-                          Icon(Icons.arrow_drop_down)
+                          Padding(
+                            padding: EdgeInsets.only(right: isFromScreenshot ? 8.0 : 3.0),
+                            child: Visibility(
+                              visible: !isFromScreenshot,
+                              child: Icon(Icons.arrow_drop_down),
+                            ),
+                          )
                         ]),
                   ),
                 ),
