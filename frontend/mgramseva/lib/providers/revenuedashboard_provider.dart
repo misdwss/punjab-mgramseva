@@ -131,7 +131,8 @@ class RevenueDashboard with ChangeNotifier {
                 TableData('${DateFormats.getMonth(
                     DateFormats.getFormattedDateToDateTime(
                         DateFormats.timeStampToDate(collection.month))!)}',
-                    callBack: onTapOfMonth),
+                    callBack: onTapOfMonth,
+                apiKey: collection.month.toString()),
                 TableData('${surplus.abs()}', style: TextStyle(color: surplus.isNegative ?
                 Color.fromRGBO(255, 0, 0, 1) :
                 Color.fromRGBO(0, 128, 0, 1))),
@@ -179,7 +180,7 @@ class RevenueDashboard with ChangeNotifier {
     var dashBoardProvider = Provider.of<DashBoardProvider>(
         navigatorKey.currentContext!, listen: false);
 
-    var monthIndex = 0;
+    var monthIndex = DateTime.fromMillisecondsSinceEpoch(int.parse(tableData.apiKey.toString())).month;
     var date = monthIndex >= 4
         ? dashBoardProvider.selectedMonth.startDate
         : dashBoardProvider.selectedMonth.endDate;
@@ -199,13 +200,11 @@ class RevenueDashboard with ChangeNotifier {
     Map filteredData = {};
     var list = <charts.Series<RevenueGraphModel, int>>[];
     revenueGraph.data?.firstWhere((e) =>  e.headerName == "WaterService").plots?.forEach((e) {
-      //var date = DateTime.fromMillisecondsSinceEpoch(e.key ?? 0);
       revenueData[i18.dashboard.REVENUE] ??= {};
       revenueData[i18.dashboard.REVENUE][e.name] = e.value;
     });
 
     revenueGraph.data?.firstWhere((e) => e.headerName == "ExpenseService").plots?.forEach((e) {
-      //var date = DateTime.fromMillisecondsSinceEpoch(e.key ?? 0);
       expenseData[i18.dashboard.EXPENDITURE] ??= {};
       expenseData[i18.dashboard.EXPENDITURE][e.name] = e.value;
     });
