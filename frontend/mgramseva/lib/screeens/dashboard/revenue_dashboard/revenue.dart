@@ -10,7 +10,7 @@ class RevenueDataHolder {
 
   RevenueGraph? stackedBar;
   RevenueGraph? trendLine;
-  List<Revenue>? revenueTable;
+  List<TableDataRow>? revenueTable;
   var stackLoader = false;
   var trendLineLoader = false;
   var tableLoader = false;
