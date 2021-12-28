@@ -553,12 +553,11 @@ class DashBoardProvider with ChangeNotifier {
     notifyListeners();
 
     fetchUserFeedbackDetails(context);
-    if (selectedMonth.dateType == DateType.MONTH &&
-        previousDateType == selectedMonth.dateType) {
+    if (selectedMonth.dateType == DateType.MONTH ) {
       fetchDashboardMetricInformation(context,
           selectedDashboardType == DashBoardType.Expenditure ? true : false);
       fetchDetails(context, limit, 1, true);
-    } else if (previousDateType == selectedMonth.dateType) {
+    } else {
       var revenueProvider =
           Provider.of<RevenueDashboard>(context, listen: false);
       revenueProvider.loadGraphicalDashboard(context);

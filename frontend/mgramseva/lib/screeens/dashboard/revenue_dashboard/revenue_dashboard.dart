@@ -25,9 +25,14 @@ class _RevenueDashBoardState extends State<RevenueDashBoard> {
 
   @override
   void initState() {
-    var revenueProvider = Provider.of<RevenueDashboard>(context, listen: false);
-    revenueProvider.loadRevenueTableDetails(context);
+    WidgetsBinding.instance?.addPostFrameCallback((_) => afterViewBuild());
     super.initState();
+  }
+
+  afterViewBuild(){
+    var revenueProvider = Provider.of<RevenueDashboard>(context, listen: false);
+    if(!widget.isFromScreenshot)
+      revenueProvider.loadGraphicalDashboard(context);
   }
 
   @override
@@ -52,27 +57,13 @@ class _RevenueDashBoardState extends State<RevenueDashBoard> {
 
   Widget _buildLoaderView(){
     var revenueDashboard = Provider.of<RevenueDashboard>(context, listen: false);
-    return StreamBuilder(
-        stream: revenueDashboard.revenueStreamController.stream,
-        builder: (context, AsyncSnapshot snapshot) {
-          if (snapshot.hasData) {
-            if(snapshot.data is String){
-              return CommonWidgets.buildEmptyMessage(snapshot.data, context);
-            }
-            return _buildTable(snapshot.data);
-          } else if (snapshot.hasError) {
-            return Notifiers.networkErrorPage(context, () => {});
-          } else {
-            switch (snapshot.connectionState) {
-              case ConnectionState.waiting:
-                return Loaders.CircularLoader();
-              case ConnectionState.active:
-                return Loaders.CircularLoader();
-              default:
-                return Container();
-            }
-          }
-        });
+    var height = 250.0;
+    return Consumer<RevenueDashboard>(
+        builder : (_, revenue, child) =>
+        revenue.revenueDataHolder.tableLoader ? Loaders.circularLoader(height: height) :  revenue.revenueDataHolder.revenueTable == null
+            ? CommonWidgets.buildEmptyMessage(i18.dashboard.NO_RECORDS_MSG, context)
+            : _buildTable(revenue.revenueDataHolder.revenueTable!)
+    );
   }
 
   Widget _buildNote(){

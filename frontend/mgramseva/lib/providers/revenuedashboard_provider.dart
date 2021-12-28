@@ -48,7 +48,7 @@ class RevenueDashboard with ChangeNotifier {
           "visualizationCode": isLineChart ? "revenueAndExpenditureTrendTwo" : "revenueAndExpenditureTrendOne",
           "queryType": "",
           "filters": {
-            "tenantId": []
+            "tenantId": [commonProvider.userDetails?.selectedtenant?.code]
           },
           "moduleLevel": "",
           "aggregationFactors": null,
@@ -106,6 +106,8 @@ class RevenueDashboard with ChangeNotifier {
   // }
 
   Future<void> loadRevenueTableDetails(BuildContext context) async {
+    revenueDataHolder.tableLoader = true;
+    notifyListeners();
     try {
       var commonProvider = Provider.of<CommonProvider>(
           navigatorKey.currentContext!,
@@ -145,10 +147,13 @@ class RevenueDashboard with ChangeNotifier {
               ]));
         }
       }
-      revenueStreamController.add(filteredList);
+      revenueDataHolder.revenueTable = filteredList;
+      //revenueStreamController.add(filteredList);
     } catch (e, s) {
       ErrorHandler().allExceptionsHandler(context, e, s);
     }
+    revenueDataHolder.tableLoader = false;
+    notifyListeners();
   }
 
   void setSelectedTab(int index) {
@@ -185,12 +190,11 @@ class RevenueDashboard with ChangeNotifier {
         ? dashBoardProvider.selectedMonth.startDate
         : dashBoardProvider.selectedMonth.endDate;
     dashBoardProvider.onChangeOfDate(DatePeriod(
-        DateTime(date.year, monthIndex, 1),
-        DateTime(date.year, monthIndex + 1, 0), DateType.MONTH),
+        DateTime(date.year, monthIndex, 1,  23,59, 59, 999),
+        DateTime(date.year, monthIndex + 1, 0,  23,59, 59, 999), DateType.MONTH),
         navigatorKey.currentContext!);
     dashBoardProvider.scrollController.jumpTo(0.0);
   }
-
 
   List<charts.Series<RevenueGraphModel, int>>? trendGraphDataBinding(
       RevenueGraph revenueGraph) {

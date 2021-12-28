@@ -24,15 +24,10 @@ class RevenueCharts extends StatefulWidget {
 
 class _RevenueChartsState extends State<RevenueCharts> {
 
+
   @override
   void initState() {
-    WidgetsBinding.instance?.addPostFrameCallback((_) => afterViewBuild());
     super.initState();
-  }
-
-  afterViewBuild(){
-    var revenueProvider = Provider.of<RevenueDashboard>(context, listen: false);
-    revenueProvider.loadGraphicalDashboard(context);
   }
 
   @override
@@ -322,8 +317,6 @@ class SimpleLineChart extends StatelessWidget {
                   'xAxis': '$xAxis',
                   'pointColor': '$pointColor'
                 });
-                debugPrint(xAxis);
-                debugPrint(pointColor);
               }
             }
         ),
