@@ -13,6 +13,8 @@ import 'package:mgramseva/widgets/LabelText.dart';
 import 'package:provider/provider.dart';
 import 'package:mgramseva/utils/Constants/I18KeyConstants.dart';
 
+import 'Custom Label widget/custom_tooltip_label_render.dart';
+
 class RevenueCharts extends StatefulWidget {
   const RevenueCharts({Key? key}) : super(key: key);
 
@@ -285,13 +287,14 @@ class SimpleLineChart extends StatelessWidget {
   final dynamic seriesList;
   final bool? animate;
 
+
   SimpleLineChart(this.seriesList, {this.animate});
 
 
   @override
   Widget build(BuildContext context) {
     var revenueDashboard = Provider.of<RevenueDashboard>(context, listen: false);
-
+    var xAxis , pointColor;
     final customTickFormatter =
     charts.BasicNumericTickFormatterSpec((num? value) {
 
@@ -306,6 +309,37 @@ class SimpleLineChart extends StatelessWidget {
 
     return new charts.LineChart(seriesList,
           animate: animate,
+        defaultRenderer: charts.LineRendererConfig(includePoints: true, ),
+      selectionModels: [
+        charts.SelectionModelConfig(
+            changedListener: (charts.SelectionModel model) {
+              if(model.hasAnySelection) {
+                xAxis = model.selectedSeries.first
+                    .measureFn(model.selectedDatum.first.index)
+                    .toString();
+                pointColor = model.selectedSeries.first.colorFn!(model.selectedDatum.first.index)!.hexString;
+                ToolTipMgr.setTitle({
+                  'xAxis': '$xAxis',
+                  'pointColor': '$pointColor'
+                });
+                debugPrint(xAxis);
+                debugPrint(pointColor);
+              }
+            }
+        ),
+      ],
+      behaviors: [
+        charts.SelectNearest(
+          eventTrigger: charts.SelectionTrigger.tap,
+        ),
+        charts.LinePointHighlighter(
+          radiusPaddingPx: 3.0,
+          showVerticalFollowLine:
+          charts.LinePointHighlighterFollowLineType.nearest,
+          showHorizontalFollowLine: charts.LinePointHighlighterFollowLineType.nearest,
+          symbolRenderer: CustomCircleSymbolRenderer(),
+        ),
+      ],
         domainAxis: charts.NumericAxisSpec(
           tickProviderSpec:
           charts.BasicNumericTickProviderSpec(desiredTickCount: 1),
@@ -313,4 +347,5 @@ class SimpleLineChart extends StatelessWidget {
         ),
     );
   }
+
 }
