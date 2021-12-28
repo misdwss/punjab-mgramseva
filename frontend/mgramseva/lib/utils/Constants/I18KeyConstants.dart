@@ -187,6 +187,8 @@ class Common {
 
   String get INVALID_SELECTED_INPUT => 'INVALID_SELECTED_INPUT';
   String get NA => 'NA';
+  String get OK => 'OK';
+  String get ALERT => 'ALERT';
 }
 
 class Password {
@@ -327,6 +329,7 @@ class CreateConsumer {
   String get REGISTER_SUCCESS => 'CONSUMER_REGISTER_SUCCESS_LABEL';
   String get UPDATED_SUCCESS => 'CONSUMER_UPDATED_SUCCESS_LABEL';
   String get CONSUMER_BILLING_CYCLE => 'CONSUMER_BILLING_CYCLE';
+  String get ALL_DEMANDS_REVERSED => 'ALL_DEMANDS_REVERSED';
 }
 
 class SearchWaterConnection {

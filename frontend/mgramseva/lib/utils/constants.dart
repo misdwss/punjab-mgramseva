@@ -136,4 +136,5 @@ class Constants {
 
   static const MAX_PDF_PAGES = 100 ;
 
+  static const List<String> CONNECTION_STATUS = ['Inactive', 'Active'];
 }
