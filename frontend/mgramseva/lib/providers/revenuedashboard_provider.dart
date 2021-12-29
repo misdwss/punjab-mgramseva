@@ -125,6 +125,17 @@ class RevenueDashboard with ChangeNotifier {
       var res2 = await DashBoardRepository().fetchExpenseDetails(query);
       var filteredList = <TableDataRow>[];
       if (res1 != null && res1.isNotEmpty && res2 != null && res2.isNotEmpty) {
+        Map totalDetails = {
+          'surplus' : 0,
+          'demand' : 0,
+          'arrears' : 0,
+          'pendingCollection' : 0,
+          'actualCollection' : 0,
+          'totalExpenditure' : 0,
+          'amountUnpaid' : 0,
+          'amountPaid' : 0
+        };
+
         for(int i =0 ; i < res1.length ; i++) {
           var collection = res1[i];
           var expense = res2[i];
@@ -146,7 +157,36 @@ class RevenueDashboard with ChangeNotifier {
                 TableData('${expense.amountUnpaid ?? '-'}'),
                 TableData('${expense.amountPaid ?? '-'}'),
               ]));
+
+          totalDetails['surplus'] += surplus;
+          totalDetails['demand'] += num.parse(collection.demand ?? '0');
+          totalDetails['arrears'] += num.parse(collection.arrears ?? '0');
+          totalDetails['pendingCollection'] += num.parse(collection.pendingCollection ?? '0');
+          totalDetails['actualCollection'] += num.parse(collection.actualCollection ?? '0');
+          totalDetails['totalExpenditure'] += num.parse(expense.totalExpenditure ?? '0');
+          totalDetails['amountUnpaid'] += num.parse(expense.amountUnpaid ?? '0');
+          totalDetails['amountPaid'] += num.parse(expense.amountPaid ?? '0');
+
         }
+
+        filteredList.add(TableDataRow([
+          TableData(i18.common.TOTAL,
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              color: Colors.black
+            )
+              ),
+          TableData('${totalDetails['surplus']}', style: TextStyle(color: totalDetails['surplus'].isNegative ?
+          Color.fromRGBO(255, 0, 0, 1) :
+          Color.fromRGBO(0, 128, 0, 1))),
+          TableData('${totalDetails['demand']}(${totalDetails['arrears']})'),
+          TableData('${totalDetails['pendingCollection']}'),
+          TableData('${totalDetails['actualCollection']}'),
+          TableData('${totalDetails['totalExpenditure']}'),
+          TableData('${totalDetails['amountUnpaid']}'),
+          TableData('${totalDetails['amountPaid']}'),
+        ]));
+
       }
       revenueDataHolder.revenueTable = filteredList;
       //revenueStreamController.add(filteredList);
