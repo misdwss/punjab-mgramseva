@@ -189,6 +189,7 @@ class Common {
   String get NA => 'NA';
   String get OK => 'OK';
   String get ALERT => 'ALERT';
+  String get TOTAL => 'TOTAL';
 }
 
 class Password {
