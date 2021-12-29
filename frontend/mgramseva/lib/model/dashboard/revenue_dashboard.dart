@@ -44,3 +44,17 @@ class Expense {
   factory Expense.fromJson(Map<String, dynamic> json) =>
       _$ExpenseFromJson(json);
 }
+
+
+class TotalDetails {
+  num surplus;
+  num demand;
+  num arrears ;
+  num pendingCollection;
+  num actualCollection;
+  num totalExpenditure;
+  num amountUnpaid;
+  num amountPaid;
+  TotalDetails({this.surplus = 0, this.demand = 0, this.arrears = 0,
+  this.pendingCollection = 0, this.actualCollection = 0, this.totalExpenditure = 0, this.amountUnpaid = 0, this.amountPaid = 0});
+}
