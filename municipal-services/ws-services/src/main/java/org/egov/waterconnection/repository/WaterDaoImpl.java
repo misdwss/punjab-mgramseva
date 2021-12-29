@@ -2,7 +2,9 @@ package org.egov.waterconnection.repository;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -365,6 +367,23 @@ public class WaterDaoImpl implements WaterDao {
 
 		List<WaterConnection> waterConnectionList = new ArrayList<>();
 		List<Object> preparedStatement = new ArrayList<>();
+		
+		Set<String> ids = new HashSet<String>();
+		List<String> connectionIds = null;
+		if (criteria.getIds() != null && !criteria.getIds().isEmpty())
+			ids = criteria.getIds();
+		else
+			connectionIds = fetchWaterConIds(criteria);
+
+		if(connectionIds!=null && connectionIds.size()>0) {
+//		for (String id : connectionIds) {
+			ids.addAll(connectionIds);
+//		}
+		}
+		if (ids.isEmpty())
+			return new WaterConnectionResponse();
+
+		criteria.setIds(ids);
 		
 		String query = wsQueryBuilder.getSearchQueryStringForPlaneSearch(criteria, preparedStatement, requestInfo);
 
