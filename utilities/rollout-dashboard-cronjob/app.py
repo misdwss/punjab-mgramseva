@@ -506,22 +506,7 @@ def getCurrentDate():
     currentDateInMillis = str(parser.parse(currentDate).timestamp() * 1000)
     
     return currentDateInMillis
-    
-def accessToken():
- 
-    
-    try:
-        query = {'username': os.getenv('TOKEN_USERNAME'),'password': os.getenv('TOKEN_PASSWORD'),'userType':'EMPLOYEE',"scope":"read","grant_type":"password"}
-        query['tenantId']=os.getenv('TOKEN_TENANTID')
-   
-        response = requests.post( os.getenv('TOKEN_URL')+'user/oauth/token', data=query, headers={
-        "Connection":"keep-alive","content-type":"application/x-www-form-urlencoded","Authorization": "Basic ZWdvdi11c2VyLWNsaWVudDo="})
-        
-        jsondata = response.json()
-        return jsondata.get('access_token')
-    except Exception as exception:
-            print("Exception occurred while connecting to the database")
-            print(exception)    
+     
     
 def createTable():
     
