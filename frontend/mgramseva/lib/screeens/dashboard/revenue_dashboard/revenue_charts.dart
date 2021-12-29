@@ -178,7 +178,7 @@ class _RevenueChartsState extends State<RevenueCharts> {
     var height = 250.0;
     return Consumer<RevenueDashboard>(
       builder : (_, revenue, child) =>
-      revenue.revenueDataHolder.trendLineLoader ? Loaders.circularLoader(height: height) :  revenue.revenueDataHolder.trendLine?.graphData == null
+      revenue.revenueDataHolder.trendLineLoader ? Loaders.circularLoader(height: height) :  (revenue.revenueDataHolder.trendLine?.graphData == null || revenue.revenueDataHolder.trendLine!.graphData!.isEmpty)
           ? CommonWidgets.buildEmptyMessage(i18.dashboard.NO_RECORDS_MSG, context)
           : Column(children : [
         Container(
@@ -201,6 +201,7 @@ class _RevenueChartsState extends State<RevenueCharts> {
   }
 
   Widget getGraphView(int index){
+    return _buildLineCharts();
     switch(index){
       case 0 :
        return _buildStackedCharts();

@@ -17,7 +17,7 @@ import 'dashboard_provider.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
 
 class RevenueDashboard with ChangeNotifier {
-  int selectedIndex = 1;
+  int selectedIndex = 0;
   var revenueStreamController = StreamController.broadcast();
   var revenueDataHolder = RevenueDataHolder();
 
@@ -29,6 +29,7 @@ class RevenueDashboard with ChangeNotifier {
   }
 
   void loadGraphicalDashboard(BuildContext context) {
+    revenueDataHolder.resetData();
     loadRevenueTableDetails(context);
     loadRevenueTrendGraphDetails(context);
     /// Stacked Graph not implemented due to Backend API response finalization is pending
@@ -157,6 +158,8 @@ class RevenueDashboard with ChangeNotifier {
   }
 
   void setSelectedTab(int index) {
+    /// Disabled tapping functionality
+    return;
     selectedIndex = index;
     notifyListeners();
   }
