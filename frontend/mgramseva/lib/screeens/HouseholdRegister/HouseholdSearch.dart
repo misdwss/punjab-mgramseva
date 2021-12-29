@@ -28,7 +28,9 @@ class _HouseholdSearchState extends State<HouseholdSearch> with SingleTickerProv
   }
 
   afterViewBuild() {
-    var householdRegisterProvider = Provider.of<HouseholdRegisterProvider>(context, listen: false);
+    var householdRegisterProvider =
+    Provider.of<HouseholdRegisterProvider>(context, listen: false);
+    householdRegisterProvider.searchController.text = "";
     householdRegisterProvider.onChangeOfTab(context, 0);
   }
 
