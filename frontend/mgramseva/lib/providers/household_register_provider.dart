@@ -92,8 +92,7 @@ class HouseholdRegisterProvider with ChangeNotifier {
       'tenantId': commonProvider.userDetails?.selectedtenant?.code,
       'offset': '${offset - 1}',
       'limit': '$limit',
-      'toDate':
-          '${DateTime(DateTime.now().year, DateTime.now().month).millisecondsSinceEpoch}',
+      'toDate': '${DateTime.now().millisecondsSinceEpoch}',
       'isCollectionCount': 'true',
     };
 
@@ -307,8 +306,7 @@ class HouseholdRegisterProvider with ChangeNotifier {
     var query = {
       'tenantId': commonProvider.userDetails?.selectedtenant?.code,
       'limit': '-1',
-      'toDate':
-          '${DateTime(DateTime.now().year, DateTime.now().month).millisecondsSinceEpoch}',
+      'toDate': '${DateTime.now().millisecondsSinceEpoch}',
       'isCollectionCount': 'true',
     };
 
