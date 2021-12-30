@@ -354,8 +354,7 @@ public class ChallanService {
 
 			if (criteria.getIds() != null && !criteria.getIds().isEmpty())
 				ids = criteria.getIds();
-			else
-				ids = repository.fetchESIds(criteria);
+			
 
 			if (ids.isEmpty())
 				return Collections.emptyList();
