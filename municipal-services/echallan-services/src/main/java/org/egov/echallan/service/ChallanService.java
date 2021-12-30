@@ -349,18 +349,6 @@ public class ChallanService {
 	 private List<Challan> getchallanPlainSearch(SearchCriteria criteria, RequestInfo requestInfo,  Map<String, String> finalData) {
 		 if (criteria.getLimit() != null && criteria.getLimit() > config.getMaxSearchLimit())
 				criteria.setLimit(config.getMaxSearchLimit());
-
-			List<String> ids = null;
-
-			if (criteria.getIds() != null && !criteria.getIds().isEmpty())
-				ids = criteria.getIds();
-			
-
-			if (ids.isEmpty())
-				return Collections.emptyList();
-
-			criteria.setIds(ids);
-
 			List<Challan> listFSM = repository.getChallansForPlaneSearch(criteria, finalData);
 			return listFSM;
 	}
