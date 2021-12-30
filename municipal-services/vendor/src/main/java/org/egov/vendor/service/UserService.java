@@ -86,7 +86,7 @@ public class UserService {
 				for (int i = 0; i < userDetailResponse.getUser().size(); i++) {
 
 					if(userDetailResponse.getUser().get(i).getType().equalsIgnoreCase(VendorConstants.EMPLOYEE)) {
-						throw new CustomException(VendorErrorConstants.INVALID_OWNER_ERROR, "MobileNumber for Vendor belongs to Employee!");
+						throw new CustomException(VendorErrorConstants.INVALID_OWNER_EMPLOYEE, "MobileNumber for Vendor belongs to Employee!");
 					}
 					if (isRoleAvailale(userDetailResponse.getUser().get(i), config.getVendorRole(),
 							vendor.getTenantId()) == Boolean.TRUE) {
