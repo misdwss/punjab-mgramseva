@@ -307,7 +307,7 @@ public class ChallanQueryBuilder {
 		finalQuery = finalQuery.replace("{orderby}", string);
 
 		finalQuery = finalQuery.replace("{amount}",
-				" (select nullif(sum(bi.totalamount),0) from egbs_billdetail_v1 bi join egbs_bill_v1 b on bi.billid=b.id where bi.businessservice = challan.businessservice and bi.consumercode = challan.challanno and b.status IN ('ACTIVE','PAID' ) group by bi.consumercode) as totalamount, ");
+				" ");
 
 		if (criteria.getLimit() != null && criteria.getLimit() != 0) {
 			int limit = 0, offset = 0;
@@ -344,8 +344,8 @@ public class ChallanQueryBuilder {
 		}
 		if (criteria.getTenantId() != null) {
 			addClauseIfRequired(preparedStmtList, builder);
-			builder.append(" challan.tenantid=? ");
-			preparedStmtList.add(criteria.getTenantId());
+			builder.append(" challan.tenantid like ? ");
+			preparedStmtList.add("%" + criteria.getTenantId() +"%");
 		}
 		if (criteria.getIsBillPaid() != null) {
 			addClauseIfRequired(preparedStmtList, builder);
