@@ -181,9 +181,11 @@ class _RevenueChartsState extends State<RevenueCharts> {
       revenue.revenueDataHolder.trendLineLoader ? Loaders.circularLoader(height: height) :  (revenue.revenueDataHolder.trendLine?.graphData == null || revenue.revenueDataHolder.trendLine!.graphData!.isEmpty)
           ? CommonWidgets.buildEmptyMessage(i18.dashboard.NO_RECORDS_MSG, context)
           : Column(children : [
-        Container(
-            height: height,
-          child : SimpleLineChart(revenue.revenueDataHolder.trendLine!.graphData!)),
+        LayoutBuilder(
+          builder: (_, constraints) => Container(
+              height: height,
+            child : SimpleLineChart(revenue.revenueDataHolder.trendLine!.graphData!, constraints, animate: false)),
+        ),
       Container(
           padding: const EdgeInsets.only(top : 16.0),
           height: isDeskTopView ? 90 : null,
@@ -282,9 +284,9 @@ class StackedBarChart extends StatelessWidget {
 class SimpleLineChart extends StatelessWidget {
   final dynamic seriesList;
   final bool? animate;
+  final BoxConstraints constraints;
 
-
-  SimpleLineChart(this.seriesList, {this.animate});
+  SimpleLineChart(this.seriesList, this.constraints, {this.animate});
 
 
   @override
@@ -297,7 +299,8 @@ class SimpleLineChart extends StatelessWidget {
      var dateList =  revenueDashboard.revenueDataHolder.trendLine?.data!.first.plots?.map((e) => e.name).toList() ?? [];
       var index = value?.toInt() ?? 0;
      if(index < dateList.length){
-       return dateList[index].toString();
+       var filteredMonth = dateList[index].toString().split('-').first ?? '';
+       return filteredMonth;
      }else{
        return "";
      }
@@ -323,6 +326,8 @@ class SimpleLineChart extends StatelessWidget {
         ),
       ],
       behaviors: [
+        charts.SlidingViewport(),
+        charts.PanAndZoomBehavior(),
         charts.SelectNearest(
           eventTrigger: charts.SelectionTrigger.tap,
         ),
@@ -338,6 +343,14 @@ class SimpleLineChart extends StatelessWidget {
           tickProviderSpec:
           charts.BasicNumericTickProviderSpec(desiredTickCount: 1),
           tickFormatterSpec: customTickFormatter,
+            viewport: constraints.maxWidth > 760 ? null : ((revenueDashboard.revenueDataHolder.trendLine?.data?.first.plots?.length ?? 0) > 6 ? ( charts.NumericExtents(0.0, 5.0)) : null),
+          renderSpec: charts.SmallTickRendererSpec(
+              minimumPaddingBetweenLabelsPx: 0,
+              // Tick and Label styling here.
+              labelStyle: new charts.TextStyleSpec(
+              fontSize: 12, // size in Pts.
+              color: charts.MaterialPalette.black),
+          ),
         ),
     );
   }
