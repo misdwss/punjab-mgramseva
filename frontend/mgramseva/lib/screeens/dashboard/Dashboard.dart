@@ -46,10 +46,10 @@ import 'package:universal_html/html.dart' as html;
 import 'package:flutter_share_me/flutter_share_me.dart';
 
 class Dashboard extends StatefulWidget {
-  final int initialTabIndex;
+  final int? initialTabIndex;
   final DatePeriod? selectedMonth;
 
-  const Dashboard({Key? key, this.initialTabIndex = 0, this.selectedMonth})
+  const Dashboard({Key? key, this.initialTabIndex, this.selectedMonth})
       : super(key: key);
 
   @override
@@ -73,14 +73,20 @@ class _Dashboard extends State<Dashboard> with SingleTickerProviderStateMixin {
     super.initState();
     var dashBoardProvider =
         Provider.of<DashBoardProvider>(context, listen: false);
+    if(widget.initialTabIndex == null){
     dashBoardProvider.selectedMonth =
         CommonMethods.getFinancialYearList().first.year;
+    }else{
+      dashBoardProvider.selectedMonth =
+          CommonMethods.getFinancialYearList().first.monthList.first;
+      dashBoardProvider.selectedDashboardType = widget.initialTabIndex == 0
+          ? DashBoardType.collections
+          : DashBoardType.Expenditure;
+    }
     dashBoardProvider.scrollController = ScrollController();
     dashBoardProvider.debounce = null;
     dashBoardProvider.userFeedBackInformation = null;
-    dashBoardProvider.selectedDashboardType = widget.initialTabIndex == 0
-        ? DashBoardType.collections
-        : DashBoardType.Expenditure;
+
     WidgetsBinding.instance?.addPostFrameCallback((_) => afterViewBuild());
   }
 

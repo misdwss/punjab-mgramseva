@@ -117,6 +117,11 @@ class HouseConnectionDetailCard extends StatelessWidget {
                         waterconnection!.meterId,
                         context,
                       ),
+                _getLabeltext(
+                  i18.common.STATUS,
+                  waterconnection!.status,
+                  context,
+                ),
                 Consumer<HouseHoldProvider>(
                     builder: (_, provider, child) =>
                         Wrap(

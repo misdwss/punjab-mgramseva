@@ -151,7 +151,7 @@ class _BillsTable extends State<BillsTable> {
               child: Text(
                 ApplicationLocalizations.of(context)
                     .translate(widget.tableData[index].tableRow.first.label),
-                style: TextStyle(color: Theme.of(context).primaryColor),
+                style: widget.tableData[index].tableRow.first.style ?? TextStyle(color: Theme.of(context).primaryColor),
               ),
               width: widget.leftColumnWidth,
               height: widget.tableData[index].tableRow.first.label.length > 28 ? columnRowIncreasedHeight(index) : columnRowFixedHeight,
