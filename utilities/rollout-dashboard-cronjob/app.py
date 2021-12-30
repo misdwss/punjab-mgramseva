@@ -1,6 +1,6 @@
 from typing import BinaryIO, List
 import requests
-from datetime import datetime
+from datetime import datetime, timezone
 from dateutil import parser
 import time
 import os
@@ -417,8 +417,8 @@ def createEntryForRollout(tenant, consumersCreated,countOfRateMaster, lastDemand
         cursor = connection.cursor()
         
         #createdTime = int(round(time.time() * 1000)) // time in currenttimemillis format   
-        createdTime = datetime.now();
-      
+        createdTime = datetime.now(timezone.utc).astimezone()
+        
         postgres_insert_query = "INSERT INTO roll_out_dashboard (tenantid, projectcode, zone, circle, division, subdivision, section, consumer_created_count, billing_slab_count, last_demand_gen_date, collection_till_date, collection_till_date_online, last_collection_date, expense_count, last_expense_txn_date, paid_status_expense_bill_count, demands_till_date_count, ratings_count, last_rating_date, active_users_count, createdtime) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
         record_to_insert = (tenant['tenantId'], tenant['projectcode'], tenant['zone'], tenant['circle'], tenant['division'], tenant['subdivision'], tenant['section'], consumersCreated,countOfRateMaster, lastDemandGenratedDate,collectionsMade,collectionsMadeOnline,lastCollectionDate, expenseBillTillDate, lastExpTrnsDate, noOfBillpaid, noOfDemandRaised, noOfRatings, lastRatingDate, activeUsersCount, createdTime)
         cursor.execute(postgres_insert_query, record_to_insert)
