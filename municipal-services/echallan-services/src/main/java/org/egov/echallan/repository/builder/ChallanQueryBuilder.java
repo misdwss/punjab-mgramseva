@@ -307,7 +307,7 @@ public class ChallanQueryBuilder {
 		finalQuery = finalQuery.replace("{orderby}", string);
 
 		finalQuery = finalQuery.replace("{amount}",
-				" ");
+				" 0 as totalamount, ");
 
 		if (criteria.getLimit() != null && criteria.getLimit() != 0) {
 			int limit = 0, offset = 0;
