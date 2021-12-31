@@ -119,7 +119,7 @@ dynamic _response(http.Response response) {
   }
 }
 
-CustomException getException(String errorMsg,List<Map> errorList, int statusCode, ExceptionType exceptionType) {
+CustomException getException(String errorMsg,List<dynamic> errorList, int statusCode, ExceptionType exceptionType) {
   for(var error in errorList){
     if((error['message'] ?? '').contains(Constants.INVALID_EXCEPTION_CODE)) {
       throw CustomException(
