@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mgramseva/main.dart' as app;
 import 'package:mgramseva/utils/Locilization/application_localizations.dart';
 import 'package:mgramseva/utils/TestingKeys/testing_keys.dart';
+import 'package:mgramseva/utils/constants.dart';
 import 'package:mgramseva/utils/date_formats.dart';
 import 'package:mgramseva/utils/global_variables.dart';
 import 'package:mgramseva/utils/Constants/I18KeyConstants.dart';
@@ -20,6 +21,13 @@ void main() {
     final dashboard = find.byType(GridTile).at(8);
     await tester.tap(dashboard);
     await tester.pumpAndSettle(Duration(milliseconds: 5000));
+
+    final month = find.widgetWithText(Container, ApplicationLocalizations.of(navigatorKey.currentContext!).translate(Constants.MONTHS[dashboardTestData['graphicalDashboardMonthIndex']])).first;
+    print(ApplicationLocalizations.of(navigatorKey.currentContext!).translate(Constants.MONTHS[5]));
+    await tester.ensureVisible(month);
+    await tester.pumpAndSettle(Duration(milliseconds: 1000));
+    await tester.tap(month);
+    await tester.pumpAndSettle(Duration(milliseconds: 3000));
 
     // final tabSelection = find.byKey(Keys.dashboard.DASHBOARD_SEARCH);
     final dashboard_search = find.byKey(Keys.dashboard.DASHBOARD_SEARCH);
