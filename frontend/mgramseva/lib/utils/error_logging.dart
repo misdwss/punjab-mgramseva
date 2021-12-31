@@ -1,7 +1,9 @@
 import 'package:flutter/cupertino.dart';
+import 'package:mgramseva/providers/common_provider.dart';
 import 'package:mgramseva/routers/Routers.dart';
 import 'package:mgramseva/utils/custom_exception.dart';
 import 'package:mgramseva/utils/notifyers.dart';
+import 'package:provider/provider.dart';
 
 import 'Locilization/application_localizations.dart';
 import 'global_variables.dart';
@@ -20,6 +22,9 @@ class ErrorHandler {
         if (currentRoute == Routes.LOGIN) {
           return true;
         }
+        var commonProvider = Provider.of<CommonProvider>(context,
+            listen: false);
+        commonProvider.onLogout();
         navigatorKey.currentState
             ?.pushNamedAndRemoveUntil(Routes.LOGIN, (route) => false);
         return false;
