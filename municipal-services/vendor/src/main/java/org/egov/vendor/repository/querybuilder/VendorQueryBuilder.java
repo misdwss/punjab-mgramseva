@@ -68,7 +68,7 @@ public class VendorQueryBuilder {
 		if (criteria.getTenantId() != null) {
 			
 				addClauseIfRequired(preparedStmtList, builder);
-				builder.append(" vendor.status = ");
+				builder.append(" vendor.status = ? ");
 				preparedStmtList.add("ACTIVE");
 			
 			
