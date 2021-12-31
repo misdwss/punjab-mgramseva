@@ -71,6 +71,7 @@ Map<String, dynamic> getTestData() {
 
     ///******** GPWSC Dashboard Inputs ********
     'dashboardSearch' : 'hara',
+    'graphicalDashboardMonthIndex' : 5,
 
     ///********* Household Register Inputs *********
     'householdSearch' : '1370',
