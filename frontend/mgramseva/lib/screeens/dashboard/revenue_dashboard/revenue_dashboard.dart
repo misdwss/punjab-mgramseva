@@ -38,10 +38,10 @@ class _RevenueDashBoardState extends State<RevenueDashBoard> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 16),
+      padding: EdgeInsets.symmetric(vertical: widget.isFromScreenshot ? 5 : 16),
       child: Column(
         children: [
-          RevenueCharts(),
+          RevenueCharts(widget.isFromScreenshot),
           _buildLoaderView(),
           Visibility(
             visible: !widget.isFromScreenshot,
@@ -49,7 +49,7 @@ class _RevenueDashBoardState extends State<RevenueDashBoard> {
                 alignment: Alignment.centerLeft,
                 child: _buildNote()),
           ),
-          Footer()
+          Footer(padding: widget.isFromScreenshot ? EdgeInsets.all(5.0) : null)
         ],
       ),
     );
@@ -105,7 +105,7 @@ class _RevenueDashBoardState extends State<RevenueDashBoard> {
     var revenueDashboard = Provider.of<RevenueDashboard>(context, listen: false);
 
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 16),
+      padding: EdgeInsets.symmetric(vertical:  widget.isFromScreenshot ? 5 : 16),
       child: LayoutBuilder(
           builder : (context, constraints) {
             var width = constraints.maxWidth < 760 ?  150.0 : constraints.maxWidth / 8;
@@ -114,7 +114,7 @@ class _RevenueDashBoardState extends State<RevenueDashBoard> {
               tableData:  tableData,
               leftColumnWidth: width,
               rightColumnWidth:  width * 7,
-              height: 68 + (52.0 * tableData.length),
+              height: 63 + (52.0 * tableData.length),
               scrollPhysics:  NeverScrollableScrollPhysics(),
             );
           }),

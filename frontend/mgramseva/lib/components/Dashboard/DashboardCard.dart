@@ -21,13 +21,13 @@ class DashboardCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return LayoutBuilder(builder: (context, constraints) {
       return Card(
-          margin: EdgeInsets.only(bottom: 2),
+          margin: EdgeInsets.only(bottom: isFromScreenshot ? 0 : 2),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(0.0),
           ),
           child: Column(mainAxisSize: MainAxisSize.min, children: [
             Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-              LabelText(i18.dashboard.DASHBOARD),
+              LabelText(i18.dashboard.DASHBOARD, padding:  isFromScreenshot ? const EdgeInsets.all(5.0) : null),
               Expanded(
                 child: InkWell(
                   key: Keys.dashboard.DASHBOARD_DATE_PICKER,
@@ -84,19 +84,20 @@ class DashboardCard extends StatelessWidget {
             .toString();
         return Padding(
           padding: constraints.maxWidth > 760
-              ? const EdgeInsets.all(20.0)
+              ? isFromScreenshot ? const EdgeInsets.all(5.0) : const EdgeInsets.all(20.0)
               : const EdgeInsets.all(8.0),
           child:
               Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
             GridView.count(
               crossAxisCount: 3,
-              childAspectRatio: constraints.maxWidth > 760 ? (1 / .3) : 1.0,
+              childAspectRatio: constraints.maxWidth > 760 ? (isFromScreenshot ? (1 / .2) : ((1 / .3))) : 1.0,
               shrinkWrap: true,
               physics: NeverScrollableScrollPhysics(),
               children: List.generate(
                   feedBackDetails.keys.length,
                   (index) => GridTile(
                         child: Container(
+                          alignment: Alignment.center,
                             decoration: BoxDecoration(
                               border: index == 0
                                   ? null
@@ -140,7 +141,7 @@ class DashboardCard extends StatelessWidget {
                       )).toList(),
             ),
             Padding(
-              padding: const EdgeInsets.symmetric(vertical: 10),
+              padding:  EdgeInsets.symmetric(vertical: isFromScreenshot ? 5 : 10),
               child: Text(
                 "$localizationLabel",
                 textAlign: TextAlign.start,
