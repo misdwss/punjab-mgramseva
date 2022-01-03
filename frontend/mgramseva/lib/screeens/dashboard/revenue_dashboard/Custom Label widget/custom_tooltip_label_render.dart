@@ -48,8 +48,8 @@ class CustomCircleSymbolRenderer extends CircleSymbolRenderer {
 
     canvas.drawText(
         ChartText.TextElement('${ToolTipMgr.xAxis}', style: textStyle),
-        (bounds.left - bounds.width + 305).round(),
-        (bounds.height - 35).round());
+        (bounds.left - bounds.width + 5).round(),
+        (bounds.height + 20).round());
   }
 
 }
