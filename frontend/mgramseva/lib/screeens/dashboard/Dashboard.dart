@@ -205,8 +205,9 @@ class _Dashboard extends State<Dashboard> with SingleTickerProviderStateMixin {
                       width: 900,
                       child: Screenshot(
                           controller: screenshotController,
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 10),
+                          child: Container(
+                            color: Color.fromRGBO(238, 238, 238, 1),
+                            padding: const EdgeInsets.symmetric(horizontal: 5),
                             child: Column(children: [
                               customRevenueAppBar(),
                               DashboardCard(() {}, isFromScreenshot: true),

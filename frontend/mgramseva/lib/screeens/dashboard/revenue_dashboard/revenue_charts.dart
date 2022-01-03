@@ -16,7 +16,8 @@ import 'package:mgramseva/utils/Constants/I18KeyConstants.dart';
 import 'Custom Label widget/custom_tooltip_label_render.dart';
 
 class RevenueCharts extends StatefulWidget {
-  const RevenueCharts({Key? key}) : super(key: key);
+  final bool isFromScreenshot;
+  const RevenueCharts(this.isFromScreenshot, {Key? key}) : super(key: key);
 
   @override
   _RevenueChartsState createState() => _RevenueChartsState();
@@ -70,13 +71,13 @@ class _RevenueChartsState extends State<RevenueCharts> {
     return Card(
       margin: EdgeInsets.all(0.0),
       child: Padding(
-        padding: EdgeInsets.all(16),
+        padding: EdgeInsets.all(widget.isFromScreenshot ? 5 : 16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
             Padding(
-              padding: const EdgeInsets.only(bottom: 16),
+              padding: EdgeInsets.only(bottom: widget.isFromScreenshot ? 5 : 16),
               child: Text('${ApplicationLocalizations.of(context).translate(i18.dashboard.REVENUE_EXPENDITURE_TREND)}',
                 style: TextStyle(
                     fontSize: 18,
@@ -187,8 +188,8 @@ class _RevenueChartsState extends State<RevenueCharts> {
             child : SimpleLineChart(revenue.revenueDataHolder.trendLine!.graphData!, constraints, animate: false)),
         ),
       Container(
-          padding: const EdgeInsets.only(top : 16.0),
-          height: isDeskTopView ? 90 : null,
+          padding:  EdgeInsets.only(top : widget.isFromScreenshot ? 5 : 16.0),
+          // height: isDeskTopView ? 90 : null,
           alignment: isDeskTopView ? Alignment.center : null,
           child: Wrap(
             spacing: 20,
@@ -299,7 +300,7 @@ class SimpleLineChart extends StatelessWidget {
      var dateList =  revenueDashboard.revenueDataHolder.trendLine?.data!.first.plots?.map((e) => e.name).toList() ?? [];
       var index = value?.toInt() ?? 0;
      if(index < dateList.length){
-       var filteredMonth = dateList[index].toString().split('-').first ?? '';
+       var filteredMonth = dateList[index].toString().split('-').first;
        return ApplicationLocalizations.of(context).translate(filteredMonth);
      }else{
        return "";
