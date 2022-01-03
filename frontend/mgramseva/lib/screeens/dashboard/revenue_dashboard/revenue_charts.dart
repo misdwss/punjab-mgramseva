@@ -300,7 +300,7 @@ class SimpleLineChart extends StatelessWidget {
       var index = value?.toInt() ?? 0;
      if(index < dateList.length){
        var filteredMonth = dateList[index].toString().split('-').first ?? '';
-       return filteredMonth;
+       return ApplicationLocalizations.of(context).translate(filteredMonth);
      }else{
        return "";
      }
