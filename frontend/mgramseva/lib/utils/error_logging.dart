@@ -27,7 +27,7 @@ class ErrorHandler {
         commonProvider.onLogout();
         navigatorKey.currentState
             ?.pushNamedAndRemoveUntil(Routes.LOGIN, (route) => false);
-        return false;
+        return true;
       case ExceptionType.INVALIDINPUT:
       case ExceptionType.OTHER:
       case ExceptionType.FETCHDATA:

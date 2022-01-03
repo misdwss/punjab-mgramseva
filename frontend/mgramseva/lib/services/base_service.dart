@@ -8,6 +8,7 @@ import 'package:mgramseva/services/RequestInfo.dart';
 import 'package:mgramseva/utils/constants.dart';
 import 'package:mgramseva/utils/custom_exception.dart';
 import 'package:mgramseva/utils/models.dart';
+import 'package:mgramseva/utils/Constants/I18KeyConstants.dart';
 
 class BaseService {
   Future<dynamic> makeRequest<T>(
@@ -123,7 +124,7 @@ CustomException getException(String errorMsg,List<dynamic> errorList, int status
   for(var error in errorList){
     if((error['message'] ?? '').contains(Constants.INVALID_EXCEPTION_CODE)) {
       throw CustomException(
-          errorMsg, statusCode, ExceptionType.UNAUTHORIZED);
+          i18.common.SESSION_EXPIRED, statusCode, ExceptionType.UNAUTHORIZED);
     }
   }
     throw CustomException(

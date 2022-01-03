@@ -190,6 +190,7 @@ class Common {
   String get OK => 'OK';
   String get ALERT => 'ALERT';
   String get TOTAL => 'TOTAL';
+  String get SESSION_EXPIRED => 'SESSION_EXPIRED';
 }
 
 class Password {
