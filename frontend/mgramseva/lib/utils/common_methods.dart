@@ -21,7 +21,7 @@ class CommonMethods {
     return url.substring(0, url.indexOf('?')).split('/').last;
   }
 
-  static List<DatePeriod> getPastMonthUntilFinancialYear(int year){
+  static List<DatePeriod> getPastMonthUntilFinancialYear(int year, {DateType? dateType}){
     var monthList = <DateTime>[];
     if(DateTime.now().year == year && DateTime.now().month >= 4){
       for(int i = 4; i <= DateTime.now().month; i++){
@@ -32,7 +32,7 @@ class CommonMethods {
       for(int i = 4; i <= 12; i++){
         monthList.add(DateTime(yearDetails.year, i));
       }
-      for(int i = 1; i <= (DateTime.now().year == year ? DateTime.now().month : 3); i++){
+      for(int i = 1; i <= (dateType == DateType.YTD ? DateTime.now().month : 3); i++){
         monthList.add(DateTime(yearDetails.year + 1, i));
       }
     }
@@ -48,12 +48,13 @@ class CommonMethods {
       yearWithMonths.add(YearWithMonths(monthList, year));
     }else{
       var year = DatePeriod(DateTime( DateTime.now().year - 1, 1), DateTime.now(), DateType.YTD);
-      var monthList = getPastMonthUntilFinancialYear(year.startDate.year);
+      var monthList = getPastMonthUntilFinancialYear(year.startDate.year, dateType : DateType.YTD);
       yearWithMonths.add(YearWithMonths(monthList, year));
     }
 
     for(int i =0; i < count-1; i++){
-      dynamic year = DateTime(DateTime.now().year - i);
+      var currentDate = DateTime.now();
+      dynamic year = currentDate.month < 4 ? DateTime(currentDate.year - (i+1)) : DateTime(currentDate.year - i);
       year = DatePeriod(DateTime(year.year - 1, 4), DateTime(year.year, 4, 0, 23,59, 59, 999), DateType.YEAR);
       var monthList = getPastMonthUntilFinancialYear(year.startDate.year);
       yearWithMonths.add(YearWithMonths(monthList, year));
