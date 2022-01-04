@@ -47,7 +47,7 @@ class CommonMethods {
       var monthList = getPastMonthUntilFinancialYear(DateTime.now().year);
       yearWithMonths.add(YearWithMonths(monthList, year));
     }else{
-      var year = DatePeriod(DateTime( DateTime.now().year - 1, 1), DateTime.now(), DateType.YTD);
+      var year = DatePeriod(DateTime( DateTime.now().year - 1, 4), DateTime.now(), DateType.YTD);
       var monthList = getPastMonthUntilFinancialYear(year.startDate.year, dateType : DateType.YTD);
       yearWithMonths.add(YearWithMonths(monthList, year));
     }
