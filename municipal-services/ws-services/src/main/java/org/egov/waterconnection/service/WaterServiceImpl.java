@@ -585,7 +585,7 @@ public class WaterServiceImpl implements WaterService {
 			totalMonthsTillDate = 9 + currentMonthNumber;
 			currentDate.setTimeInMillis(criteria.getFromDate());
 
-			currentMonthDate = LocalDate.of(currentDate.get(Calendar.YEAR) - 1, currentDate.get(Calendar.MONTH) + 1,
+			currentMonthDate = LocalDate.of(currentDate.get(Calendar.YEAR), currentDate.get(Calendar.MONTH) + 1,
 					currentDate.get(Calendar.DAY_OF_MONTH));
 
 			finYearStarting = currentMonthDate;
