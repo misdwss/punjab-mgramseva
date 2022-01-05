@@ -225,7 +225,7 @@ class RevenueDashboard with ChangeNotifier {
         ? dashBoardProvider.selectedMonth.startDate
         : dashBoardProvider.selectedMonth.endDate;
     dashBoardProvider.onChangeOfDate(DatePeriod(
-        DateTime(date.year, monthIndex, 1,  23,59, 59, 999),
+        DateTime(date.year, monthIndex, 1),
         DateTime(date.year, monthIndex + 1, 0,  23,59, 59, 999), DateType.MONTH),
         navigatorKey.currentContext!);
     dashBoardProvider.scrollController.jumpTo(0.0);
