@@ -324,7 +324,7 @@ public class ChallanService {
 			if (null != paidAmount) {
 				challanData.setAmountPaid(paidAmount.toString());
 			}
-			Long amountUnpaid = repository.getPendingAmountTillDate(criteria);
+			Long amountUnpaid = repository.getPendingAmount(criteria);
 			if (null != amountUnpaid) {
 				challanData.setAmountUnpaid(amountUnpaid.toString());
 			}

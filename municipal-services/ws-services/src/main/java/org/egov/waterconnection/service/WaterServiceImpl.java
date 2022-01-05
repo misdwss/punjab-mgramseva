@@ -621,7 +621,7 @@ public class WaterServiceImpl implements WaterService {
 			if (null != paidAmount) {
 				collectionData.setActualCollection(paidAmount.toString());
 			}
-			Integer unpaidAmount = waterDaoImpl.getPendingCollectionAmountTillDate(criteria);
+			Integer unpaidAmount = waterDaoImpl.getPendingCollectionAmount(criteria);
 			if (null != unpaidAmount) {
 				collectionData.setPendingCollection(unpaidAmount.toString());
 			}
