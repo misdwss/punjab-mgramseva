@@ -86,7 +86,7 @@ class _CustomAppBarState extends State<CustomAppBar> {
         listen: false);
     var tenantProvider = Provider.of<TenantsProvider>(context, listen: false);
     showDialog(
-        barrierDismissible: commonProvider.userDetails!.selectedtenant == null ? false : true,
+        barrierDismissible: commonProvider.userDetails!.selectedtenant != null,
         context: context,
         builder: (BuildContext context) {
           return Stack(children: <Widget>[
