@@ -1,10 +1,8 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:mgramseva/model/mdms/tenants.dart';
 import 'package:mgramseva/providers/common_provider.dart';
 import 'package:mgramseva/providers/language.dart';
 import 'package:mgramseva/providers/tenants_provider.dart';
-import 'package:mgramseva/routers/Routers.dart';
 import 'package:mgramseva/utils/Locilization/application_localizations.dart';
 import 'package:mgramseva/utils/common_methods.dart';
 import 'package:mgramseva/utils/global_variables.dart';
@@ -86,8 +84,9 @@ class _CustomAppBarState extends State<CustomAppBar> {
     var commonProvider = Provider.of<CommonProvider>(
         navigatorKey.currentContext!,
         listen: false);
+    var tenantProvider = Provider.of<TenantsProvider>(context, listen: false);
     showDialog(
-        barrierDismissible: false,
+        barrierDismissible: commonProvider.userDetails!.selectedtenant == null ? false : true,
         context: context,
         builder: (BuildContext context) {
           return Stack(children: <Widget>[
@@ -101,9 +100,12 @@ class _CustomAppBarState extends State<CustomAppBar> {
                 width: MediaQuery.of(context).size.width > 720
                     ? MediaQuery.of(context).size.width / 3
                     : MediaQuery.of(context).size.width,
+                height: tenantProvider.tenants!.tenantsList!.length * 50 < 300 ?
+                tenantProvider.tenants!.tenantsList!.length * 50 : 300,
                 color: Colors.white,
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
+                child: ListView(
+                  padding: EdgeInsets.zero,
+                  shrinkWrap: true,
                   children: List.generate(result.length, (index) {
                     return GestureDetector(
                         onTap: () {
