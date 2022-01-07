@@ -34,9 +34,9 @@ void main() {
     await tester.tap(searchConnectionBtn);
     await tester.pumpAndSettle(Duration(milliseconds: 3000));
     await tester.tap(backButton);
-    await tester.pumpAndSettle(Duration(seconds: 3));
+    await tester.pumpAndSettle(Duration(seconds: 5));
     await tester.tap(backButton);
-    await tester.pumpAndSettle(Duration(seconds: 3));
+    await tester.pumpAndSettle(Duration(seconds: 5));
 
     await tester.tap(collectPayment);
     await tester.pumpAndSettle(Duration(milliseconds: 3000));
@@ -47,9 +47,9 @@ void main() {
     await tester.tap(searchConnectionBtn);
     await tester.pumpAndSettle(Duration(milliseconds: 3000));
     await tester.tap(backButton);
-    await tester.pumpAndSettle(Duration(milliseconds: 3000));
+    await tester.pumpAndSettle(Duration(milliseconds: 5000));
     await tester.tap(backButton);
-    await tester.pumpAndSettle(Duration(milliseconds: 3000));
+    await tester.pumpAndSettle(Duration(milliseconds: 5000));
 
 
     await tester.tap(collectPayment);
@@ -64,10 +64,10 @@ void main() {
     await tester.pumpAndSettle(Duration(milliseconds: 3000));
     await tester.ensureVisible(backButton);
     await tester.tap(backButton);
-    await tester.pumpAndSettle(Duration(seconds: 3));
+    await tester.pumpAndSettle(Duration(seconds: 5));
     await tester.ensureVisible(backButton);
     await tester.tap(backButton);
-    await tester.pumpAndSettle(Duration(seconds: 3));
+    await tester.pumpAndSettle(Duration(seconds: 5));
 
     await tester.tap(collectPayment);
     await tester.pumpAndSettle(Duration(milliseconds: 3000));
@@ -80,10 +80,10 @@ void main() {
     await tester.tap(searchConnectionBtn);
     await tester.pumpAndSettle(Duration(milliseconds: 3000));
     await tester.tap(backButton);
-    await tester.pumpAndSettle(Duration(seconds: 3));
+    await tester.pumpAndSettle(Duration(seconds: 5));
     await tester.ensureVisible(backButton);
     await tester.tap(backButton);
-    await tester.pumpAndSettle(Duration(seconds: 3));
+    await tester.pumpAndSettle(Duration(seconds: 5));
 
   });
 }

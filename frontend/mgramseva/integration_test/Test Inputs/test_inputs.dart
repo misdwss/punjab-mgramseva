@@ -4,7 +4,7 @@ Map<String, dynamic> getTestData() {
     'forgotPasswordMobileNumber': '9686151676',
 
     ///*********** Language Selection and Login Inputs ****************
-    'selectLanguage': '2',  //For Punjabi - 0, Hindi- 1 , English - 2
+    'selectLanguage': 2,  //For Punjabi - 0, Hindi- 1 , English - 2
     'loginPhoneNumber' : '9686151676',
     'loginPassword' : 'eGov@123',
 
@@ -34,7 +34,7 @@ Map<String, dynamic> getTestData() {
     'consumerProperty': 'RESIDENTIAL', // [RESIDENTIAL, COMMERCIAL]
     'consumerService': 'Metered', // [Metered, Non_Metered]
     'consumerOldConnectionID': 'WS-986-456',
-    'previousReadingDate': '01/10/2021',
+    'previousReadingDate': '1/10/2021',
     'consumerMeterNumber': 'ID745MS',
     'consumerMeterReadingField1': '1',
     'consumerMeterReadingField2': '3',
@@ -67,6 +67,7 @@ Map<String, dynamic> getTestData() {
     'searchExpenseType' : 'OM',
     'expenseVendorName' : 'hara',
     'expenseVendorPhoneNum' : '9949210191',
+    'expenseVendorAmount' : '1000',
     'searchExpenseBillID' : 'EB-2021-22-0270',
 
     ///******** GPWSC Dashboard Inputs ********

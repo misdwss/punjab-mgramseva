@@ -54,10 +54,12 @@ import 'providers/collect_payment.dart';
 import 'providers/dashboard_provider.dart';
 import 'providers/revenuedashboard_provider.dart';
 import 'screeens/common/collect_payment.dart';
+import 'configure_non_web.dart' if (dart.library.html) 'configure_web.dart';
 
 void main() {
   HttpOverrides.global = new MyHttpOverrides();
   setPathUrlStrategy();
+  //configureApp();
   setEnvironment(Environment.dev);
 
   runZonedGuarded(() async {

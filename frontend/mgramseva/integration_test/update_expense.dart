@@ -21,6 +21,10 @@ void main() {
     var updateExpenseTestData = getTestData();
     app.main();
     await tester.pumpAndSettle(Duration(milliseconds: 2000));
+
+    final appBar = find.byType(AppBar);
+    await tester.tap(appBar);
+    await tester.pumpAndSettle(Duration(seconds: 3));
     final updateExpense = find.byType(GridTile).at(4);
     await tester.tap(updateExpense);
     await tester.pumpAndSettle(Duration(milliseconds: 3000));

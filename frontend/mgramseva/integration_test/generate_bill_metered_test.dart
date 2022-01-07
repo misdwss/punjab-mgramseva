@@ -19,6 +19,9 @@ void main() {
     app.main();
     await tester.pumpAndSettle(Duration(milliseconds: 3000));
 
+    final appBar = find.byType(AppBar);
+    await tester.tap(appBar);
+    await tester.pumpAndSettle(Duration(seconds: 3));
     /// Open Collect Payment Screen
     final collectPayment = find.widgetWithText(GridTile,
         ApplicationLocalizations.of(navigatorKey.currentContext!).translate('CORE_COLLECT_PAYMENTS'));

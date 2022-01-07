@@ -17,6 +17,9 @@ void main() {
     app.main();
     await tester.pumpAndSettle(Duration(milliseconds: 3000));
 
+    final appBar = find.byType(AppBar);
+    await tester.tap(appBar);
+    await tester.pumpAndSettle(Duration(seconds: 3));
     final createConsumer = find.widgetWithText(GridTile,
         ApplicationLocalizations.of(navigatorKey.currentContext!).translate('CORE_CONSUMER_CREATE'));
     await tester.tap(createConsumer);
@@ -56,9 +59,8 @@ void main() {
     final findEditDateIcon = find.byIcon(Icons.edit);
     final findDateTextField = find.widgetWithText(TextField, DateFormats.getFilteredDate(
         DateTime.now().toLocal().toString(),
-        dateFormat: "dd/MM/yyyy") );
-    final findOKButtonInDate = find.text(ApplicationLocalizations.of(navigatorKey.currentContext!).
-    translate('OK'));
+        dateFormat: "d/M/yyyy") );
+    final findOKButtonInDate = find.text('OK');
 
     final consumerMeterNumber = find.byKey(Keys.createConsumer.CONSUMER_METER_NUMBER_KEY);
 
@@ -136,6 +138,7 @@ void main() {
       await tester.pumpAndSettle(Duration(milliseconds: 3000));
       await tester.tap(findEditDateIcon);
       await tester.pumpAndSettle(Duration(milliseconds: 3000));
+      await tester.tap(findDateTextField);
       await tester.enterText(findDateTextField,
           createConsumerTestData['previousReadingDate']);
       await tester.pumpAndSettle(Duration(milliseconds: 3000));

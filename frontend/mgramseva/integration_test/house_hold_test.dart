@@ -20,6 +20,9 @@ void main() {
     var householdTestData = getTestData();
     app.main();
     await tester.pumpAndSettle(Duration(milliseconds: 2000));
+    final appBar = find.byType(AppBar);
+    await tester.tap(appBar);
+    await tester.pumpAndSettle(Duration(seconds: 3));
     final dashboard = find.byType(GridTile).at(0);
     await tester.tap(dashboard);
     await tester.pumpAndSettle(Duration(milliseconds: 5000));
