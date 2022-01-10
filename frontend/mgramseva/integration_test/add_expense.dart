@@ -19,6 +19,9 @@ void main() {
       var addExpenseTestData = getTestData();
       app.main();
       await tester.pumpAndSettle(Duration(milliseconds: 2000));
+      final appBar = find.byType(AppBar);
+      await tester.tap(appBar);
+      await tester.pumpAndSettle(Duration(seconds: 3));
       final addExpense = find.byType(GridTile).at(3);
       await tester.tap(addExpense);
       await tester.pumpAndSettle(Duration(milliseconds: 3000));
@@ -41,14 +44,14 @@ void main() {
 
       await tester.enterText(vendorNameAutoComplete, addExpenseTestData['expenseVendorName']);
       await tester.pumpAndSettle(Duration(milliseconds: 3000));
-      await tester.enterText(expenseAmount, addExpenseTestData['expenseVendorPhoneNum']);
+      await tester.enterText(expenseAmount, addExpenseTestData['expenseVendorAmount']);
       await tester.pumpAndSettle(Duration(milliseconds: 2000));
 
       final findDatePicker = find.byKey(Keys.expense.EXPENSE_BILL_DATE);
       final findEditDateIcon = find.byIcon(Icons.edit);
       final findDateTextField = find.widgetWithText(TextField, DateFormats.getFilteredDate(
           DateTime.now().toLocal().toString(),
-          dateFormat: "dd/MM/yyyy") );
+          dateFormat: "d/M/yyyy") );
       final findOKButtonInDate = find.text('OK');
       await tester.ensureVisible(findDatePicker);
       await tester.tap(findDatePicker);

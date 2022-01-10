@@ -10,6 +10,9 @@ void main() {
     var changePasswordTestData = getTestData();
     app.main();
     await tester.pumpAndSettle(Duration(milliseconds: 3000));
+    final appBar = find.byType(AppBar);
+    await tester.tap(appBar);
+    await tester.pumpAndSettle(Duration(seconds: 3));
 
     final tapAppDrawer = find.byIcon(Icons.menu);
     await tester.tap(tapAppDrawer);

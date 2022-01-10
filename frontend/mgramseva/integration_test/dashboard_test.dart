@@ -18,6 +18,9 @@ void main() {
     var dashboardTestData = getTestData();
     app.main();
     await tester.pumpAndSettle(Duration(milliseconds: 2000));
+    final appBar = find.byType(AppBar);
+    await tester.tap(appBar);
+    await tester.pumpAndSettle(Duration(seconds: 3));
     final dashboard = find.byType(GridTile).at(8);
     await tester.tap(dashboard);
     await tester.pumpAndSettle(Duration(milliseconds: 5000));
@@ -25,7 +28,7 @@ void main() {
     final month = find.widgetWithText(Container, ApplicationLocalizations.of(navigatorKey.currentContext!).translate(Constants.MONTHS[dashboardTestData['graphicalDashboardMonthIndex']])).first;
     print(ApplicationLocalizations.of(navigatorKey.currentContext!).translate(Constants.MONTHS[5]));
     await tester.ensureVisible(month);
-    await tester.pumpAndSettle(Duration(milliseconds: 1000));
+    await tester.pumpAndSettle(Duration(milliseconds: 3000));
     await tester.tap(month);
     await tester.pumpAndSettle(Duration(milliseconds: 3000));
 

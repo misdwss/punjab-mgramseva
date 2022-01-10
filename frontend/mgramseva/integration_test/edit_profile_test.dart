@@ -9,9 +9,12 @@ import 'Test Inputs/test_inputs.dart';
 void main() {
   testWidgets("Edit Profile Test", (tester) async {
     var editProfileTestData = getTestData();
-    app.main();
-    await tester.pumpAndSettle(Duration(milliseconds: 3000));
+     app.main();
+     await tester.pumpAndSettle(Duration(milliseconds: 3000));
 
+    final appBar = find.byType(AppBar);
+    await tester.tap(appBar);
+    await tester.pumpAndSettle(Duration(seconds: 3));
     final tapAppDrawer = find.byIcon(Icons.menu);
     await tester.tap(tapAppDrawer);
     await tester.pumpAndSettle(Duration(seconds: 3));

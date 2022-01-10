@@ -20,6 +20,8 @@ void main() {
     final selectLanButton = find.byKey(Keys.language.LANGUAGE_PAGE_CONTINUE_BTN);
     await tester.tap(selectLanguage);
     await tester.pumpAndSettle(Duration(milliseconds: 3000));
+    await tester.tap(selectLanguage);
+    await tester.pumpAndSettle(Duration(milliseconds: 3000));
     await tester.tap(selectLanButton);
     await tester.pumpAndSettle(Duration(milliseconds: 3000));
 
