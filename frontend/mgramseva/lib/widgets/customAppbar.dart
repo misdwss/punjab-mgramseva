@@ -84,7 +84,6 @@ class _CustomAppBarState extends State<CustomAppBar> {
     var commonProvider = Provider.of<CommonProvider>(
         navigatorKey.currentContext!,
         listen: false);
-    var tenantProvider = Provider.of<TenantsProvider>(context, listen: false);
     showDialog(
         barrierDismissible: commonProvider.userDetails!.selectedtenant != null,
         context: context,
@@ -100,8 +99,8 @@ class _CustomAppBarState extends State<CustomAppBar> {
                 width: MediaQuery.of(context).size.width > 720
                     ? MediaQuery.of(context).size.width / 3
                     : MediaQuery.of(context).size.width,
-                height: tenantProvider.tenants!.tenantsList!.length * 50 < 300 ?
-                tenantProvider.tenants!.tenantsList!.length * 50 : 300,
+                height: result.length * 50 < 300 ?
+                result.length * 50 : 300,
                 color: Colors.white,
                 child: ListView(
                   padding: EdgeInsets.zero,
