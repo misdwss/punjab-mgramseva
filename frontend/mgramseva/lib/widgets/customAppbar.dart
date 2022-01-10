@@ -187,7 +187,7 @@ class _CustomAppBarState extends State<CustomAppBar> {
             children: [
               Consumer<CommonProvider>(
                   builder: (_, commonProvider, child) =>
-                      commonProvider.userDetails!.selectedtenant == null
+                      commonProvider.userDetails?.selectedtenant == null
                           ? Text("")
                           : Column(
                               mainAxisAlignment: MainAxisAlignment.end,
