@@ -85,6 +85,13 @@ class _CustomAppBarState extends State<CustomAppBar> {
         navigatorKey.currentContext!,
         listen: false);
     var tenantProvider = Provider.of<TenantsProvider>(context, listen: false);
+    final r = commonProvider.userDetails!.userRequest!.roles!
+        .map((e) => e.tenantId)
+        .toSet()
+        .toList();
+    final res = tenantProvider.tenants!.tenantsList!
+        .where((element) => r.contains(element.code?.trim()))
+        .toList();
     showDialog(
         barrierDismissible: commonProvider.userDetails!.selectedtenant != null,
         context: context,
@@ -100,8 +107,8 @@ class _CustomAppBarState extends State<CustomAppBar> {
                 width: MediaQuery.of(context).size.width > 720
                     ? MediaQuery.of(context).size.width / 3
                     : MediaQuery.of(context).size.width,
-                height: tenantProvider.tenants!.tenantsList!.length * 50 < 300 ?
-                tenantProvider.tenants!.tenantsList!.length * 50 : 300,
+                height: res.length * 50 < 300 ?
+                res.length * 50 : 300,
                 color: Colors.white,
                 child: ListView(
                   padding: EdgeInsets.zero,
@@ -188,7 +195,7 @@ class _CustomAppBarState extends State<CustomAppBar> {
             children: [
               Consumer<CommonProvider>(
                   builder: (_, commonProvider, child) =>
-                      commonProvider.userDetails!.selectedtenant == null
+                      commonProvider.userDetails?.selectedtenant == null
                           ? Text("")
                           : Column(
                               mainAxisAlignment: MainAxisAlignment.end,
