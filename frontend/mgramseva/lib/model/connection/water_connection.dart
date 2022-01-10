@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:mgramseva/model/connection/property.dart';
@@ -100,9 +101,9 @@ class WaterConnection {
   setText() {
     oldConnectionNo = OldConnectionCtrl.text;
     meterId = meterIdCtrl.text != "" ? meterIdCtrl.text : null;
-    arrears = arrearsCtrl.text != ""
+    arrears = arrearsCtrl.text.trim() != "" && double.parse(arrearsCtrl.text) > 0
         ? double.parse(arrearsCtrl.text).toDouble()
-        : 0.0;
+        : null;
     previousReadingDate = previousReadingDateCtrl.text != ""
         ? DateFormats.dateToTimeStamp(
             previousReadingDateCtrl.text,
@@ -116,12 +117,20 @@ class WaterConnection {
         : DateFormats.dateToTimeStamp(DateFormats.getFilteredDate(
             meterInstallationDateCtrl.text,
             dateFormat: "dd/MM/yyyy"));
+
+    if (connectionType != 'Metered') {
+      previousReadingDate = BillingCycleCtrl.text.trim() != ""
+          ? DateFormats.dateToTimeStamp(
+        BillingCycleCtrl.text.trim(),
+      )
+          : null;
+    }
   }
 
   getText() {
     OldConnectionCtrl.text = oldConnectionNo ?? "";
     meterIdCtrl.text = meterId ?? "";
-    arrearsCtrl.text = arrears.toString();
+    arrearsCtrl.text = (arrears == null ? '' : getFilteredAmount(arrears!));
     categoryCtrl.text = additionalDetails?.category ?? "";
     subCategoryCtrl.text = additionalDetails?.subCategory ?? "";
     addharCtrl.text = additionalDetails?.aadharNumber ?? "";
@@ -140,6 +149,12 @@ class WaterConnection {
       om_4Ctrl.text = additionalDetails!.initialMeterReading!.toString()[3];
       om_5Ctrl.text = additionalDetails!.initialMeterReading!.toString()[4];
     }
+  }
+
+ String getFilteredAmount(double amount) {
+     if(kIsWeb) return amount.toString();
+     var decimalAmount = (amount.toString().split('.'))[1];
+     return int.parse(decimalAmount) > 0 ? amount.toString() : amount.toString().split('.').first;
   }
 
   WaterConnection();
@@ -191,6 +206,7 @@ class AdditionalDetails {
 
   @JsonKey(name: "collectionPendingAmount")
   String? collectionPendingAmount;
+
 
   @JsonKey(ignore: true)
   var initialMeterReadingCtrl = TextEditingController();

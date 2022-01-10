@@ -121,6 +121,7 @@ class DashBoardProvider with ChangeNotifier {
               commonProvider.userDetails!.userRequest!.tenantId.toString()));
 
       if (languageList.mdmsRes?.propertyTax?.PropertyTypeList != null) {
+        propertyTaxList.clear();
         var property = PropertyType();
         property.code = i18.dashboard.ALL;
         propertyTaxList.add(property);

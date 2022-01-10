@@ -109,6 +109,7 @@ class StateInfo {
   bool? hasLocalisation;
   bool? enableWhatsApp;
   String? selectedCode;
+  String? stateLogoURL;
   DefaultUrl? defaultUrl;
   List<Languages>? languages;
   // List<LocalizationModules>? localizationModules;
@@ -120,6 +121,7 @@ class StateInfo {
     this.bannerUrl,
     this.logoUrl,
     this.selectedCode,
+    this.stateLogoURL,
     this.logoUrlWhite,
     this.hasLocalisation,
     this.enableWhatsApp,
@@ -133,6 +135,7 @@ class StateInfo {
     code = json['code'];
     qrCodeURL = json['qrCodeURL'];
     bannerUrl = json['bannerUrl'];
+    stateLogoURL = json['stateLogoURL'];
     logoUrl = json['logoUrl'];
     selectedCode = json['selectedCode'];
     logoUrlWhite = json['logoUrlWhite'];
@@ -162,6 +165,7 @@ class StateInfo {
     data['qrCodeURL'] = this.qrCodeURL;
     data['bannerUrl'] = this.bannerUrl;
     data['logoUrl'] = this.logoUrl;
+    data['stateLogoURL'] = this.stateLogoURL;
     data['selectedCode'] = this.selectedCode;
     data['logoUrlWhite'] = this.logoUrlWhite;
     data['hasLocalisation'] = this.hasLocalisation;

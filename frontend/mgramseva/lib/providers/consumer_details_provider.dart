@@ -145,7 +145,7 @@ class ConsumerProvider with ChangeNotifier {
     waterconnection = data;
     waterconnection.getText();
     selectedcycle = DateFormats.timeStampToDate(
-                waterconnection.meterInstallationDate,
+                waterconnection.previousReadingDate,
                 format: 'yyyy-MM-dd')
             .toString() +
         " 00:00:00.000";

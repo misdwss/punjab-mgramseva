@@ -7,10 +7,12 @@ import 'package:mgramseva/utils/models.dart';
 // ignore: non_constant_identifier_names
 class Constants {
   static const int PAGINATION_LIMIT = 75;
+  static const int MAX_PDF_PAGES = 100;
 
-  static const String DIGIT_FOOTER_ENDPOINT = 'mgramseva-dev-assets/logo/digit-footer.png';
-  static const String DIGIT_FOOTER_WHITE_ENDPOINT = 'mgramseva-dev-assets/logo/digit-footer-bw.png';
-
+  static const String DIGIT_FOOTER_ENDPOINT =
+      'mgramseva-dev-assets/logo/digit-footer.png';
+  static const String DIGIT_FOOTER_WHITE_ENDPOINT =
+      'mgramseva-dev-assets/logo/digit-footer-bw.png';
   static const String LOGIN_KEY = 'login_key';
   static const String LANGUAGE_KEY = 'language_key';
   static const String STATES_KEY = 'states_key';
@@ -133,8 +135,6 @@ class Constants {
   static const ALL = 'ALL';
   static const PENDING = 'PENDING';
   static const PAID = 'PAID';
-
-  static const MAX_PDF_PAGES = 100 ;
 
   static const List<String> CONNECTION_STATUS = ['Inactive', 'Active'];
 

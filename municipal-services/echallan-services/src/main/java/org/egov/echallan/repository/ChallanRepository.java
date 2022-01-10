@@ -54,7 +54,7 @@ public class ChallanRepository {
     private ChallanRowMapper rowMapper;
     
     private RestTemplate restTemplate;
-    
+
     @Autowired
     private CommonUtils util;
 
@@ -110,15 +110,13 @@ public class ChallanRepository {
 			StringBuilder paidQuery = new StringBuilder(queryBuilder.bill_count);
 			paidQuery = queryBuilder.applyFilters(paidQuery, preparedStmnt, criteria);
 			paidQuery.append(" AND isbillpaid=true ");
-			System.out.println("Final Paid Query" + paidQuery);
 			List<Map<String, Object>> paidCountdata = jdbcTemplate.queryForList(paidQuery.toString(),
 					preparedStmnt.toArray());
 			List<Object> prpstmnt = new ArrayList<>();
 			StringBuilder notPaidQuery = new StringBuilder(queryBuilder.bill_count);
 			notPaidQuery = queryBuilder.applyFilters(notPaidQuery, prpstmnt, criteria);
 			notPaidQuery.append(" AND isbillpaid=false ");
-			System.out.println("Final Not Paid Query" + notPaidQuery);
-
+			
 			List<Map<String, Object>> notPaidCountdata = jdbcTemplate.queryForList(notPaidQuery.toString(),
 					preparedStmnt.toArray());
 		
@@ -192,8 +190,8 @@ public class ChallanRepository {
 
 	public List<String>  getPreviousMonthExpensePayments(String tenantId, Long startDate, Long endDate) {
 		StringBuilder query = new StringBuilder(queryBuilder.PREVIOUSMONTHEXPPAYMENT);
-		query.append( " and PAYMTDTL.receiptdate  >= ").append( startDate)  
-		.append(" and  PAYMTDTL.receiptdate <= " ).append(endDate).append(" and PAYMTDTL.tenantid = '").append(tenantId).append("'"); 
+		query.append( " and PAYMTDTL.receiptdate  >= ").append( startDate)
+		.append(" and  PAYMTDTL.receiptdate <= " ).append(endDate).append(" and PAYMTDTL.tenantid = '").append(tenantId).append("'");
 		log.info("Previous month expense paid query : " + query);
 		return jdbcTemplate.queryForList(query.toString(), String.class);
 	}
@@ -201,7 +199,7 @@ public class ChallanRepository {
 	public Integer getLastsMonthExpensePayments(String tenantId, Long startDate, Long endDate) {
 		StringBuilder query = new StringBuilder(queryBuilder.PREVIOUSMONTHEXPPAYMENT);
 		query.append( " and PAYMTDTL.receiptdate  >= ").append( startDate)  
-		.append(" and  PAYMTDTL.receiptdate <= " ).append(endDate).append(" and PAYMTDTL.tenantid = '").append(tenantId).append("'"); 
+		.append(" and  PAYMTDTL.receiptdate <= " ).append(endDate).append(" and PAYMTDTL.tenantid = '").append(tenantId).append("'");
 		log.info("Previous month expense paid query : " + query);
 		return jdbcTemplate.queryForObject(query.toString(), Integer.class);
 	}
@@ -273,7 +271,7 @@ public class ChallanRepository {
 		log.info("Active pending collection query : " + query);
 		return jdbcTemplate.queryForObject(query.toString(), Long.class);
 	}
-	
+
 	public Long getTotalBill(@Valid SearchCriteria criteria) {
 		StringBuilder query = new StringBuilder(queryBuilder.TOTALBILLS);
 		query.append(" and taxperiodto between " + criteria.getFromDate() + " and " + criteria.getToDate())
@@ -297,7 +295,7 @@ public class ChallanRepository {
 		log.info("pending bills Final Query : " + query);
 		return jdbcTemplate.queryForObject(query.toString(), Long.class);
 	}
-    
+
 
 	public Long getElectricityBill(@Valid SearchCriteria criteria) {
 		StringBuilder query = new StringBuilder(queryBuilder.ELECTRICITYBILLS);
@@ -322,7 +320,7 @@ public class ChallanRepository {
 		log.info("salary Final Query : " + query);
 		return jdbcTemplate.queryForObject(query.toString(), Long.class);
 	}
-	
+
 	public Long getPendingAmountTillDate(@Valid SearchCriteria criteria) {
 		StringBuilder query = new StringBuilder(queryBuilder.PENDINGEXPCOLLTILLDATE);
 		query.append(" and dmd.taxperiodto <= " + criteria.getToDate())
@@ -332,11 +330,11 @@ public class ChallanRepository {
 		log.info("Active pending collection query : " + query);
 		return jdbcTemplate.queryForObject(query.toString(), Long.class);
 	}
-    
+
 	public List<Challan> getChallansForPlaneSearch(SearchCriteria criteria, Map<String, String> finalData) {
         List<Object> preparedStmtList = new ArrayList<>();
         String query = queryBuilder.getChallanSearchQueryForPlaneSearch(criteria, preparedStmtList);
-        List<Challan> challans =  jdbcTemplate.query(query, preparedStmtList.toArray(), rowMapper); 
+        List<Challan> challans =  jdbcTemplate.query(query, preparedStmtList.toArray(), rowMapper);
         return challans;
     }
 
