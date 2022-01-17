@@ -61,7 +61,7 @@ class ConsumerProvider with ChangeNotifier {
       "usageCategory": "RESIDENTIAL",
       "creationReason": "CREATE",
       "noOfFloors": 1,
-      "source": "MUNICIPAL_RECORDS",
+      "source": "WS",
       "channel": "CITIZEN",
       "ownershipCategory": "INDIVIDUAL",
       "owners": [
