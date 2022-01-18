@@ -434,13 +434,16 @@ public class DemandGenerationConsumer {
 			}
 
 			System.out.println("Bulk Event msg1:: " + message);
-			events.add(Event.builder().tenantId(tenantId).description(message)
-					.eventType(WSCalculationConstant.USREVENTS_EVENT_TYPE)
-					.name(WSCalculationConstant.MONTHLY_DEMAND_GENERATED)
-					.postedBy(WSCalculationConstant.USREVENTS_EVENT_POSTEDBY)
-					.recepient(getRecepient(requestInfo, tenantId)).source(Source.WEBAPP).eventDetails(null)
-					.actions(action).additionalDetails(additionals).build());
+			if (message != null) {
+				events.add(Event.builder().tenantId(tenantId).description(message)
+						.eventType(WSCalculationConstant.USREVENTS_EVENT_TYPE)
+						.name(WSCalculationConstant.MONTHLY_DEMAND_GENERATED)
+						.postedBy(WSCalculationConstant.USREVENTS_EVENT_POSTEDBY)
+						.recepient(getRecepient(requestInfo, tenantId)).source(Source.WEBAPP).eventDetails(null)
+						.actions(action).additionalDetails(additionals).build());
 
+			}
+			
 			if (!CollectionUtils.isEmpty(events)) {
 				EventRequest eventReq = EventRequest.builder().requestInfo(requestInfo).events(events).build();
 				util.sendEventNotification(eventReq);
