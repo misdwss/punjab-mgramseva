@@ -99,7 +99,7 @@ config:
       - work-dir: "utilities/rollout-dashboard-cronjob"
         image-name: "rollout-dashboard-cronjob"
         dockerfile: "utilities/rollout-dashboard-cronjob/Dockerfile"
-  - name: "builds/mGramSeva/municipal-services/ws-calculator"
+  - name: "builds/mGramSeva/municipal-services/property-services"
     build:
       - work-dir: "municipal-services/property-services"
         image-name: "property-services"
