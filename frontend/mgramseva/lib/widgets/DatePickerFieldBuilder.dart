@@ -18,6 +18,9 @@ class BasicDateField extends StatelessWidget {
   final String? requiredMessage;
   final GlobalKey? contextkey;
   final Key? key;
+  final String? Function(DateTime?)? validator;
+  final AutovalidateMode? autoValidation;
+
   BasicDateField(this.label, this.isRequired, this.controller,
       {this.firstDate,
       this.lastDate,
@@ -25,7 +28,8 @@ class BasicDateField extends StatelessWidget {
       this.initialDate,
       this.isEnabled,
       this.requiredMessage,
-      this.contextkey, this.key});
+      this.autoValidation,
+      this.contextkey, this.key, this.validator});
 
   @override
   Widget build(BuildContext context) {
@@ -45,7 +49,8 @@ class BasicDateField extends StatelessWidget {
                   OutlineInputBorder(borderRadius: BorderRadius.circular(1.0)),
             ),
             controller: controller,
-            validator: (val) {
+            autovalidateMode: autoValidation,
+            validator: validator ?? (val) {
               if (isRequired != null &&
                   isRequired &&
                   controller.text.trim().isEmpty) {

@@ -123,6 +123,12 @@ class ExpensesDetailsModel {
   var billDateCtrl = TextEditingController();
 
   @JsonKey(ignore: true)
+  var fromDateCtrl = TextEditingController();
+
+  @JsonKey(ignore: true)
+  var toDateCtrl = TextEditingController();
+
+  @JsonKey(ignore: true)
   var paidDateCtrl = TextEditingController();
 
   @JsonKey(ignore: true)

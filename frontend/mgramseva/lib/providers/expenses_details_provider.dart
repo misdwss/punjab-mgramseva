@@ -20,6 +20,7 @@ import 'package:mgramseva/utils/Locilization/application_localizations.dart';
 
 import 'package:mgramseva/utils/constants.dart';
 import 'package:mgramseva/utils/custom_exception.dart';
+import 'package:mgramseva/utils/date_formats.dart';
 import 'package:mgramseva/utils/error_logging.dart';
 import 'package:mgramseva/utils/global_variables.dart';
 import 'package:mgramseva/utils/loaders.dart';
@@ -44,6 +45,7 @@ class ExpensesDetailsProvider with ChangeNotifier {
   var vendorList = <Vendor>[];
   late SuggestionsBoxController suggestionsBoxController;
   var phoneNumberAutoValidation = false;
+  var dateAutoValidation = false;
 
   dispose() {
     streamController.close();
@@ -180,6 +182,7 @@ class ExpensesDetailsProvider with ChangeNotifier {
     getExpensesDetails(navigatorKey.currentContext!, null, null);
     autoValidation = false;
     phoneNumberAutoValidation = false;
+    dateAutoValidation = false;
     notifyListeners();
     Navigator.pop(navigatorKey.currentContext!);
   }
@@ -434,8 +437,39 @@ class ExpensesDetailsProvider with ChangeNotifier {
   }
 
   void onChangeOfDate(DateTime? dateTime) {
-    // ctrl.text = DateFormats.getFilteredDate(dateTime.toString());
     notifyListeners();
+  }
+
+  void onChangeOfStartEndDate(DateTime? dateTime){
+    dateAutoValidation = true;
+    notifyListeners();
+  }
+
+  void onChangeOfBillDate(DateTime? dateTime){
+    if(dateTime == null) return;
+
+    if(expenditureDetails.fromDateCtrl.text.trim().isEmpty && expenditureDetails.toDateCtrl.text.trim().isEmpty) {
+      expenditureDetails.fromDateCtrl.text =
+          DateFormats.timeStampToDate(dateTime.millisecondsSinceEpoch);
+      expenditureDetails.toDateCtrl.text =
+          DateFormats.timeStampToDate(dateTime.millisecondsSinceEpoch);
+    }
+    notifyListeners();
+  }
+
+  String? fromToDateValidator(DateTime? dateTime, [bool isFromDate = false]){
+    var fromDate = DateFormats.getFormattedDateToDateTime(expenditureDetails.fromDateCtrl.text.trim());
+    var toDate = DateFormats.getFormattedDateToDateTime(expenditureDetails.toDateCtrl.text.trim());
+    if(isFromDate){
+      if(dateTime == null) return "from date is required";
+    }else{
+      if(dateTime == null){
+        return 'to date is required';
+      }if(fromDate != null && toDate != null && fromDate.isAfter(toDate)){
+        return 'Start must be before the end date';
+      }
+    }
+    return null;
   }
 
   void onTapOfAttachment(FileStore store, BuildContext context) async {

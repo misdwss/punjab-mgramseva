@@ -60,6 +60,7 @@ class _ExpenseDetailsState extends State<ExpenseDetails> {
   afterViewBuild() {
     Provider.of<ExpensesDetailsProvider>(context, listen: false)
       ..phoneNumberAutoValidation = false
+      ..dateAutoValidation = false
       ..formKey = GlobalKey<FormState>()
       ..suggestionsBoxController = SuggestionsBoxController()
       ..expenditureDetails = ExpensesDetailsModel()
@@ -284,31 +285,67 @@ class _ExpenseDetailsState extends State<ExpenseDetails> {
                                   expenseProvider.expenseWalkthrougList[2].key,
                               key: Keys.expense.EXPENSE_AMOUNT,
                             ),
-                            BasicDateField(
-                              i18.expense.BILL_DATE,
-                              true,
-                              expenseDetails.billDateCtrl,
-                              firstDate: expenseDetails.billIssuedDateCtrl.text
-                                      .trim()
-                                      .isEmpty
-                                  ? null
-                                  : DateFormats.getFormattedDateToDateTime(
+                            Container(
+                              padding: EdgeInsets.all(8),
+                              margin: EdgeInsets.all(8),
+                              decoration: BoxDecoration(
+                                color: Colors.grey.withOpacity(0.1),
+                                borderRadius: BorderRadius.all(Radius.circular(10))
+                              ),
+                              child: Wrap(
+                                children: [
+                                  BasicDateField(
+                                    i18.expense.BILL_DATE,
+                                    true,
+                                    expenseDetails.billDateCtrl,
+                                    firstDate: expenseDetails.billIssuedDateCtrl.text
+                                        .trim()
+                                        .isEmpty
+                                        ? null
+                                        : DateFormats.getFormattedDateToDateTime(
                                       expenseDetails.billIssuedDateCtrl.text
                                           .trim(),
                                     ),
-                              initialDate:
-                                  DateFormats.getFormattedDateToDateTime(
-                                expenseDetails.billDateCtrl.text.trim(),
+                                    initialDate:
+                                    DateFormats.getFormattedDateToDateTime(
+                                      expenseDetails.billDateCtrl.text.trim(),
+                                    ),
+                                    lastDate: DateTime.now(),
+                                    onChangeOfDate:
+                                    expensesDetailsProvider.onChangeOfBillDate,
+                                    isEnabled: expenseDetails.allowEdit,
+                                    requiredMessage:
+                                    i18.expense.DATE_BILL_ENTERED_IN_RECORDS,
+                                    contextkey:
+                                    expenseProvider.expenseWalkthrougList[3].key,
+                                    key: Keys.expense.EXPENSE_BILL_DATE,
+                                  ),
+                                  BasicDateField(
+                                    i18.expense.EXPENSE_FROM_DATE,
+                                    true,
+                                    expenseDetails.fromDateCtrl,
+                                    onChangeOfDate:
+                                    expensesDetailsProvider.onChangeOfStartEndDate,
+                                    isEnabled: (expenseDetails.allowEdit! && expenseDetails.billDateCtrl.text.trim().isNotEmpty),
+                                    requiredMessage: 'expense from date is required',
+                                    autoValidation: expenseProvider.dateAutoValidation ? AutovalidateMode.always
+                                        : AutovalidateMode.disabled,
+                                  ),
+                                  BasicDateField(
+                                    i18.expense.EXPENSE_TO_DATE,
+                                    true,
+                                    expenseDetails.toDateCtrl,
+                                    onChangeOfDate:
+                                    expensesDetailsProvider.onChangeOfStartEndDate,
+                                    isEnabled: (expenseDetails.allowEdit! && expenseDetails.billDateCtrl.text.trim().isNotEmpty),
+                                    requiredMessage:
+                                    'expense to date is required',
+                                    validator: expensesDetailsProvider.fromToDateValidator,
+                                    autoValidation: expenseProvider.dateAutoValidation ? AutovalidateMode.always
+                                        : AutovalidateMode.disabled,
+                                  )
+                                ],
                               ),
-                              lastDate: DateTime.now(),
-                              onChangeOfDate:
-                                  expensesDetailsProvider.onChangeOfDate,
-                              isEnabled: expenseDetails.allowEdit,
-                              requiredMessage:
-                                  i18.expense.DATE_BILL_ENTERED_IN_RECORDS,
-                              contextkey:
-                                  expenseProvider.expenseWalkthrougList[3].key,
-                              key: Keys.expense.EXPENSE_BILL_DATE,
                             ),
                             BasicDateField(
                               i18.expense.PARTY_BILL_DATE,
