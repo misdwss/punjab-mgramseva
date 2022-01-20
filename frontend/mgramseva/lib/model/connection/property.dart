@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:json_annotation/json_annotation.dart';
+import 'package:mgramseva/model/user/user_details.dart';
 
 part 'property.g.dart';
 
@@ -124,6 +125,18 @@ class Locality {
 
 @JsonSerializable()
 class Owners {
+  @JsonKey(name: "id")
+  int? id;
+  @JsonKey(name: "uuid")
+  String? uuid;
+  @JsonKey(name: "userName")
+  String? userName;
+  @JsonKey(name: "active")
+  bool? active;
+  @JsonKey(name: "type")
+  String? type;
+  @JsonKey(name: "tenantId")
+  String? tenantId;
   @JsonKey(name: "altContactNumber")
   String? altContactNumber;
   @JsonKey(name: "correspondenceAddress")
@@ -140,7 +153,8 @@ class Owners {
   String? fatherOrHusbandName;
   @JsonKey(name: "name")
   String? name;
-
+  @JsonKey(name: "status")
+  String? status;
   @JsonKey(name: "gender")
   String? gender;
 
@@ -148,6 +162,9 @@ class Owners {
   String? ownerType;
   @JsonKey(name: "documents")
   List<Documents>? documents;
+
+  @JsonKey(name: "roles")
+  List<Roles>? roles;
 
   @JsonKey(ignore: true)
   var consumerNameCtrl = TextEditingController();

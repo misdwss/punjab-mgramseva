@@ -65,7 +65,7 @@ class ConsumerProvider with ChangeNotifier {
       "usageCategory": "RESIDENTIAL",
       "creationReason": "CREATE",
       "noOfFloors": 1,
-      "source": "MUNICIPAL_RECORDS",
+      "source": "WS",
       "channel": "CITIZEN",
       "ownershipCategory": "INDIVIDUAL",
       "owners": [
@@ -292,6 +292,7 @@ class ConsumerProvider with ChangeNotifier {
           property.address.geoLocation = GeoLocation();
           property.address.geoLocation?.latitude = null;
           property.address.geoLocation?.longitude = null;
+          property.source = 'WS';
           var result1 =
               await ConsumerRepository().updateProperty(property.toJson());
           var result2 = await ConsumerRepository()

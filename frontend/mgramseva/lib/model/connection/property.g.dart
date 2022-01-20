@@ -108,6 +108,12 @@ Map<String, dynamic> _$LocalityToJson(Locality instance) => <String, dynamic>{
 
 Owners _$OwnersFromJson(Map<String, dynamic> json) {
   return Owners()
+    ..id = json['id'] as int?
+    ..uuid = json['uuid'] as String?
+    ..userName = json['userName'] as String?
+    ..active = json['active'] as bool?
+    ..type = json['type'] as String?
+    ..tenantId = json['tenantId'] as String?
     ..altContactNumber = json['altContactNumber'] as String?
     ..correspondenceAddress = json['correspondenceAddress'] as String?
     ..designation = json['designation'] as String?
@@ -116,14 +122,24 @@ Owners _$OwnersFromJson(Map<String, dynamic> json) {
     ..mobileNumber = json['mobileNumber'] as String?
     ..fatherOrHusbandName = json['fatherOrHusbandName'] as String?
     ..name = json['name'] as String?
+    ..status = json['status'] as String?
     ..gender = json['gender'] as String?
     ..ownerType = json['ownerType'] as String?
     ..documents = (json['documents'] as List<dynamic>?)
         ?.map((e) => Documents.fromJson(e as Map<String, dynamic>))
+        .toList()
+    ..roles = (json['roles'] as List<dynamic>?)
+        ?.map((e) => Roles.fromJson(e as Map<String, dynamic>))
         .toList();
 }
 
 Map<String, dynamic> _$OwnersToJson(Owners instance) => <String, dynamic>{
+      'id': instance.id,
+      'uuid': instance.uuid,
+      'userName': instance.userName,
+      'active': instance.active,
+      'type': instance.type,
+      'tenantId': instance.tenantId,
       'altContactNumber': instance.altContactNumber,
       'correspondenceAddress': instance.correspondenceAddress,
       'designation': instance.designation,
@@ -132,9 +148,11 @@ Map<String, dynamic> _$OwnersToJson(Owners instance) => <String, dynamic>{
       'mobileNumber': instance.mobileNumber,
       'fatherOrHusbandName': instance.fatherOrHusbandName,
       'name': instance.name,
+      'status': instance.status,
       'gender': instance.gender,
       'ownerType': instance.ownerType,
       'documents': instance.documents,
+      'roles': instance.roles,
     };
 
 Documents _$DocumentsFromJson(Map<String, dynamic> json) {
