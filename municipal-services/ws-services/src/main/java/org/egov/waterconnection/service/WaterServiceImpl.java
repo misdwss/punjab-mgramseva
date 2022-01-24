@@ -524,19 +524,27 @@ public class WaterServiceImpl implements WaterService {
 
 	@Override
 	public WaterConnectionResponse getWCListFuzzySearch(SearchCriteria criteria, RequestInfo requestInfo) {
-		 
-		List<String> idsfromDB = waterDao.getWCListFuzzySearch(criteria);
-		
-		 if(CollectionUtils.isEmpty(idsfromDB))
-			 WaterConnectionResponse.builder().waterConnection(new LinkedList<>());
 
-	     validateFuzzySearchCriteria(criteria);
-		
-		 Object esResponse = elasticSearchRepository.fuzzySearchProperties(criteria, idsfromDB);
-		
-		 List<Map<String, Object>> data = wsDataResponse(esResponse);
-		 
-		 return WaterConnectionResponse.builder().waterConnectionData(data).totalCount(data.size()).build();
+		List<String> idsfromDB = waterDao.getWCListFuzzySearch(criteria);
+
+		if (CollectionUtils.isEmpty(idsfromDB))
+			WaterConnectionResponse.builder().waterConnection(new LinkedList<>());
+
+		validateFuzzySearchCriteria(criteria);
+
+		Object esResponse = elasticSearchRepository.fuzzySearchProperties(criteria, idsfromDB);
+
+		List<Map<String, Object>> data;
+		try {
+			data = wsDataResponse(esResponse);
+			if (data.isEmpty()) {
+				throw new CustomException("WS_SEARCh_ERROR", "NO user or property found");
+
+			}
+		} catch (Exception e) {
+			throw new CustomException("WS_SEARCh_ERROR", "NO user or property found");
+		}
+		return WaterConnectionResponse.builder().waterConnectionData(data).totalCount(data.size()).build();
 	}
 	
 	private void validateFuzzySearchCriteria(SearchCriteria criteria){
