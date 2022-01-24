@@ -34,25 +34,25 @@ class _RevenueChartsState extends State<RevenueCharts> {
   @override
   Widget build(BuildContext context) {
     return  LayoutBuilder(
-            builder: (context, constraints) => Container(
-            color: Color.fromRGBO(238, 238, 238, 1),
-            child: constraints.maxWidth > 760 ?  _buildDesktopView() : _buildMobileView(),
-          ),
+      builder: (context, constraints) => Container(
+        color: Color.fromRGBO(238, 238, 238, 1),
+        child: constraints.maxWidth > 760 ?  _buildDesktopView() : _buildMobileView(),
+      ),
     );
   }
 
 
   Widget _buildMobileView() {
     return _buildChartWithCardView(
-      Consumer<RevenueDashboard>(
-          builder : (_, revenueProvider, child) =>
-              getGraphView(revenueProvider.selectedIndex)
-      ),
-      _buildActions()
+        Consumer<RevenueDashboard>(
+            builder : (_, revenueProvider, child) =>
+                getGraphView(revenueProvider.selectedIndex)
+        ),
+        _buildActions()
     );
   }
-  
-  
+
+
   Widget _buildDesktopView(){
     var revenueProvider = Provider.of<RevenueDashboard>(context, listen: false);
 
@@ -62,7 +62,8 @@ class _RevenueChartsState extends State<RevenueCharts> {
         /// Stacked Graph not implemented due to Backend API response finalization is pending
         // Expanded(child: _buildChartWithCardView(_buildStackedCharts(), _buildButton(revenueProvider.getTabs(context).first))),
         // SizedBox(width: 8),
-        Expanded(child: _buildChartWithCardView(_buildLineCharts(true), _buildButton(revenueProvider.getTabs(context).last))),
+        Expanded(child: _buildChartWithCardView(_buildLineCharts(true),
+            _buildButton(revenueProvider.getTabs(context).last))),
       ],
     );
   }
@@ -150,27 +151,27 @@ class _RevenueChartsState extends State<RevenueCharts> {
 
   Widget _buildStackedLegends(String label, List<Legend> legends){
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisAlignment: MainAxisAlignment.start,
-      children : [
-        Padding(
-          padding: const EdgeInsets.symmetric(vertical : 8.0),
-          child: Text('${ApplicationLocalizations.of(context).translate(label)}',
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w700
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.start,
+        children : [
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical : 8.0),
+            child: Text('${ApplicationLocalizations.of(context).translate(label)}',
+              style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700
+              ),
+            ),
           ),
-          ),
-        ),
-        Expanded(
-          child: Wrap(
-            direction: Axis.vertical,
-            spacing: 8,
-            runSpacing: 10,
-            children: legends.map((e) => _buildLegend(e.label,  HexColor(e.hexColor))).toList()
-          ),
-        )
-      ]
+          Expanded(
+            child: Wrap(
+                direction: Axis.vertical,
+                spacing: 8,
+                runSpacing: 10,
+                children: legends.map((e) => _buildLegend(e.label,  HexColor(e.hexColor))).toList()
+            ),
+          )
+        ]
     );
   }
 
@@ -178,28 +179,28 @@ class _RevenueChartsState extends State<RevenueCharts> {
   Widget _buildLineCharts([bool isDeskTopView = false]){
     var height = 250.0;
     return Consumer<RevenueDashboard>(
-      builder : (_, revenue, child) =>
-      revenue.revenueDataHolder.trendLineLoader ? Loaders.circularLoader(height: height) :  (revenue.revenueDataHolder.trendLine?.graphData == null || revenue.revenueDataHolder.trendLine!.graphData!.isEmpty)
-          ? CommonWidgets.buildEmptyMessage(i18.dashboard.NO_RECORDS_MSG, context)
-          : Column(children : [
-        LayoutBuilder(
-          builder: (_, constraints) => Container(
-              height: height,
-            child : SimpleLineChart(revenue.revenueDataHolder.trendLine!.graphData!, constraints, animate: false)),
-        ),
-      Container(
-          padding:  EdgeInsets.only(top : widget.isFromScreenshot ? 5 : 16.0),
-          // height: isDeskTopView ? 90 : null,
-          alignment: isDeskTopView ? Alignment.center : null,
-          child: Wrap(
-            spacing: 20,
-            children: [
-              _buildLegend(i18.dashboard.REVENUE, Color.fromRGBO(64, 106, 187, 1)),
-              _buildLegend(i18.dashboard.EXPENDITURE, Color.fromRGBO(255, 0, 0, 1)),
-            ],
+        builder : (_, revenue, child) =>
+        revenue.revenueDataHolder.trendLineLoader ? Loaders.circularLoader(height: height) :  (revenue.revenueDataHolder.trendLine?.graphData == null || revenue.revenueDataHolder.trendLine!.graphData!.isEmpty)
+            ? CommonWidgets.buildEmptyMessage(i18.dashboard.NO_RECORDS_MSG, context)
+            : Column(children : [
+          LayoutBuilder(
+            builder: (_, constraints) => Container(
+                height: height,
+                child : SimpleLineChart(revenue.revenueDataHolder.trendLine!.graphData!, constraints, animate: false)),
           ),
-      )
-      ])
+          Container(
+            padding:  EdgeInsets.only(top : widget.isFromScreenshot ? 5 : 16.0),
+            // height: isDeskTopView ? 90 : null,
+            alignment: isDeskTopView ? Alignment.center : null,
+            child: Wrap(
+              spacing: 20,
+              children: [
+                _buildLegend(i18.dashboard.REVENUE, Color.fromRGBO(64, 106, 187, 1)),
+                _buildLegend(i18.dashboard.EXPENDITURE, Color.fromRGBO(255, 0, 0, 1)),
+              ],
+            ),
+          )
+        ])
     );
   }
 
@@ -207,7 +208,7 @@ class _RevenueChartsState extends State<RevenueCharts> {
     return _buildLineCharts();
     switch(index){
       case 0 :
-       return _buildStackedCharts();
+        return _buildStackedCharts();
       case 1 :
         return _buildLineCharts();
       default :
@@ -224,15 +225,15 @@ class _RevenueChartsState extends State<RevenueCharts> {
           height: 12,
           width: 12,
           decoration: BoxDecoration(
-            color: color,
-            shape: BoxShape.circle
+              color: color,
+              shape: BoxShape.circle
           ),
         ),
         Text('${ApplicationLocalizations.of(context).translate(label)}',
-        style: TextStyle(
-          fontSize: 12,
-          color: Color.fromRGBO(11, 12, 12, 1)
-        ),
+          style: TextStyle(
+              fontSize: 12,
+              color: Color.fromRGBO(11, 12, 12, 1)
+          ),
         )
       ],
     );
@@ -241,18 +242,19 @@ class _RevenueChartsState extends State<RevenueCharts> {
   Widget _buildButton(String label, [int? index, Function(int)? callBack]){
     var revenueProvider = Provider.of<RevenueDashboard>(context, listen: false);
 
-    return OutlinedButton(
+    return Container(height: 10,);
+    OutlinedButton(
       onPressed: () => callBack != null && index != null ? callBack(index) : (){},
-    style: OutlinedButton.styleFrom(
-    side: BorderSide(width: 1.0, color: (revenueProvider.selectedIndex == index) || index == null ? Theme.of(context).primaryColor : Color.fromRGBO(238, 238, 238, 1)),
-    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(3.0)),
-    padding: EdgeInsets.symmetric(horizontal: 8, vertical: 9)
-    ),
-      child: Text("${ApplicationLocalizations.of(context).translate(label)}",
-      style: TextStyle(
-        color: (revenueProvider.selectedIndex == index) || index == null ? Theme.of(context).primaryColor : Color.fromRGBO(80, 90, 95, 1),
-        fontSize: 14
+      style: OutlinedButton.styleFrom(
+          side: BorderSide(width: 1.0, color: (revenueProvider.selectedIndex == index) || index == null ? Theme.of(context).primaryColor : Color.fromRGBO(238, 238, 238, 1)),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(3.0)),
+          padding: EdgeInsets.symmetric(horizontal: 8, vertical: 9)
       ),
+      child: Text("${ApplicationLocalizations.of(context).translate(label)}",
+        style: TextStyle(
+            color: (revenueProvider.selectedIndex == index) || index == null ? Theme.of(context).primaryColor : Color.fromRGBO(80, 90, 95, 1),
+            fontSize: 14
+        ),
       ),
     );
   }
@@ -275,7 +277,7 @@ class StackedBarChart extends StatelessWidget {
       defaultRenderer: new charts.BarRendererConfig(
         groupingType: charts.BarGroupingType.groupedStacked,
         maxBarWidthPx: 8,
-          cornerStrategy: const charts.ConstCornerStrategy(30),
+        cornerStrategy: const charts.ConstCornerStrategy(30),
       ),
     );
   }
@@ -297,19 +299,25 @@ class SimpleLineChart extends StatelessWidget {
     final customTickFormatter =
     charts.BasicNumericTickFormatterSpec((num? value) {
 
-     var dateList =  revenueDashboard.revenueDataHolder.trendLine?.data!.first.plots?.map((e) => e.name).toList() ?? [];
+      var dateList =  revenueDashboard.revenueDataHolder.trendLine?.data!.first.plots?.map((e) => e.name).toList() ?? [];
       var index = value?.toInt() ?? 0;
-     if(index < dateList.length){
-       var filteredMonth = dateList[index].toString().split('-').first;
-       return ApplicationLocalizations.of(context).translate(filteredMonth);
-     }else{
-       return "";
-     }
+      if(index < dateList.length){
+        var filteredMonth = dateList[index].toString().split('-').first;
+        return ApplicationLocalizations.of(context).translate(filteredMonth);
+      }else{
+        return "";
+      }
+    });
+    final customYAxisTickFormatter =
+    charts.BasicNumericTickFormatterSpec((num? value) {
+      ToolTipMgr.setMaxValue(value ?? 0);
+      return '₹ $value';
+
     });
 
     return new charts.LineChart(seriesList,
-          animate: animate,
-        defaultRenderer: charts.LineRendererConfig(includePoints: true, ),
+      animate: animate,
+      defaultRenderer: charts.LineRendererConfig(includePoints: true, ),
       selectionModels: [
         charts.SelectionModelConfig(
             changedListener: (charts.SelectionModel model) {
@@ -340,19 +348,22 @@ class SimpleLineChart extends StatelessWidget {
           symbolRenderer: CustomCircleSymbolRenderer(),
         ),
       ],
-        domainAxis: charts.NumericAxisSpec(
-          tickProviderSpec:
-          charts.BasicNumericTickProviderSpec(desiredTickCount: 1),
-          tickFormatterSpec: customTickFormatter,
-            viewport: constraints.maxWidth > 760 ? null : ((revenueDashboard.revenueDataHolder.trendLine?.data?.first.plots?.length ?? 0) > 6 ? ( charts.NumericExtents(0.0, 5.0)) : null),
-          renderSpec: charts.SmallTickRendererSpec(
-              minimumPaddingBetweenLabelsPx: 0,
-              // Tick and Label styling here.
-              labelStyle: new charts.TextStyleSpec(
+      domainAxis: charts.NumericAxisSpec(
+        tickProviderSpec:
+        charts.BasicNumericTickProviderSpec(desiredTickCount: 1),
+        tickFormatterSpec: customTickFormatter,
+        viewport: constraints.maxWidth > 760 ? null : ((revenueDashboard.revenueDataHolder.trendLine?.data?.first.plots?.length ?? 0) > 6 ? ( charts.NumericExtents(0.0, 5.0)) : null),
+        renderSpec: charts.SmallTickRendererSpec(
+          minimumPaddingBetweenLabelsPx: 0,
+          // Tick and Label styling here.
+          labelStyle: new charts.TextStyleSpec(
               fontSize: 12, // size in Pts.
               color: charts.MaterialPalette.black),
-          ),
         ),
+      ),
+      primaryMeasureAxis: charts.NumericAxisSpec(
+        tickFormatterSpec: customYAxisTickFormatter,
+      ),
     );
   }
 
