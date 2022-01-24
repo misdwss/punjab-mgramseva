@@ -1,4 +1,3 @@
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
@@ -62,8 +61,7 @@ class _RevenueChartsState extends State<RevenueCharts> {
         /// Stacked Graph not implemented due to Backend API response finalization is pending
         // Expanded(child: _buildChartWithCardView(_buildStackedCharts(), _buildButton(revenueProvider.getTabs(context).first))),
         // SizedBox(width: 8),
-        Expanded(child: _buildChartWithCardView(_buildLineCharts(true),
-            _buildButton(revenueProvider.getTabs(context).last))),
+        Expanded(child: _buildChartWithCardView(_buildLineCharts(true), _buildButton(revenueProvider.getTabs(context).last))),
       ],
     );
   }
@@ -243,20 +241,20 @@ class _RevenueChartsState extends State<RevenueCharts> {
     var revenueProvider = Provider.of<RevenueDashboard>(context, listen: false);
 
     return Container(height: 10,);
-    OutlinedButton(
-      onPressed: () => callBack != null && index != null ? callBack(index) : (){},
-      style: OutlinedButton.styleFrom(
-          side: BorderSide(width: 1.0, color: (revenueProvider.selectedIndex == index) || index == null ? Theme.of(context).primaryColor : Color.fromRGBO(238, 238, 238, 1)),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(3.0)),
-          padding: EdgeInsets.symmetric(horizontal: 8, vertical: 9)
-      ),
-      child: Text("${ApplicationLocalizations.of(context).translate(label)}",
-        style: TextStyle(
-            color: (revenueProvider.selectedIndex == index) || index == null ? Theme.of(context).primaryColor : Color.fromRGBO(80, 90, 95, 1),
-            fontSize: 14
-        ),
-      ),
-    );
+    //   OutlinedButton(
+    //   onPressed: () => callBack != null && index != null ? callBack(index) : (){},
+    //   style: OutlinedButton.styleFrom(
+    //       side: BorderSide(width: 1.0, color: (revenueProvider.selectedIndex == index) || index == null ? Theme.of(context).primaryColor : Color.fromRGBO(238, 238, 238, 1)),
+    //       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(3.0)),
+    //       padding: EdgeInsets.symmetric(horizontal: 8, vertical: 9)
+    //   ),
+    //   child: Text("${ApplicationLocalizations.of(context).translate(label)}",
+    //     style: TextStyle(
+    //         color: (revenueProvider.selectedIndex == index) || index == null ? Theme.of(context).primaryColor : Color.fromRGBO(80, 90, 95, 1),
+    //         fontSize: 14
+    //     ),
+    //   ),
+    // );
   }
 }
 
@@ -308,6 +306,7 @@ class SimpleLineChart extends StatelessWidget {
         return "";
       }
     });
+
     final customYAxisTickFormatter =
     charts.BasicNumericTickFormatterSpec((num? value) {
       ToolTipMgr.setMaxValue(value ?? 0);
