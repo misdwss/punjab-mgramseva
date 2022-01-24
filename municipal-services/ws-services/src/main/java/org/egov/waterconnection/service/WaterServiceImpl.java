@@ -538,11 +538,11 @@ public class WaterServiceImpl implements WaterService {
 		try {
 			data = wsDataResponse(esResponse);
 			if (data.isEmpty()) {
-				throw new CustomException("WS_SEARCh_ERROR", "NO user or property found");
+				throw new CustomException("INVALID_SEARCH_USER_PROP_NOT_FOUND", "Could not find user or property details !");
 
 			}
 		} catch (Exception e) {
-			throw new CustomException("WS_SEARCh_ERROR", "NO user or property found");
+			throw new CustomException("INVALID_SEARCH_USER_PROP_NOT_FOUND", "Could not find user or property details !");
 		}
 		return WaterConnectionResponse.builder().waterConnectionData(data).totalCount(data.size()).build();
 	}
