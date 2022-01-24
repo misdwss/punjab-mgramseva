@@ -290,7 +290,9 @@ class _ExpenseDetailsState extends State<ExpenseDetails> {
                               margin: EdgeInsets.all(8),
                               decoration: BoxDecoration(
                                 color: Colors.grey.withOpacity(0.1),
-                                borderRadius: BorderRadius.all(Radius.circular(10))
+                                border: Border.all(color: Colors.grey, width: 0.3),
+                                borderRadius: BorderRadius.all(Radius.circular(10),
+                                )
                               ),
                               child: Wrap(
                                 children: [
@@ -321,25 +323,23 @@ class _ExpenseDetailsState extends State<ExpenseDetails> {
                                     key: Keys.expense.EXPENSE_BILL_DATE,
                                   ),
                                   BasicDateField(
-                                    i18.expense.EXPENSE_FROM_DATE,
+                                    i18.expense.EXPENSE_START_DATE,
                                     true,
                                     expenseDetails.fromDateCtrl,
                                     onChangeOfDate:
                                     expensesDetailsProvider.onChangeOfStartEndDate,
-                                    isEnabled: (expenseDetails.allowEdit! && expenseDetails.billDateCtrl.text.trim().isNotEmpty),
-                                    requiredMessage: 'expense from date is required',
+                                    isEnabled: expenseDetails.allowEdit,
+                                    requiredMessage: i18.expense.EXPENSE_START_DATE_MANDATORY,
                                     autoValidation: expenseProvider.dateAutoValidation ? AutovalidateMode.always
                                         : AutovalidateMode.disabled,
                                   ),
                                   BasicDateField(
-                                    i18.expense.EXPENSE_TO_DATE,
+                                    i18.expense.EXPENSE_END_DATE,
                                     true,
                                     expenseDetails.toDateCtrl,
                                     onChangeOfDate:
                                     expensesDetailsProvider.onChangeOfStartEndDate,
-                                    isEnabled: (expenseDetails.allowEdit! && expenseDetails.billDateCtrl.text.trim().isNotEmpty),
-                                    requiredMessage:
-                                    'expense to date is required',
+                                    isEnabled: expenseDetails.allowEdit,
                                     validator: expensesDetailsProvider.fromToDateValidator,
                                     autoValidation: expenseProvider.dateAutoValidation ? AutovalidateMode.always
                                         : AutovalidateMode.disabled,

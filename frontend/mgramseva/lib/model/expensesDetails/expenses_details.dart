@@ -153,6 +153,8 @@ class ExpensesDetailsModel {
       billIssuedDate = DateFormats.dateToTimeStamp(billIssuedDateCtrl.text);
     if (paidDateCtrl.text.trim().isNotEmpty)
       paidDate = DateFormats.dateToTimeStamp(paidDateCtrl.text);
+    taxPeriodFrom = DateFormats.dateToTimeStamp(fromDateCtrl.text.trim());
+    taxPeriodTo = DateFormats.dateToTimeStamp(toDateCtrl.text.trim());
   }
 
   getText() {
@@ -170,6 +172,8 @@ class ExpensesDetailsModel {
         billIssuedDate == 0 ? '' : DateFormats.timeStampToDate(billIssuedDate);
     isBillPaid ??= false;
     challanNumberCtrl.text = challanNo?.toString() ?? '';
+    fromDateCtrl.text = DateFormats.timeStampToDate(taxPeriodFrom);
+    toDateCtrl.text = DateFormats.timeStampToDate(taxPeriodTo);
 
     if (selectedVendor == null && challanNo != null) {
       selectedVendor = Vendor(vendorName ?? '', vendorId ?? '');

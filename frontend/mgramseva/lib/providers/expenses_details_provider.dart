@@ -461,12 +461,12 @@ class ExpensesDetailsProvider with ChangeNotifier {
     var fromDate = DateFormats.getFormattedDateToDateTime(expenditureDetails.fromDateCtrl.text.trim());
     var toDate = DateFormats.getFormattedDateToDateTime(expenditureDetails.toDateCtrl.text.trim());
     if(isFromDate){
-      if(dateTime == null) return "from date is required";
+      if(fromDate == null) return i18.expense.EXPENSE_START_DATE_MANDATORY;
     }else{
-      if(dateTime == null){
-        return 'to date is required';
-      }if(fromDate != null && toDate != null && fromDate.isAfter(toDate)){
-        return 'Start must be before the end date';
+      if(toDate == null){
+        return i18.expense.EXPENSE_END_DATE_MANDATORY;
+      }if(fromDate != null && fromDate.isAfter(toDate)){
+        return i18.expense.EXPENSE_END_START_DATE_VALIDATION;
       }
     }
     return null;
