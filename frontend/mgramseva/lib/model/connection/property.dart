@@ -65,6 +65,8 @@ class Property {
 class Address {
   @JsonKey(name: "city")
   String? city;
+  @JsonKey(name: "id")
+  String? id;
   @JsonKey(name: "locality")
   Locality? locality;
   @JsonKey(name: "street")
@@ -116,6 +118,10 @@ class Locality {
   String? code;
   @JsonKey(name: "area")
   String? area;
+  @JsonKey(name: "name")
+  String? name;
+  @JsonKey(name: "label")
+  String? label;
 
   Locality();
   factory Locality.fromJson(Map<String, dynamic> json) =>
@@ -131,6 +137,26 @@ class Owners {
   String? uuid;
   @JsonKey(name: "userName")
   String? userName;
+  @JsonKey(name: "password")
+  String? password;
+  @JsonKey(name: "aadhaarNumber")
+  String? aadhaarNumber;
+  @JsonKey(name: "permanentAddress")
+  String? permanentAddress;
+  @JsonKey(name: "permanentCity")
+  String? permanentCity;
+  @JsonKey(name: "permanentPinCode")
+  String? permanentPinCode;
+  @JsonKey(name: "correspondenceCity")
+  String? correspondenceCity;
+  @JsonKey(name: "correspondencePinCode")
+  String? correspondencePinCode;
+  @JsonKey(name: "correspondenceAddress")
+  String? correspondenceAddress;
+  @JsonKey(name: "pwdExpiryDate")
+  int? pwdExpiryDate;
+  @JsonKey(name: "accountLocked")
+  bool? accountLocked;
   @JsonKey(name: "active")
   bool? active;
   @JsonKey(name: "type")
@@ -139,8 +165,14 @@ class Owners {
   String? tenantId;
   @JsonKey(name: "altContactNumber")
   String? altContactNumber;
-  @JsonKey(name: "correspondenceAddress")
-  String? correspondenceAddress;
+  @JsonKey(name: "ownerInfoUuid")
+  String? ownerInfoUuid;
+  @JsonKey(name: "isPrimaryOwner")
+  String? isPrimaryOwner;
+  @JsonKey(name: "ownerShipPercentage")
+  String? ownerShipPercentage;
+  @JsonKey(name: "institutionId")
+  String? institutionId;
   @JsonKey(name: "designation")
   String? designation;
   @JsonKey(name: "emailId")
