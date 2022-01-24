@@ -202,7 +202,6 @@ class ConsumerProvider with ChangeNotifier {
 
       property.tenantId = commonProvider.userDetails!.selectedtenant!.code;
       property.address.city = commonProvider.userDetails!.selectedtenant!.name;
-      waterconnection.setText();
       if (waterconnection.processInstance == null) {
         var processInstance = ProcessInstance();
         processInstance.action = 'SUBMIT';
@@ -444,7 +443,6 @@ class ConsumerProvider with ChangeNotifier {
   }
 
   List<DropdownMenuItem<Object>> getSubCategoryList() {
-    print(languageList?.mdmsRes?.subCategory!.subcategoryList!.first.code);
     if (languageList?.mdmsRes?.subCategory != null) {
       return (languageList?.mdmsRes?.subCategory?.subcategoryList ??
               <SubCategoryType>[])
@@ -483,6 +481,7 @@ class ConsumerProvider with ChangeNotifier {
   onChangeBillingcycle(val) {
     selectedcycle = val;
     var date = val;
+    waterconnection.previousReadingDateCtrl.clear();
     waterconnection.BillingCycleCtrl.text = selectedcycle ?? '';
     waterconnection.meterInstallationDateCtrl.text = selectedcycle ?? '';
     notifyListeners();

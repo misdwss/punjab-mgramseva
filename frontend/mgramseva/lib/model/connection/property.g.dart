@@ -71,6 +71,7 @@ Map<String, dynamic> _$PropertyToJson(Property instance) => <String, dynamic>{
 Address _$AddressFromJson(Map<String, dynamic> json) {
   return Address()
     ..city = json['city'] as String?
+    ..id = json['id'] as String?
     ..locality = json['locality'] == null
         ? null
         : Locality.fromJson(json['locality'] as Map<String, dynamic>)
@@ -87,6 +88,7 @@ Address _$AddressFromJson(Map<String, dynamic> json) {
 
 Map<String, dynamic> _$AddressToJson(Address instance) => <String, dynamic>{
       'city': instance.city,
+      'id': instance.id,
       'locality': instance.locality,
       'street': instance.street,
       'geoLocation': instance.geoLocation,
@@ -98,12 +100,16 @@ Map<String, dynamic> _$AddressToJson(Address instance) => <String, dynamic>{
 Locality _$LocalityFromJson(Map<String, dynamic> json) {
   return Locality()
     ..code = json['code'] as String?
-    ..area = json['area'] as String?;
+    ..area = json['area'] as String?
+    ..name = json['name'] as String?
+    ..label = json['label'] as String?;
 }
 
 Map<String, dynamic> _$LocalityToJson(Locality instance) => <String, dynamic>{
       'code': instance.code,
       'area': instance.area,
+      'name': instance.name,
+      'label': instance.label,
     };
 
 Owners _$OwnersFromJson(Map<String, dynamic> json) {
@@ -111,11 +117,24 @@ Owners _$OwnersFromJson(Map<String, dynamic> json) {
     ..id = json['id'] as int?
     ..uuid = json['uuid'] as String?
     ..userName = json['userName'] as String?
+    ..password = json['password'] as String?
+    ..aadhaarNumber = json['aadhaarNumber'] as String?
+    ..permanentAddress = json['permanentAddress'] as String?
+    ..permanentCity = json['permanentCity'] as String?
+    ..permanentPinCode = json['permanentPinCode'] as String?
+    ..correspondenceCity = json['correspondenceCity'] as String?
+    ..correspondencePinCode = json['correspondencePinCode'] as String?
+    ..correspondenceAddress = json['correspondenceAddress'] as String?
+    ..pwdExpiryDate = json['pwdExpiryDate'] as int?
+    ..accountLocked = json['accountLocked'] as bool?
     ..active = json['active'] as bool?
     ..type = json['type'] as String?
     ..tenantId = json['tenantId'] as String?
     ..altContactNumber = json['altContactNumber'] as String?
-    ..correspondenceAddress = json['correspondenceAddress'] as String?
+    ..ownerInfoUuid = json['ownerInfoUuid'] as String?
+    ..isPrimaryOwner = json['isPrimaryOwner'] as String?
+    ..ownerShipPercentage = json['ownerShipPercentage'] as String?
+    ..institutionId = json['institutionId'] as String?
     ..designation = json['designation'] as String?
     ..emailId = json['emailId'] as String?
     ..isCorrespondenceAddress = json['isCorrespondenceAddress'] as bool?
@@ -137,11 +156,24 @@ Map<String, dynamic> _$OwnersToJson(Owners instance) => <String, dynamic>{
       'id': instance.id,
       'uuid': instance.uuid,
       'userName': instance.userName,
+      'password': instance.password,
+      'aadhaarNumber': instance.aadhaarNumber,
+      'permanentAddress': instance.permanentAddress,
+      'permanentCity': instance.permanentCity,
+      'permanentPinCode': instance.permanentPinCode,
+      'correspondenceCity': instance.correspondenceCity,
+      'correspondencePinCode': instance.correspondencePinCode,
+      'correspondenceAddress': instance.correspondenceAddress,
+      'pwdExpiryDate': instance.pwdExpiryDate,
+      'accountLocked': instance.accountLocked,
       'active': instance.active,
       'type': instance.type,
       'tenantId': instance.tenantId,
       'altContactNumber': instance.altContactNumber,
-      'correspondenceAddress': instance.correspondenceAddress,
+      'ownerInfoUuid': instance.ownerInfoUuid,
+      'isPrimaryOwner': instance.isPrimaryOwner,
+      'ownerShipPercentage': instance.ownerShipPercentage,
+      'institutionId': instance.institutionId,
       'designation': instance.designation,
       'emailId': instance.emailId,
       'isCorrespondenceAddress': instance.isCorrespondenceAddress,
