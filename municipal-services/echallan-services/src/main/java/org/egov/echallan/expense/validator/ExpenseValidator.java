@@ -82,13 +82,24 @@ public class ExpenseValidator {
 		if (challan.getIsBillPaid() && (!isNull(challan.getPaidDate())) && challan.getPaidDate() > currentTime)
 			errorMap.put("PaidDate_CurrentDate", " Paid date should be before current date");
 
+		if (isNull(challan.getTaxPeriodFrom()) && isNull(challan.getTaxPeriodTo())) {
+			errorMap.put("FromDate_ToDate_Mandetory", "Both Expense Fromdate and Todate is Mandetory");
+		}
+		
+		if (isNull(challan.getTaxPeriodFrom()) && !isNull(challan.getTaxPeriodTo())) {
+			errorMap.put("FromDate_Mandetory", "Expense From date Is Mandetory");
+
+		}if (!isNull(challan.getTaxPeriodFrom()) && isNull(challan.getTaxPeriodTo())) {
+			errorMap.put("ToDate_Mandetory", "Expense Todate is Mandetory");
+		}
+		
+		if (challan.getTaxPeriodFrom() > challan.getTaxPeriodTo()) {
+			errorMap.put("ToDate_Before_FromDate", " From date should be Less Than Todate date");
+		}
+		
 		if (!errorMap.isEmpty())
 			throw new CustomException(errorMap);
-		else {
-			challan.setTaxPeriodTo(challan.getBillDate() + 1);
-			challan.setTaxPeriodFrom(challan.getBillDate());
-		}
-
+	
 	}
 
 	private Object validateVendor(String vendor, String tenantId, RequestInfo requestInfo) {
