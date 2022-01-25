@@ -1,3 +1,4 @@
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:mgramseva/model/connection/water_connection.dart';
@@ -100,6 +101,16 @@ class router {
         path = Routes.HOME;
       }
     }
+
+
+    if (kIsWeb) {
+      FirebaseAnalytics analytics = FirebaseAnalytics();
+      analytics.logEvent(name: "screen_view", parameters: {
+        'firebase_screen': "$path",
+        'screen_name': "$path",
+      });
+    }
+
     if (!(path != null && RoleActionsFiltering().isEligibleRoletoRoute(path)))
       return pageNotAvailable;
 
