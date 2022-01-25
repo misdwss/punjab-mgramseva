@@ -311,7 +311,7 @@ class SimpleLineChart extends StatelessWidget {
     final customYAxisTickFormatter =
     charts.BasicNumericTickFormatterSpec((num? value) {
       ToolTipMgr.setMaxValue(value ?? 0);
-      return '₹ $value';
+      return '₹ ${value?.toInt()}';
 
     });
 
