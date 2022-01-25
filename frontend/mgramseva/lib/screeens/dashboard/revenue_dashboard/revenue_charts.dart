@@ -363,6 +363,7 @@ class SimpleLineChart extends StatelessWidget {
         ),
         primaryMeasureAxis: charts.NumericAxisSpec(
         tickFormatterSpec: customYAxisTickFormatter,
+        showAxisLine: true
       ),
     );
   }
