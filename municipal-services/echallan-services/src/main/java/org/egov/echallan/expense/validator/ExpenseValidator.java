@@ -95,8 +95,9 @@ public class ExpenseValidator {
 		
 		if (challan.getTaxPeriodFrom() > challan.getTaxPeriodTo()) {
 			errorMap.put("ToDate_Before_FromDate", " From date should be Less Than Todate date");
-		}
-		
+		} else if (challan.getTaxPeriodFrom() > currentTime)
+			errorMap.put("FromDate_CurrentDate", "From date should be before current date");
+
 		if (!errorMap.isEmpty())
 			throw new CustomException(errorMap);
 	
