@@ -461,12 +461,12 @@ class ExpensesDetailsProvider with ChangeNotifier {
     var fromDate = DateFormats.getFormattedDateToDateTime(expenditureDetails.fromDateCtrl.text.trim());
     var toDate = DateFormats.getFormattedDateToDateTime(expenditureDetails.toDateCtrl.text.trim());
     if(isFromDate){
-      if(fromDate == null) return i18.expense.EXPENSE_START_DATE_MANDATORY;
+      if(fromDate == null) return '${ApplicationLocalizations.of(navigatorKey.currentContext!).translate(i18.expense.EXPENSE_START_DATE_MANDATORY)}';
     }else{
       if(toDate == null){
-        return i18.expense.EXPENSE_END_DATE_MANDATORY;
+        return '${ApplicationLocalizations.of(navigatorKey.currentContext!).translate(i18.expense.EXPENSE_END_DATE_MANDATORY)}';
       }if(fromDate != null && fromDate.isAfter(toDate)){
-        return i18.expense.EXPENSE_END_START_DATE_VALIDATION;
+        return '${ApplicationLocalizations.of(navigatorKey.currentContext!).translate(i18.expense.EXPENSE_END_START_DATE_VALIDATION)}';
       }
     }
     return null;

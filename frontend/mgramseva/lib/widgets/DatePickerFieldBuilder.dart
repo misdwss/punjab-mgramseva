@@ -20,6 +20,7 @@ class BasicDateField extends StatelessWidget {
   final Key? key;
   final String? Function(DateTime?)? validator;
   final AutovalidateMode? autoValidation;
+  final EdgeInsets? margin;
 
   BasicDateField(this.label, this.isRequired, this.controller,
       {this.firstDate,
@@ -29,7 +30,7 @@ class BasicDateField extends StatelessWidget {
       this.isEnabled,
       this.requiredMessage,
       this.autoValidation,
-      this.contextkey, this.key, this.validator});
+      this.contextkey, this.key, this.validator, this.margin});
 
   @override
   Widget build(BuildContext context) {
@@ -108,7 +109,7 @@ class BasicDateField extends StatelessWidget {
         return Container(
             key: contextkey,
             margin:
-                const EdgeInsets.only(top: 5.0, bottom: 5, right: 8, left: 8),
+            margin ?? EdgeInsets.only(top: 5.0, bottom: 5, right: 8, left: 8),
             child: Column(children: [
               Container(
                   padding: EdgeInsets.only(top: 18, bottom: 3),
@@ -119,7 +120,7 @@ class BasicDateField extends StatelessWidget {
       } else {
         return Container(
             key: contextkey,
-            margin: const EdgeInsets.only(
+            margin: margin ?? EdgeInsets.only(
                 top: 20.0, bottom: 5, right: 20, left: 20),
             child: Row(children: [
               Container(
