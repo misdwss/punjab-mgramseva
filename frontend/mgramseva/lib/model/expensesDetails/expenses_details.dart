@@ -164,7 +164,7 @@ class ExpensesDetailsModel {
 
     vendorNameCtrl.text = vendorName ?? '';
     expensesAmount?.first.amountCtrl.text =
-        expensesAmount?.first.amount ?? totalAmount?.toString() ?? '';
+        expensesAmount?.first.amount ?? totalAmount?.toInt().toString() ?? '';
     billDateCtrl.text = DateFormats.timeStampToDate(billDate);
     paidDateCtrl.text =
         paidDate == 0 ? '' : DateFormats.timeStampToDate(paidDate);

@@ -63,6 +63,7 @@ class _ExpenseDetailsState extends State<ExpenseDetails> {
       ..phoneNumberAutoValidation = false
       ..dateAutoValidation = false
       ..formKey = GlobalKey<FormState>()
+      ..filePickerKey = GlobalKey<FilePickerDemoState>()
       ..suggestionsBoxController = SuggestionsBoxController()
       ..expenditureDetails = ExpensesDetailsModel()
       ..autoValidation = false
@@ -453,6 +454,7 @@ class _ExpenseDetailsState extends State<ExpenseDetails> {
                               ),
                             if (expenseDetails.allowEdit ?? true)
                               FilePickerDemo(
+                                key: expensesDetailsProvider.filePickerKey,
                                 callBack:
                                     expensesDetailsProvider.fileStoreIdCallBack,
                                 extensions: ['jpg', 'pdf', 'png'],
