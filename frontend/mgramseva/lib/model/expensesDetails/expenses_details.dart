@@ -154,7 +154,7 @@ class ExpensesDetailsModel {
     if (paidDateCtrl.text.trim().isNotEmpty)
       paidDate = DateFormats.dateToTimeStamp(paidDateCtrl.text);
     taxPeriodFrom = DateFormats.dateToTimeStamp(fromDateCtrl.text.trim());
-    taxPeriodTo = DateFormats.dateToTimeStamp(toDateCtrl.text.trim()) + 1;
+    taxPeriodTo = DateFormats.dateToTimeStamp(toDateCtrl.text.trim());
   }
 
   getText() {
