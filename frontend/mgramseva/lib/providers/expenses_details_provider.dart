@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -17,6 +18,7 @@ import 'package:mgramseva/routers/Routers.dart';
 import 'package:mgramseva/screeens/AddExpense/AddExpenseWalkThrough/expenseWalkThrough.dart';
 import 'package:mgramseva/services/MDMS.dart';
 import 'package:mgramseva/utils/Locilization/application_localizations.dart';
+import 'package:mgramseva/utils/common_methods.dart';
 
 import 'package:mgramseva/utils/constants.dart';
 import 'package:mgramseva/utils/custom_exception.dart';
@@ -89,7 +91,7 @@ class ExpensesDetailsProvider with ChangeNotifier {
     }
   }
 
-  void getStoreFileDetails() async {
+  Future<void> getStoreFileDetails() async {
     if (expenditureDetails.fileStoreId == null) return;
     try {
       expenditureDetails.fileStoreList =
@@ -484,7 +486,9 @@ class ExpensesDetailsProvider with ChangeNotifier {
 
   void onTapOfAttachment(FileStore store, BuildContext context) async {
     if (store.url == null) return;
-    CoreRepository().fileDownload(context, store.url!);
+    var random = new Random();
+    var fileName = CommonMethods.getExtension(store.url!);
+    CoreRepository().fileDownload(context, store.url!, '${random.nextInt(20)}$fileName');
   }
 
   void setwalkthrough(value) {
