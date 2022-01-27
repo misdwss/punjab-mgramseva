@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -17,6 +18,7 @@ import 'package:mgramseva/routers/Routers.dart';
 import 'package:mgramseva/screeens/AddExpense/AddExpenseWalkThrough/expenseWalkThrough.dart';
 import 'package:mgramseva/services/MDMS.dart';
 import 'package:mgramseva/utils/Locilization/application_localizations.dart';
+import 'package:mgramseva/utils/common_methods.dart';
 
 import 'package:mgramseva/utils/constants.dart';
 import 'package:mgramseva/utils/custom_exception.dart';
@@ -89,7 +91,7 @@ class ExpensesDetailsProvider with ChangeNotifier {
     }
   }
 
-  void getStoreFileDetails() async {
+  Future<void> getStoreFileDetails() async {
     if (expenditureDetails.fileStoreId == null) return;
     try {
       expenditureDetails.fileStoreList =
@@ -466,12 +468,16 @@ class ExpensesDetailsProvider with ChangeNotifier {
   String? fromToDateValidator(DateTime? dateTime, [bool isFromDate = false]){
     var fromDate = DateFormats.getFormattedDateToDateTime(expenditureDetails.fromDateCtrl.text.trim());
     var toDate = DateFormats.getFormattedDateToDateTime(expenditureDetails.toDateCtrl.text.trim());
+    var billDate = DateFormats.getFormattedDateToDateTime(expenditureDetails.billDateCtrl.text.trim());
+
     if(isFromDate){
       if(fromDate == null) return '${ApplicationLocalizations.of(navigatorKey.currentContext!).translate(i18.expense.EXPENSE_START_DATE_MANDATORY)}';
+      else if(billDate != null && fromDate.isAfter(billDate)) return  '${ApplicationLocalizations.of(navigatorKey.currentContext!).translate(i18.expense.FROM_DATE_CANNOT_BE_AFTER_BILL_DATE)}';
     }else{
       if(toDate == null){
         return '${ApplicationLocalizations.of(navigatorKey.currentContext!).translate(i18.expense.EXPENSE_END_DATE_MANDATORY)}';
-      }if(fromDate != null && fromDate.isAfter(toDate)){
+      }else if(billDate != null && toDate.isAfter(billDate)) return '${ApplicationLocalizations.of(navigatorKey.currentContext!).translate(i18.expense.TO_DATE_CANNOT_BE_AFTER_BILL_DATE)}';
+      else if(fromDate != null && fromDate.isAfter(toDate)){
         return '${ApplicationLocalizations.of(navigatorKey.currentContext!).translate(i18.expense.EXPENSE_END_START_DATE_VALIDATION)}';
       }
     }
@@ -480,7 +486,9 @@ class ExpensesDetailsProvider with ChangeNotifier {
 
   void onTapOfAttachment(FileStore store, BuildContext context) async {
     if (store.url == null) return;
-    CoreRepository().fileDownload(context, store.url!);
+    var random = new Random();
+    var fileName = CommonMethods.getExtension(store.url!);
+    CoreRepository().fileDownload(context, store.url!, '${random.nextInt(20)}$fileName');
   }
 
   void setwalkthrough(value) {
