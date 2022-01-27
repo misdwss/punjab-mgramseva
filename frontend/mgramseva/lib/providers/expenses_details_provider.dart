@@ -488,7 +488,7 @@ class ExpensesDetailsProvider with ChangeNotifier {
     if (store.url == null) return;
     var random = new Random();
     var fileName = CommonMethods.getExtension(store.url!);
-    CoreRepository().fileDownload(context, store.url!, '${random.nextInt(20)}$fileName');
+    CoreRepository().fileDownload(context, store.url!, '${random.nextInt(200)}${random.nextInt(100)}$fileName');
   }
 
   void setwalkthrough(value) {
