@@ -48,6 +48,7 @@ class BasicDateField extends StatelessWidget {
                   new EdgeInsets.symmetric(vertical: 10.0, horizontal: 10.0),
               border:
                   OutlineInputBorder(borderRadius: BorderRadius.circular(1.0)),
+              errorMaxLines: 3
             ),
             controller: controller,
             autovalidateMode: autoValidation,
