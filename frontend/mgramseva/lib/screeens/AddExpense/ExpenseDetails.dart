@@ -335,8 +335,11 @@ class _ExpenseDetailsState extends State<ExpenseDetails> {
                                       expenseDetails.fromDateCtrl,
                                       onChangeOfDate:
                                       expensesDetailsProvider.onChangeOfStartEndDate,
+                                      lastDate: DateFormats.getFormattedDateToDateTime(
+                                        expenseDetails.billDateCtrl.text.trim(),
+                                      ) ?? DateTime.now(),
                                       isEnabled: expenseDetails.allowEdit,
-                                      requiredMessage: i18.expense.EXPENSE_START_DATE_MANDATORY,
+                                      validator: (val) => expensesDetailsProvider.fromToDateValidator(val, true),
                                       autoValidation: expenseProvider.dateAutoValidation ? AutovalidateMode.always
                                           : AutovalidateMode.disabled,
                                       margin: margin,
@@ -345,6 +348,12 @@ class _ExpenseDetailsState extends State<ExpenseDetails> {
                                       i18.expense.EXPENSE_END_DATE,
                                       true,
                                       expenseDetails.toDateCtrl,
+                                      initialDate: DateFormats.getFormattedDateToDateTime(
+                                        expenseDetails.billDateCtrl.text.trim(),
+                                      ),
+                                      lastDate: DateFormats.getFormattedDateToDateTime(
+                                        expenseDetails.billDateCtrl.text.trim(),
+                                      ) ?? DateTime.now(),
                                       onChangeOfDate:
                                       expensesDetailsProvider.onChangeOfStartEndDate,
                                       isEnabled: expenseDetails.allowEdit,

@@ -466,12 +466,16 @@ class ExpensesDetailsProvider with ChangeNotifier {
   String? fromToDateValidator(DateTime? dateTime, [bool isFromDate = false]){
     var fromDate = DateFormats.getFormattedDateToDateTime(expenditureDetails.fromDateCtrl.text.trim());
     var toDate = DateFormats.getFormattedDateToDateTime(expenditureDetails.toDateCtrl.text.trim());
+    var billDate = DateFormats.getFormattedDateToDateTime(expenditureDetails.billDateCtrl.text.trim());
+
     if(isFromDate){
       if(fromDate == null) return '${ApplicationLocalizations.of(navigatorKey.currentContext!).translate(i18.expense.EXPENSE_START_DATE_MANDATORY)}';
+      else if(billDate != null && fromDate.isAfter(billDate)) return  '${ApplicationLocalizations.of(navigatorKey.currentContext!).translate(i18.expense.FROM_DATE_CANNOT_BE_AFTER_BILL_DATE)}';
     }else{
       if(toDate == null){
         return '${ApplicationLocalizations.of(navigatorKey.currentContext!).translate(i18.expense.EXPENSE_END_DATE_MANDATORY)}';
-      }if(fromDate != null && fromDate.isAfter(toDate)){
+      }else if(billDate != null && toDate.isAfter(billDate)) return '${ApplicationLocalizations.of(navigatorKey.currentContext!).translate(i18.expense.TO_DATE_CANNOT_BE_AFTER_BILL_DATE)}';
+      else if(fromDate != null && fromDate.isAfter(toDate)){
         return '${ApplicationLocalizations.of(navigatorKey.currentContext!).translate(i18.expense.EXPENSE_END_START_DATE_VALIDATION)}';
       }
     }
