@@ -101,7 +101,7 @@ public class ExpenseValidator {
 		else if (challan.getTaxPeriodTo() > challan.getBillDate())
 			errorMap.put("ToDate_CurrentDate", "To date should be before current date");
 		
-		if(challan.getTaxPeriodFrom() == challan.getTaxPeriodTo()){
+		if(challan.getTaxPeriodFrom().equals(challan.getTaxPeriodTo())){
 			challan.setTaxPeriodTo(challan.getTaxPeriodTo() + 1);
 		}
 		
