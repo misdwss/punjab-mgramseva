@@ -213,13 +213,6 @@ class _LandingPageState extends State<LandingPage> {
     );
     //newVersion.showAlertIfNecessary(context: context); //Use this if you want the update alert with default settings
     final status = await newVersion.getVersionStatus();
-
-    // var updateStatus = await storage.read(key: Constants.UPDATE_STATUS_KEY);
-    // if(updateStatus.toString() == 'updateInitiated' && !status!.canUpdate)
-    // {
-    //   storage.deleteAll();
-    // }
-
     if (status != null && status.canUpdate) {
       final uri =
       Uri.https("play.google.com", "/store/apps/details", {"id": "com.dwss.mgramseva"});
@@ -254,7 +247,7 @@ class _LandingPageState extends State<LandingPage> {
                     TextButton(onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
                         child: Text('Later',
                         style: TextStyle(
-                          color: Colors.grey
+                          color: Theme.of(context).primaryColorLight
                         ),
                         )),
                     TextButton(onPressed: () => launchPlayStore(uri.toString()),
