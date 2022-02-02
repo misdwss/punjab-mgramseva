@@ -42,7 +42,6 @@ public class Property extends PropertyInfo {
 	@SafeHtml
 	private String acknowldgementNumber;
 
-	@NotNull
 	@JsonProperty("propertyType")
 	@SafeHtml
 	private String propertyType;
