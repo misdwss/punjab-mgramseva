@@ -33,7 +33,6 @@ public class Property extends PropertyInfo {
 	@JsonProperty("acknowldgementNumber")
 	private String acknowldgementNumber;
 
-	@NotNull
 	@JsonProperty("propertyType")
 	private String propertyType;
 
