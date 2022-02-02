@@ -37,7 +37,6 @@ public class OwnerInfo extends User {
 	@JsonProperty("gender")
 	private String gender;
 
-	@NotNull
 	@SafeHtml
 	@JsonProperty("fatherOrHusbandName")
 	private String fatherOrHusbandName;
