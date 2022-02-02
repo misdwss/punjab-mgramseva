@@ -2,7 +2,7 @@
 
 All notable changes to this module will be documented in this file.
 
-## 1.2.0 - 2022-02-02
+## 1.1.2 - 2022-02-02
 
 - Dashboard Screen enhancements
 - Expense screen enhancement validations
