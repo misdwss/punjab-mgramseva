@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 
 import org.egov.waterconnection.web.models.enums.Source;
 import org.egov.waterconnection.web.models.workflow.ProcessInstance;
@@ -32,6 +33,7 @@ public class Property extends PropertyInfo {
 	@JsonProperty("acknowldgementNumber")
 	private String acknowldgementNumber;
 
+	@NotNull
 	@JsonProperty("propertyType")
 	private String propertyType;
 
