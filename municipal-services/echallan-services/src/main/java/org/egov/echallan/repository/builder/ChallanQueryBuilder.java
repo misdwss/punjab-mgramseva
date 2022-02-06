@@ -173,7 +173,7 @@ public class ChallanQueryBuilder {
 			if (criteria.getFromDate() != null && criteria.getToDate() != null) {
 				addClauseIfRequired(preparedStmtList, builder);
 				builder.append(
-						" challan.taxperiodto between " + criteria.getFromDate() + " and " + criteria.getToDate());
+						" challan.billdate between " + criteria.getFromDate() + " and " + criteria.getToDate());
 			}
 			if (criteria.getIsBillPaid() != null) {
 				addClauseIfRequired(preparedStmtList, builder);
