@@ -280,8 +280,11 @@ public class WSConfiguration {
     @Value("${egov.ws.search.name.fuziness}")
     private String nameFuziness;
     
-    @Value("${egov.ws.search.mobileNo.fuziness}")
-    private String MobileNoFuziness;
+    @Value("${egov.ws.search.mobileNumber.fuziness}")
+    private String MobileNumberFuziness;
+	
+    @Value("${egov.ws.search.oldConnectionNumber.fuziness}")
+    private String OldConnectionNumberFuziness;
 
     @Value("${egov.ws.fuzzy.searh.is.wildcard}")
     private Boolean isSearchWildcardBased;
