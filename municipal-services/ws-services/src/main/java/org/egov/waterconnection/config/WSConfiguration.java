@@ -280,7 +280,7 @@ public class WSConfiguration {
     @Value("${egov.ws.search.name.fuziness}")
     private String nameFuziness;
     
-    @Value("${egov.ws.search.mobileNumber.fuziness}")
+    @Value("${egov.ws.search.mobileNo.fuziness}")
     private String MobileNumberFuziness;
 	
     @Value("${egov.ws.search.oldConnectionNumber.fuziness}")
