@@ -534,11 +534,10 @@ public class WaterServiceImpl implements WaterService {
 
 		Object esResponse = elasticSearchRepository.fuzzySearchProperties(criteria, idsfromDB);
 
-		List<Map<String, Object>> data;
 		try {
-			data = wsDataResponse(esResponse);
+			List<Map<String, Object>> data = wsDataResponse(esResponse);
 			if (data.isEmpty()) {
-				throw new CustomException("INVALID_SEARCH_USER_PROP_NOT_FOUND", "Could not find user or property details !");
+				throw new CustomException("INVALID_SEARCH_USER_PROP_NOT_FOUND", "No such details found!");
 
 			}
 		} catch (Exception e) {
