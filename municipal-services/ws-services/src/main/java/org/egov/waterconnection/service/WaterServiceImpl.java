@@ -534,8 +534,9 @@ public class WaterServiceImpl implements WaterService {
 
 		Object esResponse = elasticSearchRepository.fuzzySearchProperties(criteria, idsfromDB);
 
+		List<Map<String, Object>> data;
 		try {
-			List<Map<String, Object>> data = wsDataResponse(esResponse);
+			data = wsDataResponse(esResponse);
 			if (data.isEmpty()) {
 				throw new CustomException("INVALID_SEARCH_USER_PROP_NOT_FOUND", "No such details found!");
 
@@ -547,7 +548,7 @@ public class WaterServiceImpl implements WaterService {
 	}
 	
 	private void validateFuzzySearchCriteria(SearchCriteria criteria){
-		if(org.apache.commons.lang3.StringUtils.isBlank(criteria.getTextSearch()) && org.apache.commons.lang3.StringUtils.isBlank(criteria.getName()) && org.apache.commons.lang3.StringUtils.isBlank(criteria.getMobileNumber()))
+		if(org.apache.commons.lang3.StringUtils.isBlank(criteria.getName()) && org.apache.commons.lang3.StringUtils.isBlank(criteria.getMobileNumber()))
           throw new CustomException("EG_WC_SEARCH_ERROR"," No criteria given for the WC search");
     }
 	
