@@ -86,10 +86,13 @@ public class FuzzySearchQueryBuilder {
                 fuzzyClauses.add(getInnerNode(criteria.getName(),"Data.connectionHolders.name",config.getNameFuziness()));
             }
             if(StringUtils.isNotBlank(criteria.getMobileNumber())) {
-            	fuzzyClauses.add(getInnerNode(criteria.getMobileNumber(),"Data.connectionHolders.mobileNumber",config.getMobileNoFuziness()));
+            	fuzzyClauses.add(getInnerNode(criteria.getMobileNumber(),"Data.connectionHolders.mobileNumber",config.getMobileNumberFuziness()));
             }
             if(StringUtils.isNotBlank(criteria.getTextSearch())) {
             	fuzzyClauses.add(getInnerNode(criteria.getTextSearch(),"Data.connectionHolders.name" , config.getNameFuziness()));
+            }
+            if(StringUtils.isNotBlank(criteria.getOldConnectionNumber())) {
+            	fuzzyClauses.add(getInnerNode(criteria.getOldConnectionNumber(),"Data.connectionHolders.oldConnectionNumber" , config.getOldConnectionNumberFuziness()));
             }
             
             JsonNode mustNode = mapper.convertValue(new HashMap<String, List<JsonNode>>(){{put("must",fuzzyClauses);}}, JsonNode.class);
