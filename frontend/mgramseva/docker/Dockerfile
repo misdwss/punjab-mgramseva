@@ -5,7 +5,7 @@ WORKDIR /app
 # copy the project files
 COPY ${WORK_DIR} .
 RUN flutter channel stable
-RUN flutter upgrade
+# RUN flutter upgrade
 RUN flutter pub get
 RUN flutter build web
 # Create runtime image
