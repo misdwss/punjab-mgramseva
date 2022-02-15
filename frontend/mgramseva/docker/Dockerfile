@@ -5,6 +5,7 @@ WORKDIR /app
 # copy the project files
 COPY ${WORK_DIR} .
 RUN flutter channel stable
+RUN flutter doctor
 # RUN flutter upgrade
 RUN flutter pub get
 RUN flutter build web
