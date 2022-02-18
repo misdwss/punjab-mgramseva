@@ -73,14 +73,13 @@ void main() {
     };
 
     WidgetsFlutterBinding.ensureInitialized();
+    await FlutterDownloader.initialize(
+        debug: true // optional: set false to disable printing logs to console
+    );
 
     if(Firebase.apps.length == 0) {
       await Firebase.initializeApp();
     }
-
-    await FlutterDownloader.initialize(
-        debug: true // optional: set false to disable printing logs to console
-        );
 
     runApp(MyApp());
   }, (Object error, StackTrace stack) {
