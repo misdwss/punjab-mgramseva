@@ -206,6 +206,7 @@ class _LandingPageState extends State<LandingPage> {
   }
 
   void checkVersion() async {
+    if(!Platform.isAndroid) return;
     final newVersion = NewVersion(
       androidId: "com.dwss.mgramseva",
       //iOSId: "com.dwss.mgramseva",
