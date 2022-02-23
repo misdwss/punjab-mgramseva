@@ -18,3 +18,6 @@ class APIConstants {
 /// Custom overly
 OverlayState? overlayState;
 OverlayEntry? overlayEntry;
+
+///dart define variables
+const String? BASE_PATH = String.fromEnvironment('BASE_PATH');

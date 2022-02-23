@@ -1,3 +1,4 @@
+import 'package:mgramseva/utils/global_variables.dart';
 import 'package:universal_html/html.dart';
 
 const _baseUrl = "baseUrl";
@@ -25,7 +26,7 @@ dynamic get apiBaseUrl {
 }
 
 Map<String, dynamic> devConstants = {
-  _baseUrl: window.location.origin + "/",
+  _baseUrl:  BASE_PATH?.trim() ?? "${window.location.origin}/",
 };
 
 Map<String, dynamic> stageConstants = {
