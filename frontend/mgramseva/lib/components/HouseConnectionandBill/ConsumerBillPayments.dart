@@ -386,21 +386,24 @@ class ConsumerBillPaymentsState extends State<ConsumerBillPayments> {
                         ),
                       ),
                     ),
-                    Container(
-                      decoration: CommonStyles.buttonBottomDecoration,
-                      width: constraints.maxWidth > 760
-                          ? MediaQuery.of(context).size.width / 3
-                          : MediaQuery.of(context).size.width / 2.2,
-                      child: ElevatedButton.icon(
-                          onPressed: () => _capturePng(item),
-                          icon: Icon(Icons.print),
-                          label: Text(
-                              ApplicationLocalizations.of(context).translate(
-                                  i18.consumerReciepts.CONSUMER_RECEIPT_PRINT),
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .subtitle1!
-                                  .apply(color: Colors.white))),
+                    Flexible(
+                      fit: constraints.maxWidth > 760 ? FlexFit.loose : FlexFit.tight,
+                      child: Container(
+                        decoration: CommonStyles.buttonBottomDecoration,
+                        width: constraints.maxWidth > 760
+                            ? MediaQuery.of(context).size.width / 3
+                            : null,
+                        child: ElevatedButton.icon(
+                            onPressed: () => _capturePng(item),
+                            icon: Icon(Icons.print),
+                            label: Text(
+                                ApplicationLocalizations.of(context).translate(
+                                    i18.consumerReciepts.CONSUMER_RECEIPT_PRINT),
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .subtitle1!
+                                    .apply(color: Colors.white))),
+                      ),
                     ),
                   ])
                 ],
