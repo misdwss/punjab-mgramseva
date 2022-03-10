@@ -328,7 +328,7 @@ class ConsumerBillPaymentsState extends State<ConsumerBillPayments> {
                               ),
                             ),
                             _getLabeltext(
-                                i18.consumerReciepts.RECEIPT_CONSUMER_NO,
+                                i18.consumerReciepts.CONSUMER_RECEIPT_NO,
                                 (item.paymentDetails!.first.receiptNumber)
                                     .toString(),
                                 context),
