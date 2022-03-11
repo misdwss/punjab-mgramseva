@@ -345,54 +345,55 @@ class ConsumerBillPaymentsState extends State<ConsumerBillPayments> {
                                     .toString(),
                                 context),
                           ])),
-                  Row(children: [
-                    Container(
-                      width: constraints.maxWidth > 760
-                          ? MediaQuery.of(context).size.width / 3
-                          : MediaQuery.of(context).size.width / 2.2,
-                      child: OutlinedButton.icon(
-                        onPressed: () =>
-                            commonProvider.getFileFromPDFPaymentService({
-                          "Payments": [item]
-                        }, {
-                          "key": widget.waterconnection?.connectionType ==
-                                  'Metered'
-                              ? "ws-receipt"
-                              : "ws-receipt-nm",
-                          "tenantId":
-                              commonProvider.userDetails!.selectedtenant!.code,
-                        }, item.mobileNumber, item, "Share"),
-                        style: ButtonStyle(
-                          alignment: Alignment.center,
-                          padding: MaterialStateProperty.all(
-                              EdgeInsets.symmetric(vertical: 8)),
-                          shape:
-                              MaterialStateProperty.all(RoundedRectangleBorder(
-                            side: BorderSide(
-                                width: 2,
-                                color: Theme.of(context).primaryColor),
-                            borderRadius: BorderRadius.circular(0.0),
-                          )),
-                        ),
-                        icon: (Image.asset('assets/png/whats_app.png')),
-                        label: Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 5),
-                          child: Text(
-                            ApplicationLocalizations.of(context).translate(i18
-                                .consumerReciepts
-                                .CONSUMER_RECIEPT_SHARE_RECEIPT),
-                            style: Theme.of(context).textTheme.subtitle2,
+                  Padding(
+                    padding: const EdgeInsets.only(bottom : 8.0),
+                    child: Row(children: [
+                      Container(
+                        padding: EdgeInsets.only(left: 8),
+                        width: constraints.maxWidth > 760
+                            ? MediaQuery.of(context).size.width / 3
+                            : MediaQuery.of(context).size.width / 2.2,
+                        child: OutlinedButton.icon(
+                          onPressed: () =>
+                              commonProvider.getFileFromPDFPaymentService({
+                            "Payments": [item]
+                          }, {
+                            "key": widget.waterconnection?.connectionType ==
+                                    'Metered'
+                                ? "ws-receipt"
+                                : "ws-receipt-nm",
+                            "tenantId":
+                                commonProvider.userDetails!.selectedtenant!.code,
+                          }, item.mobileNumber, item, "Share"),
+                          style: ButtonStyle(
+                            alignment: Alignment.center,
+                            padding: MaterialStateProperty.all(
+                                EdgeInsets.symmetric(vertical: 8)),
+                            shape:
+                                MaterialStateProperty.all(RoundedRectangleBorder(
+                              side: BorderSide(
+                                  width: 2,
+                                  color: Theme.of(context).primaryColor),
+                              borderRadius: BorderRadius.circular(0.0),
+                            )),
+                          ),
+                          icon: (Image.asset('assets/png/whats_app.png')),
+                          label: Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 5),
+                            child: Text(
+                              ApplicationLocalizations.of(context).translate(i18
+                                  .consumerReciepts
+                                  .CONSUMER_RECIEPT_SHARE_RECEIPT),
+                              style: Theme.of(context).textTheme.subtitle2,
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                    Flexible(
-                      fit: constraints.maxWidth > 760 ? FlexFit.loose : FlexFit.tight,
-                      child: Container(
+                      Container(
                         decoration: CommonStyles.buttonBottomDecoration,
                         width: constraints.maxWidth > 760
                             ? MediaQuery.of(context).size.width / 3
-                            : null,
+                            : MediaQuery.of(context).size.width / 2.2,
                         child: ElevatedButton.icon(
                             onPressed: () => _capturePng(item),
                             icon: Icon(Icons.print),
@@ -404,8 +405,8 @@ class ConsumerBillPaymentsState extends State<ConsumerBillPayments> {
                                     .subtitle1!
                                     .apply(color: Colors.white))),
                       ),
-                    ),
-                  ])
+                    ]),
+                  )
                 ],
               ))
           ]));
