@@ -216,8 +216,6 @@ class _ConsumerDetailsState extends State<ConsumerDetails> {
                                 val, property.owners!.first),
                             contextkey:
                                 consumerProvider.consmerWalkthrougList[1].key,
-                            autoValidation: consumerProvider.autoValidation,
-                            errorMsg: i18.common.GENDER_REQUIRED,
                           ),
 
                           BuildTextField(

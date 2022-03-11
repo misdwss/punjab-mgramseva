@@ -7,8 +7,6 @@ class RadioButtonFieldBuilder extends StatelessWidget {
   final String labelText;
   final dynamic? controller;
   final bool isRequired;
-  final bool autoValidation;
-  final String? errorMsg;
 
   final String input;
   final String prefixText;
@@ -21,7 +19,7 @@ class RadioButtonFieldBuilder extends StatelessWidget {
 
   RadioButtonFieldBuilder(this.context, this.labelText, this.controller,
       this.input, this.prefixText, this.isRequired, this.options, this.widget1,
-      {this.isEnabled, this.contextkey, this.secondaryBox, this.refTextRadioBtn, this.autoValidation = false, this.errorMsg});
+      {this.isEnabled, this.contextkey, this.secondaryBox, this.refTextRadioBtn});
 
   @override
   Widget build(BuildContext context) {
@@ -55,7 +53,7 @@ class RadioButtonFieldBuilder extends StatelessWidget {
                   width: MediaQuery.of(context).size.width / 2.5,
                   padding: EdgeInsets.only(bottom: 3, top: 18),
                   child: Column(
-                      children: [...options.map(
+                      children: options.map(
                     (data) {
                       return new RadioListTile(
                         title: new Text(ApplicationLocalizations.of(context)
@@ -67,9 +65,7 @@ class RadioButtonFieldBuilder extends StatelessWidget {
                             child: secondaryBox ) : null,
                       );
                     },
-                  ),
-                        _buildErrorMsg()
-                      ].toList())),
+                  ).toList())),
             ]));
       } else {
         return Container(
@@ -110,24 +106,9 @@ class RadioButtonFieldBuilder extends StatelessWidget {
                   );
                 },
               ).toList()),
-              _buildErrorMsg()
             ]));
       }
     });
-  }
-
-  Widget _buildErrorMsg(){
-    return Visibility(
-      visible: autoValidation && controller == null,
-      child: Container(
-        padding: EdgeInsets.only(left: 20),
-        alignment : Alignment.centerLeft,
-        child: Text(ApplicationLocalizations.of(context)
-            .translate(errorMsg ?? ''),
-          style: Theme.of(context).inputDecorationTheme.errorStyle?.apply(color: Color.fromRGBO(211, 47, 47,1))
-        ),
-      ),
-    );
   }
 }
 
