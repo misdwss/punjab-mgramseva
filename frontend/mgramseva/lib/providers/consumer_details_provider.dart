@@ -195,7 +195,7 @@ class ConsumerProvider with ChangeNotifier {
     var commonProvider = Provider.of<CommonProvider>(
         navigatorKey.currentContext!,
         listen: false);
-    if (formKey.currentState!.validate()) {
+    if (formKey.currentState!.validate() && property.owners?.first.gender != null) {
       waterconnection.setText();
       property.owners!.first.setText();
       property.address.setText();
@@ -279,6 +279,7 @@ class ConsumerProvider with ChangeNotifier {
           if (result2 != null) {
             setModel();
             phoneNumberAutoValidation = false;
+            autoValidation = false;
             streamController.add(property);
             Notifiers.getToastMessage(
                 context, i18.consumer.REGISTER_SUCCESS, 'SUCCESS');
