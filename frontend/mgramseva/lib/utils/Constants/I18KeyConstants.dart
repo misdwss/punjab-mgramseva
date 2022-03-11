@@ -193,6 +193,7 @@ class Common {
   String get SESSION_EXPIRED => 'SESSION_EXPIRED';
   String get RECEIPT_FOOTER => 'RECEIPT_FOOTER';
   String get SHARE_BILL_PDF => 'SHARE_BILL_PDF';
+  String get GENDER_REQUIRED => 'GENDER_REQUIRED';
 }
 
 class Password {
