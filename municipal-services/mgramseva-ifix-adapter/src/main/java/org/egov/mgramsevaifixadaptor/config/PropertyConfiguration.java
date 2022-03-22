@@ -31,4 +31,24 @@ public class PropertyConfiguration {
 	@Value("${egov.mdms.search.endpoint}")
 	private String mdmsSearchEndpoint;
 
+    @Value("${egov.billingservice.host}")
+    private String billingHost;
+
+    @Value("${egov.bill.gen.endpoint}")
+    private String fetchBillEndpoint;
+
+    @Value("${egov.demand.create.endpoint}")
+    private String demandCreateEndpoint;
+
+    @Value("${egov.demand.update.endpoint}")
+    private String demandUpdateEndpoint;
+
+    @Value("${egov.demand.search.endpoint}")
+    private String demandSearchEndpoint;
+
+	@Value("${kafka.topics.save.legacy.demand}")
+	private String createLegacyDemandTopic;
+
+	@Value("${legacy.demand.create}")
+	private String legacyDemandTopic;
 }
