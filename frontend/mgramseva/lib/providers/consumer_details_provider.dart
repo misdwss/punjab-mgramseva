@@ -158,6 +158,13 @@ class ConsumerProvider with ChangeNotifier {
         "tenantId": waterconnection.tenantId,
         "status": "ACTIVE"
       });
+
+      var paymentDetails = await BillingServiceRepository().fetchdBillPayments({
+        "tenantId": waterconnection.tenantId,
+        "consumerCodes": waterconnection.connectionNo,
+        "businessService": "WS"
+      });
+
       if (waterconnection.connectionType == 'Metered' &&
           waterconnection.additionalDetails?.meterReading.toString() != '0') {
         var meterReading = waterconnection.additionalDetails?.meterReading
@@ -198,12 +205,8 @@ class ConsumerProvider with ChangeNotifier {
         isfirstdemand = true;
       }
 
-      if(demand != null && demand.isNotEmpty){
-        demand.forEach((demand) {
-          if(demand.isPaymentCompleted != null && demand.isPaymentCompleted!){
-            isfirstdemand = true;
-          }
-        });
+      if(paymentDetails.payments != null && paymentDetails.payments!.isNotEmpty){
+        isfirstdemand = true;
       }
       notifyListeners();
     }catch(e,s){
