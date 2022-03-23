@@ -41,19 +41,19 @@ public class MgramsevaAdapterController {
 	
 	
 
-	@RequestMapping(value = "/_plainsearch", method = RequestMethod.POST)
+	@RequestMapping(value = "/_legacydatatransfer", method = RequestMethod.POST)
 	public ResponseEntity<DemandResponse> planeSearch(@Valid @RequestBody RequestInfoWrapper requestInfoWrapper,
 			@Valid @ModelAttribute SearchCriteria criteria) {
 		List<Demand> demands = adopterService.legecyDemand(criteria, requestInfoWrapper.getRequestInfo());
-		DemandRequest demandRequest = new DemandRequest();
-
-		demandRequest.setDemands(demands);
-		
-		producer.push(config.getCreateLegacyDemandTopic(), demandRequest);
-		
-		DemandResponse response = DemandResponse.builder().demands(demands).responseInfo(
-				responseInfoFactory.createResponseInfoFromRequestInfo(requestInfoWrapper.getRequestInfo(), true))
-				.build();
+		DemandResponse response = new DemandResponse();
+		if (!demands.isEmpty() && demands.size() > 0) {
+			DemandRequest demandRequest = new DemandRequest();
+			demandRequest.setDemands(demands);
+			producer.push(config.getCreateLegacyDemandTopic(), demandRequest);
+			response = DemandResponse.builder().demands(demands).responseInfo(
+					responseInfoFactory.createResponseInfoFromRequestInfo(requestInfoWrapper.getRequestInfo(), true))
+					.build();
+		}
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 }
