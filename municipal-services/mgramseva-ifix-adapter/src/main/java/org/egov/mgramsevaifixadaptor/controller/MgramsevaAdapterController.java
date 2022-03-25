@@ -49,8 +49,11 @@ public class MgramsevaAdapterController {
 		if (!demands.isEmpty() && demands.size() > 0) {
 			DemandRequest demandRequest = new DemandRequest();
 			demandRequest.setRequestInfo(requestInfoWrapper.getRequestInfo());
-			demandRequest.setDemands(demands);
-			producer.push(config.getCreateLegacyDemandTopic(), demandRequest);
+			for (Demand demand : demands) {
+				demandRequest.getDemands().add(demand);
+				producer.push(config.getCreateLegacyDemandTopic(), demandRequest);
+			}
+			
 			response = DemandResponse.builder().demands(demands).responseInfo(
 					responseInfoFactory.createResponseInfoFromRequestInfo(requestInfoWrapper.getRequestInfo(), true))
 					.build();
