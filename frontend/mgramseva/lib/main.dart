@@ -252,10 +252,14 @@ class _LandingPageState extends State<LandingPage> {
   }
 
   void launchPlayStore(String appLink) async {
-    if (await canLaunch(appLink)) {
-      await launch(appLink);
-    } else {
-      throw 'Could not launch appStoreLink';
+    try {
+      if (await canLaunch(appLink)) {
+        await launch(appLink);
+      } else {
+        throw 'Could not launch appStoreLink';
+      }
+    } catch(e){
+      Navigator.pop(context);
     }
   }
 
