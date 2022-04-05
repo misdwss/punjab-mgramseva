@@ -6,8 +6,11 @@ import javax.validation.Valid;
 
 import org.egov.mgramsevaifixadaptor.config.PropertyConfiguration;
 import org.egov.mgramsevaifixadaptor.contract.DemandRequest;
+import org.egov.mgramsevaifixadaptor.contract.PaymentRequest;
 import org.egov.mgramsevaifixadaptor.models.Demand;
 import org.egov.mgramsevaifixadaptor.models.DemandResponse;
+import org.egov.mgramsevaifixadaptor.models.Payment;
+import org.egov.mgramsevaifixadaptor.models.PaymentResponse;
 import org.egov.mgramsevaifixadaptor.models.RequestInfoWrapper;
 import org.egov.mgramsevaifixadaptor.models.SearchCriteria;
 import org.egov.mgramsevaifixadaptor.producer.Producer;
@@ -53,8 +56,27 @@ public class MgramsevaAdapterController {
 				demandRequest.getDemands().add(demand);
 				producer.push(config.getCreateLegacyDemandTopic(), demandRequest);
 			}
-			
 			response = DemandResponse.builder().demands(demands).responseInfo(
+					responseInfoFactory.createResponseInfoFromRequestInfo(requestInfoWrapper.getRequestInfo(), true))
+					.build();
+		}
+		return new ResponseEntity<>(response, HttpStatus.OK);
+	}
+	
+	
+	@RequestMapping(value = "/_paymentdatatransfer", method = RequestMethod.POST)
+	public ResponseEntity<PaymentResponse> paymentDataTransfer(@Valid @RequestBody RequestInfoWrapper requestInfoWrapper,
+			@Valid @ModelAttribute SearchCriteria criteria) {
+		List<Payment> payments = adopterService.legecyPayment(criteria, requestInfoWrapper.getRequestInfo());
+		PaymentResponse response = new PaymentResponse();
+		if (!payments.isEmpty() && payments.size() > 0) {
+			for (Payment payment : payments) {
+				PaymentRequest paymentRequest = new PaymentRequest();
+				paymentRequest.setRequestInfo(requestInfoWrapper.getRequestInfo());
+				paymentRequest.setPayment(payment);
+				producer.push(config.getPaymentsTopic(), paymentRequest);
+			}
+			response = PaymentResponse.builder().payments(payments).responseInfo(
 					responseInfoFactory.createResponseInfoFromRequestInfo(requestInfoWrapper.getRequestInfo(), true))
 					.build();
 		}

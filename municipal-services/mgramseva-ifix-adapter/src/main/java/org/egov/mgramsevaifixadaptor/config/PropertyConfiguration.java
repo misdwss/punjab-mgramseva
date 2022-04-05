@@ -51,4 +51,14 @@ public class PropertyConfiguration {
 
 	@Value("${legacy.demand.create}")
 	private String legacyDemandTopic;
+	
+    @Value("${egov.collectionservice.host}")
+    private String collectionHost;
+
+    @Value("${egov.collection.plain.search.endpoint}")
+    private String collectionPlainSearchEndpoint;
+
+	@Value("${kafka.topics.legacy.payments}")
+	private String paymentsTopic;
+
 }

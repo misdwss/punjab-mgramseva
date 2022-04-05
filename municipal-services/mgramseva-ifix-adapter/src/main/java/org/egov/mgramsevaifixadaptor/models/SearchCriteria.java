@@ -28,4 +28,10 @@ public class SearchCriteria {
 
 	@JsonProperty("type")
 	private String type;
+
+	@JsonProperty("limit")
+	private String limit;
+
+	@JsonProperty("offset")
+	private String offset;
 }
