@@ -52,7 +52,7 @@ public class PropertyConfiguration {
 	@Value("${legacy.demand.create}")
 	private String legacyDemandTopic;
 	
-    @Value("${egov.collectionservice.host}")
+    @Value("${egov.collection.service.host}")
     private String collectionHost;
 
     @Value("${egov.collection.plain.search.endpoint}")
