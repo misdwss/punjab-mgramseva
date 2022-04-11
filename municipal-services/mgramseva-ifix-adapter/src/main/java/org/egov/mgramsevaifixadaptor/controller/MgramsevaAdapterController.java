@@ -50,9 +50,9 @@ public class MgramsevaAdapterController {
 		List<Demand> demands = adopterService.legecyDemand(criteria, requestInfoWrapper.getRequestInfo());
 		DemandResponse response = new DemandResponse();
 		if (!demands.isEmpty() && demands.size() > 0) {
-			DemandRequest demandRequest = new DemandRequest();
-			demandRequest.setRequestInfo(requestInfoWrapper.getRequestInfo());
 			for (Demand demand : demands) {
+				DemandRequest demandRequest = new DemandRequest();
+				demandRequest.setRequestInfo(requestInfoWrapper.getRequestInfo());
 				demandRequest.getDemands().add(demand);
 				producer.push(config.getCreateLegacyDemandTopic(), demandRequest);
 			}
