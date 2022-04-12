@@ -614,13 +614,13 @@ public class WaterServiceImpl implements WaterService {
 		LocalDate currentMonthDate = LocalDate.now();
 
 		Calendar currentDate = Calendar.getInstance();
+		currentDate.setTimeInMillis(criteria.getFromDate());
 		int currentMonthNumber = currentDate.get(Calendar.MONTH);
 
 		int totalMonthsTillDate;
 		LocalDate finYearStarting;
 		if (currentMonthNumber < 3) {
 			totalMonthsTillDate = 9 + currentMonthNumber;
-			currentDate.setTimeInMillis(criteria.getFromDate());
 
 			currentMonthDate = LocalDate.of(currentDate.get(Calendar.YEAR), currentDate.get(Calendar.MONTH) + 1,
 					currentDate.get(Calendar.DAY_OF_MONTH));
@@ -628,7 +628,6 @@ public class WaterServiceImpl implements WaterService {
 			finYearStarting = currentMonthDate;
 		} else {
 			totalMonthsTillDate = currentMonthNumber - 2;
-			currentDate.setTimeInMillis(criteria.getFromDate());
 			currentMonthDate = LocalDate.of(currentDate.get(Calendar.YEAR), currentDate.get(Calendar.MONTH) + 1,
 					currentDate.get(Calendar.DAY_OF_MONTH));
 
@@ -636,7 +635,7 @@ public class WaterServiceImpl implements WaterService {
 		}
 		ArrayList<RevenueCollectionData> data = new ArrayList<RevenueCollectionData>();
 
-		for (int i = 0; i <= totalMonthsTillDate; i++) {
+		for (int i = 0; i < totalMonthsTillDate; i++) {
 			LocalDate monthStart = currentMonthDate.minusMonths(0).with(TemporalAdjusters.firstDayOfMonth());
 			LocalDate monthEnd = currentMonthDate.minusMonths(0).with(TemporalAdjusters.lastDayOfMonth());
 
