@@ -643,7 +643,7 @@ public class WaterServiceImpl implements WaterService {
 		}
 		ArrayList<RevenueCollectionData> data = new ArrayList<RevenueCollectionData>();
 
-		for (int i = 0; i < totalMonthsTillDate; i++) {
+		for (int i = 0; i <= totalMonthsTillDate; i++) {
 			LocalDate monthStart = currentMonthDate.minusMonths(0).with(TemporalAdjusters.firstDayOfMonth());
 			LocalDate monthEnd = currentMonthDate.minusMonths(0).with(TemporalAdjusters.lastDayOfMonth());
 

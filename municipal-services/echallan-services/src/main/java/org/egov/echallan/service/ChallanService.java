@@ -310,7 +310,7 @@ public class ChallanService {
 		}
 		ArrayList<ChallanCollectionData> data = new ArrayList<ChallanCollectionData>();
 
-		for (int i = 0; i < totalMonthsTillDate; i++) {
+		for (int i = 0; i <= totalMonthsTillDate; i++) {
 			LocalDate monthStart = currentMonthDate.minusMonths(0).with(TemporalAdjusters.firstDayOfMonth());
 			LocalDate monthEnd = currentMonthDate.minusMonths(0).with(TemporalAdjusters.lastDayOfMonth());
 
