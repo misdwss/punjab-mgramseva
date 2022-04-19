@@ -85,6 +85,7 @@ public class UserService {
 
 				for (int i = 0; i < userDetailResponse.getUser().size(); i++) {
 
+					// in mGramSeva employee can also be vendor.
 //					if(userDetailResponse.getUser().get(i).getType().equalsIgnoreCase(VendorConstants.EMPLOYEE)) {
 //						throw new CustomException(VendorErrorConstants.INVALID_OWNER_EMPLOYEE, "MobileNumber for Vendor belongs to Employee!");
 //					}
