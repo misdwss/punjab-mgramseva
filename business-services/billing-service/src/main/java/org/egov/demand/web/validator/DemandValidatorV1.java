@@ -387,7 +387,9 @@ public class DemandValidatorV1 {
 				getuserFromNameAndNumber(demand, requestInfo);
 			}
 		}
+
 // In mGramSeva payment for Employee should also be allowed.
+
 //		if (!CollectionUtils.isEmpty(employeeIds))
 //			errorMap.put(EMPLOYEE_UUID_FOUND_KEY,
 //					EMPLOYEE_UUID_FOUND_MSG.replace(USER_UUID_NOT_FOUND_REPLACETEXT, employeeIds.toString()));
