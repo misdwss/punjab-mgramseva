@@ -289,7 +289,7 @@ public class ChallanService {
 		int totalMonthsTillDate;
 		LocalDate finYearStarting;
 		if (currentYear != actualYear && actualYear < currentYear) {
-			totalMonthsTillDate = 11;
+			totalMonthsTillDate = 12;
 			currentMonthDate = LocalDate.of(currentDate.get(Calendar.YEAR), currentDate.get(Calendar.MONTH) + 1,
 					currentDate.get(Calendar.DAY_OF_MONTH));
 			finYearStarting = currentMonthDate;
