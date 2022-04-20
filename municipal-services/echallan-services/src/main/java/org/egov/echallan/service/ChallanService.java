@@ -139,7 +139,8 @@ public class ChallanService {
 
 	        criteria.setTenantId(request.getChallan().getTenantId());
 	        criteria.setIds(ids);
-	        criteria.setBusinessService(request.getChallan().getBusinessService());
+	        // When the business service it self is changed 
+//	        criteria.setBusinessService(request.getChallan().getBusinessService());
 
 	        List<Challan> challans = repository.getChallans(criteria, finalData);
 	        if(challans.isEmpty())
