@@ -60,6 +60,8 @@ class ExpensesDetailsProvider with ChangeNotifier {
   Future<void> getExpensesDetails(BuildContext context,
       ExpensesDetailsModel? expensesDetails, String? id) async {
     try {
+      if(expensesDetails != null || id != null) await fetchVendors();
+      else fetchVendors();
       if (expensesDetails != null) {
         expenditureDetails = expensesDetails;
         getStoreFileDetails();
@@ -367,11 +369,16 @@ class ExpensesDetailsProvider with ChangeNotifier {
     if (pattern.toString().trim().isEmpty) return <Vendor>[];
 
     return vendorList.where((vendor) {
-      if (vendor.name
+      if (vendor.name.trim()
           .toLowerCase()
           .contains(pattern.toString().trim().toLowerCase())) {
         return true;
       } else {
+        // if(!(expenditureDetails.selectedVendor != null && expenditureDetails.vendorId == expenditureDetails.selectedVendor?.id
+        //     && expenditureDetails.selectedVendor?.name == pattern.toString().trim()))
+        expenditureDetails
+          ..selectedVendor = null
+          ..mobileNumberController.clear();
         return false;
       }
     }).toList();
@@ -380,14 +387,17 @@ class ExpensesDetailsProvider with ChangeNotifier {
   bool isNewVendor() {
     var vendorName = expenditureDetails.vendorNameCtrl.text.trim();
     if (vendorName.isEmpty) {
-      return false;
-    } else if (vendorList.isEmpty ||
-        (vendorList.indexWhere((e) =>
-                e.name.toLowerCase().trim() == vendorName.toLowerCase())) ==
-            -1) {
       return true;
-    } else {
+    } else if(vendorList.isEmpty || expenditureDetails.selectedVendor?.id != null){
+      if(expenditureDetails.selectedVendor != null && (expenditureDetails.selectedVendor?.owner?.mobileNumber == null || expenditureDetails.selectedVendor!.owner!.mobileNumber.isEmpty)){
+        var mobileNumber = vendorList.firstWhere((vendor) => vendor.id == expenditureDetails.vendorId, orElse: () => Vendor('', '')).owner?.mobileNumber ?? '';
+        expenditureDetails.selectedVendor?.owner = Owner(mobileNumber);
+        expenditureDetails.mobileNumberController.text = mobileNumber;
+      }
       return false;
+    }
+    else {
+      return true;
     }
   }
 
@@ -416,7 +426,8 @@ class ExpensesDetailsProvider with ChangeNotifier {
   void onSuggestionSelected(vendor) {
     expenditureDetails
       ..selectedVendor = vendor
-      ..vendorNameCtrl.text = vendor?.name ?? '';
+      ..vendorNameCtrl.text = vendor?.name ?? ''
+      ..mobileNumberController.text = vendor?.owner?.mobileNumber ?? '';
     notifyListeners();
   }
 
@@ -544,7 +555,7 @@ class ExpensesDetailsProvider with ChangeNotifier {
       expenditureDetails.vendorNameCtrl.text = vendorList[index].name.trim();
       expenditureDetails.selectedVendor =
           Vendor(vendorList[index].name.trim(), vendorList[index].id);
-      notifyListeners();
+      expenditureDetails.selectedVendor?.owner ??= Owner(mobileNumber);
     }
   }
 
