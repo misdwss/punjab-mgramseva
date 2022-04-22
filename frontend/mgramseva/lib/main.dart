@@ -211,6 +211,7 @@ class _LandingPageState extends State<LandingPage> {
     final newVersion = NewVersion(
       androidId: Constants.PACKAGE_NAME,
       iOSId: Constants.PACKAGE_NAME,
+      iOSAppStoreCountry: 'in'
     );
     //newVersion.showAlertIfNecessary(context: context); //Use this if you want the update alert with default settings
     final status = await newVersion.getVersionStatus();
