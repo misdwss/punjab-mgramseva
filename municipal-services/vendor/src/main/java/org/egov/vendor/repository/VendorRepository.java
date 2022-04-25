@@ -105,6 +105,8 @@ public class VendorRepository {
 
 		String query = vendorQueryBuilder.getvendorCount(ownerIdList, tenantId,preparedStmtList);
 
+		log.info("vendor exists query ===="+tenantId+"----"+ownerIdList.toString()+query);
+		log.debug("vendor exists query ===="+tenantId+"----"+ownerIdList.toString()+query);
 		return jdbcTemplate.queryForObject(query, preparedStmtList.toArray(), Integer.class);
 
 	}
