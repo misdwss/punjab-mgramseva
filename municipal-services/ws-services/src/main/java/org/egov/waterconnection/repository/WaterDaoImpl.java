@@ -460,7 +460,7 @@ public class WaterDaoImpl implements WaterDao {
 	
 	public Integer getArrearsAmount(@Valid SearchCriteria criteria) {
 		StringBuilder query = new StringBuilder(wsQueryBuilder.PENDINGCOLLECTION);
-		query.append(" and dmd.taxperiodto <= " + criteria.getFromDate())
+		query.append(" and dmd.taxperiodto <= " + criteria.getToDate())
 				.append(" and dmd.tenantId = '").append(criteria.getTenantId()).append("'");
 		log.info("Arrears Amount Final Query : " + query);
 		return jdbcTemplate.queryForObject(query.toString(), Integer.class);
