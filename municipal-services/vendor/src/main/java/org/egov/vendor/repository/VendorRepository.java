@@ -100,10 +100,10 @@ public class VendorRepository {
 		return jdbcTemplate.query(query, preparedStmtList.toArray(), vendorrowMapper);
 	}
 
-	public int getExistingVenodrsCount(List<String> ownerIdList) {
+	public int getExistingVenodrsCount(List<String> ownerIdList, String tenantId) {
 		List<Object> preparedStmtList = new ArrayList<>();
 
-		String query = vendorQueryBuilder.getvendorCount(ownerIdList, preparedStmtList);
+		String query = vendorQueryBuilder.getvendorCount(ownerIdList, tenantId,preparedStmtList);
 
 		return jdbcTemplate.queryForObject(query, preparedStmtList.toArray(), Integer.class);
 
