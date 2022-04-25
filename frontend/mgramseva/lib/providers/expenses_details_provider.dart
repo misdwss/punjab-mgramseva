@@ -98,6 +98,7 @@ class ExpensesDetailsProvider with ChangeNotifier {
     try {
       expenditureDetails.fileStoreList =
           await CoreRepository().fetchFiles([expenditureDetails.fileStoreId!]);
+      notifyListeners();
     } catch (e, s) {
       ErrorHandler.logError(e.toString(), s);
     }
@@ -409,6 +410,7 @@ class ExpensesDetailsProvider with ChangeNotifier {
     try {
       var query = {
         'tenantId': commonProvider.userDetails?.selectedtenant?.code,
+        'limit' : '-1'
       };
 
       var res = await ExpensesRepository().getVendor(query);
