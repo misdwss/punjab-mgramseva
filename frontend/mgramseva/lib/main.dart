@@ -5,6 +5,7 @@ import 'dart:ui';
 
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_analytics/observer.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
@@ -79,10 +80,12 @@ void main() {
       await Firebase.initializeApp();
     }
 
-    await FlutterDownloader.initialize(
-        debug: true // optional: set false to disable printing logs to console
-    );
-
+    if(!kIsWeb) {
+      await FlutterDownloader.initialize(
+          debug: true // optional: set false to disable printing logs to console
+      );
+    }
+    await CommonProvider().clearStorageCacheIfAppIsUpdated();
     runApp(MyApp());
   }, (Object error, StackTrace stack) {
     ErrorHandler.logError(error.toString(), stack);

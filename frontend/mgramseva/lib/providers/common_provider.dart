@@ -247,6 +247,36 @@ class CommonProvider with ChangeNotifier {
     }
   }
 
+  Future<void> clearStorageCacheIfAppIsUpdated() async {
+    try {
+      PackageInfo packageInfo = await PackageInfo.fromPlatform();
+      if(kIsWeb){
+        if (!window.localStorage.containsKey(Constants.APP_VERSION)) {
+          window.localStorage.clear();
+          window.localStorage[Constants.APP_VERSION] = packageInfo.version;
+        } else {
+          if (window.localStorage[Constants.APP_VERSION] !=
+              packageInfo.version) {
+            window.localStorage.clear();
+            window.localStorage[Constants.APP_VERSION] = packageInfo.version;
+          }
+        }
+      }else {
+        if (!await storage.containsKey(key: Constants.APP_VERSION)) {
+          await storage.deleteAll();
+          storage.write(key: Constants.APP_VERSION, value: packageInfo.version);
+        } else {
+          if (await storage.read(key: Constants.APP_VERSION) !=
+              packageInfo.version) {
+            await storage.deleteAll();
+            storage.write(
+                key: Constants.APP_VERSION, value: packageInfo.version);
+          }
+        }
+      }
+    } catch (e) {}
+  }
+
   UserDetails? getWebLoginStatus() {
     var languageProvider = Provider.of<LanguageProvider>(
         navigatorKey.currentContext!,
