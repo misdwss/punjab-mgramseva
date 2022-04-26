@@ -48,6 +48,7 @@ import 'package:mgramseva/utils/global_variables.dart';
 import 'package:mgramseva/utils/loaders.dart';
 import 'package:mgramseva/utils/notifyers.dart';
 import 'package:new_version/new_version.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
@@ -85,14 +86,16 @@ void main() {
           debug: true // optional: set false to disable printing logs to console
       );
     }
-    await CommonProvider().clearStorageCacheIfAppIsUpdated();
+
+    packageInfo = await PackageInfo.fromPlatform();
+
     runApp(MyApp());
   }, (Object error, StackTrace stack) {
     ErrorHandler.logError(error.toString(), stack);
     // exit(1); /// to close the app smoothly
   });
 
-  runApp(new MyApp());
+  // runApp(new MyApp());
 }
 
 _MyAppState myAppstate = '' as _MyAppState;
