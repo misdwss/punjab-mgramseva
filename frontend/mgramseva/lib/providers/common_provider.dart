@@ -217,12 +217,12 @@ class CommonProvider with ChangeNotifier {
               if (!await storage.containsKey(key:Constants.APP_VERSION)) {
                 await storage.deleteAll();
                 isUpdated = true;
-                storage.write(key: Constants.APP_VERSION, value: packageInfo.version);
+                storage.write(key: Constants.APP_VERSION, value: packageInfo?.version);
               } else {
-                if (await storage.read(key: Constants.APP_VERSION) != packageInfo.version) {
+                if (await storage.read(key: Constants.APP_VERSION) != packageInfo?.version) {
                   await storage.deleteAll();
                   isUpdated = true;
-                  storage.write(key: Constants.APP_VERSION, value: packageInfo.version);
+                  storage.write(key: Constants.APP_VERSION, value: packageInfo?.version);
                 }
             }
           } catch (e) {}
@@ -262,13 +262,13 @@ class CommonProvider with ChangeNotifier {
     if (!window.localStorage.containsKey(Constants.APP_VERSION)) {
       window.localStorage.clear();
       isUpdated = true;
-      window.localStorage[Constants.APP_VERSION] = packageInfo.version;
+      window.localStorage[Constants.APP_VERSION] = packageInfo?.version ?? '';
     } else {
       if (window.localStorage[Constants.APP_VERSION] !=
-          packageInfo.version) {
+          packageInfo?.version) {
         window.localStorage.clear();
         isUpdated = true;
-        window.localStorage[Constants.APP_VERSION] = packageInfo.version;
+        window.localStorage[Constants.APP_VERSION] = packageInfo?.version ?? '';
       }
     }
 

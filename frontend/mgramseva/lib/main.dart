@@ -42,6 +42,7 @@ import 'package:mgramseva/screeens/SelectLanguage/languageSelection.dart';
 import 'package:mgramseva/services/LocalStorage.dart';
 import 'package:mgramseva/theme.dart';
 import 'package:mgramseva/utils/Locilization/application_localizations.dart';
+import 'package:mgramseva/utils/common_methods.dart';
 import 'package:mgramseva/utils/constants.dart';
 import 'package:mgramseva/utils/error_logging.dart';
 import 'package:mgramseva/utils/global_variables.dart';
@@ -87,7 +88,7 @@ void main() {
       );
     }
 
-    packageInfo = await PackageInfo.fromPlatform();
+    await CommonMethods.fetchPackageInfo();
 
     runApp(MyApp());
   }, (Object error, StackTrace stack) {

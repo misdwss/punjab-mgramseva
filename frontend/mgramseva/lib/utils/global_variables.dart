@@ -21,4 +21,4 @@ OverlayState? overlayState;
 OverlayEntry? overlayEntry;
 
 /// Gives package versions info
-late PackageInfo packageInfo;
+PackageInfo? packageInfo;
