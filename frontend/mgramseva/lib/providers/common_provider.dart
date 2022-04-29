@@ -335,7 +335,7 @@ class CommonProvider with ChangeNotifier {
               msg: input.toString().replaceFirst('{link}', res!)) ?? '';
           if(response.contains('PlatformException')){
             link = "https://api.whatsapp.com/send?text=" +
-                input.toString().replaceFirst('{link}', res);
+                input.toString().replaceAll(" ", "%20").replaceFirst('{link}', res);
             await canLaunch(link)
                 ? launch(link)
                 : ErrorHandler.logError('failed to launch the url ${link}');
