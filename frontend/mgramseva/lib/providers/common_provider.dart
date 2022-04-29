@@ -331,8 +331,15 @@ class CommonProvider with ChangeNotifier {
         var link;
         if (mobileNumber == null) {
           final FlutterShareMe flutterShareMe = FlutterShareMe();
-          flutterShareMe.shareToWhatsApp(
-              msg: input.toString().replaceFirst('{link}', res!));
+         var response = await flutterShareMe.shareToWhatsApp(
+              msg: input.toString().replaceFirst('{link}', res!)) ?? '';
+          if(response.contains('PlatformException')){
+            link = "https://api.whatsapp.com/send?text=" +
+                input.toString().replaceFirst('{link}', res);
+            await canLaunch(link)
+                ? launch(link)
+                : ErrorHandler.logError('failed to launch the url ${link}');
+          }
           return;
         } else {
           link = "https://wa.me/+91$mobileNumber?text=" +
