@@ -296,6 +296,15 @@ class _LandingPageState extends State<LandingPage> {
       String id = data[0];
       DownloadTaskStatus status = data[1];
       int progress = data[2];
+      if(status == DownloadTaskStatus.complete){
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text('Yay! Successfully downloaded!'),
+          action:
+            SnackBarAction(label: 'Open', onPressed: (){
+              print(Provider.of<CommonProvider>(context, listen: false).downloadUrl);
+            })
+        ));
+      }
       setState(() {});
     });
     FlutterDownloader.registerCallback(downloadCallback);

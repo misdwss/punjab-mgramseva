@@ -286,6 +286,10 @@ class CoreRepository extends BaseService {
       if (!status.isGranted) {
         await Permission.storage.request();
       }
+
+      Provider.of<CommonProvider>(context, listen: false)
+      ..downloadUrl = '$downloadPath/$fileName';
+
       final response = await FlutterDownloader.enqueue(
         url: url,
         savedDir: downloadPath,
