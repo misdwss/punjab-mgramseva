@@ -49,6 +49,7 @@ import 'package:mgramseva/utils/global_variables.dart';
 import 'package:mgramseva/utils/loaders.dart';
 import 'package:mgramseva/utils/notifyers.dart';
 import 'package:new_version/new_version.dart';
+import 'package:open_file/open_file.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -297,13 +298,14 @@ class _LandingPageState extends State<LandingPage> {
       DownloadTaskStatus status = data[1];
       int progress = data[2];
       if(status == DownloadTaskStatus.complete){
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text('Yay! Successfully downloaded!'),
-          action:
-            SnackBarAction(label: 'Open', onPressed: (){
-              print(Provider.of<CommonProvider>(context, listen: false).downloadUrl);
-            })
-        ));
+        OpenFile.open(Provider.of<CommonProvider>(context, listen: false).downloadUrl);
+        // ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        //   content: Text('Yay! Successfully downloaded!'),
+        //   action:
+        //     SnackBarAction(label: 'Open', onPressed: (){
+        //       print(Provider.of<CommonProvider>(context, listen: false).downloadUrl);
+        //     })
+        // ));
       }
       setState(() {});
     });
