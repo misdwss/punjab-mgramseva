@@ -287,8 +287,7 @@ class CoreRepository extends BaseService {
         await Permission.storage.request();
       }
 
-      Provider.of<CommonProvider>(context, listen: false)
-      ..downloadUrl = '$downloadPath/$fileName';
+      CommonProvider.downloadUrl = '$downloadPath/$fileName';
 
       final response = await FlutterDownloader.enqueue(
         url: url,

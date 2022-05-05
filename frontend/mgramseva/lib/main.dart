@@ -115,11 +115,54 @@ class _MyAppState extends State<MyApp> {
   static FirebaseAnalytics analytics = FirebaseAnalytics();
   static FirebaseAnalyticsObserver observer =
   FirebaseAnalyticsObserver(analytics: analytics);
+  ReceivePort _port = ReceivePort();
 
   void setLocale(Locale value) {
     setState(() {
       _locale = value;
     });
+  }
+
+  @override
+  void initState() {
+    WidgetsBinding.instance?.addPostFrameCallback((_) => afterViewBuild());
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    IsolateNameServer.removePortNameMapping('downloader_send_port');
+    super.dispose();
+  }
+
+  static void downloadCallback(
+      String id, DownloadTaskStatus status, int progress) {
+    final SendPort send =
+    IsolateNameServer.lookupPortByName('downloader_send_port')!;
+
+    send.send([id, status, progress]);
+  }
+
+  afterViewBuild() async {
+    IsolateNameServer.registerPortWithName(
+        _port.sendPort, 'downloader_send_port');
+    _port.listen((dynamic data) {
+      String id = data[0];
+      DownloadTaskStatus status = data[1];
+      int progress = data[2];
+      if(status == DownloadTaskStatus.complete){
+        OpenFile.open(CommonProvider.downloadUrl);
+        // ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        //   content: Text('Yay! Successfully downloaded!'),
+        //   action:
+        //     SnackBarAction(label: 'Open', onPressed: (){
+        //       print(Provider.of<CommonProvider>(context, listen: false).downloadUrl);
+        //     })
+        // ));
+      }
+      setState(() {});
+    });
+    FlutterDownloader.registerCallback(downloadCallback);
   }
 
   // This widget is the root of your application.
@@ -212,7 +255,7 @@ class _LandingPageState extends State<LandingPage> {
   void initState() {
     WidgetsBinding.instance?.addPostFrameCallback((_) => afterViewBuild());
     super.initState();
-    checkVersion();
+    // checkVersion();
   }
 
   void checkVersion() async {
@@ -272,44 +315,44 @@ class _LandingPageState extends State<LandingPage> {
     }
   }
 
-  @override
-  void dispose() {
-    IsolateNameServer.removePortNameMapping('downloader_send_port');
-    super.dispose();
-  }
-
-  static void downloadCallback(
-      String id, DownloadTaskStatus status, int progress) {
-    final SendPort send =
-        IsolateNameServer.lookupPortByName('downloader_send_port')!;
-
-    send.send([id, status, progress]);
-  }
-
+  // @override
+  // void dispose() {
+  //   IsolateNameServer.removePortNameMapping('downloader_send_port');
+  //   super.dispose();
+  // }
+  //
+  // static void downloadCallback(
+  //     String id, DownloadTaskStatus status, int progress) {
+  //   final SendPort send =
+  //       IsolateNameServer.lookupPortByName('downloader_send_port')!;
+  //
+  //   send.send([id, status, progress]);
+  // }
+  //
   afterViewBuild() async {
     var commonProvider = Provider.of<CommonProvider>(context, listen: false);
     commonProvider.getLoginCredentails();
-
-    await Future.delayed(Duration(seconds: 2));
-    IsolateNameServer.registerPortWithName(
-        _port.sendPort, 'downloader_send_port');
-    _port.listen((dynamic data) {
-      String id = data[0];
-      DownloadTaskStatus status = data[1];
-      int progress = data[2];
-      if(status == DownloadTaskStatus.complete){
-        OpenFile.open(Provider.of<CommonProvider>(context, listen: false).downloadUrl);
-        // ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        //   content: Text('Yay! Successfully downloaded!'),
-        //   action:
-        //     SnackBarAction(label: 'Open', onPressed: (){
-        //       print(Provider.of<CommonProvider>(context, listen: false).downloadUrl);
-        //     })
-        // ));
-      }
-      setState(() {});
-    });
-    FlutterDownloader.registerCallback(downloadCallback);
+  //
+  //   await Future.delayed(Duration(seconds: 2));
+  //   IsolateNameServer.registerPortWithName(
+  //       _port.sendPort, 'downloader_send_port');
+  //   _port.listen((dynamic data) {
+  //     String id = data[0];
+  //     DownloadTaskStatus status = data[1];
+  //     int progress = data[2];
+  //     if(status == DownloadTaskStatus.complete){
+  //       OpenFile.open(Provider.of<CommonProvider>(context, listen: false).downloadUrl);
+  //       // ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+  //       //   content: Text('Yay! Successfully downloaded!'),
+  //       //   action:
+  //       //     SnackBarAction(label: 'Open', onPressed: (){
+  //       //       print(Provider.of<CommonProvider>(context, listen: false).downloadUrl);
+  //       //     })
+  //       // ));
+  //     }
+  //     setState(() {});
+  //   });
+  //   FlutterDownloader.registerCallback(downloadCallback);
   }
 
   @override
