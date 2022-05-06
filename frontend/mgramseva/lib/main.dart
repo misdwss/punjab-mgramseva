@@ -144,6 +144,7 @@ class _MyAppState extends State<MyApp> {
   }
 
   afterViewBuild() async {
+    if(kIsWeb) return;
     IsolateNameServer.registerPortWithName(
         _port.sendPort, 'downloader_send_port');
     _port.listen((dynamic data) {
@@ -151,7 +152,12 @@ class _MyAppState extends State<MyApp> {
       DownloadTaskStatus status = data[1];
       int progress = data[2];
       if(status == DownloadTaskStatus.complete){
-        OpenFile.open(CommonProvider.downloadUrl);
+        if(CommonProvider.downloadUrl.containsKey(id)){
+          OpenFile.open(CommonProvider.downloadUrl[id]);
+          CommonProvider.downloadUrl.remove(id);
+        }else if(status == DownloadTaskStatus.failed || status == DownloadTaskStatus.canceled || status == DownloadTaskStatus.undefined){
+          if(CommonProvider.downloadUrl.containsKey(id)) CommonProvider.downloadUrl.remove(id);
+        }
         // ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         //   content: Text('Yay! Successfully downloaded!'),
         //   action:

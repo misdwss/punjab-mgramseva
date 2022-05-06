@@ -40,7 +40,7 @@ class CommonProvider with ChangeNotifier {
   List<LocalizationLabel> localizedStrings = <LocalizationLabel>[];
   var userLoggedStreamCtrl = StreamController.broadcast();
   UserDetails? userDetails;
-  static String? downloadUrl;
+  static Map<String, String> downloadUrl = {};
 
   dispose() {
     userLoggedStreamCtrl.close();
