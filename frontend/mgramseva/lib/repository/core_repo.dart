@@ -293,6 +293,7 @@ class CoreRepository extends BaseService {
         fileName: '$fileName',
         showNotification: true,
         openFileFromNotification: true,
+        saveInPublicStorage: true
       );
       if (response != null) {
         CommonProvider.downloadUrl[response] = '$downloadPath/$fileName';
