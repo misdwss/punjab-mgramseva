@@ -153,18 +153,11 @@ class _MyAppState extends State<MyApp> {
       int progress = data[2];
       if(status == DownloadTaskStatus.complete){
         if(CommonProvider.downloadUrl.containsKey(id)){
-          OpenFile.open(CommonProvider.downloadUrl[id]);
+          if(Platform.isIOS) OpenFile.open(CommonProvider.downloadUrl[id]);
           CommonProvider.downloadUrl.remove(id);
         }else if(status == DownloadTaskStatus.failed || status == DownloadTaskStatus.canceled || status == DownloadTaskStatus.undefined){
           if(CommonProvider.downloadUrl.containsKey(id)) CommonProvider.downloadUrl.remove(id);
         }
-        // ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        //   content: Text('Yay! Successfully downloaded!'),
-        //   action:
-        //     SnackBarAction(label: 'Open', onPressed: (){
-        //       print(Provider.of<CommonProvider>(context, listen: false).downloadUrl);
-        //     })
-        // ));
       }
       setState(() {});
     });
