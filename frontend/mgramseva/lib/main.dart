@@ -254,7 +254,7 @@ class _LandingPageState extends State<LandingPage> {
   void initState() {
     WidgetsBinding.instance?.addPostFrameCallback((_) => afterViewBuild());
     super.initState();
-    // checkVersion();
+    checkVersion();
   }
 
   void checkVersion() async {
