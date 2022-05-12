@@ -343,8 +343,8 @@ class CommonProvider with ChangeNotifier {
           }
           return;
         } else {
-          link = "https://api.whatsapp.com/send?phone=+91$mobileNumber&text=" +
-              input.toString().replaceFirst('{link}', res!);
+          link = "https://wa.me/+91$mobileNumber?text=" +
+              input.toString().replaceAll(" ", "%20").replaceFirst('{link}', res!);
         }
         await canLaunch(link)
             ? launch(link)
