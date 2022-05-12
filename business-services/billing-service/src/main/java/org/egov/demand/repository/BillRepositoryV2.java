@@ -3,7 +3,6 @@ package org.egov.demand.repository;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -85,6 +84,7 @@ public class BillRepositoryV2 {
 				ps.setObject(14, util.getPGObject(bill.getAdditionalDetails()));
 				ps.setString(15, bill.getConsumerCode());
 				ps.setString(16, bill.getTenantId());
+				
 			}
 			
 			@Override
