@@ -191,7 +191,8 @@ public class BillServicev2 {
 		/* 
 		 * If no existing bills found then Generate new bill 
 		 */
-		generateBill(billCriteria, requestInfo);
+		if (CollectionUtils.isEmpty(bills))
+			generateBill(billCriteria, requestInfo);
 		
 		/*
 		 * Adding consumer-codes of unbilled demands to generate criteria
