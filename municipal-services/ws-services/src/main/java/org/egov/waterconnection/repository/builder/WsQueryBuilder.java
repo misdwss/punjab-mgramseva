@@ -66,8 +66,6 @@ public class WsQueryBuilder {
 
 	private static final String PAGINATION_WRAPPER = "{} {orderby} {pagination}";
 	
-	private static final String PAGINATION_WRAPPER_SEARCH = "{} {orderby}{orderby2}{pagination}";
-
 	private static final String ORDER_BY_CLAUSE = " ORDER BY wc.appCreatedDate DESC";
 
 	public static final String GET_BILLING_CYCLE = "select fromperiod,toperiod from egcl_billdetial where billid=(select billid from egcl_paymentdetail where paymentid=?)";
@@ -410,7 +408,6 @@ public class WsQueryBuilder {
 	 */
 	private String addPaginationWrapper(String query, List<Object> preparedStmtList, SearchCriteria criteria) {
 		String string = addOrderByClause(criteria);
-		String string2 = addOrderByClause2(criteria);
 		Integer limit = config.getDefaultLimit();
 		Integer offset = config.getDefaultOffset();
 		String finalQuery = null;
@@ -418,10 +415,9 @@ public class WsQueryBuilder {
 		if(criteria.getIsBillPaid() != null && (criteria.getIsCollectionCount() != null && criteria.getIsCollectionCount())) {
 			finalQuery = query;
 		} else {
-			finalQuery = PAGINATION_WRAPPER_SEARCH.replace("{}", query);
+			finalQuery = PAGINATION_WRAPPER.replace("{}", query);
 		}
 		finalQuery = finalQuery.replace("{orderby}", string);
-		finalQuery = finalQuery.replace("{orderby2}", string2);
 		
 		finalQuery = finalQuery.replace("{holderSelectValues}",
 				"(select nullif(sum(payd.amountpaid),0) from egcl_paymentdetail payd join egcl_bill payspay on (payd.billid = payspay.id) where payd.businessservice = 'WS' and payspay.consumercode = conn.connectionno" +" {fromToDateHolder} "+ "group by payspay.consumercode) as collectionamount, connectionholder.tenantid as holdertenantid, connectionholder.connectionid as holderapplicationId, userid, connectionholder.status as holderstatus, isprimaryholder, connectionholdertype, holdershippercentage, connectionholder.relationship as holderrelationship, connectionholder.createdby as holdercreatedby, connectionholder.createdtime as holdercreatedtime, connectionholder.lastmodifiedby as holderlastmodifiedby, connectionholder.lastmodifiedtime as holderlastmodifiedtime");
@@ -484,6 +480,14 @@ public class WsQueryBuilder {
 		else
 			builder.append(" DESC ");
 
+		builder.append(" , ").append("conn.id");
+		
+		if (criteria.getSortOrder() == SearchCriteria.SortOrder.ASC)
+			builder.append(" ASC ");
+		else
+			builder.append(" DESC ");
+		
+		
 		if (criteria.getSortBy() == SearchCriteria.SortBy.collectionAmount
 				|| criteria.getSortBy() == SearchCriteria.SortBy.collectionPendingAmount)
 			builder.append(" NULLS LAST ");
@@ -648,17 +652,5 @@ public class WsQueryBuilder {
 			builder.append(" DESC ");
 
 		return builder.toString();
-	}
-	private String addOrderByClause2(SearchCriteria criteria) {
-		StringBuilder builder = new StringBuilder();
-
-		builder.append(" , ").append("conn.id");
-		
-		if (criteria.getSortOrder() == SearchCriteria.SortOrder.ASC)
-			builder.append(" ASC ");
-		else
-			builder.append(" DESC ");
-
-		return builder.toString();
-	}
+	}	
 }
