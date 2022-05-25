@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:mgramseva/widgets/SearchSelectFieldBuilder.dart';
 import 'package:mgramseva/widgets/focus_watcher.dart';
 import 'package:mgramseva/model/connection/property.dart';
 import 'package:mgramseva/model/connection/water_connection.dart';
@@ -58,6 +59,7 @@ class _ConsumerDetailsState extends State<ConsumerDetails> {
       ..selectedcycle = ''
       ..waterconnection = WaterConnection()
       ..isfirstdemand = false
+      ..searchPickerKey = GlobalKey<SearchSelectFieldState>()
       ..property = Property();
 
     if (widget.waterconnection != null) {
@@ -68,7 +70,6 @@ class _ConsumerDetailsState extends State<ConsumerDetails> {
         consumerProvider
           ..setModel()
           ..setWaterConnection(widget.waterconnection)
-          ..getConnectionTypePropertyTypeTaxPeriod()
           ..fetchBoundary()
           ..getProperty({
             "tenantId": commonProvider.userDetails!.selectedtenant!.code,
@@ -126,6 +127,7 @@ class _ConsumerDetailsState extends State<ConsumerDetails> {
       ..getConsumerDetails()
       ..autoValidation = false
       ..formKey = GlobalKey<FormState>()
+      // ..searchPickerKey = GlobalKey<SearchSelectFieldState>()
       ..setwallthrough(ConsumerWalkThrough().consumerWalkThrough.map((e) {
         e.key = GlobalKey();
         return e;
@@ -447,36 +449,59 @@ class _ConsumerDetailsState extends State<ConsumerDetails> {
                                                     : Text(""),
                                               ],
                                             ),
-                                      consumerProvider.waterconnection
+                                      if(!(consumerProvider.waterconnection
                                                   .connectionType !=
-                                              'Non_Metered'
-                                          ? Container()
-                                          : Consumer<ConsumerProvider>(
+                                              'Non_Metered'))
+                                           Consumer<ConsumerProvider>(
                                               builder: (_, consumerProvider,
                                                       child) =>
-                                                  consumerProvider.isEdit ==
-                                                              false ||
-                                                          consumerProvider
-                                                                  .isfirstdemand ==
-                                                              false
-                                                      ? SelectFieldBuilder(
-                                                          i18.consumer
-                                                              .CONSUMER_BILLING_CYCLE,
-                                                          consumerProvider
-                                                              .selectedcycle,
-                                                          '',
-                                                          '',
-                                                          consumerProvider
-                                                              .onChangeBillingcycle,
-                                                          consumerProvider
-                                                              .getBillingCycle(),
-                                                          true,
-                                                          controller: consumerProvider
-                                                              .waterconnection
-                                                              .BillingCycleCtrl,
-                                                    key: Keys.createConsumer.CONSUMER_LAST_BILLED_CYCLE,
-                                                        )
-                                                      : Text("")),
+                                                  // consumerProvider.isEdit ==
+                                                  //             false ||
+                                                  //         consumerProvider
+                                                  //                 .isfirstdemand ==
+                                                  //             false
+                                                  //     ?
+                                                  Wrap(
+                                                 children: [
+                                                    SelectFieldBuilder(
+                                                    i18.demandGenerate
+                                                    .BILLING_YEAR_LABEL,
+                                                      consumerProvider
+                                                        .billYear,
+                                                    '',
+                                                    '',
+                                                      consumerProvider.onChangeOfBillYear,
+                                                      consumerProvider
+                                                        .getFinancialYearList(),
+                                                    true,
+                                                    controller: consumerProvider
+                                                        .waterconnection.billingCycleYearCtrl,
+                                                    key: Keys.bulkDemand.BULK_DEMAND_BILLING_YEAR,
+                                                  ),
+                                                   Consumer<ConsumerProvider>(
+                                                     builder: (_, consumerProvider,
+                                                         child) => SelectFieldBuilder(
+                                                     i18.consumer
+                                                         .CONSUMER_BILLING_CYCLE,
+                                                     consumerProvider
+                                                         .selectedcycle,
+                                                     '',
+                                                     '',
+                                                       consumerProvider
+                                                           .onChangeBillingcycle,
+                                                     consumerProvider
+                                                         .getBillingCycle(),
+                                                     true,
+                                                     controller: consumerProvider
+                                                         .waterconnection
+                                                         .BillingCycleCtrl,
+                                                     suggestionKey : consumerProvider.searchPickerKey,
+                                                       // contextkey: Keys.createConsumer.CONSUMER_LAST_BILLED_CYCLE,
+                                                   ))
+                                                 ],
+                                                   )
+                                                      // : Text("")
+                          ),
                                     ],
                                   )),
                           consumerProvider.isEdit == false ||
