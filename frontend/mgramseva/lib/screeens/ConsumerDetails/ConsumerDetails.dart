@@ -127,7 +127,6 @@ class _ConsumerDetailsState extends State<ConsumerDetails> {
       ..getConsumerDetails()
       ..autoValidation = false
       ..formKey = GlobalKey<FormState>()
-      // ..searchPickerKey = GlobalKey<SearchSelectFieldState>()
       ..setwallthrough(ConsumerWalkThrough().consumerWalkThrough.map((e) {
         e.key = GlobalKey();
         return e;
@@ -455,12 +454,12 @@ class _ConsumerDetailsState extends State<ConsumerDetails> {
                                            Consumer<ConsumerProvider>(
                                               builder: (_, consumerProvider,
                                                       child) =>
-                                                  // consumerProvider.isEdit ==
-                                                  //             false ||
-                                                  //         consumerProvider
-                                                  //                 .isfirstdemand ==
-                                                  //             false
-                                                  //     ?
+                                                  consumerProvider.isEdit ==
+                                                              false ||
+                                                          consumerProvider
+                                                                  .isfirstdemand ==
+                                                              false
+                                                      ?
                                                   Wrap(
                                                  children: [
                                                     SelectFieldBuilder(
@@ -478,9 +477,7 @@ class _ConsumerDetailsState extends State<ConsumerDetails> {
                                                         .waterconnection.billingCycleYearCtrl,
                                                     key: Keys.bulkDemand.BULK_DEMAND_BILLING_YEAR,
                                                   ),
-                                                   Consumer<ConsumerProvider>(
-                                                     builder: (_, consumerProvider,
-                                                         child) => SelectFieldBuilder(
+                                                   SelectFieldBuilder(
                                                      i18.consumer
                                                          .CONSUMER_BILLING_CYCLE,
                                                      consumerProvider
@@ -496,11 +493,11 @@ class _ConsumerDetailsState extends State<ConsumerDetails> {
                                                          .waterconnection
                                                          .BillingCycleCtrl,
                                                      suggestionKey : consumerProvider.searchPickerKey,
-                                                       // contextkey: Keys.createConsumer.CONSUMER_LAST_BILLED_CYCLE,
-                                                   ))
+                                                       key: Keys.createConsumer.CONSUMER_LAST_BILLED_CYCLE,
+                                                   )
                                                  ],
                                                    )
-                                                      // : Text("")
+                                                      : Text("")
                           ),
                                     ],
                                   )),
