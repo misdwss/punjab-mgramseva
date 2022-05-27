@@ -217,6 +217,7 @@ public class BillRepositoryV2 {
 		// only ACTIVE bill can be EXPIRED/UPDATED 
 		if (BillStatus.EXPIRED.equals(updateBillCriteria.getStatusToBeUpdated())) {
 			billSearchCriteria.setStatus(BillStatus.ACTIVE);
+			billSearchCriteria.setReturnAllBills(true);
 		}
 
 		List<BillV2> bills =  findBill(billSearchCriteria);

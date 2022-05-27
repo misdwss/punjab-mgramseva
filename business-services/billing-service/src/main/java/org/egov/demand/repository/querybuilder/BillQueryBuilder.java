@@ -19,7 +19,7 @@ public class BillQueryBuilder {
 	
 	public static final String REPLACE_STRING = "{replace}";
 	
-	public static final String BILL_STATUS_UPDATE_BASE_QUERY = "UPDATE egbs_bill_v1 SET status=? {replace} WHERE status='ACTIVE' AND tenantId = ? ";
+	public static final String BILL_STATUS_UPDATE_BASE_QUERY = "UPDATE egbs_bill_v1 SET status=?, lastmodifieddate=? {replace} WHERE status='ACTIVE' AND tenantId = ? ";
 	
 	public static final String INSERT_BILL_QUERY = "INSERT into egbs_bill_v1 "
 			+ " (id, tenantid, payername, payeraddress, payeremail, isactive, iscancelled, createdby, createddate, lastmodifiedby, lastmodifieddate, mobilenumber, status, additionaldetails)"
@@ -81,6 +81,10 @@ public class BillQueryBuilder {
 			preparedStatementValues.add(billSearchCriteria.getTenantId());
 		}
 		addWhereClause(billQuery, preparedStatementValues, billSearchCriteria);
+		
+		if(billSearchCriteria.getReturnAllBills()) {
+			return billQuery.toString();
+		}
 		StringBuilder maxQuery = addPagingClause(billQuery, preparedStatementValues, billSearchCriteria);
 		
 		return maxQuery.toString();
@@ -171,6 +175,7 @@ public class BillQueryBuilder {
 		StringBuilder builder = new StringBuilder();
 		
 		preparedStmtList.add(updateBillCriteria.getStatusToBeUpdated().toString());
+		preparedStmtList.add(System.currentTimeMillis());
 
 		if (updateBillCriteria.getStatusToBeUpdated().equals(BillStatus.CANCELLED)
 				&& updateBillCriteria.getAdditionalDetails() != null) {
