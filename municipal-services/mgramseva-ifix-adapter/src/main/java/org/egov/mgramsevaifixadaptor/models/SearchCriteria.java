@@ -34,8 +34,4 @@ public class SearchCriteria {
 
 	@JsonProperty("offset")
 	private String offset;
-	
-	@JsonProperty("status")
-	private String status;
-	
 }
