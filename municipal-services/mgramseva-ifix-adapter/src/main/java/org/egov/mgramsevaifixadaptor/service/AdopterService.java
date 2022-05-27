@@ -97,6 +97,7 @@ public class AdopterService {
         url.append("&");
         url.append("status=");
         url.append("{3}");
+        url.append("&");
         return url.toString();
     }
     
