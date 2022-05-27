@@ -34,10 +34,10 @@ public class AdopterService {
     
     
     
-	public List<Demand> legecyDemand(@Valid SearchCriteria criteria, RequestInfo requestInfo) {
+	public List<Demand> legecyDemand(@Valid SearchCriteria criteria, RequestInfo requestInfo, String tenantId) {
 
-		String tenantId = criteria.getTenantId();
 		String businessService = criteria.getBusinessService();
+		String status = criteria.getStatus();
 		if(tenantId.isEmpty() || tenantId == null) {
 			throw new CustomException("MISSING PARAM ERROR","TenantId is mandetory");
 		}if(businessService.isEmpty() || businessService == null) {
@@ -45,7 +45,7 @@ public class AdopterService {
 		}
 		List<Demand> demands = null;
 		if(tenantId != null &&  businessService != null) {
-			 demands = searchDemand(tenantId,requestInfo,businessService);
+			 demands = searchDemand(tenantId,requestInfo,businessService,status);
 		}
 		
 		return demands;
@@ -57,10 +57,11 @@ public class AdopterService {
      * @param requestInfo The RequestInfo of the incoming request
      * @return Lis to demands for the given consumerCode
      */
-    private List<Demand> searchDemand(String tenantId,RequestInfo requestInfo, String businessService){
+    private List<Demand> searchDemand(String tenantId,RequestInfo requestInfo, String businessService, String status){
         String uri = getDemandSearchURL();
         uri = uri.replace("{1}",tenantId);
         uri = uri.replace("{2}",businessService);
+        uri = uri.replace("{3}",status);
 
         Object result = serviceRequestRepository.fetchResult(uri,RequestInfoWrapper.builder()
                                                       .requestInfo(requestInfo).build());
