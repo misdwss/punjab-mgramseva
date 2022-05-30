@@ -50,8 +50,10 @@ public class MgramsevaAdapterController {
 			@Valid @ModelAttribute SearchCriteria criteria) {
 		List<Demand> demands = new ArrayList<Demand>();
 		List<String> tenantIds = requestInfoWrapper.getTenantIds();
+		log.info("Tenantids",tenantIds);
 		if(!tenantIds.isEmpty()) {
 			for(String tenantId : tenantIds) {
+				log.info("tenantid",tenantId);
 				demands = adopterService.legecyDemand(criteria, requestInfoWrapper.getRequestInfo(),tenantId);
 			}
 		}
