@@ -241,6 +241,11 @@ public class DemandService {
 			LocalDate firstDate = Instant.ofEpochMilli(fromDate).atZone(ZoneId.systemDefault()).toLocalDate();
 			LocalDate lastDate = Instant.ofEpochMilli(toDate).atZone(ZoneId.systemDefault()).toLocalDate();
 
+			String lastDateTime = lastDate.toString();
+			if (firstDate.isEqual(lastDate) && lastDateTime.contains("-04-01")) {
+				toDate = toDate + 60000;
+			}
+			
 			billCycle = firstDate.format(dateTimeFormatter) + " - " + lastDate.format(dateTimeFormatter);
 			addRoundOffTaxHead(calculation.getTenantId(), demandDetails);
 
