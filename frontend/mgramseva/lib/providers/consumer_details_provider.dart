@@ -651,8 +651,8 @@ class ConsumerProvider with ChangeNotifier {
 
   List<KeyValue> getAmountTypeList() {
     return [
-      KeyValue('Arrears', 'arrears'),
-      KeyValue('Advance', 'advance'),
+      KeyValue(i18.common.ARREARS, 'arrears'),
+      KeyValue(i18.common.CORE_ADVANCE, 'advance'),
     ];
   }
 
