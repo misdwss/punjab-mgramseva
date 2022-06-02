@@ -501,19 +501,26 @@ class _ConsumerDetailsState extends State<ConsumerDetails> {
                           ),
                                     ],
                                   )),
-                          consumerProvider.isEdit == false ||
-                                  consumerProvider.isfirstdemand == false
-                              ? BuildTextField(i18.consumer.ARREARS,
-                                  consumerProvider.waterconnection.arrearsCtrl,
-                                  textInputType: TextInputType.number,
-                                  inputFormatter: [
-                                    FilteringTextInputFormatter.allow(
-                                        RegExp("[0-9.]"))
-                                  ],
-                                  contextkey: consumerProvider
-                                      .consmerWalkthrougList[8].key,
-                          key: Keys.createConsumer.CONSUMER_ARREARS_KEY,)
-                              : Text(""),
+                          if(consumerProvider.isEdit == false ||
+                                  consumerProvider.isfirstdemand == false)
+                            Wrap(
+                              children: [
+                                RadioButtonFieldBuilder(
+                                    context,
+                                    "",
+                                    consumerProvider.waterconnection.amountType,
+                                    '',
+                                    '',
+                                    false,
+                                    consumerProvider.getAmountTypeList(),
+                                    consumerProvider.onChangeOfAmountType,
+                                    isEnabled: true),
+                              Visibility(
+                                   visible: consumerProvider.waterconnection.amountType != null,
+                                  child: consumerProvider.waterconnection.amountType == 'arrears' ?
+                                _buildArrears(consumerProvider) : _buildAdvance(consumerProvider))
+                              ],
+                            ),
                           if (consumerProvider.isEdit)
                             Container(
                               alignment: Alignment.centerLeft,
@@ -593,5 +600,38 @@ class _ConsumerDetailsState extends State<ConsumerDetails> {
           () => {userProvider.validateConsumerDetails(context)},
           key: Keys.createConsumer.CREATE_CONSUMER_BTN_KEY,),
     ));
+  }
+
+
+  Widget _buildArrears(ConsumerProvider consumerProvider) {
+    return Wrap(children: [
+      BuildTextField(i18.consumer.ARREARS,
+        consumerProvider.waterconnection.arrearsCtrl,
+        textInputType: TextInputType.number,
+        inputFormatter: [
+          FilteringTextInputFormatter.allow(
+              RegExp("[0-9.]"))
+        ],
+        contextkey: consumerProvider
+            .consmerWalkthrougList[8].key,
+        key: Keys.createConsumer.CONSUMER_ARREARS_KEY,),
+      BuildTextField(i18.common.CORE_PENALTY,
+        consumerProvider.waterconnection.penaltyCtrl,
+        textInputType: TextInputType.number,
+        inputFormatter: [
+          FilteringTextInputFormatter.allow(
+              RegExp("[0-9.]"))
+        ])
+    ]);
+  }
+
+  Widget _buildAdvance(ConsumerProvider consumerProvider) {
+  return  BuildTextField(i18.common.CORE_ADVANCE,
+    consumerProvider.waterconnection.advanceCtrl,
+    textInputType: TextInputType.number,
+    inputFormatter: [
+      FilteringTextInputFormatter.allow(
+          RegExp("[0-9.]"))
+    ]);
   }
 }
