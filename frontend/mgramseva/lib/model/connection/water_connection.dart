@@ -59,7 +59,16 @@ class WaterConnection {
   ProcessInstance? processInstance;
 
   @JsonKey(ignore: true)
+  String? amountType;
+
+  @JsonKey(ignore: true)
   var arrearsCtrl = TextEditingController();
+
+  @JsonKey(ignore: true)
+  var advanceCtrl = TextEditingController();
+
+  @JsonKey(ignore: true)
+  var penaltyCtrl = TextEditingController();
 
   @JsonKey(ignore: true)
   var meterIdCtrl = TextEditingController();
