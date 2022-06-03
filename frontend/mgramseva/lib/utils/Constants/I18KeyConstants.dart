@@ -195,6 +195,8 @@ class Common {
   String get SHARE_BILL_PDF => 'SHARE_BILL_PDF';
   String get CORE_PENALTY => 'PENALTY';
   String get CORE_ADVANCE => 'ADVANCE';
+  String get CORE_ADVANCE_ADJUSTED => 'CORE_ADVANCE_ADJUSTED';
+  String get CORE_NET_DUE_AMOUNT => 'CORE_NET_DUE_AMOUNT';
 }
 
 class Password {

@@ -196,6 +196,18 @@ class NewConsumerBillState extends State<NewConsumerBill> {
                                               (billList.bill?.first.totalAmount)
                                                   .toString()),
                                           context),
+                                      _getLabeltext(
+                                          i18.common.CORE_ADVANCE_ADJUSTED,
+                                          ('₹' +
+                                              (billList.bill?.first.advanceAdjusted ?? 0)
+                                                  .toString()),
+                                          context),
+                                      _getLabeltext(
+                                          i18.common.CORE_NET_DUE_AMOUNT,
+                                          ('₹' +
+                                              ((billList.bill?.first.totalAmount ?? 0) + (billList.bill?.first.advanceAdjusted ?? 0))
+                                                  .toString()),
+                                          context),
                                       widget.mode == 'collect'
                                           ? Align(
                                               alignment: Alignment.centerLeft,
