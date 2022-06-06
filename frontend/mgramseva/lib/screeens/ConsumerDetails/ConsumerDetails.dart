@@ -508,18 +508,18 @@ class _ConsumerDetailsState extends State<ConsumerDetails> {
                                 RadioButtonFieldBuilder(
                                     context,
                                     "",
-                                    consumerProvider.waterconnection.amountType,
+                                    consumerProvider.waterconnection.paymentType,
                                     '',
                                     '',
                                     false,
-                                    consumerProvider.getAmountTypeList(),
+                                    Constants.CONSUMER_AMOUNT_TYPE,
                                     consumerProvider.onChangeOfAmountType,
                                     contextkey: consumerProvider
                                         .consmerWalkthrougList[8].key,
                                     isEnabled: true),
                               Visibility(
-                                   visible: consumerProvider.waterconnection.amountType != null,
-                                  child: consumerProvider.waterconnection.amountType == 'arrears' ?
+                                   visible: consumerProvider.waterconnection.paymentType != null,
+                                  child: consumerProvider.waterconnection.paymentType == Constants.CONSUMER_AMOUNT_TYPE.first.key ?
                                 _buildArrears(consumerProvider) : _buildAdvance(consumerProvider))
                               ],
                             ),
@@ -615,7 +615,7 @@ class _ConsumerDetailsState extends State<ConsumerDetails> {
               RegExp("[0-9.]"))
         ],
         key: Keys.createConsumer.CONSUMER_ARREARS_KEY,),
-      BuildTextField(i18.common.CORE_PENALTY,
+      if(false) BuildTextField(i18.common.CORE_PENALTY,
         consumerProvider.waterconnection.penaltyCtrl,
         textInputType: TextInputType.number,
         inputFormatter: [
@@ -626,7 +626,7 @@ class _ConsumerDetailsState extends State<ConsumerDetails> {
   }
 
   Widget _buildAdvance(ConsumerProvider consumerProvider) {
-  return  BuildTextField(i18.common.CORE_ADVANCE,
+  return  BuildTextField(i18.common.CORE_ADVANCE_RUPEE,
     consumerProvider.waterconnection.advanceCtrl,
     textInputType: TextInputType.number,
     inputFormatter: [

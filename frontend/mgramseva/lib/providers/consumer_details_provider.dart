@@ -649,22 +649,13 @@ class ConsumerProvider with ChangeNotifier {
     return <DropdownMenuItem<Object>>[];
   }
 
-  List<KeyValue> getAmountTypeList() {
-    return [
-      KeyValue(i18.common.ARREARS, 'arrears'),
-      KeyValue(i18.common.CORE_ADVANCE, 'advance'),
-    ];
-  }
-
   void onChangeOfAmountType(value){
-    waterconnection.amountType = value;
+    waterconnection.paymentType = value;
 
     if(!isEdit) {
       waterconnection.penaltyCtrl.clear();
       waterconnection.advanceCtrl.clear();
       waterconnection.arrearsCtrl.clear();
-    }else{
-      
     }
     notifyListeners();
   }
