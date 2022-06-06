@@ -84,7 +84,18 @@ public class WaterConnectionValidator {
 			errorMap.putAll(isMeterInfoValidated.getErrorMessage());
 		if(waterConnectionRequest.getWaterConnection().getProcessInstance().getAction().equalsIgnoreCase("PAY"))
 			errorMap.put("INVALID_ACTION","Pay action cannot be perform directly");
-
+		
+		if (waterConnectionRequest.getWaterConnection().getPaymentType().equalsIgnoreCase(
+				WCConstants.PAYMENT_TYPE_ARREARS) && waterConnectionRequest.getWaterConnection().getAdvance() != null) {
+			errorMap.put("INVALID_PARAMETER","Advance value is not considered when Paymenttype is arrears.");
+		}
+		if (waterConnectionRequest.getWaterConnection().getPaymentType()
+				.equalsIgnoreCase(WCConstants.PAYMENT_TYPE_ADVANCE)
+				&& (waterConnectionRequest.getWaterConnection().getArrears() != null
+						|| waterConnectionRequest.getWaterConnection().getPenalty() != null)) {
+			errorMap.put("INVALID_PARAMETER", "Arrears and Penalty value is not considered when Paymenttype is Advanced.");
+		}		
+		
 		if (!errorMap.isEmpty())
 			throw new CustomException(errorMap);
 	}

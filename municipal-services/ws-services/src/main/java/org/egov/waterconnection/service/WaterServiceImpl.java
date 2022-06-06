@@ -163,10 +163,25 @@ public class WaterServiceImpl implements WaterService {
 
 		enrichmentService.postStatusEnrichment(waterConnectionRequest);
 		waterDao.saveWaterConnection(waterConnectionRequest);
-		if (waterConnectionRequest.getWaterConnection().getArrears() != null
-				&& waterConnectionRequest.getWaterConnection().getArrears().intValue() > 0) {
-			calculationService.calculateFeeAndGenerateDemand(waterConnectionRequest, property);
+		
+		if (waterConnectionRequest.getWaterConnection().getPaymentType()
+				.equalsIgnoreCase(WCConstants.PAYMENT_TYPE_ARREARS)) {
+			if ((waterConnectionRequest.getWaterConnection().getArrears() != null
+					&& waterConnectionRequest.getWaterConnection().getArrears().intValue() > 0)
+					|| (waterConnectionRequest.getWaterConnection().getPenalty() != null
+							&& waterConnectionRequest.getWaterConnection().getPenalty().intValue() > 0)) {
+				calculationService.calculateFeeAndGenerateDemand(waterConnectionRequest, property);
+			}
+
+		} else if (waterConnectionRequest.getWaterConnection().getPaymentType()
+				.equalsIgnoreCase(WCConstants.PAYMENT_TYPE_ADVANCE)) {
+			if (waterConnectionRequest.getWaterConnection().getAdvance() != null
+					&& waterConnectionRequest.getWaterConnection().getAdvance().intValue() > 0) {
+				calculationService.calculateFeeAndGenerateDemand(waterConnectionRequest, property);
+			}
 		}
+		
+		
 
 		return Arrays.asList(waterConnectionRequest.getWaterConnection());
 	}
@@ -239,10 +254,22 @@ public class WaterServiceImpl implements WaterService {
 		// Call workflow
 //		wfIntegrator.callWorkFlow(waterConnectionRequest, property);
 		// call calculator service to generate the demand for one time fee
-		if (waterConnectionRequest.getWaterConnection().getArrears() != null
-				&& waterConnectionRequest.getWaterConnection().getArrears().intValue() > 0) {
-			calculationService.calculateFeeAndGenerateDemand(waterConnectionRequest, property);
+		if (waterConnectionRequest.getWaterConnection().getPaymentType()
+				.equalsIgnoreCase(WCConstants.PAYMENT_TYPE_ARREARS)) {
+			if ((waterConnectionRequest.getWaterConnection().getArrears() != null
+					&& waterConnectionRequest.getWaterConnection().getArrears().intValue() > 0)
+					|| (waterConnectionRequest.getWaterConnection().getPenalty() != null
+							&& waterConnectionRequest.getWaterConnection().getPenalty().intValue() > 0)) {
+				calculationService.calculateFeeAndGenerateDemand(waterConnectionRequest, property);
+			}
+		} else if (waterConnectionRequest.getWaterConnection().getPaymentType()
+				.equalsIgnoreCase(WCConstants.PAYMENT_TYPE_ADVANCE)) {
+			if (waterConnectionRequest.getWaterConnection().getAdvance() != null
+					&& waterConnectionRequest.getWaterConnection().getAdvance().intValue() > 0) {
+				calculationService.calculateFeeAndGenerateDemand(waterConnectionRequest, property);
+			}
 		}
+		
 		// check for edit and send edit notification
 		waterDaoImpl.pushForEditNotification(waterConnectionRequest);
 		// Enrich file store Id After payment
@@ -302,10 +329,23 @@ public class WaterServiceImpl implements WaterService {
 		userService.updateUser(waterConnectionRequest, searchResult);
 		waterConnectionValidator.validateUpdate(waterConnectionRequest, searchResult, WCConstants.MODIFY_CONNECTION);
 		// call calculator service to generate the demand for one time fee
-		if (waterConnectionRequest.getWaterConnection().getArrears() != null
-				&& waterConnectionRequest.getWaterConnection().getArrears().intValue() > 0) {
-			calculationService.calculateFeeAndGenerateDemand(waterConnectionRequest, property);
+		if (waterConnectionRequest.getWaterConnection().getPaymentType()
+				.equalsIgnoreCase(WCConstants.PAYMENT_TYPE_ARREARS)) {
+			if ((waterConnectionRequest.getWaterConnection().getArrears() != null
+					&& waterConnectionRequest.getWaterConnection().getArrears().intValue() > 0)
+					|| (waterConnectionRequest.getWaterConnection().getPenalty() != null
+							&& waterConnectionRequest.getWaterConnection().getPenalty().intValue() > 0)) {
+				calculationService.calculateFeeAndGenerateDemand(waterConnectionRequest, property);
+			}
+
+		} else if (waterConnectionRequest.getWaterConnection().getPaymentType()
+				.equalsIgnoreCase(WCConstants.PAYMENT_TYPE_ADVANCE)) {
+			if (waterConnectionRequest.getWaterConnection().getAdvance() != null
+					&& waterConnectionRequest.getWaterConnection().getAdvance().intValue() > 0) {
+				calculationService.calculateFeeAndGenerateDemand(waterConnectionRequest, property);
+			}
 		}
+		
 //		wfIntegrator.callWorkFlow(waterConnectionRequest, property);
 		boolean isStateUpdatable = waterServiceUtil.getStatusForUpdate(businessService, previousApplicationStatus);
 		waterDao.updateWaterConnection(waterConnectionRequest, isStateUpdatable);
