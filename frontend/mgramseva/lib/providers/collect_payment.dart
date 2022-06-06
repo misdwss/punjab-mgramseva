@@ -55,6 +55,7 @@ class CollectPaymentProvider with ChangeNotifier {
         // if (demandDetails != null)
         // paymentDetails.first.demand = demandDetails.first;
         getPaymentModes(paymentDetails.first);
+        paymentDetails.first.customAmountCtrl.text = paymentDetails.first.totalAmount!.toInt().toString();
         paymentStreamController.add(paymentDetails.first);
         notifyListeners();
       }
@@ -317,9 +318,7 @@ class CollectPaymentProvider with ChangeNotifier {
       FetchBill fetchBill, BuildContext context) async {
     var commonProvider = Provider.of<CommonProvider>(context, listen: false);
 
-    var amount = fetchBill.paymentAmount == Constants.PAYMENT_AMOUNT.last.key
-        ? fetchBill.customAmountCtrl.text
-        : fetchBill.totalAmount;
+    var amount = fetchBill.customAmountCtrl.text;
     var payment = {
       "Payment": {
         "tenantId": commonProvider.userDetails?.selectedtenant?.code,
@@ -430,11 +429,11 @@ class CollectPaymentProvider with ChangeNotifier {
 
   onChangeOfPaymentAmountOrMethod(FetchBill fetchBill, String val,
       [isPaymentAmount = false]) {
-    if (isPaymentAmount) {
-      fetchBill.paymentAmount = val;
-    } else {
-      fetchBill.paymentMethod = val;
-    }
-    notifyListeners();
+    // if (isPaymentAmount) {
+    //   fetchBill.paymentAmount = val;
+    // } else {
+    //   fetchBill.paymentMethod = val;
+    // }
+    // notifyListeners();
   }
 }

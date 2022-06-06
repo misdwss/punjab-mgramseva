@@ -195,6 +195,10 @@ class Common {
   String get SHARE_BILL_PDF => 'SHARE_BILL_PDF';
   String get CORE_PENALTY => 'PENALTY';
   String get CORE_ADVANCE => 'ADVANCE';
+  String get CORE_ADVANCE_ADJUSTED => 'CORE_ADVANCE_ADJUSTED';
+  String get CORE_NET_DUE_AMOUNT => 'CORE_NET_DUE_AMOUNT';
+  String get CORE_TOTAL_BILL_AMOUNT => 'CORE_TOTAL_BILL_AMOUNT';
+  String get CORE_NET_AMOUNT_DUE => 'CORE_NET_AMOUNT_DUE';
 }
 
 class Password {
@@ -503,6 +507,7 @@ class _Payment {
   String get RECEIPT_REFERENCE_WITH_MOBILE_NUMBER =>
       'RECEIPT_REFERENCE_WITH_MOBILE_NUMBER'; //Fee Estimate
   String get BILL_DETAILS => 'BILL_DETAILS';
+  String get CORE_CHANGE_THE_AMOUNT => 'CORE_CHANGE_THE_AMOUNT';
 }
 
 class _HomeWalkThroughMsg {
