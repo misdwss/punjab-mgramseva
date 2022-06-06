@@ -514,6 +514,8 @@ class _ConsumerDetailsState extends State<ConsumerDetails> {
                                     false,
                                     consumerProvider.getAmountTypeList(),
                                     consumerProvider.onChangeOfAmountType,
+                                    contextkey: consumerProvider
+                                        .consmerWalkthrougList[8].key,
                                     isEnabled: true),
                               Visibility(
                                    visible: consumerProvider.waterconnection.amountType != null,
@@ -612,8 +614,6 @@ class _ConsumerDetailsState extends State<ConsumerDetails> {
           FilteringTextInputFormatter.allow(
               RegExp("[0-9.]"))
         ],
-        contextkey: consumerProvider
-            .consmerWalkthrougList[8].key,
         key: Keys.createConsumer.CONSUMER_ARREARS_KEY,),
       BuildTextField(i18.common.CORE_PENALTY,
         consumerProvider.waterconnection.penaltyCtrl,
