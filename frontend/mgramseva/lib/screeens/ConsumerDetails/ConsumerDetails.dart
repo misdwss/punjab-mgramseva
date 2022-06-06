@@ -508,18 +508,18 @@ class _ConsumerDetailsState extends State<ConsumerDetails> {
                                 RadioButtonFieldBuilder(
                                     context,
                                     "",
-                                    consumerProvider.waterconnection.amountType,
+                                    consumerProvider.waterconnection.paymentType,
                                     '',
                                     '',
                                     false,
-                                    consumerProvider.getAmountTypeList(),
+                                    Constants.CONSUMER_AMOUNT_TYPE,
                                     consumerProvider.onChangeOfAmountType,
                                     contextkey: consumerProvider
                                         .consmerWalkthrougList[8].key,
                                     isEnabled: true),
                               Visibility(
-                                   visible: consumerProvider.waterconnection.amountType != null,
-                                  child: consumerProvider.waterconnection.amountType == 'arrears' ?
+                                   visible: consumerProvider.waterconnection.paymentType != null,
+                                  child: consumerProvider.waterconnection.paymentType == Constants.CONSUMER_AMOUNT_TYPE.first.key ?
                                 _buildArrears(consumerProvider) : _buildAdvance(consumerProvider))
                               ],
                             ),

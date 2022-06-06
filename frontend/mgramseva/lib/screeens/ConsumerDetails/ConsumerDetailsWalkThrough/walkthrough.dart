@@ -99,7 +99,7 @@ var json = [
         '',
         '',
         false,
-        ConsumerProvider().getAmountTypeList(),
+        Constants.CONSUMER_AMOUNT_TYPE,
         (val)=>{},
         isEnabled: true),
   },
