@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_focus_watcher/flutter_focus_watcher.dart';
@@ -13,6 +15,7 @@ import 'package:mgramseva/utils/loaders.dart';
 import 'package:mgramseva/utils/notifyers.dart';
 import 'package:mgramseva/utils/validators/Validators.dart';
 import 'package:mgramseva/widgets/BottonButtonBar.dart';
+import 'package:mgramseva/widgets/ConfirmationPopUp.dart';
 import 'package:mgramseva/widgets/DrawerWrapper.dart';
 import 'package:mgramseva/widgets/FormWrapper.dart';
 import 'package:mgramseva/widgets/HomeBack.dart';
@@ -84,7 +87,22 @@ class _ConnectionPaymentViewState extends State<ConnectionPaymentView> {
             visible: fetchBill != null,
             child: BottomButtonBar(
                 '${ApplicationLocalizations.of(context).translate(i18.common.COLLECT_PAYMENT)}',
-                () => paymentInfo(fetchBill!, context))),
+                () => showGeneralDialog(
+                    barrierLabel: "Label",
+                    barrierDismissible: false,
+                    barrierColor: Colors.black.withOpacity(0.5),
+                    context: context,
+                    pageBuilder: (context, anim1, anim2) {
+                      return Align(
+                          alignment: Alignment.center,
+                          child: ConfirmationPopUp(
+                            textString: i18.payment.CORE_AMOUNT_CONFIRMATION,
+                            subTextString: '₹ ${fetchBill?.customAmountCtrl.text}',
+                            cancelLabel: i18.common.CORE_GO_BACK,
+                            confirmLabel: i18.common.CORE_CONFIRM,
+                            onConfirm: () => paymentInfo(fetchBill!, context),
+                          ));
+                    },))),
       ),
     ));
   }
