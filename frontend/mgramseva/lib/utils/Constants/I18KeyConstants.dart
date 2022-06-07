@@ -199,6 +199,9 @@ class Common {
   String get CORE_NET_DUE_AMOUNT => 'CORE_NET_DUE_AMOUNT';
   String get CORE_TOTAL_BILL_AMOUNT => 'CORE_TOTAL_BILL_AMOUNT';
   String get CORE_NET_AMOUNT_DUE => 'CORE_NET_AMOUNT_DUE';
+  String get CANCEL_BUTTON => 'CANCEL';
+  String get GO_BACK => 'GO_BACK';
+  String get CONFIRM_BUTTON => 'CONFIRM';
 }
 
 class Password {
@@ -508,6 +511,7 @@ class _Payment {
       'RECEIPT_REFERENCE_WITH_MOBILE_NUMBER'; //Fee Estimate
   String get BILL_DETAILS => 'BILL_DETAILS';
   String get CORE_CHANGE_THE_AMOUNT => 'CORE_CHANGE_THE_AMOUNT';
+  String get CONFIRM_AMOUNT_ENTERED => 'CONFIRM_AMOUNT_ENTERED';
 }
 
 class _HomeWalkThroughMsg {
