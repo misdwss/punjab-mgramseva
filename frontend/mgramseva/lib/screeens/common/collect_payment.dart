@@ -96,10 +96,10 @@ class _ConnectionPaymentViewState extends State<ConnectionPaymentView> {
                       return Align(
                           alignment: Alignment.center,
                           child: ConfirmationPopUp(
-                            textString: i18.payment.CONFIRM_AMOUNT_ENTERED,
+                            textString: i18.payment.CORE_AMOUNT_CONFIRMATION,
                             subTextString: '₹ ${fetchBill?.customAmountCtrl.text}',
-                            cancelLabel: i18.common.CANCEL_BUTTON,
-                            confirmLabel: i18.common.CONFIRM_BUTTON,
+                            cancelLabel: i18.common.CORE_GO_BACK,
+                            confirmLabel: i18.common.CORE_CONFIRM,
                             onConfirm: () => paymentInfo(fetchBill!, context),
                           ));
                     },))),

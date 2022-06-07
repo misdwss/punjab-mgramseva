@@ -25,7 +25,6 @@ class ConfirmationPopUp extends StatefulWidget {
 }
 
 class _ConfirmationPopUpState extends State<ConfirmationPopUp> {
-  int active = 0;
   @override
   void initState() {
     super.initState();
@@ -124,7 +123,7 @@ class _ConfirmationPopUpState extends State<ConfirmationPopUp> {
                                           child: Center(
                                               child: Text(
                                                 ApplicationLocalizations.of(context)
-                                                    .translate(widget.cancelLabel ?? i18.common.CANCEL_BUTTON),
+                                                    .translate(widget.cancelLabel ?? i18.common.CORE_CANCEL),
                                                 style: TextStyle(
                                                     color: Colors.white,
                                                     fontSize: 14),
@@ -144,7 +143,7 @@ class _ConfirmationPopUpState extends State<ConfirmationPopUp> {
                                           child: Center(
                                               child: Text(
                                                 ApplicationLocalizations.of(context)
-                                                    .translate(widget.confirmLabel ?? i18.common.CONFIRM_BUTTON),
+                                                    .translate(widget.confirmLabel ?? i18.common.CORE_CONFIRM),
                                                 style: TextStyle(
                                                     color: Colors.white,
                                                     fontSize: 14),
