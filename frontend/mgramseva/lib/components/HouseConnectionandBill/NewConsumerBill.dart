@@ -205,7 +205,7 @@ class NewConsumerBillState extends State<NewConsumerBill> {
                                       _getLabeltext(
                                           i18.common.CORE_NET_DUE_AMOUNT,
                                           ('₹' +
-                                              ((billList.bill?.first.totalAmount ?? 0) + (billList.bill?.first.advanceAdjusted ?? 0))
+                                              (billList.bill?.first.netAmountDue ?? 0)
                                                   .toString()),
                                           context),
                                       widget.mode == 'collect'

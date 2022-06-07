@@ -31,8 +31,10 @@ class Bill {
   String? status;
   @JsonKey(name: "totalAmount")
   double? totalAmount;
-  @JsonKey(name: "advanceAdjusted")
+  @JsonKey(name: "advanceAdjustedAmount")
   double? advanceAdjusted;
+  @JsonKey(name: "netAmountDue")
+  double? netAmountDue;
   @JsonKey(name: "businessService")
   String? businessService;
   @JsonKey(name: "billNumber")
