@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_focus_watcher/flutter_focus_watcher.dart';
@@ -13,11 +15,13 @@ import 'package:mgramseva/utils/loaders.dart';
 import 'package:mgramseva/utils/notifyers.dart';
 import 'package:mgramseva/utils/validators/Validators.dart';
 import 'package:mgramseva/widgets/BottonButtonBar.dart';
+import 'package:mgramseva/widgets/ConfirmationPopUp.dart';
 import 'package:mgramseva/widgets/DrawerWrapper.dart';
 import 'package:mgramseva/widgets/FormWrapper.dart';
 import 'package:mgramseva/widgets/HomeBack.dart';
 import 'package:mgramseva/widgets/RadioButtonFieldBuilder.dart';
 import 'package:mgramseva/widgets/SideBar.dart';
+import 'package:mgramseva/widgets/TextFieldBuilder.dart';
 import 'package:provider/provider.dart';
 import '../../widgets/customAppbar.dart';
 
@@ -83,7 +87,22 @@ class _ConnectionPaymentViewState extends State<ConnectionPaymentView> {
             visible: fetchBill != null,
             child: BottomButtonBar(
                 '${ApplicationLocalizations.of(context).translate(i18.common.COLLECT_PAYMENT)}',
-                () => paymentInfo(fetchBill!, context))),
+                () => showGeneralDialog(
+                    barrierLabel: "Label",
+                    barrierDismissible: false,
+                    barrierColor: Colors.black.withOpacity(0.5),
+                    context: context,
+                    pageBuilder: (context, anim1, anim2) {
+                      return Align(
+                          alignment: Alignment.center,
+                          child: ConfirmationPopUp(
+                            textString: i18.payment.CORE_AMOUNT_CONFIRMATION,
+                            subTextString: '₹ ${fetchBill?.customAmountCtrl.text}',
+                            cancelLabel: i18.common.CORE_GO_BACK,
+                            confirmLabel: i18.common.CORE_CONFIRM,
+                            onConfirm: () => paymentInfo(fetchBill!, context),
+                          ));
+                    },))),
       ),
     ));
   }
@@ -169,42 +188,27 @@ class _ConnectionPaymentViewState extends State<ConnectionPaymentView> {
       builder: (_, consumerPaymentProvider, child) => Card(
           child: Wrap(
         children: [
-          RadioButtonFieldBuilder(
-              context,
-              i18.common.PAYMENT_AMOUNT,
-              fetchBill.paymentAmount,
-              '',
-              '',
-              true,
-              Constants.PAYMENT_AMOUNT,
-              (val) => consumerPaymentProvider.onChangeOfPaymentAmountOrMethod(
-                  fetchBill, val, true),
-              refTextRadioBtn: Constants.PAYMENT_AMOUNT.last.key,
-              secondaryBox: fetchBill.paymentAmount == Constants.PAYMENT_AMOUNT.last.key ?
-              ForceFocusWatcher(
-                  child: TextFormField(
-                style: TextStyle(
-                    fontWeight: FontWeight.w400,
-                    fontSize: 16,
-                    color: Theme.of(context).primaryColorDark),
-                controller: fetchBill.customAmountCtrl,
-                keyboardType: TextInputType.number,
-                inputFormatters: [
+          ForceFocusWatcher(
+              child:
+              BuildTextField(
+                i18.common.PAYMENT_AMOUNT,
+                 fetchBill.customAmountCtrl,
+                textInputType: TextInputType.number,
+                inputFormatter: [
                   FilteringTextInputFormatter.allow(RegExp("[0-9]"))
                 ],
-                validator: (val) =>
-                    Validators.partialAmountValidatior(val, fetchBill.totalAmount),
-                decoration: const InputDecoration(
-                  prefixText: '₹ ',
-                  prefixStyle: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w400),
-                  errorMaxLines: 1,
-                  errorStyle: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w400),
-                ),
-              )) : null),
+                validator:
+                    Validators.partialAmountValidatior,
+                prefixText: '₹ ',
+              )),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Text('${ApplicationLocalizations.of(context).translate(i18.payment.CORE_CHANGE_THE_AMOUNT)}',
+            style: TextStyle(
+              color: Colors.blueAccent
+            ),
+            ),
+          ),
           RadioButtonFieldBuilder(
               context,
               i18.common.PAYMENT_METHOD,
@@ -268,7 +272,16 @@ class _ConnectionPaymentViewState extends State<ConnectionPaymentView> {
                         '₹ ${fetchBill.billDetails?.first.billAccountDetails?.last.amount}'),
                 // }),
                 if (fetchBill.billDetails != null && res.length > 1)
-                  _buildWaterCharges(fetchBill, constraints)
+                  _buildWaterCharges(fetchBill, constraints),
+                _buildLabelValue(
+                    i18.common.CORE_TOTAL_BILL_AMOUNT,
+                    '₹ ${fetchBill.billDetails?.first.billAccountDetails?.last.amount}'),
+                _buildLabelValue(
+                    i18.common.CORE_ADVANCE_ADJUSTED,
+                    '₹'),
+                _buildLabelValue(
+                    i18.common.CORE_NET_AMOUNT_DUE,
+                    '₹'),
               ],
             ),
           )
