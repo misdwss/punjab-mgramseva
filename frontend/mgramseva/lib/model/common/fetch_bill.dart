@@ -43,9 +43,6 @@ class FetchBill {
   bool viewDetails = false;
 
   @JsonKey(ignore: true)
-  String paymentAmount = Constants.PAYMENT_AMOUNT.first.key ;
-
-  @JsonKey(ignore: true)
   String? paymentMethod;
 
   @JsonKey(ignore: true)
