@@ -257,13 +257,13 @@ class _ConnectionPaymentViewState extends State<ConnectionPaymentView> {
                   _buildWaterCharges(fetchBill, constraints),
                 _buildLabelValue(
                     i18.common.CORE_TOTAL_BILL_AMOUNT,
-                    '₹ ${fetchBill.billDetails?.first.billAccountDetails?.last.amount}'),
+                    '₹ ${fetchBill.totalAmount}'),
                 _buildLabelValue(
                     i18.common.CORE_ADVANCE_ADJUSTED,
-                    '₹'),
+                    '₹ ${fetchBill.billDetails?.first.billAccountDetails?.last.advanceAdjustedAmount}'),
                 _buildLabelValue(
                     i18.common.CORE_NET_AMOUNT_DUE,
-                    '₹'),
+                    '₹ ${fetchBill.billDetails?.first.billAccountDetails?.last.netAmountDue}'),
               ],
             ),
           )
