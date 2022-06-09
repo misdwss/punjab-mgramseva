@@ -16,6 +16,8 @@ import 'package:mgramseva/widgets/ShortButton.dart';
 import 'package:provider/provider.dart';
 import "package:collection/collection.dart";
 
+import '../../widgets/CustomDetails.dart';
+
 class NewConsumerBill extends StatefulWidget {
   final String? mode;
   final WaterConnection? waterConnection;
@@ -39,7 +41,7 @@ class NewConsumerBillState extends State<NewConsumerBill> {
       ..fetchBill(widget.waterConnection);
   }
 
-  _getLabeltext(label, value, context) {
+  _getLabeltext(label, value, context, {subLabel = ''}) {
     return Container(
         padding: EdgeInsets.only(top: 16, bottom: 16),
         child: (Row(
@@ -48,14 +50,32 @@ class NewConsumerBillState extends State<NewConsumerBill> {
             Container(
                 padding: EdgeInsets.only(right: 16),
                 width: MediaQuery.of(context).size.width / 3,
-                child: Text(
-                  ApplicationLocalizations.of(context).translate(label),
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
-                )),
+                child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        ApplicationLocalizations.of(context).translate(label),
+                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
+                        textAlign: TextAlign.start,
+                      ),
+                      subLabel?.trim?.toString() != ''
+                          ? Text( subLabel,
+                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.w400),
+                      ) : Text('')
+                    ])),
             Text(value,
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.w400))
           ],
         )));
+  }
+
+  getDueDatePenalty(dueDate){
+    late String localizationText;
+    localizationText = '${ApplicationLocalizations.of(context).translate(i18.billDetails.CORE_PAID_AFTER)}';
+    localizationText = localizationText.replaceFirst(
+        '{dueDate}', dueDate);
+    return localizationText;
   }
 
   @override
@@ -208,6 +228,27 @@ class NewConsumerBillState extends State<NewConsumerBill> {
                                               (billList.bill?.first.netAmountDue ?? 0)
                                                   .toString()),
                                           context),
+                                      CustomDetailsCard(
+                                          Column(
+                                            children: [
+                                              _getLabeltext(
+                                                  i18.billDetails.CORE_PENALTY,
+                                                  ('₹' +
+                                                      (billList.bill?.first.penalty ?? 0)
+                                                          .toString()),
+                                                  context,
+                                                  subLabel: getDueDatePenalty('dueDate')),
+                                              _getLabeltext(
+                                                  i18.billDetails.CORE_NET_DUE_AMOUNT_WITH_PENALTY,
+                                                  ('₹' +
+                                                      (billList.bill?.first.netAmountDueWithPenalty ?? 0)
+                                                          .toString()),
+                                                  context,
+                                                  subLabel: getDueDatePenalty('dueDate'))
+
+                                            ],
+                                          )
+                                      ),
                                       widget.mode == 'collect'
                                           ? Align(
                                               alignment: Alignment.centerLeft,
