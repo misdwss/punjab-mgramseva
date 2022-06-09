@@ -657,7 +657,7 @@ class ConsumerProvider with ChangeNotifier {
   }
 
   void onChangeOfAmountType(value){
-    waterconnection.amountType = value;
+    waterconnection.paymentType = value;
 
     if(!isEdit) {
       waterconnection.penaltyCtrl.clear();
