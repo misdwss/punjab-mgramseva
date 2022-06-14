@@ -452,6 +452,9 @@ class BillDetails {
   String get ARRERS_DUES => 'ARRERS_DUES';
   String get TOTAL_AMOUNT => 'TOTAL_AMOUNT';
   String get COLLECT_PAYMENT => 'COLLECT_PAYMENT';
+  String get CORE_PAID_AFTER => 'CORE_PAID_AFTER';
+  String get CORE_PENALTY => 'CORE_PENALTY';
+  String get CORE_NET_DUE_AMOUNT_WITH_PENALTY => 'CORE_NET_DUE_AMOUNT_WITH_PENALTY';
 }
 
 class GenerateBillDetails {

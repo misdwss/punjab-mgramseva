@@ -58,8 +58,14 @@ class WaterConnection {
   @JsonKey(name: "processInstance")
   ProcessInstance? processInstance;
 
-  @JsonKey(ignore: true)
-  String? amountType;
+  @JsonKey(name: "paymentType")
+  String? paymentType;
+
+  @JsonKey(name: "penalty")
+  double? penalty;
+
+  @JsonKey(name: "advance")
+  double? advance;
 
   @JsonKey(ignore: true)
   var arrearsCtrl = TextEditingController();
@@ -116,6 +122,12 @@ class WaterConnection {
     arrears = arrearsCtrl.text.trim() != "" && double.parse(arrearsCtrl.text) > 0
         ? double.parse(arrearsCtrl.text).toDouble()
         : null;
+    advance = advanceCtrl.text.trim() != "" && double.parse(advanceCtrl.text) > 0
+        ? double.parse(advanceCtrl.text).toDouble()
+        : null;
+    penalty = penaltyCtrl.text.trim() != "" && double.parse(penaltyCtrl.text) > 0
+        ? double.parse(penaltyCtrl.text).toDouble()
+        : null;
     previousReadingDate = previousReadingDateCtrl.text != ""
         ? DateFormats.dateToTimeStamp(
             previousReadingDateCtrl.text,
@@ -143,6 +155,8 @@ class WaterConnection {
     OldConnectionCtrl.text = oldConnectionNo ?? "";
     meterIdCtrl.text = meterId ?? "";
     arrearsCtrl.text = (arrears == null ? '' : getFilteredAmount(arrears!));
+    advanceCtrl.text = (advance == null ? '' : getFilteredAmount(advance!));
+    penaltyCtrl.text = (penalty == null ? '' : getFilteredAmount(penalty!));
     categoryCtrl.text = additionalDetails?.category ?? "";
     subCategoryCtrl.text = additionalDetails?.subCategory ?? "";
     addharCtrl.text = additionalDetails?.aadharNumber ?? "";
