@@ -164,7 +164,6 @@ public class Connection {
 	@JsonProperty("advance")
 	private BigDecimal advance = null;
 	
-
 	public String getPaymentType() {
 		return paymentType;
 	}
@@ -205,10 +204,6 @@ public class Connection {
 	public void setArrears(BigDecimal arrears) {
 		this.arrears = arrears;
 	}
-
-	
-	
-	
 
 	public Connection id(String id) {
 		this.id = id;

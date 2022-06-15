@@ -83,6 +83,9 @@ public class WSCalculationConstant {
 	public static final String WS_WATER_CESS = "WS_WATER_CESS";
 
 	public static final String WS_CHARGE = "10101";
+	
+	public static final String ADVANCE_COLLECTION = "WS_ADVANCE_CARRYFORWARD";
+
 
 	public static final String WS_CHARGE_ARREAR = "10102";
 

@@ -170,14 +170,13 @@ public class WaterServiceImpl implements WaterService {
 					&& waterConnectionRequest.getWaterConnection().getArrears().intValue() > 0)
 					|| (waterConnectionRequest.getWaterConnection().getPenalty() != null
 							&& waterConnectionRequest.getWaterConnection().getPenalty().intValue() > 0)) {
-				calculationService.calculateFeeAndGenerateDemand(waterConnectionRequest, property);
+				calculationService.calculateFeeAndGenerateDemand(waterConnectionRequest, property, false);
 			}
 
 		} else if (waterConnectionRequest.getWaterConnection().getPaymentType()
 				.equalsIgnoreCase(WCConstants.PAYMENT_TYPE_ADVANCE)) {
-			if (waterConnectionRequest.getWaterConnection().getAdvance() != null
-					&& waterConnectionRequest.getWaterConnection().getAdvance().intValue() > 0) {
-				calculationService.calculateFeeAndGenerateDemand(waterConnectionRequest, property);
+			if (waterConnectionRequest.getWaterConnection().getAdvance() != null) {
+				calculationService.calculateFeeAndGenerateDemand(waterConnectionRequest, property, true);
 			}
 		}
 		
@@ -260,13 +259,13 @@ public class WaterServiceImpl implements WaterService {
 					&& waterConnectionRequest.getWaterConnection().getArrears().intValue() > 0)
 					|| (waterConnectionRequest.getWaterConnection().getPenalty() != null
 							&& waterConnectionRequest.getWaterConnection().getPenalty().intValue() > 0)) {
-				calculationService.calculateFeeAndGenerateDemand(waterConnectionRequest, property);
+				calculationService.calculateFeeAndGenerateDemand(waterConnectionRequest, property, false);
 			}
 		} else if (waterConnectionRequest.getWaterConnection().getPaymentType()
 				.equalsIgnoreCase(WCConstants.PAYMENT_TYPE_ADVANCE)) {
 			if (waterConnectionRequest.getWaterConnection().getAdvance() != null
 					&& waterConnectionRequest.getWaterConnection().getAdvance().intValue() > 0) {
-				calculationService.calculateFeeAndGenerateDemand(waterConnectionRequest, property);
+				calculationService.calculateFeeAndGenerateDemand(waterConnectionRequest, property, true);
 			}
 		}
 		
@@ -335,14 +334,14 @@ public class WaterServiceImpl implements WaterService {
 					&& waterConnectionRequest.getWaterConnection().getArrears().intValue() > 0)
 					|| (waterConnectionRequest.getWaterConnection().getPenalty() != null
 							&& waterConnectionRequest.getWaterConnection().getPenalty().intValue() > 0)) {
-				calculationService.calculateFeeAndGenerateDemand(waterConnectionRequest, property);
+				calculationService.calculateFeeAndGenerateDemand(waterConnectionRequest, property,false);
 			}
 
 		} else if (waterConnectionRequest.getWaterConnection().getPaymentType()
 				.equalsIgnoreCase(WCConstants.PAYMENT_TYPE_ADVANCE)) {
 			if (waterConnectionRequest.getWaterConnection().getAdvance() != null
 					&& waterConnectionRequest.getWaterConnection().getAdvance().intValue() > 0) {
-				calculationService.calculateFeeAndGenerateDemand(waterConnectionRequest, property);
+				calculationService.calculateFeeAndGenerateDemand(waterConnectionRequest, property,true);
 			}
 		}
 		
