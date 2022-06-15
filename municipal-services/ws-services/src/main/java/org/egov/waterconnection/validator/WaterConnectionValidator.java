@@ -133,9 +133,15 @@ public class WaterConnectionValidator {
 				data.add(demand.isPaymentCompleted());
 			}
 		}
-		if(request.getWaterConnection().getStatus().equals(StatusEnum.INACTIVE) && demands.size() == data.size() || request.getWaterConnection().getArrears() == null || request.getWaterConnection().getArrears().toString() == "0") {
+		Boolean isArrear = false;
+		if(request.getWaterConnection().getArrears()!=null && request.getWaterConnection().getArrears().toString() == "0") {
+			isArrear =  true;
+		}
+		if ((request.getWaterConnection().getStatus().equals(StatusEnum.INACTIVE) && demands.size() == data.size())
+				|| (searchResult.getArrears() != null && request.getWaterConnection().getArrears() == null
+						|| isArrear)) {
 			for (Demand demand : demands) {
-					demand.setStatus(org.egov.waterconnection.web.models.Demand.StatusEnum.CANCELLED);
+				demand.setStatus(org.egov.waterconnection.web.models.Demand.StatusEnum.CANCELLED);
 			}
 			updateDemand(request.getRequestInfo(), demands);
 
