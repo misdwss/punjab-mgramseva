@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mgramseva/model/bill/billing.dart';
 import 'package:mgramseva/model/connection/water_connection.dart';
+import 'package:mgramseva/model/demand/demand_list.dart';
 import 'package:mgramseva/providers/common_provider.dart';
 import 'package:mgramseva/providers/fetch_bill_provider.dart';
 import 'package:mgramseva/providers/household_details_provider.dart';
@@ -21,8 +22,9 @@ import '../../widgets/CustomDetails.dart';
 class NewConsumerBill extends StatefulWidget {
   final String? mode;
   final WaterConnection? waterConnection;
+  final List<Demands> demandList;
 
-  const NewConsumerBill(this.mode, this.waterConnection);
+  const NewConsumerBill(this.mode, this.waterConnection, this.demandList);
   @override
   State<StatefulWidget> createState() {
     return NewConsumerBillState();
@@ -38,7 +40,7 @@ class NewConsumerBillState extends State<NewConsumerBill> {
 
   afterViewBuild() {
     Provider.of<FetchBillProvider>(context, listen: false)
-      ..fetchBill(widget.waterConnection);
+      ..fetchBill(widget.waterConnection, context);
   }
 
   _getLabeltext(label, value, context, {subLabel = ''}) {
@@ -103,12 +105,11 @@ class NewConsumerBillState extends State<NewConsumerBill> {
   }
 
   buidBillview(BillList billList) {
-    List res = [];
     var commonProvider = Provider.of<CommonProvider>(context, listen: false);
-    if (billList.bill!.isNotEmpty)
-      billList.bill?.first.billDetails!.forEach((element) {
-        res.add(element.amount);
-      });
+    // if (billList.bill!.isNotEmpty)
+    //   billList.bill?.first.billDetails!.forEach((element) {
+    //     res.add(element.amount);
+    //   });
 
     return LayoutBuilder(builder: (context, constraints) {
       var houseHoldProvider =
@@ -189,46 +190,34 @@ class NewConsumerBillState extends State<NewConsumerBill> {
                                               ? i18.billDetails.CURRENT_BILL
                                               : i18.billDetails.ARRERS_DUES,
                                           ('₹' +
-                                              billList.bill!.first.billDetails!
-                                                  .first.amount
+                                              widget.demandList.first.demandDetails!
+                                                  .first.taxAmount
                                                   .toString()),
                                           context),
                                       houseHoldProvider.isfirstdemand == true
                                           ? _getLabeltext(
                                               i18.billDetails.ARRERS_DUES,
-                                              ('₹' +
-                                                  (res.reduce((previousValue,
-                                                                  element) =>
-                                                              previousValue +
-                                                              element) -
-                                                          billList
-                                                              .bill
-                                                              ?.first
-                                                              .billDetails
-                                                              ?.first
-                                                              .amount)
-                                                      .toString()),
+                                              ('₹' + getArrearsAmount().toString()),
                                               context)
                                           : Text(""),
                                       _getLabeltext(
                                           i18.billDetails.TOTAL_AMOUNT,
                                           ('₹' +
-                                              (billList.bill?.first.totalAmount)
-                                                  .toString()),
+                                              getTotalBillAmount()),
                                           context),
                                       _getLabeltext(
                                           i18.common.CORE_ADVANCE_ADJUSTED,
                                           ('₹' +
-                                              (billList.bill?.first.advanceAdjusted ?? 0)
+                                              (getAdvanceAdjustedAmount())
                                                   .toString()),
                                           context),
                                       _getLabeltext(
                                           i18.common.CORE_NET_DUE_AMOUNT,
                                           ('₹' +
-                                              (billList.bill?.first.netAmountDue ?? 0)
+                                              (billList.bill?.first.totalAmount)
                                                   .toString()),
                                           context),
-                                      CustomDetailsCard(
+                                      if(false) CustomDetailsCard(
                                           Column(
                                             children: [
                                               _getLabeltext(
@@ -403,4 +392,44 @@ class NewConsumerBillState extends State<NewConsumerBill> {
     Navigator.pushNamed(context, Routes.HOUSEHOLD_DETAILS_COLLECT_PAYMENT,
         arguments: query);
   }
+
+  String getAdvanceAdjustedAmount() {
+     var amount = '0';
+     var index = -1;
+     // widget.demandList.sort((a, b) => b
+     //     .demandDetails!.first.auditDetails!.createdTime!
+     //     .compareTo(a.demandDetails!.first.auditDetails!.createdTime!));
+
+     for(int i =0; i < widget.demandList.length; i++){
+       index = widget.demandList[i].demandDetails?.indexWhere((e) => e.taxHeadMasterCode == 'WS_ADVANCE_CARRYFORWARD') ?? -1;
+       if(index != -1){
+         amount = widget.demandList[i].demandDetails![index].taxAmount.toString();
+         break;
+       }
+     }
+     return amount;
+  }
+
+  String getTotalBillAmount() {
+    return ((widget.demandList.first.demandDetails?.first.taxAmount ?? 0) + getArrearsAmount()).toString();
+  }
+
+  num getArrearsAmount() {
+    List res = [];
+
+    if (widget.demandList.isNotEmpty)
+      widget.demandList.first.demandDetails!.forEach((e) {
+        if(e.taxHeadMasterCode != 'WS_ADVANCE_CARRYFORWARD')
+          res.add(e.taxAmount);
+      });
+
+   return (res.reduce((previousValue,
+        element) =>
+    previousValue +
+        element) -
+        widget.demandList.first.demandDetails
+            ?.first
+            .taxAmount);
+  }
+
 }

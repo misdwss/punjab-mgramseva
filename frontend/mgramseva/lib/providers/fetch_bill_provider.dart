@@ -11,7 +11,7 @@ class FetchBillProvider with ChangeNotifier {
   late GlobalKey<FormState> formKey;
 
   // ignore: non_constant_identifier_names
-  Future<void> fetchBill(data) async {
+  Future<void> fetchBill(data, BuildContext context) async {
     try {
       var res = await BillingServiceRepository().fetchdBill({
         "tenantId": data.tenantId,

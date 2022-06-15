@@ -31,6 +31,7 @@ import 'package:provider/provider.dart';
 import 'package:screenshot/screenshot.dart';
 import 'package:image/image.dart' as img;
 import 'common_provider.dart';
+import 'package:mgramseva/repository/billing_service_repo.dart';
 
 class CollectPaymentProvider with ChangeNotifier {
   var paymentStreamController = StreamController.broadcast();
@@ -48,6 +49,21 @@ class CollectPaymentProvider with ChangeNotifier {
       BuildContext context, Map<String, dynamic> query) async {
     try {
       var paymentDetails = await ConsumerRepository().getBillDetails(query);
+
+      var value = await BillingServiceRepository().fetchdDemand({
+        "tenantId": query['tenantId'],
+        "consumerCode": query['consumerCode'],
+        "businessService": "WS",
+        "status": "ACTIVE"
+      });
+
+        if (value.demands!.length > 0) {
+          value.demands!.sort((a, b) =>
+              b
+                  .demandDetails!.first.auditDetails!.createdTime!
+                  .compareTo(
+                  a.demandDetails!.first.auditDetails!.createdTime!));
+        }
       if (paymentDetails != null) {
         paymentDetails.first.billDetails
             ?.sort((a, b) => b.fromPeriod!.compareTo(a.fromPeriod!));
