@@ -125,7 +125,7 @@ public class WSCalculationServiceImpl implements WSCalculationService {
 		}
 		
 
-		if(request.getIsAdvanceCalculation()) {
+		if(request.getIsAdvanceCalculation() != null && request.getIsAdvanceCalculation()) {
 			demandService.generateDemand(request.getRequestInfo(), calculations, masterMap,
 					request.getIsAdvanceCalculation(), isWSUpdateSMS);
 		}else {
