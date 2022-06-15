@@ -61,7 +61,7 @@ public class EstimationService {
 	 */
 	@SuppressWarnings("rawtypes")
 	public Map<String, List> getEstimationMap(CalculationCriteria criteria, RequestInfo requestInfo,
-			Map<String, Object> masterData,boolean isconnectionCalculation) {
+			Map<String, Object> masterData,boolean isconnectionCalculation, boolean isAdvanceCalculation) {
 		String tenantId = criteria.getTenantId();
 		if (criteria.getWaterConnection() == null && !StringUtils.isEmpty(criteria.getConnectionNo())) {
 			List<WaterConnection> waterConnectionList = calculatorUtil.getWaterConnection(requestInfo, criteria.getConnectionNo(), tenantId);
@@ -88,14 +88,16 @@ public class EstimationService {
 		// billingSlabMaster,
 		// timeBasedExemptionMasterMap);
 		BigDecimal taxAmt = BigDecimal.ZERO;
-		if(!isconnectionCalculation) {
+		if(isAdvanceCalculation) {
+			taxAmt = criteria.getWaterConnection().getAdvance();
+		}else if(!isconnectionCalculation) {
 			taxAmt = criteria.getWaterConnection().getArrears();
 		}else {
 			taxAmt = getWaterEstimationCharge(criteria.getWaterConnection(), criteria, billingSlabMaster, billingSlabIds,
 					requestInfo);
 		}
 		List<TaxHeadEstimate> taxHeadEstimates = getEstimatesForTax(taxAmt, criteria.getWaterConnection(),
-				timeBasedExemptionMasterMap, RequestInfoWrapper.builder().requestInfo(requestInfo).build(),isconnectionCalculation);
+				timeBasedExemptionMasterMap, RequestInfoWrapper.builder().requestInfo(requestInfo).build(),isconnectionCalculation,isAdvanceCalculation);
 
 		Map<String, List> estimatesAndBillingSlabs = new HashMap<>();
 		estimatesAndBillingSlabs.put("estimates", taxHeadEstimates);
@@ -114,11 +116,16 @@ public class EstimationService {
 	 */
 	private List<TaxHeadEstimate> getEstimatesForTax(BigDecimal waterCharge,
 			WaterConnection connection,
-			Map<String, JSONArray> timeBasedExemptionsMasterMap, RequestInfoWrapper requestInfoWrapper, boolean isconnectionCalculation) {
+			Map<String, JSONArray> timeBasedExemptionsMasterMap, RequestInfoWrapper requestInfoWrapper, boolean isconnectionCalculation,boolean isAdvanceCalculation) {
 		List<TaxHeadEstimate> estimates = new ArrayList<>();
 		// water_charge
-		estimates.add(TaxHeadEstimate.builder().taxHeadCode(isconnectionCalculation ? WSCalculationConstant.WS_CHARGE :WSCalculationConstant.WS_CHARGE_ARREAR)
-				.estimateAmount(waterCharge.setScale(2, 2)).build());
+		if(!isAdvanceCalculation) {
+			estimates.add(TaxHeadEstimate.builder().taxHeadCode(isconnectionCalculation ? WSCalculationConstant.WS_CHARGE :WSCalculationConstant.WS_CHARGE_ARREAR)
+					.estimateAmount(waterCharge.setScale(2, 2)).build());
+		}else {
+			estimates.add(TaxHeadEstimate.builder().taxHeadCode(WSCalculationConstant.ADVANCE_COLLECTION)
+					.estimateAmount(waterCharge.setScale(2, 2)).build());
+		}
 
 		// Water_cess
 		if (timeBasedExemptionsMasterMap.get(WSCalculationConstant.WC_WATER_CESS_MASTER) != null) {
