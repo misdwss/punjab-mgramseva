@@ -379,7 +379,7 @@ class router {
           localQuery.remove('fetchBill');
         }
         return MaterialPageRoute(
-            builder: (_) => ConnectionPaymentView(query: localQuery, bill: (settings.arguments as Map?)?['fetchBill'] as List<Bill>, demandList: (settings.arguments as Map?)?['demandList'] as List<Demands>),
+            builder: (_) => ConnectionPaymentView(query: localQuery, bill: (settings.arguments as Map?)?['fetchBill'] as List<Bill>?, demandList: (settings.arguments as Map?)?['demandList'] as List<Demands>?),
             settings: RouteSettings(
                 name:
                     '${Routes.HOUSEHOLD_DETAILS_COLLECT_PAYMENT}?${Uri(queryParameters: localQuery).query}'));

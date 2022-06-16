@@ -62,19 +62,21 @@ class CollectPaymentProvider with ChangeNotifier {
 
 
       if(demandList == null) {
-        await BillingServiceRepository().fetchdDemand({
+        var demand = await BillingServiceRepository().fetchdDemand({
           "tenantId": query['tenantId'],
           "consumerCode": query['consumerCode'],
           "businessService": "WS",
           "status": "ACTIVE"
         });
 
-        if (demandList!.length > 0) {
-          // demandList!.sort((a, b) =>
-          //     b
-          //         .demandDetails!.first.auditDetails!.createdTime!
-          //         .compareTo(
-          //         a.demandDetails!.first.auditDetails!.createdTime!));
+        demandList = demand.demands;
+
+        if (demandList != null && demandList.length > 0) {
+          demandList!.sort((a, b) =>
+              b
+                  .demandDetails!.first.auditDetails!.createdTime!
+                  .compareTo(
+                  a.demandDetails!.first.auditDetails!.createdTime!));
         }
       }
 
@@ -86,8 +88,8 @@ class CollectPaymentProvider with ChangeNotifier {
         // paymentDetails.first.demand = demandDetails.first;
         getPaymentModes(paymentDetails.first);
         paymentDetails.first.customAmountCtrl.text = paymentDetails.first.totalAmount!.toInt().toString();
-        paymentDetails.first.billDetails?.first.billAccountDetails?.last.advanceAdjustedAmount = double.parse(CommonProvider.getAdvanceAdjustedAmount(demandList));
-        paymentDetails.first.billDetails?.first.billAccountDetails?.last.arrearsAmount = CommonProvider.getArrearsAmount(demandList);
+        paymentDetails.first.billDetails?.first.billAccountDetails?.last.advanceAdjustedAmount = double.parse(CommonProvider.getAdvanceAdjustedAmount(demandList ?? []));
+        paymentDetails.first.billDetails?.first.billAccountDetails?.last.arrearsAmount = CommonProvider.getArrearsAmount(demandList ?? []);
         paymentStreamController.add(paymentDetails.first);
         notifyListeners();
       }
