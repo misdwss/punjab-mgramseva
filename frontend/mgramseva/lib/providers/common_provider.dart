@@ -528,4 +528,22 @@ class CommonProvider with ChangeNotifier {
     }
     return amount;
   }
+
+  static double getArrearsAmount(List<Demands> demandList) {
+    List res = [];
+
+    if (demandList.isNotEmpty)
+      demandList.first.demandDetails!.forEach((e) {
+        if(e.taxHeadMasterCode != 'WS_ADVANCE_CARRYFORWARD')
+          res.add(e.taxAmount);
+      });
+
+    return (res.reduce((previousValue,
+        element) =>
+    previousValue +
+        element) -
+        demandList.first.demandDetails
+            ?.first
+            .taxAmount);
+  }
 }

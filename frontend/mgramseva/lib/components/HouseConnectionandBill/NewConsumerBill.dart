@@ -197,7 +197,7 @@ class NewConsumerBillState extends State<NewConsumerBill> {
                                       houseHoldProvider.isfirstdemand == true
                                           ? _getLabeltext(
                                               i18.billDetails.ARRERS_DUES,
-                                              ('₹' + getArrearsAmount().toString()),
+                                              ('₹' + CommonProvider.getArrearsAmount(widget.demandList).toString()),
                                               context)
                                           : Text(""),
                                       _getLabeltext(
@@ -396,25 +396,7 @@ class NewConsumerBillState extends State<NewConsumerBill> {
   }
 
   String getTotalBillAmount() {
-    return ((widget.demandList.first.demandDetails?.first.taxAmount ?? 0) + getArrearsAmount()).toString();
-  }
-
-  num getArrearsAmount() {
-    List res = [];
-
-    if (widget.demandList.isNotEmpty)
-      widget.demandList.first.demandDetails!.forEach((e) {
-        if(e.taxHeadMasterCode != 'WS_ADVANCE_CARRYFORWARD')
-          res.add(e.taxAmount);
-      });
-
-   return (res.reduce((previousValue,
-        element) =>
-    previousValue +
-        element) -
-        widget.demandList.first.demandDetails
-            ?.first
-            .taxAmount);
+    return ((widget.demandList.first.demandDetails?.first.taxAmount ?? 0) + CommonProvider.getArrearsAmount(widget.demandList)).toString();
   }
 
 }

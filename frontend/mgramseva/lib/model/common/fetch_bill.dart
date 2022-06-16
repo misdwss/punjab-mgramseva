@@ -125,6 +125,9 @@ class BillAccountDetails {
   @JsonKey(name: "advanceAdjustedAmount")
   double? advanceAdjustedAmount;
 
+  @JsonKey(ignore: true)
+  double? arrearsAmount;
+
   @JsonKey(name: "taxHeadCode")
   String taxHeadCode = '';
 

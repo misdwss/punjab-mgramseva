@@ -266,7 +266,7 @@ class _ConnectionPaymentViewState extends State<ConnectionPaymentView> {
                                             .billAccountDetails?.last.amount) >
                                     0
                                 ? _buildLabelValue(i18.billDetails.ARRERS_DUES,
-                                    '₹ ${(res.reduce((value, element) => value + element) - fetchBill.billDetails?.first.billAccountDetails?.last.amount).toString()}')
+                                    '₹ ${fetchBill.billDetails?.first.billAccountDetails?.last.arrearsAmount.toString()}')
                                 : SizedBox(
                                     height: 0,
                                   )
@@ -282,10 +282,10 @@ class _ConnectionPaymentViewState extends State<ConnectionPaymentView> {
                     '₹ ${fetchBill.totalAmount}'),
                 _buildLabelValue(
                     i18.common.CORE_ADVANCE_ADJUSTED,
-                    '₹ '),
+                    '₹ ${fetchBill.billDetails?.first.billAccountDetails?.last.advanceAdjustedAmount}'),
                 _buildLabelValue(
                     i18.common.CORE_NET_AMOUNT_DUE,
-                    '₹ '),
+                    '₹ ${fetchBill.totalAmount}'),
               ],
             ),
           )
