@@ -74,7 +74,6 @@ BillAccountDetails _$BillAccountDetailsFromJson(Map<String, dynamic> json) {
     ..adjustedAmount = (json['adjustedAmount'] as num?)?.toDouble()
     ..advanceAdjustedAmount =
         (json['advanceAdjustedAmount'] as num?)?.toDouble()
-    ..netAmountDue = (json['netAmountDue'] as num?)?.toDouble()
     ..taxHeadCode = json['taxHeadCode'] as String;
 }
 
@@ -88,6 +87,5 @@ Map<String, dynamic> _$BillAccountDetailsToJson(BillAccountDetails instance) =>
       'amount': instance.amount,
       'adjustedAmount': instance.adjustedAmount,
       'advanceAdjustedAmount': instance.advanceAdjustedAmount,
-      'netAmountDue': instance.netAmountDue,
       'taxHeadCode': instance.taxHeadCode,
     };

@@ -208,7 +208,7 @@ class NewConsumerBillState extends State<NewConsumerBill> {
                                       _getLabeltext(
                                           i18.common.CORE_ADVANCE_ADJUSTED,
                                           ('₹' +
-                                              (getAdvanceAdjustedAmount())
+                                              (CommonProvider.getAdvanceAdjustedAmount(widget.demandList))
                                                   .toString()),
                                           context),
                                       _getLabeltext(
@@ -282,7 +282,7 @@ class NewConsumerBillState extends State<NewConsumerBill> {
                                                       () =>
                                                           onClickOfCollectPayment(
                                                               billList
-                                                                  .bill!.first,
+                                                                  .bill!,
                                                               context))
                                                   : ShortButton(
                                                       i18.billDetails
@@ -290,7 +290,7 @@ class NewConsumerBillState extends State<NewConsumerBill> {
                                                       () =>
                                                           onClickOfCollectPayment(
                                                               billList
-                                                                  .bill!.first,
+                                                                  .bill!,
                                                               context)))
                                           : houseHoldProvider.isfirstdemand ==
                                                   true
@@ -381,33 +381,18 @@ class NewConsumerBillState extends State<NewConsumerBill> {
     });
   }
 
-  void onClickOfCollectPayment(Bill bill, BuildContext context) {
+  void onClickOfCollectPayment(List<Bill> bill, BuildContext context) {
     var commonProvider = Provider.of<CommonProvider>(context, listen: false);
 
     Map<String, dynamic> query = {
-      'consumerCode': bill.consumerCode,
-      'businessService': bill.businessService,
-      'tenantId': commonProvider.userDetails?.selectedtenant?.code
+      'consumerCode': bill.first.consumerCode,
+      'businessService': bill.first.businessService,
+      'tenantId': commonProvider.userDetails?.selectedtenant?.code,
+      'demandList' : widget.demandList,
+      'fetchBill' : bill
     };
     Navigator.pushNamed(context, Routes.HOUSEHOLD_DETAILS_COLLECT_PAYMENT,
         arguments: query);
-  }
-
-  String getAdvanceAdjustedAmount() {
-     var amount = '0';
-     var index = -1;
-     // widget.demandList.sort((a, b) => b
-     //     .demandDetails!.first.auditDetails!.createdTime!
-     //     .compareTo(a.demandDetails!.first.auditDetails!.createdTime!));
-
-     for(int i =0; i < widget.demandList.length; i++){
-       index = widget.demandList[i].demandDetails?.indexWhere((e) => e.taxHeadMasterCode == 'WS_ADVANCE_CARRYFORWARD') ?? -1;
-       if(index != -1){
-         amount = widget.demandList[i].demandDetails![index].taxAmount.toString();
-         break;
-       }
-     }
-     return amount;
   }
 
   String getTotalBillAmount() {
