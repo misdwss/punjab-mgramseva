@@ -86,6 +86,8 @@ public class WSCalculationConstant {
 
 	public static final String WS_CHARGE_ARREAR = "10102";
 
+	public static final String WS_PENALTY = "10201";
+
 	/**
 	 * data fields
 	 */

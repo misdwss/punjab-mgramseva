@@ -87,12 +87,18 @@ public class EstimationService {
 		// mDataService.setWaterConnectionMasterValues(requestInfo, tenantId,
 		// billingSlabMaster,
 		// timeBasedExemptionMasterMap);
-		BigDecimal taxAmt = BigDecimal.ZERO;
+		if(criteria.getWaterConnection().getPenalty()!=null && criteria.getWaterConnection().getPenalty().toString()!="0") {
+			
+		}
+		 Map<String, BigDecimal> taxAmt = new HashMap<>();
 		if(!isconnectionCalculation) {
-			taxAmt = criteria.getWaterConnection().getArrears();
+			taxAmt.put("arrears", criteria.getWaterConnection().getArrears());
+			if(criteria.getWaterConnection().getPenalty()!=null && criteria.getWaterConnection().getPenalty().toString()!="0") {
+				taxAmt.put("penalty", criteria.getWaterConnection().getPenalty());
+			}
 		}else {
-			taxAmt = getWaterEstimationCharge(criteria.getWaterConnection(), criteria, billingSlabMaster, billingSlabIds,
-					requestInfo);
+			taxAmt.put("waterCharge", getWaterEstimationCharge(criteria.getWaterConnection(), criteria, billingSlabMaster, billingSlabIds,
+					requestInfo));
 		}
 		List<TaxHeadEstimate> taxHeadEstimates = getEstimatesForTax(taxAmt, criteria.getWaterConnection(),
 				timeBasedExemptionMasterMap, RequestInfoWrapper.builder().requestInfo(requestInfo).build(),isconnectionCalculation);
@@ -112,20 +118,24 @@ public class EstimationService {
 	 * @param requestInfoWrapper - RequestInfo Wrapper object
 	 * @return - Returns list of TaxHeadEstimates
 	 */
-	private List<TaxHeadEstimate> getEstimatesForTax(BigDecimal waterCharge,
+	private List<TaxHeadEstimate> getEstimatesForTax(Map<String, BigDecimal> waterCharge,
 			WaterConnection connection,
 			Map<String, JSONArray> timeBasedExemptionsMasterMap, RequestInfoWrapper requestInfoWrapper, boolean isconnectionCalculation) {
 		List<TaxHeadEstimate> estimates = new ArrayList<>();
 		// water_charge
 		estimates.add(TaxHeadEstimate.builder().taxHeadCode(isconnectionCalculation ? WSCalculationConstant.WS_CHARGE :WSCalculationConstant.WS_CHARGE_ARREAR)
-				.estimateAmount(waterCharge.setScale(2, 2)).build());
-
+				.estimateAmount(waterCharge.get("arrears").setScale(2, 2)).build());
+		if(connection.getPenalty()!=null) {
+			estimates.add(TaxHeadEstimate.builder().taxHeadCode(isconnectionCalculation ? WSCalculationConstant.WS_CHARGE :WSCalculationConstant.WS_PENALTY)
+					.estimateAmount(waterCharge.get("penalty").setScale(2, 2)).build());
+		}
+		
 		// Water_cess
 		if (timeBasedExemptionsMasterMap.get(WSCalculationConstant.WC_WATER_CESS_MASTER) != null) {
 			List<Object> waterCessMasterList = timeBasedExemptionsMasterMap
 					.get(WSCalculationConstant.WC_WATER_CESS_MASTER);
 			BigDecimal waterCess;
-			waterCess = waterCessUtil.getWaterCess(waterCharge, WSCalculationConstant.Assessment_Year, waterCessMasterList);
+			waterCess = waterCessUtil.getWaterCess(waterCharge.get("waterCharge"), WSCalculationConstant.Assessment_Year, waterCessMasterList);
 			estimates.add(TaxHeadEstimate.builder().taxHeadCode(WSCalculationConstant.WS_WATER_CESS)
 					.estimateAmount(waterCess.setScale(2, 2)).build());
 		}
