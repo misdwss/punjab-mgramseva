@@ -3,8 +3,10 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_focus_watcher/flutter_focus_watcher.dart';
+import 'package:mgramseva/model/bill/billing.dart';
 import 'package:mgramseva/model/common/fetch_bill.dart' as billDetails;
 import 'package:mgramseva/model/common/fetch_bill.dart';
+import 'package:mgramseva/model/demand/demand_list.dart';
 import 'package:mgramseva/providers/collect_payment.dart';
 import 'package:mgramseva/utils/Constants/I18KeyConstants.dart';
 import 'package:mgramseva/utils/Locilization/application_localizations.dart';
@@ -27,7 +29,9 @@ import '../../widgets/customAppbar.dart';
 
 class ConnectionPaymentView extends StatefulWidget {
   final Map<String, dynamic> query;
-  const ConnectionPaymentView({Key? key, required this.query})
+  final List<Bill>? bill;
+  final List<Demands>? demandList;
+  const ConnectionPaymentView({Key? key, required this.query, this.bill, this.demandList})
       : super(key: key);
 
   @override
@@ -42,7 +46,7 @@ class _ConnectionPaymentViewState extends State<ConnectionPaymentView> {
   void initState() {
     var consumerPaymentProvider =
         Provider.of<CollectPaymentProvider>(context, listen: false);
-    consumerPaymentProvider.getBillDetails(context, widget.query);
+    consumerPaymentProvider.getBillDetails(context, widget.query, widget.bill, widget.demandList);
     super.initState();
   }
 
@@ -70,7 +74,7 @@ class _ConnectionPaymentViewState extends State<ConnectionPaymentView> {
               return Notifiers.networkErrorPage(
                   context,
                   () => consumerPaymentProvider.getBillDetails(
-                      context, widget.query));
+                      context, widget.query, widget.bill, widget.demandList));
             } else {
               switch (snapshot.connectionState) {
                 case ConnectionState.waiting:
@@ -262,7 +266,7 @@ class _ConnectionPaymentViewState extends State<ConnectionPaymentView> {
                                             .billAccountDetails?.last.amount) >
                                     0
                                 ? _buildLabelValue(i18.billDetails.ARRERS_DUES,
-                                    '₹ ${(res.reduce((value, element) => value + element) - fetchBill.billDetails?.first.billAccountDetails?.last.amount).toString()}')
+                                    '₹ ${fetchBill.billDetails?.first.billAccountDetails?.last.arrearsAmount.toString()}')
                                 : SizedBox(
                                     height: 0,
                                   )
@@ -281,7 +285,7 @@ class _ConnectionPaymentViewState extends State<ConnectionPaymentView> {
                     '₹ ${fetchBill.billDetails?.first.billAccountDetails?.last.advanceAdjustedAmount}'),
                 _buildLabelValue(
                     i18.common.CORE_NET_AMOUNT_DUE,
-                    '₹ ${fetchBill.billDetails?.first.billAccountDetails?.last.netAmountDue}'),
+                    '₹ ${fetchBill.totalAmount}'),
               ],
             ),
           )

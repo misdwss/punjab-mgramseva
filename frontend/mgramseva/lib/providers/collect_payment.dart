@@ -31,6 +31,9 @@ import 'package:provider/provider.dart';
 import 'package:screenshot/screenshot.dart';
 import 'package:image/image.dart' as img;
 import 'common_provider.dart';
+import 'package:mgramseva/repository/billing_service_repo.dart';
+import 'package:mgramseva/model/bill/billing.dart';
+import 'package:mgramseva/model/demand/demand_list.dart';
 
 class CollectPaymentProvider with ChangeNotifier {
   var paymentStreamController = StreamController.broadcast();
@@ -45,9 +48,36 @@ class CollectPaymentProvider with ChangeNotifier {
   }
 
   Future<void> getBillDetails(
-      BuildContext context, Map<String, dynamic> query) async {
+      BuildContext context, Map<String, dynamic> query, List<Bill>? bill, List<Demands>? demandList) async {
     try {
-      var paymentDetails = await ConsumerRepository().getBillDetails(query);
+
+
+      List<FetchBill>? paymentDetails;
+
+      // if(bill == null) {
+        paymentDetails = await ConsumerRepository().getBillDetails(query);
+      // }else{
+      //   paymentDetails = (bill.map((e)=> e.toJson()).toList()).map<FetchBill>((e)=> FetchBill.fromJson(e)).toList();
+      // }
+
+
+      if(demandList == null) {
+        await BillingServiceRepository().fetchdDemand({
+          "tenantId": query['tenantId'],
+          "consumerCode": query['consumerCode'],
+          "businessService": "WS",
+          "status": "ACTIVE"
+        });
+
+        if (demandList!.length > 0) {
+          // demandList!.sort((a, b) =>
+          //     b
+          //         .demandDetails!.first.auditDetails!.createdTime!
+          //         .compareTo(
+          //         a.demandDetails!.first.auditDetails!.createdTime!));
+        }
+      }
+
       if (paymentDetails != null) {
         paymentDetails.first.billDetails
             ?.sort((a, b) => b.fromPeriod!.compareTo(a.fromPeriod!));
@@ -56,6 +86,8 @@ class CollectPaymentProvider with ChangeNotifier {
         // paymentDetails.first.demand = demandDetails.first;
         getPaymentModes(paymentDetails.first);
         paymentDetails.first.customAmountCtrl.text = paymentDetails.first.totalAmount!.toInt().toString();
+        paymentDetails.first.billDetails?.first.billAccountDetails?.last.advanceAdjustedAmount = double.parse(CommonProvider.getAdvanceAdjustedAmount(demandList));
+        paymentDetails.first.billDetails?.first.billAccountDetails?.last.arrearsAmount = CommonProvider.getArrearsAmount(demandList);
         paymentStreamController.add(paymentDetails.first);
         notifyListeners();
       }

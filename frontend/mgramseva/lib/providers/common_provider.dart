@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_share_me/flutter_share_me.dart';
 import 'package:mgramseva/model/bill/bill_payments.dart';
+import 'package:mgramseva/model/demand/demand_list.dart';
 import 'package:mgramseva/model/file/file_store.dart';
 import 'package:mgramseva/model/localization/language.dart';
 import 'package:mgramseva/model/user/user_details.dart';
@@ -513,5 +514,36 @@ class CommonProvider with ChangeNotifier {
         return pw.Font.ttf(
             await rootBundle.load('assets/fonts/Roboto/punjabi.ttf'));
     }
+  }
+
+  static  String getAdvanceAdjustedAmount(List<Demands> demandList) {
+    var amount = '0';
+    var index = -1;
+    for(int i =0; i < demandList.length; i++){
+      index = demandList[i].demandDetails?.indexWhere((e) => e.taxHeadMasterCode == 'WS_ADVANCE_CARRYFORWARD') ?? -1;
+      if(index != -1){
+        amount = demandList[i].demandDetails![index].taxAmount.toString();
+        break;
+      }
+    }
+    return amount;
+  }
+
+  static double getArrearsAmount(List<Demands> demandList) {
+    List res = [];
+
+    if (demandList.isNotEmpty)
+      demandList.first.demandDetails!.forEach((e) {
+        if(e.taxHeadMasterCode != 'WS_ADVANCE_CARRYFORWARD')
+          res.add(e.taxAmount);
+      });
+
+    return (res.reduce((previousValue,
+        element) =>
+    previousValue +
+        element) -
+        demandList.first.demandDetails
+            ?.first
+            .taxAmount);
   }
 }

@@ -73,7 +73,7 @@ class _HouseholdDetailState extends State<HouseholdDetail> {
                         'Metered' &&
                     houseHoldProvider.isfirstdemand == false)
             ? Text("")
-            : NewConsumerBill(widget.mode, houseHoldProvider.waterConnection),
+            : NewConsumerBill(widget.mode, houseHoldProvider.waterConnection, data.demands!),
         ConsumerBillPayments(houseHoldProvider.waterConnection)
       ],
     );
