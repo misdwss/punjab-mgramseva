@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_share_me/flutter_share_me.dart';
 import 'package:mgramseva/model/bill/bill_payments.dart';
+import 'package:mgramseva/model/bill/billing.dart';
 import 'package:mgramseva/model/demand/demand_list.dart';
 import 'package:mgramseva/model/file/file_store.dart';
 import 'package:mgramseva/model/localization/language.dart';
@@ -532,18 +533,21 @@ class CommonProvider with ChangeNotifier {
   static double getArrearsAmount(List<Demands> demandList) {
     List res = [];
 
-    if (demandList.isNotEmpty)
-      demandList.first.demandDetails!.forEach((e) {
-        if(e.taxHeadMasterCode != 'WS_ADVANCE_CARRYFORWARD')
-          res.add(e.taxAmount);
-      });
+    if (demandList.isNotEmpty) {
+      var filteredDemands = demandList.where((e) => !(e.isPaymentCompleted ?? false))
+          .toList();
+      for (var demand in filteredDemands) {
+        demand.demandDetails!.forEach((e) {
+          if (e.taxHeadMasterCode != 'WS_ADVANCE_CARRYFORWARD'){
+            res.add((e.taxAmount ?? 0) - (e.collectionAmount ?? 0));
+          }
+        });
+      }
+    }
 
     return (res.reduce((previousValue,
         element) =>
     previousValue +
-        element) -
-        demandList.first.demandDetails
-            ?.first
-            .taxAmount);
+        element) - ((demandList.first.demandDetails?.first.taxAmount ?? 0) - (demandList.first.demandDetails?.first.collectionAmount ?? 0)));
   }
 }
