@@ -233,7 +233,7 @@ class _ConnectionPaymentViewState extends State<ConnectionPaymentView> {
     num len = fetchBill.billDetails?.first.billAccountDetails?.length as num;
     if (fetchBill.billDetails!.isNotEmpty)
       fetchBill.billDetails?.forEach((element) {
-        res.add(element.amount);
+        if(element.amount != 0) res.add(element.amount);
       });
     return LayoutBuilder(
       builder: (_, constraints) => Column(
