@@ -38,7 +38,8 @@ Demands _$DemandsFromJson(Map<String, dynamic> json) {
         : AuditDetails.fromJson(json['auditDetails'] as Map<String, dynamic>)
     ..billExpiryTime = json['billExpiryTime'] as int?
     ..minimumAmountPayable = (json['minimumAmountPayable'] as num?)?.toDouble()
-    ..status = json['status'] as String?;
+    ..status = json['status'] as String?
+    ..isPaymentCompleted = json['isPaymentCompleted'] as bool?;
 }
 
 Map<String, dynamic> _$DemandsToJson(Demands instance) => <String, dynamic>{
