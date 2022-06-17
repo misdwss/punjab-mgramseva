@@ -125,8 +125,10 @@ public class WaterConnectionValidator {
 			isArrear =  true;
 		}
 		if ((request.getWaterConnection().getStatus().equals(StatusEnum.INACTIVE) && demands.size() == data.size())
-				|| (searchResult.getArrears() != null && request.getWaterConnection().getArrears() == null
+				|| ((searchResult.getArrears() != null && request.getWaterConnection().getArrears() == null)
 						|| isArrear)) {
+			log.debug("inside debug------------>");
+			log.info("insie info ------------------->");
 			for (Demand demand : demands) {
 				demand.setStatus(org.egov.waterconnection.web.models.Demand.StatusEnum.CANCELLED);
 			}
