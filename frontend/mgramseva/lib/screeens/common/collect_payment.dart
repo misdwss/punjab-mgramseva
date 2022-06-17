@@ -259,11 +259,9 @@ class _ConnectionPaymentViewState extends State<ConnectionPaymentView> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                             _buildLabelValue(
-                                'WS_${fetchBill.billDetails?.first.billAccountDetails?.last.taxHeadCode}',
-                                '₹ ${fetchBill.billDetails?.first.billAccountDetails?.last.amount}'),
-                            (res.reduce((value, element) => value + element) -
-                                        fetchBill.billDetails?.first
-                                            .billAccountDetails?.last.amount) >
+                                'WS_${fetchBill.demands?.demandDetails?.last.taxHeadMasterCode}',
+                                '₹ ${fetchBill.demands?.demandDetails?.last.taxAmount}'),
+                          (fetchBill.billDetails?.first.billAccountDetails?.last.arrearsAmount ?? 0) >
                                     0
                                 ? _buildLabelValue(i18.billDetails.ARRERS_DUES,
                                     '₹ ${fetchBill.billDetails?.first.billAccountDetails?.last.arrearsAmount.toString()}')
@@ -272,14 +270,14 @@ class _ConnectionPaymentViewState extends State<ConnectionPaymentView> {
                                   )
                           ])
                     : _buildLabelValue(
-                        'WS_${fetchBill.billDetails?.first.billAccountDetails?.last.taxHeadCode}',
-                        '₹ ${fetchBill.billDetails?.first.billAccountDetails?.last.amount}'),
+                        'WS_${fetchBill.demands?.demandDetails?.last.taxHeadMasterCode}',
+                        '₹ ${fetchBill.demands?.demandDetails?.last.taxAmount}'),
                 // }),
                 if (fetchBill.billDetails != null && res.length > 1)
                   _buildWaterCharges(fetchBill, constraints),
                 _buildLabelValue(
                     i18.common.CORE_TOTAL_BILL_AMOUNT,
-                    '₹ ${fetchBill.totalAmount}'),
+                    '₹ ${fetchBill.billDetails?.first.billAccountDetails?.last.totalBillAmount}'),
                 _buildLabelValue(
                     i18.common.CORE_ADVANCE_ADJUSTED,
                     '₹ ${fetchBill.billDetails?.first.billAccountDetails?.last.advanceAdjustedAmount}'),
