@@ -77,7 +77,10 @@ public class EnrichmentService {
         	challan.getAddress().setTenantId(challan.getTenantId());
         }
 //        challan.setFilestoreid(null);
-        setIdgenIds(challanRequest);
+        if(!(challan.getChallanNo() != null && !challan.getChallanNo().isEmpty())) {
+            // If challan number is not provided in the request, only then add Id.
+            setIdgenIds(challanRequest);
+        }
     }
 
     private List<String> getIdList(RequestInfo requestInfo, String tenantId, String idKey,
