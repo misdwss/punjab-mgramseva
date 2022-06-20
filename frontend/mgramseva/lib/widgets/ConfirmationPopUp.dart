@@ -41,7 +41,7 @@ class _ConfirmationPopUpState extends State<ConfirmationPopUp> {
                   minHeight: 160,
                   maxHeight: 180
                 ),
-                width: MediaQuery.of(context).size.width > 720 ? MediaQuery.of(context).size.width / 2 : MediaQuery.of(context).size.width ,
+                width: MediaQuery.of(context).size.width > 720 ? MediaQuery.of(context).size.width / 3.5 : MediaQuery.of(context).size.width ,
                 padding: EdgeInsets.only(right: 8.0, left: 8.0),
                 child: Card(
                     child: Column(
@@ -54,9 +54,11 @@ class _ConfirmationPopUpState extends State<ConfirmationPopUp> {
                           Align(
                             alignment: Alignment.topLeft,
                               child: Container(
-                                width: MediaQuery.of(context).size.width > 720 ? MediaQuery.of(context).size.width / 2.5 : MediaQuery.of(context).size.width / 1.25,
+                                width: MediaQuery.of(context).size.width > 720 ? MediaQuery.of(context).size.width / 4 : MediaQuery.of(context).size.width / 1.25,
                                 child: Padding(
-                                  padding: EdgeInsets.only(left: 8.0, top: 16.0),
+                                  padding: EdgeInsets.only(
+                                      left: MediaQuery.of(context).size.width > 720 ? 16.0 :  8.0,
+                                      top: 16.0),
                                   child: Text(
                                     ApplicationLocalizations.of(context).translate(
                                         widget.textString ?? ''),
@@ -87,9 +89,9 @@ class _ConfirmationPopUpState extends State<ConfirmationPopUp> {
                           Align(
                             alignment: Alignment.topLeft,
                               child: Container(
-                                  width: MediaQuery.of(context).size.width > 720 ? MediaQuery.of(context).size.width / 2.25 : MediaQuery.of(context).size.width / 1.25,
+                                  width: MediaQuery.of(context).size.width > 720 ? MediaQuery.of(context).size.width / 4 : MediaQuery.of(context).size.width / 1.25,
                                   child:Padding(
-                                    padding: EdgeInsets.only(left: 8.0),
+                                    padding: EdgeInsets.only(left: MediaQuery.of(context).size.width > 720 ? 16.0 : 8.0),
                                     child: Text(
                                   ApplicationLocalizations.of(context).translate(
                                       widget.subTextString ?? ''),
@@ -103,7 +105,8 @@ class _ConfirmationPopUpState extends State<ConfirmationPopUp> {
                              height: 20,
                            ),
                            Padding(
-                              padding: EdgeInsets.only(left: 4.0, right: 4.0, top: 4.0),
+                              padding: EdgeInsets.only(left: MediaQuery.of(context).size.width > 720 ? 8.0 : 4.0,
+                                  right: MediaQuery.of(context).size.width > 720 ? 8.0 : 4.0, top: 4.0),
                               child: Row(
                                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                   children: [
@@ -114,7 +117,7 @@ class _ConfirmationPopUpState extends State<ConfirmationPopUp> {
                                         child: Container(
                                           margin: EdgeInsets.all(4.0),
                                           height: 35,
-                                          width: MediaQuery.of(context).size.width > 720 ? MediaQuery.of(context).size.width / 5  : MediaQuery.of(context).size.width / 2.5,
+                                          width: MediaQuery.of(context).size.width > 720 ? MediaQuery.of(context).size.width / 10  : MediaQuery.of(context).size.width / 2.5,
                                           decoration: BoxDecoration(
                                             color:
                                             Theme.of(context).disabledColor,
@@ -134,7 +137,7 @@ class _ConfirmationPopUpState extends State<ConfirmationPopUp> {
                                         child: Container(
                                           margin: EdgeInsets.all(4.0),
                                           height: 35,
-                                          width: MediaQuery.of(context).size.width > 720 ? MediaQuery.of(context).size.width / 5  : MediaQuery.of(context).size.width / 2.5,
+                                          width: MediaQuery.of(context).size.width > 720 ? MediaQuery.of(context).size.width / 10  : MediaQuery.of(context).size.width / 2.5,
                                           decoration: BoxDecoration(
                                             color:
                                             Theme.of(context).primaryColor,
