@@ -263,8 +263,7 @@ public class WaterServiceImpl implements WaterService {
 			}
 		} else if (waterConnectionRequest.getWaterConnection().getPaymentType()
 				.equalsIgnoreCase(WCConstants.PAYMENT_TYPE_ADVANCE)) {
-			if (waterConnectionRequest.getWaterConnection().getAdvance() != null
-					&& waterConnectionRequest.getWaterConnection().getAdvance().intValue() > 0) {
+			if (waterConnectionRequest.getWaterConnection().getAdvance() != null) {
 				calculationService.calculateFeeAndGenerateDemand(waterConnectionRequest, property, true);
 			}
 		}
@@ -339,8 +338,7 @@ public class WaterServiceImpl implements WaterService {
 
 		} else if (waterConnectionRequest.getWaterConnection().getPaymentType()
 				.equalsIgnoreCase(WCConstants.PAYMENT_TYPE_ADVANCE)) {
-			if (waterConnectionRequest.getWaterConnection().getAdvance() != null
-					&& waterConnectionRequest.getWaterConnection().getAdvance().intValue() > 0) {
+			if (waterConnectionRequest.getWaterConnection().getAdvance() != null) {
 				calculationService.calculateFeeAndGenerateDemand(waterConnectionRequest, property,true);
 			}
 		}

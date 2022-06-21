@@ -114,23 +114,30 @@ public class WSCalculationServiceImpl implements WSCalculationService {
 				request.getCalculationCriteria().get(0).getTenantId(),
 				request.getCalculationCriteria().get(0).getConnectionNo(), request.getRequestInfo());
 		
-		if (searchResult != null && searchResult.size() > 0
+		if ((searchResult != null && searchResult.size() > 0
 				&& searchResult.get(0).getConsumerType().equalsIgnoreCase("waterConnection-arrears")
 				&& !request.getIsconnectionCalculation() && wsresults != null && wsresults.size() > 0
 				&& wsresults.get(0).getPreviousReadingDate().longValue() != request.getCalculationCriteria().get(0)
-						.getWaterConnection().getPreviousReadingDate().longValue()) {
+						.getWaterConnection().getPreviousReadingDate().longValue())
+				||
+				(searchResult != null && searchResult.size() > 0
+						&& searchResult.get(0).getConsumerType().equalsIgnoreCase("waterConnection-advance")
+						&& !request.getIsconnectionCalculation() && wsresults != null && wsresults.size() > 0
+						&& wsresults.get(0).getPreviousReadingDate().longValue() != request.getCalculationCriteria().get(0)
+								.getWaterConnection().getPreviousReadingDate().longValue())) {
 			searchResult.get(0).setStatus(StatusEnum.CANCELLED);
 			isWSUpdateSMS = true;
 			demandRepository.updateDemand(request.getRequestInfo(), searchResult);
 		}
 		
+		
 
 		if(request.getIsAdvanceCalculation() != null && request.getIsAdvanceCalculation().booleanValue()) {
 			demandService.generateDemand(request.getRequestInfo(), calculations, masterMap,
-					request.getIsAdvanceCalculation(), isWSUpdateSMS);
+					request.getIsconnectionCalculation(), isWSUpdateSMS, request.getIsAdvanceCalculation());
 		}else {
 			demandService.generateDemand(request.getRequestInfo(), calculations, masterMap,
-					request.getIsconnectionCalculation(), isWSUpdateSMS);
+					request.getIsconnectionCalculation(), isWSUpdateSMS, false);
 		}
 		unsetWaterConnection(calculations);
 		return calculations;
@@ -145,7 +152,7 @@ public class WSCalculationServiceImpl implements WSCalculationService {
 	 */
 	public List<Calculation> bulkDemandGeneration(CalculationReq request, Map<String, Object> masterMap) {
 		List<Calculation> calculations = getCalculations(request, masterMap);
-		demandService.generateDemand(request.getRequestInfo(), calculations, masterMap, true, false);
+		demandService.generateDemand(request.getRequestInfo(), calculations, masterMap, true, false, false);
 		return calculations;
 	}
 
