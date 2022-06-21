@@ -161,7 +161,7 @@ class _ConnectionPaymentViewState extends State<ConnectionPaymentView> {
                   child: _buildViewDetails(fetchBill)),
             ),
             _buildLabelValue(i18.common.TOTAL_DUE_AMOUNT,
-                '₹ ${fetchBill.totalAmount}', FontWeight.w700),
+                '₹ ${(fetchBill.totalAmount ?? 0) >= 0 ? fetchBill.totalAmount : 0}', FontWeight.w700),
             Consumer<CollectPaymentProvider>(
               builder: (_, consumerPaymentProvider, child) => Padding(
                 padding: const EdgeInsets.symmetric(vertical: 10),
@@ -283,7 +283,7 @@ class _ConnectionPaymentViewState extends State<ConnectionPaymentView> {
                     '₹ ${fetchBill.billDetails?.first.billAccountDetails?.last.advanceAdjustedAmount}'),
                 _buildLabelValue(
                     i18.common.CORE_NET_AMOUNT_DUE,
-                    '₹ ${fetchBill.totalAmount}'),
+                    '₹ ${(fetchBill.totalAmount ?? 0) >= 0 ? fetchBill.totalAmount : 0}'),
               ],
             ),
           )

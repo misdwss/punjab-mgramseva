@@ -7,6 +7,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_share_me/flutter_share_me.dart';
 import 'package:mgramseva/model/bill/bill_payments.dart';
 import 'package:mgramseva/model/bill/billing.dart';
+import 'package:mgramseva/model/common/fetch_bill.dart';
 import 'package:mgramseva/model/demand/demand_list.dart';
 import 'package:mgramseva/model/file/file_store.dart';
 import 'package:mgramseva/model/localization/language.dart';
@@ -545,9 +546,9 @@ class CommonProvider with ChangeNotifier {
       }
     }
 
-    return (res.reduce((previousValue,
+    return ((res.reduce((previousValue,
         element) =>
     previousValue +
-        element) - ((demandList.first.demandDetails?.first.taxAmount ?? 0) - (demandList.first.demandDetails?.first.collectionAmount ?? 0)));
+        element) - ((demandList.first.demandDetails?.first.taxAmount ?? 0) - (demandList.first.demandDetails?.first.collectionAmount ?? 0))) as double).abs();
   }
 }
