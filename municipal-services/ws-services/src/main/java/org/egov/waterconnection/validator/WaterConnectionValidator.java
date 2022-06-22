@@ -85,7 +85,7 @@ public class WaterConnectionValidator {
 		if(waterConnectionRequest.getWaterConnection().getProcessInstance().getAction().equalsIgnoreCase("PAY"))
 			errorMap.put("INVALID_ACTION","Pay action cannot be perform directly");
 		
-		if (!waterConnectionRequest.getWaterConnection().getPaymentType().isEmpty()) {
+		if (waterConnectionRequest.getWaterConnection().getPaymentType()!=null) {
 
 			if (waterConnectionRequest.getWaterConnection().getPaymentType()
 					.equalsIgnoreCase(WCConstants.PAYMENT_TYPE_ARREARS)
