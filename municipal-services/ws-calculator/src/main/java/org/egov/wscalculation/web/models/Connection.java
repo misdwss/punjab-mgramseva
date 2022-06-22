@@ -136,7 +136,6 @@ public class Connection {
 	private BigDecimal arrears = null;
 
 	@JsonProperty("paymentType")
-	@NotNull
 	private String paymentType = null;
 	
 	@JsonProperty("penalty")

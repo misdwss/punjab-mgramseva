@@ -85,19 +85,21 @@ public class WaterConnectionValidator {
 		if(waterConnectionRequest.getWaterConnection().getProcessInstance().getAction().equalsIgnoreCase("PAY"))
 			errorMap.put("INVALID_ACTION","Pay action cannot be perform directly");
 		
-		if (waterConnectionRequest.getWaterConnection().getPaymentType().isEmpty()) {
-			errorMap.put("INVALID_PARAMETER","payment type shouldn't be empty.");
-		}
-		if (waterConnectionRequest.getWaterConnection().getPaymentType().equalsIgnoreCase(
-				WCConstants.PAYMENT_TYPE_ARREARS) && waterConnectionRequest.getWaterConnection().getAdvance() != null) {
-			errorMap.put("INVALID_PARAMETER","Advance value is not considered when Paymenttype is arrears.");
-		}
-		if (waterConnectionRequest.getWaterConnection().getPaymentType()
-				.equalsIgnoreCase(WCConstants.PAYMENT_TYPE_ADVANCE)
-				&& (waterConnectionRequest.getWaterConnection().getArrears() != null
-						|| waterConnectionRequest.getWaterConnection().getPenalty() != null)) {
-			errorMap.put("INVALID_PARAMETER", "Arrears and Penalty value is not considered when Paymenttype is Advanced.");
-		}		
+		if (!waterConnectionRequest.getWaterConnection().getPaymentType().isEmpty()) {
+
+			if (waterConnectionRequest.getWaterConnection().getPaymentType()
+					.equalsIgnoreCase(WCConstants.PAYMENT_TYPE_ARREARS)
+					&& waterConnectionRequest.getWaterConnection().getAdvance() != null) {
+				errorMap.put("INVALID_PARAMETER", "Advance value is not considered when Paymenttype is arrears.");
+			}
+			if (waterConnectionRequest.getWaterConnection().getPaymentType()
+					.equalsIgnoreCase(WCConstants.PAYMENT_TYPE_ADVANCE)
+					&& (waterConnectionRequest.getWaterConnection().getArrears() != null
+							|| waterConnectionRequest.getWaterConnection().getPenalty() != null)) {
+				errorMap.put("INVALID_PARAMETER",
+						"Arrears and Penalty value is not considered when Paymenttype is Advanced.");
+			}
+		}	
 		
 		if (!errorMap.isEmpty())
 			throw new CustomException(errorMap);
