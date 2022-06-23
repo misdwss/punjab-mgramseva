@@ -7,7 +7,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_share_me/flutter_share_me.dart';
 import 'package:mgramseva/model/bill/bill_payments.dart';
 import 'package:mgramseva/model/bill/billing.dart';
-import 'package:mgramseva/model/common/fetch_bill.dart';
 import 'package:mgramseva/model/demand/demand_list.dart';
 import 'package:mgramseva/model/file/file_store.dart';
 import 'package:mgramseva/model/localization/language.dart';
@@ -524,7 +523,7 @@ class CommonProvider with ChangeNotifier {
     for(int i =0; i < demandList.length; i++){
       index = demandList[i].demandDetails?.indexWhere((e) => e.taxHeadMasterCode == 'WS_ADVANCE_CARRYFORWARD') ?? -1;
       if(index != -1){
-        amount = demandList[i].demandDetails![index].taxAmount.toString();
+        amount = demandList[i].demandDetails![index].collectionAmount.toString();
         break;
       }
     }
@@ -546,7 +545,7 @@ class CommonProvider with ChangeNotifier {
       }
     }
 
-    return ((res.reduce((previousValue,
+    return res.length == 0 ? 0 : ((res.reduce((previousValue,
         element) =>
     previousValue +
         element) - ((demandList.first.demandDetails?.first.taxAmount ?? 0) - (demandList.first.demandDetails?.first.collectionAmount ?? 0))) as double).abs();
