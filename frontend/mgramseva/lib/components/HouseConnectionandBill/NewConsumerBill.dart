@@ -115,9 +115,12 @@ class NewConsumerBillState extends State<NewConsumerBill> {
       var houseHoldProvider =
           Provider.of<HouseHoldProvider>(context, listen: false);
       return billList.bill!.isEmpty
-          ? Text("")
-          : billList.bill!.first.totalAmount! > 0
-              ? houseHoldProvider.isfirstdemand == false &&
+          ?
+      Text("")
+          :
+      !(widget.demandList.first.demandDetails?.first.taxHeadMasterCode == 'WS_ADVANCE_CARRYFORWARD')
+              ?
+      houseHoldProvider.isfirstdemand == false &&
                       widget.mode != 'collect'
                   ? Text("")
                   : Column(
@@ -214,7 +217,7 @@ class NewConsumerBillState extends State<NewConsumerBill> {
                                       _getLabeltext(
                                           i18.common.CORE_NET_DUE_AMOUNT,
                                           ('₹' +
-                                              (billList.bill?.first.totalAmount)
+                                              ((billList.bill?.first.totalAmount ?? 0) >= 0 ? billList.bill?.first.totalAmount : 0)
                                                   .toString()),
                                           context),
                                       if(false) CustomDetailsCard(
