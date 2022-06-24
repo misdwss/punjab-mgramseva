@@ -63,7 +63,7 @@ class _ConsumerDetailsState extends State<ConsumerDetails> {
       ..property = Property();
 
     if (widget.waterconnection != null) {
-      WidgetsBinding.instance?.addPostFrameCallback((_) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
         var commonProvider = Provider.of<CommonProvider>(
             navigatorKey.currentContext!,
             listen: false);
@@ -83,7 +83,7 @@ class _ConsumerDetailsState extends State<ConsumerDetails> {
           }).toList());
       });
     } else if (widget.id != null) {
-      WidgetsBinding.instance?.addPostFrameCallback((_) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
         Provider.of<CommonProvider>(navigatorKey.currentContext!,
             listen: false);
         consumerProvider
@@ -99,7 +99,7 @@ class _ConsumerDetailsState extends State<ConsumerDetails> {
           }).toList());
       });
     } else {
-      WidgetsBinding.instance?.addPostFrameCallback((_) => afterViewBuild());
+      WidgetsBinding.instance.addPostFrameCallback((_) => afterViewBuild());
     }
 
     _numberFocus.addListener(_onFocusChange);

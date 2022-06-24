@@ -36,7 +36,7 @@ class HouseholdDetail extends StatefulWidget {
 
 class _HouseholdDetailState extends State<HouseholdDetail> {
   void initState() {
-    WidgetsBinding.instance?.addPostFrameCallback((_) => afterViewBuild());
+    WidgetsBinding.instance.addPostFrameCallback((_) => afterViewBuild());
     super.initState();
   }
 

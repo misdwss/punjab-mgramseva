@@ -34,7 +34,7 @@ class NewConsumerBill extends StatefulWidget {
 class NewConsumerBillState extends State<NewConsumerBill> {
   @override
   void initState() {
-    WidgetsBinding.instance?.addPostFrameCallback((_) => afterViewBuild());
+    WidgetsBinding.instance.addPostFrameCallback((_) => afterViewBuild());
     super.initState();
   }
 
