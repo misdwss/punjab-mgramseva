@@ -275,19 +275,12 @@ public class DemandQueryBuilder {
 	
 	public String getDemandHistoryQuery(DemandCriteria demandCriteria, List<Object> preparedStatementValues) {
 
-		StringBuilder demandQuery = new StringBuilder(BASE_DEMAND_HISTORY_QUERY);
-
-		String tenantId = demandCriteria.getTenantId();
-		String[] tenantIdChunks = tenantId.split("\\.");
+		StringBuilder demandQuery = new StringBuilder(BASE_DEMAND_HISTORY_QUERY);		
 		
-		if(tenantIdChunks.length == 1){
-			demandQuery.append(" dmd.tenantid LIKE ? ");
-			preparedStatementValues.add(demandCriteria.getTenantId() + '%');
-		}else{
+		if( demandCriteria.getTenantId() != null) {
 			demandQuery.append(" dmd.tenantid = ? ");
 			preparedStatementValues.add(demandCriteria.getTenantId());
 		}
-		
 		if (demandCriteria.getBusinessService() != null) {
 			addAndClause(demandQuery);
 			demandQuery.append("dmd.businessservice=?");
