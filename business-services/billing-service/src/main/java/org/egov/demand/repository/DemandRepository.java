@@ -398,4 +398,11 @@ public class DemandRepository {
 
 		return paymentId;
 	}
+	
+	public List<Demand> getDemandHistory(DemandCriteria demandCriteria) {
+
+		List<Object> preparedStatementValues = new ArrayList<>();
+		String searchDemandQuery = demandQueryBuilder.getDemandHistoryQuery(demandCriteria, preparedStatementValues);
+		return jdbcTemplate.query(searchDemandQuery, preparedStatementValues.toArray(), demandRowMapper);
+	}
 }
