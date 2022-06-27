@@ -72,7 +72,7 @@ class CollectPaymentProvider with ChangeNotifier {
         demandList = demand.demands;
 
         if (demandList != null && demandList.length > 0) {
-          demandList!.sort((a, b) =>
+          demandList.sort((a, b) =>
               b
                   .demandDetails!.first.auditDetails!.createdTime!
                   .compareTo(
