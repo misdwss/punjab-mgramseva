@@ -149,7 +149,7 @@ public class DemandController {
 	}
     
     @PostMapping("_history")
-	public ResponseEntity<?> _history(@RequestBody RequestInfoWrapper requestInfoWrapper,
+	public ResponseEntity<?> history(@RequestBody RequestInfoWrapper requestInfoWrapper,
 			@ModelAttribute @Valid DemandCriteria demandCriteria) {
 
 		RequestInfo requestInfo = requestInfoWrapper.getRequestInfo();
