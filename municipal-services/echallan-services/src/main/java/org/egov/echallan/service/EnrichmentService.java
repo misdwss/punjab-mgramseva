@@ -78,6 +78,10 @@ public class EnrichmentService {
         }
 //        challan.setFilestoreid(null);
         setIdgenIds(challanRequest);
+        // If referenceId not provided in the request, then set it to same value as challanNo
+        if(challan.getReferenceId() == null || challan.getReferenceId().isEmpty()) {
+            challan.setReferenceId(challan.getChallanNo());
+        }
     }
 
     private List<String> getIdList(RequestInfo requestInfo, String tenantId, String idKey,

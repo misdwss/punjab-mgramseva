@@ -60,7 +60,7 @@ public class PaymentUpdateService {
 			for (PaymentDetail paymentDetail : paymentDetails) {
 				SearchCriteria criteria = new SearchCriteria();
 				criteria.setTenantId(paymentRequest.getPayment().getTenantId());
-				criteria.setChallanNo(paymentDetail.getBill().getConsumerCode());
+				criteria.setReferenceId(paymentDetail.getBill().getConsumerCode());
 				criteria.setBusinessService(paymentDetail.getBusinessService());
 				Map<String, String> finalData = new HashMap<String, String>();
 				List<Challan> challans = challanService.search(criteria, requestInfo, finalData);
@@ -68,10 +68,12 @@ public class PaymentUpdateService {
 				if(!CollectionUtils.isEmpty(challans) ) {
 					String uuid = requestInfo.getUserInfo().getUuid();
 				    AuditDetails auditDetails = commUtils.getAuditDetails(uuid, true);
-					challans.forEach(challan -> challan.setApplicationStatus(StatusEnum.PAID));
-					challans.get(0).setAuditDetails(auditDetails);
-					ChallanRequest request = ChallanRequest.builder().requestInfo(requestInfo).challan(challans.get(0)).build();
-					producer.push(config.getUpdateStatusChallanTopic(), request);
+					challans.forEach(challan -> {
+						challan.setApplicationStatus(StatusEnum.PAID);
+						challan.setAuditDetails(auditDetails);
+						ChallanRequest request = ChallanRequest.builder().requestInfo(requestInfo).challan(challan).build();
+						producer.push(config.getUpdateStatusChallanTopic(), request);
+					});
 				}
 			}
 		} catch (Exception e) {
