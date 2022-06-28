@@ -94,6 +94,13 @@ public class DemandHistoryRowMapper implements ResultSetExtractor<List<Demand>> 
 				demand.setMinimumAmountPayable(rs.getBigDecimal("dminimumAmountPayable"));
 				
 
+				AuditDetails auditDetail = new AuditDetails();
+				auditDetail.setCreatedBy(rs.getString("dcreatedby"));
+				auditDetail.setLastModifiedBy(rs.getString("dlastModifiedby"));
+				auditDetail.setCreatedTime(rs.getLong("dcreatedtime"));
+				auditDetail.setLastModifiedTime(rs.getLong("dlastModifiedtime"));
+				demand.setAuditDetails(auditDetail);
+				
 				demand.setDemandDetails(new ArrayList<>());
 				demandMap.put(demand.getId(), demand);
 			}
