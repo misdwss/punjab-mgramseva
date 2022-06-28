@@ -115,6 +115,13 @@ public class DemandHistoryRowMapper implements ResultSetExtractor<List<Demand>> 
 			demandDetail.setTaxAmount(rs.getBigDecimal("dltaxamount"));
 			demandDetail.setCollectionAmount(rs.getBigDecimal("dlcollectionamount"));
 
+			AuditDetails dlauditDetail = new AuditDetails();
+			dlauditDetail.setCreatedBy(rs.getString("dlcreatedby"));
+			dlauditDetail.setCreatedTime(rs.getLong("dlcreatedtime"));
+			dlauditDetail.setLastModifiedBy(rs.getString("dllastModifiedby"));
+			dlauditDetail.setLastModifiedTime(rs.getLong("dllastModifiedtime"));
+			demandDetail.setAuditDetails(dlauditDetail);
+			
 			if (demand.getId().equals(demandDetail.getDemandId()))
 				demand.getDemandDetails().add(demandDetail);
 		}
