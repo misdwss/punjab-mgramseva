@@ -86,7 +86,7 @@ public class DemandQueryBuilder {
 			+ "dmd.lastmodifiedtime AS dlastmodifiedtime,dmd.tenantid AS dtenantid,dmd.status,"
 			+ "dmd.additionaldetails as demandadditionaldetails,dmd.ispaymentcompleted as ispaymentcompleted,"
 
-			+ "dmdl.id AS dlid,dmdl.demandid AS dldemandid,dmdl.taxheadcode AS dltaxheadcode,"
+			+ "dmdlau.id AS dlid,dmdlau.demandid AS dldemandid,dmdlau.taxheadcode AS dltaxheadcode,"
 			+ "dmdlau.taxamount AS dltaxamount,dmdlau.collectionamount AS dlcollectionamount,"
 			+ "dmdl.createdby AS dlcreatedby,dmdl.lastModifiedby AS dllastModifiedby,"
 			+ "dmdl.createdtime AS dlcreatedtime,dmdl.lastModifiedtime AS dllastModifiedtime,"
@@ -294,7 +294,6 @@ public class DemandQueryBuilder {
 			addToPreparedStatement(preparedStatementValues, demandCriteria.getConsumerCode());
 		}
 
-		addOrderByClause(demandQuery, DEMAND_QUERY_ORDER_BY_CLAUSE);
 		addPagingClause(demandQuery, preparedStatementValues);
 
 		log.info("the query String for demand : " + demandQuery.toString());
