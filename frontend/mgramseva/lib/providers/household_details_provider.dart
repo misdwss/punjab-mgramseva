@@ -85,7 +85,7 @@ class HouseHoldProvider with ChangeNotifier {
         "tenantId": data.tenantId,
         "consumerCode": data.connectionNo.toString(),
         "businessService": "WS",
-        "status": "ACTIVE"
+        // "status": "ACTIVE"
       }).then((value) {
         if (value.demands!.length > 0) {
           value.demands!.sort((a, b) => b
@@ -96,7 +96,9 @@ class HouseHoldProvider with ChangeNotifier {
           } else if (value.demands?.length == 1 &&
               value.demands?.first.consumerType == 'waterConnection-arrears') {
             isfirstdemand = false;
-          } else {
+          } else if(value.demands?.length == 1 && value.demands?.first.demandDetails?.length == 1 && value.demands?.first.demandDetails?.first.taxHeadMasterCode == 'WS_ADVANCE_CARRYFORWARD'){
+            isfirstdemand = false;
+          }else {
             isfirstdemand = true;
           }
           streamController.add(value);

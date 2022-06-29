@@ -56,14 +56,15 @@ class _GenerateNewBillState extends State<GenerateNewBill> {
 
   buidDemandview(DemandList demandList) {
     if (demandList.demands!.isNotEmpty) {
+
       var amount = demandList.demands!
           .map((element) {
             var toalamount = element.demandDetails!
-                .map((e) => e.taxAmount)
+                .map((e) => e.taxHeadMasterCode == 'WS_ADVANCE_CARRYFORWARD' ? 0 : e.taxAmount)
                 .toList()
                 .reduce((a, b) => a! + b!);
             var collectedAmount = element.demandDetails!
-                .map((e) => e.collectionAmount)
+                .map((e) => e.taxHeadMasterCode == 'WS_ADVANCE_CARRYFORWARD' ? 0 : e.collectionAmount)
                 .toList()
                 .reduce((a, b) => a! + b!);
             var amount = (toalamount! - collectedAmount!);
@@ -71,6 +72,8 @@ class _GenerateNewBillState extends State<GenerateNewBill> {
           })
           .toList()
           .reduce((a, b) => a + b);
+      var advanceAmount = CommonProvider.getAdvanceAmount(demandList.demands ?? []);
+      amount = amount + advanceAmount;
       int? num = demandList.demands?.first.auditDetails?.createdTime;
       var billpaymentsProvider =
           Provider.of<DemadDetailProvider>(context, listen: false);

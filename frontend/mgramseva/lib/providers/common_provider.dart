@@ -521,9 +521,22 @@ class CommonProvider with ChangeNotifier {
     var amount = '0';
     var index = -1;
     for(int i =0; i < demandList.length; i++){
-      index = demandList[i].demandDetails?.indexWhere((e) => e.taxHeadMasterCode == 'WS_ADVANCE_CARRYFORWARD') ?? -1;
+      index = demandList[i].demandDetails?.lastIndexWhere((e) => e.taxHeadMasterCode == 'WS_ADVANCE_CARRYFORWARD') ?? -1;
       if(index != -1){
-        amount = demandList[i].demandDetails![index].collectionAmount.toString();
+          amount = ((demandList[i].demandDetails![index].collectionAmount ?? 0) - ( demandList[i].demandDetails?.length == 1 ? 0 : (demandList[i].demandDetails![index-1].collectionAmount ?? 0))).toString();
+        break;
+      }
+    }
+    return amount;
+  }
+
+  static  num getAdvanceAmount(List<Demands> demandList) {
+    var amount = 0.0;
+    var index = -1;
+    for(int i =0; i < demandList.length; i++){
+      index = demandList[i].demandDetails?.lastIndexWhere((e) => e.taxHeadMasterCode == 'WS_ADVANCE_CARRYFORWARD') ?? -1;
+      if(index != -1){
+        amount = (demandList[i].demandDetails![index].taxAmount ?? 0) - (demandList[i].demandDetails![index].collectionAmount ?? 0);
         break;
       }
     }

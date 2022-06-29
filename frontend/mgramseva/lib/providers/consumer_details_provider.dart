@@ -179,7 +179,7 @@ class ConsumerProvider with ChangeNotifier {
         "consumerCode": waterconnection.connectionNo,
         "businessService": "WS",
         "tenantId": waterconnection.tenantId,
-        "status": "ACTIVE"
+        // "status": "ACTIVE"
       });
 
       var paymentDetails = await BillingServiceRepository().fetchdBillPayments({
@@ -663,5 +663,19 @@ class ConsumerProvider with ChangeNotifier {
       
     }
     notifyListeners();
+  }
+
+  bool getPenaltyOrAdvanceStatus([isAdvance = false]) {
+   return true; if(languageList == null) return false;
+    var index = languageList?.mdmsRes?.billingService?.taxHeadMasterList?.indexWhere((e) => e.code == (isAdvance ? 'WS_ADVANCE_CARRYFORWARD' : 'WS_TIME_PENALTY'));
+    if(index != null && index != -1){
+      return (languageList?.mdmsRes?.billingService?.taxHeadMasterList?[index].isRequired ?? false);
+    }
+    return false;
+  }
+
+  List<KeyValue> getPaymentTypeList() {
+    if(getPenaltyOrAdvanceStatus(true)) return Constants.CONSUMER_PAYMENT_TYPE;
+    return [Constants.CONSUMER_PAYMENT_TYPE.first];
   }
 }
