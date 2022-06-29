@@ -75,7 +75,8 @@ public class DemandService {
                 }
             }
 
-            applicationNumbersFromDemands = demands.stream().map(Demand::getConsumerCode).collect(Collectors.toList());
+            if(demands != null)
+                applicationNumbersFromDemands = demands.stream().map(Demand::getConsumerCode).collect(Collectors.toList());
 
             for(Calculation calculation : calculations)
             {
