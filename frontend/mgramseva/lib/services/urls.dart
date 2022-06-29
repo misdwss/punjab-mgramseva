@@ -40,7 +40,7 @@ class Url {
   static const String UPDATE_EVENTS = 'egov-user-event/v1/events/_update';
 
   ///Fetch Demands
-  static const String FETCH_DEMAND = 'billing-service/demand/_search';
+  static const String FETCH_DEMAND = 'billing-service/demand/_history';
 
   static const String FETCH_BILL = 'billing-service/bill/v2/_fetchbill';
   static const String SEARCH_BILL = 'billing-service/bill/v2/_search';

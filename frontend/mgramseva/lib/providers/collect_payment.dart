@@ -66,7 +66,7 @@ class CollectPaymentProvider with ChangeNotifier {
           "tenantId": query['tenantId'],
           "consumerCode": query['consumerCode'],
           "businessService": "WS",
-          "status": "ACTIVE"
+          // "status": "ACTIVE"
         });
 
         demandList = demand.demands;

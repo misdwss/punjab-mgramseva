@@ -512,7 +512,7 @@ class _ConsumerDetailsState extends State<ConsumerDetails> {
                                     '',
                                     '',
                                     false,
-                                    Constants.CONSUMER_PAYMENT_TYPE,
+                                    consumerProvider.getPaymentTypeList(),
                                     consumerProvider.onChangeOfAmountType,
                                     contextkey: consumerProvider
                                         .consmerWalkthrougList[8].key,
@@ -615,7 +615,7 @@ class _ConsumerDetailsState extends State<ConsumerDetails> {
               RegExp("[0-9.]"))
         ],
         key: Keys.createConsumer.CONSUMER_ARREARS_KEY,),
-    if(false)  BuildTextField(i18.common.CORE_PENALTY,
+    if(consumerProvider.getPenaltyOrAdvanceStatus())  BuildTextField(i18.common.CORE_PENALTY,
         consumerProvider.waterconnection.penaltyCtrl,
         textInputType: TextInputType.number,
         inputFormatter: [
