@@ -261,12 +261,14 @@ public class DemandService {
 						.taxPeriodTo(toDate).consumerType("waterConnection-advance")
 						.businessService(businessService).status(StatusEnum.valueOf("ACTIVE")).billExpiryTime(expiryDate)
 						.build());
+			}else {
+				demands.add(Demand.builder().consumerCode(consumerCode).demandDetails(demandDetails).payer(owner)
+						.minimumAmountPayable(minimumPayableAmount).tenantId(tenantId).taxPeriodFrom(fromDate)
+						.taxPeriodTo(toDate).consumerType(isForConnectionNO ? "waterConnection" : "waterConnection-arrears")
+						.businessService(businessService).status(StatusEnum.valueOf("ACTIVE")).billExpiryTime(expiryDate)
+						.build());
 			}
-			demands.add(Demand.builder().consumerCode(consumerCode).demandDetails(demandDetails).payer(owner)
-					.minimumAmountPayable(minimumPayableAmount).tenantId(tenantId).taxPeriodFrom(fromDate)
-					.taxPeriodTo(toDate).consumerType(isForConnectionNO ? "waterConnection" : "waterConnection-arrears")
-					.businessService(businessService).status(StatusEnum.valueOf("ACTIVE")).billExpiryTime(expiryDate)
-					.build());
+		
 			if (!isWSUpdateSMS) {
 
 				HashMap<String, String> localizationMessage = util.getLocalizationMessage(requestInfo,

@@ -165,6 +165,7 @@ public class WaterConnectionValidator {
 		url.append(config.getBillingHost()).append(config.getDemandSearchUri());
 		url.append("?consumerCode=").append(request.getWaterConnection().getConnectionNo());
 		url.append("&tenantId=").append(request.getWaterConnection().getTenantId());
+		url.append("&status=ACTIVE");
 		url.append("&businessService=WS");
 		DemandResponse demandResponse = null;
 		try {
