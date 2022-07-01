@@ -75,9 +75,6 @@ public class DemandService {
                 }
             }
 
-            if(demands != null)
-                applicationNumbersFromDemands = demands.stream().map(Demand::getConsumerCode).collect(Collectors.toList());
-
             for(Calculation calculation : calculations)
             {
                 if(!applicationNumbersFromDemands.contains(calculation.getChallan().getChallanNo()))
