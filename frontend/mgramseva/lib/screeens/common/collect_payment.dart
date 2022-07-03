@@ -259,8 +259,8 @@ class _ConnectionPaymentViewState extends State<ConnectionPaymentView> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                             _buildLabelValue(
-                                'WS_${fetchBill.demands?.demandDetails?.last.taxHeadMasterCode}',
-                                '₹ ${fetchBill.demands?.demandDetails?.last.taxAmount}'),
+                                'WS_${fetchBill.demands?.demandDetails?.first.taxHeadMasterCode}',
+                                '₹ ${fetchBill.demands?.demandDetails?.first.taxAmount}'),
                           (fetchBill.billDetails?.first.billAccountDetails?.last.arrearsAmount ?? 0) >
                                     0
                                 ? _buildLabelValue(i18.billDetails.ARRERS_DUES,
@@ -305,6 +305,7 @@ class _ConnectionPaymentViewState extends State<ConnectionPaymentView> {
         child: constraints.maxWidth > 760
             ? Column(
                 children: List.generate(bill.billDetails?.length ?? 0, (index) {
+                if(bill.billDetails?[index].billAccountDetails?.first.taxHeadCode == 'WS_ADVANCE_CARRYFORWARD') return Container();
                 if (index != 0) {
                   return Row(
                     children: [
@@ -330,7 +331,7 @@ class _ConnectionPaymentViewState extends State<ConnectionPaymentView> {
             : Table(
                 defaultVerticalAlignment: TableCellVerticalAlignment.middle,
                 children: List.generate(bill.billDetails?.length ?? 0, (index) {
-                  if (index == 0) {
+                  if (index == 0 || bill.billDetails?[index].billAccountDetails?.first.taxHeadCode == 'WS_ADVANCE_CARRYFORWARD') {
                     return TableRow(children: [
                       TableCell(child: Text("")),
                       TableCell(child: Text(""))

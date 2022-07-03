@@ -16,7 +16,8 @@ import 'package:provider/provider.dart';
 
 class GenerateNewBill extends StatefulWidget {
   final WaterConnection? waterconnection;
-  GenerateNewBill(this.waterconnection);
+  final DemandList demandList;
+  GenerateNewBill(this.waterconnection, this.demandList);
   @override
   State<StatefulWidget> createState() {
     return _GenerateNewBillState();
@@ -26,13 +27,7 @@ class GenerateNewBill extends StatefulWidget {
 class _GenerateNewBillState extends State<GenerateNewBill> {
   @override
   void initState() {
-    WidgetsBinding.instance.addPostFrameCallback((_) => afterViewBuild());
     super.initState();
-  }
-
-  afterViewBuild() {
-    Provider.of<DemadDetailProvider>(context, listen: false)
-      ..fetchDemandDetails(widget.waterconnection);
   }
 
   _getLabeltext(label, value, context) {
@@ -54,26 +49,9 @@ class _GenerateNewBillState extends State<GenerateNewBill> {
         )));
   }
 
-  buidDemandview(DemandList demandList) {
+  buidDemandview() {
+    DemandList demandList = widget.demandList;
     if (demandList.demands!.isNotEmpty) {
-
-      var amount = demandList.demands!
-          .map((element) {
-            var toalamount = element.demandDetails!
-                .map((e) => e.taxHeadMasterCode == 'WS_ADVANCE_CARRYFORWARD' ? 0 : e.taxAmount)
-                .toList()
-                .reduce((a, b) => a! + b!);
-            var collectedAmount = element.demandDetails!
-                .map((e) => e.taxHeadMasterCode == 'WS_ADVANCE_CARRYFORWARD' ? 0 : e.collectionAmount)
-                .toList()
-                .reduce((a, b) => a! + b!);
-            var amount = (toalamount! - collectedAmount!);
-            return amount;
-          })
-          .toList()
-          .reduce((a, b) => a + b);
-      var advanceAmount = CommonProvider.getAdvanceAmount(demandList.demands ?? []);
-      amount = amount + advanceAmount;
       int? num = demandList.demands?.first.auditDetails?.createdTime;
       var billpaymentsProvider =
           Provider.of<DemadDetailProvider>(context, listen: false);
@@ -159,9 +137,9 @@ class _GenerateNewBillState extends State<GenerateNewBill> {
                                     .toString(),
                             context),
                         _getLabeltext(i18.generateBillDetails.PENDING_AMOUNT,
-                            ('₹' + amount.toString()), context),
+                            ('₹' + getPendingAmount.toString()), context),
                         billpaymentsProvider.isfirstdemand == false &&
-                                amount > 0
+                            getPendingAmount > 0
                             ? new Column(
                                 mainAxisAlignment: MainAxisAlignment.start,
                                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -268,24 +246,10 @@ class _GenerateNewBillState extends State<GenerateNewBill> {
 
   @override
   Widget build(BuildContext context) {
-    var billProvider = Provider.of<DemadDetailProvider>(context, listen: false);
-    return StreamBuilder(
-        stream: billProvider.streamController.stream,
-        builder: (context, AsyncSnapshot snapshot) {
-          if (snapshot.hasData) {
-            return buidDemandview(snapshot.data);
-          } else if (snapshot.hasError) {
-            return Notifiers.networkErrorPage(context, () {});
-          } else {
-            switch (snapshot.connectionState) {
-              case ConnectionState.waiting:
-                return Loaders.CircularLoader();
-              case ConnectionState.active:
-                return Loaders.CircularLoader();
-              default:
-                return Container();
-            }
-          }
-        });
+    return buidDemandview();
+  }
+
+  double get getPendingAmount {
+    return widget.waterconnection!.fetchBill!.bill!.isNotEmpty ? (widget.waterconnection?.fetchBill?.bill?.first.totalAmount ?? 0) : 0;
   }
 }

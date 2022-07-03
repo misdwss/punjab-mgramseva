@@ -34,14 +34,9 @@ class NewConsumerBill extends StatefulWidget {
 class NewConsumerBillState extends State<NewConsumerBill> {
   @override
   void initState() {
-    WidgetsBinding.instance.addPostFrameCallback((_) => afterViewBuild());
     super.initState();
   }
 
-  afterViewBuild() {
-    Provider.of<FetchBillProvider>(context, listen: false)
-      ..fetchBill(widget.waterConnection, context);
-  }
 
   _getLabeltext(label, value, context, {subLabel = ''}) {
     return Container(
@@ -82,34 +77,11 @@ class NewConsumerBillState extends State<NewConsumerBill> {
 
   @override
   Widget build(BuildContext context) {
-    var billpaymentsProvider =
-        Provider.of<FetchBillProvider>(context, listen: false);
-    return StreamBuilder(
-        stream: billpaymentsProvider.streamController.stream,
-        builder: (context, AsyncSnapshot snapshot) {
-          if (snapshot.hasData) {
-            return buidBillview(snapshot.data);
-          } else if (snapshot.hasError) {
-            return Notifiers.networkErrorPage(context, () {});
-          } else {
-            switch (snapshot.connectionState) {
-              case ConnectionState.waiting:
-                return Loaders.CircularLoader();
-              case ConnectionState.active:
-                return Loaders.CircularLoader();
-              default:
-                return Container();
-            }
-          }
-        });
+    return buidBillview(widget.waterConnection?.fetchBill ?? BillList());
   }
 
   buidBillview(BillList billList) {
     var commonProvider = Provider.of<CommonProvider>(context, listen: false);
-    // if (billList.bill!.isNotEmpty)
-    //   billList.bill?.first.billDetails!.forEach((element) {
-    //     res.add(element.amount);
-    //   });
 
     return LayoutBuilder(builder: (context, constraints) {
       var houseHoldProvider =

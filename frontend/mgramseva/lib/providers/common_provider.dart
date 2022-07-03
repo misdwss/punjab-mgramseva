@@ -517,14 +517,66 @@ class CommonProvider with ChangeNotifier {
     }
   }
 
+  // static  String getAdvanceAdjustedAmount(List<Demands> demandList) {
+  //   var amount = '0';
+  //   var index = -1;
+  //   for(int i =0; i < demandList.length; i++){
+  //     index = demandList[i].demandDetails?.lastIndexWhere((e) => e.taxHeadMasterCode == 'WS_ADVANCE_CARRYFORWARD') ?? -1;
+  //     if(index != -1){
+  //
+  //       if(demandList[i].demandDetails?.length == 1){
+  //
+  //       }else if(demandList[i].demandDetails?.length == 2){
+  //         amount = (demandList[i].demandDetails![index].collectionAmount ?? 0).toString();
+  //       } else if(demandList[i].demandDetails?[index].collectionAmount == demandList[i].demandDetails?[index].taxAmount){
+  //         if((demandList.first.demandDetails?.first.collectionAmount ?? 0) > 0){
+  //          amount = (-(demandList.first.demandDetails!.first.collectionAmount ?? 0)).toString();
+  //         }else {
+  //           amount = (demandList[i].demandDetails![index].collectionAmount ?? 0).toString();
+  //         }
+  //         }
+  //       else{
+  //         amount = ((demandList[i].demandDetails![index].collectionAmount ?? 0) -  (demandList[i].demandDetails![index-1].collectionAmount ?? 0)).toString();
+  //       }
+  //       break;
+  //     }
+  //   }
+  //   return amount;
+  // }
+
   static  String getAdvanceAdjustedAmount(List<Demands> demandList) {
     var amount = '0';
     var index = -1;
-    for(int i =0; i < demandList.length; i++){
-      index = demandList[i].demandDetails?.lastIndexWhere((e) => e.taxHeadMasterCode == 'WS_ADVANCE_CARRYFORWARD') ?? -1;
-      if(index != -1){
-          amount = ((demandList[i].demandDetails![index].collectionAmount ?? 0) - ( demandList[i].demandDetails?.length == 1 ? 0 : (demandList[i].demandDetails![index-1].collectionAmount ?? 0))).toString();
-        break;
+
+    if (demandList.isEmpty) return amount;
+
+    var filteredDemands = demandList.where((e) =>
+    !(e.isPaymentCompleted ?? false))
+        .toList();
+
+    for (int i = 0; i < filteredDemands.length; i++) {
+      index = demandList[i].demandDetails?.lastIndexWhere((e) => e
+          .taxHeadMasterCode == 'WS_ADVANCE_CARRYFORWARD') ?? -1;
+
+      if (index != -1) {
+        var demandDetail = demandList[i].demandDetails?[index];
+        if(demandDetail!.collectionAmount!.abs() < demandDetail.taxAmount!.abs()){
+         amount = filteredDemands.first.demandDetails?.last.collectionAmount?.toString() ?? '0';
+        }else if(demandDetail.collectionAmount! == demandDetail.taxAmount!){
+          if(filteredDemands.first.demandDetails?.last.collectionAmount != 0){
+            var list = <double>[];
+            for(int j = 0; j <= i ; j++){
+              for(int k = 0; k < (filteredDemands[j].demandDetails?.length ?? 0); k++) {
+                if (k == index && j == i) break;
+                list.add(filteredDemands[j].demandDetails![k].collectionAmount ?? 0);
+              }
+            }
+            print(list);
+            var collectedAmount = list.reduce((a, b) => a+b);
+            amount = collectedAmount == demandDetail.collectionAmount?.abs()
+                ? filteredDemands.first.demandDetails?.last.collectionAmount?.toString() ?? '0' : '0';
+          }
+        }
       }
     }
     return amount;
@@ -558,9 +610,12 @@ class CommonProvider with ChangeNotifier {
       }
     }
 
+    var arrearsDeduction = demandList.first.demandDetails?.first.taxHeadMasterCode != 'WS_ADVANCE_CARRYFORWARD' ?
+     ((demandList.first.demandDetails?.first.taxAmount ?? 0) - (demandList.first.demandDetails?.first.collectionAmount ?? 0)) : 0;
+
     return res.length == 0 ? 0 : ((res.reduce((previousValue,
         element) =>
     previousValue +
-        element) - ((demandList.first.demandDetails?.first.taxAmount ?? 0) - (demandList.first.demandDetails?.first.collectionAmount ?? 0))) as double).abs();
+        element) - arrearsDeduction) as double).abs();
   }
 }
