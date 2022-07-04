@@ -90,7 +90,7 @@ class NewConsumerBillState extends State<NewConsumerBill> {
           ?
       Text("")
           :
-      !(widget.demandList.first.demandDetails?.first.taxHeadMasterCode == 'WS_ADVANCE_CARRYFORWARD')
+      showBill(widget.demandList)
               ?
       houseHoldProvider.isfirstdemand == false &&
                       widget.mode != 'collect'
@@ -372,6 +372,49 @@ class NewConsumerBillState extends State<NewConsumerBill> {
 
   String getTotalBillAmount() {
     return ((widget.demandList.first.demandDetails?.first.taxAmount ?? 0) + CommonProvider.getArrearsAmount(widget.demandList)).toString();
+  }
+
+  bool showBill(List<Demands> demandList) {
+    var index = -1;
+
+    if(demandList.isEmpty){
+      return false;
+    }else if(demandList.first.demandDetails?.first.taxHeadMasterCode == 'WS_ADVANCE_CARRYFORWARD'){
+      return true;
+    }else if((widget.waterConnection?.fetchBill?.bill?.first.totalAmount ?? 0) > 0){
+      return true;
+    } else {
+      var filteredDemands = demandList.where((e) =>
+      !(e.isPaymentCompleted ?? false))
+          .toList();
+
+      if(filteredDemands.isEmpty) return false;
+
+      for (int i = 0; i < filteredDemands.length; i++) {
+        index = demandList[i].demandDetails?.lastIndexWhere((e) => e
+            .taxHeadMasterCode == 'WS_ADVANCE_CARRYFORWARD') ?? -1;
+
+        if (index != -1) {
+          var demandDetail = demandList[i].demandDetails?[index];
+        if(demandDetail!.collectionAmount! == demandDetail.taxAmount!){
+            if(filteredDemands.first.demandDetails?.last.collectionAmount != 0){
+              var list = <double>[];
+              for(int j = 0; j <= i ; j++){
+                for(int k = 0; k < (filteredDemands[j].demandDetails?.length ?? 0); k++) {
+                  if (k == index && j == i) break;
+                  list.add(filteredDemands[j].demandDetails![k].collectionAmount ?? 0);
+                }
+              }
+              var collectedAmount = list.reduce((a, b) => a+b);
+              return !(collectedAmount == demandDetail.collectionAmount?.abs());
+            }
+          }
+        }else{
+          return false;
+        }
+      }
+    }
+    return false;
   }
 
 }
