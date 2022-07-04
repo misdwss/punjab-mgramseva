@@ -582,6 +582,36 @@ class CommonProvider with ChangeNotifier {
     return amount;
   }
 
+  static num getPenalty(List<Demands> demandList) {
+    var penalty = 0.0;
+
+    demandList.forEach((billDetails) {
+      billDetails.demandDetails?.forEach((billAccountDetails) {
+        if(billAccountDetails.taxHeadMasterCode == '10102' || billAccountDetails.taxHeadMasterCode == 'WS_TIME_ADHOC_PENALTY'){
+                  penalty += billAccountDetails.taxAmount ?? 0;
+                }
+      });
+    });
+    // if(billList is List<Bill>){
+    //   billList.first.billDetails!.forEach((bill) {
+    //     bill.billAccountDetails?.forEach((billAccountDetails) {
+    //       if(billAccountDetails.taxHeadCode == '10102' || billAccountDetails.taxHeadCode == 'WS_TIME_ADHOC_PENALTY'){
+    //         penalty += billAccountDetails.amount ?? 0;
+    //       }
+    //     });
+    //   });
+    // }else if(billList is FetchBill ){
+    //  billList.billDetails?.forEach((bill) {
+    //    bill.billAccountDetails?.forEach((billAccountDetails) {
+    //      if(billAccountDetails.taxHeadCode == '10102' || billAccountDetails.taxHeadCode == 'WS_TIME_ADHOC_PENALTY'){
+    //        penalty += billAccountDetails.amount ?? 0;
+    //      }
+    //    });
+    //  });
+    // }
+    return penalty;
+  }
+
   static  num getAdvanceAmount(List<Demands> demandList) {
     var amount = 0.0;
     var index = -1;
@@ -603,14 +633,15 @@ class CommonProvider with ChangeNotifier {
           .toList();
       for (var demand in filteredDemands) {
         demand.demandDetails!.forEach((e) {
-          if (e.taxHeadMasterCode != 'WS_ADVANCE_CARRYFORWARD'){
+          if (e.taxHeadMasterCode != 'WS_ADVANCE_CARRYFORWARD' && e.taxHeadMasterCode != '10102' && e.taxHeadMasterCode != 'WS_TIME_ADHOC_PENALTY'){
             res.add((e.taxAmount ?? 0) - (e.collectionAmount ?? 0));
           }
         });
       }
     }
 
-    var arrearsDeduction = demandList.first.demandDetails?.first.taxHeadMasterCode != 'WS_ADVANCE_CARRYFORWARD' ?
+    var arrearsDeduction = (demandList.first.demandDetails?.first.taxHeadMasterCode != 'WS_ADVANCE_CARRYFORWARD' && demandList.first.demandDetails?.first.taxHeadMasterCode != '10102'
+    && demandList.first.demandDetails?.first.taxHeadMasterCode != 'WS_TIME_ADHOC_PENALTY') ?
      ((demandList.first.demandDetails?.first.taxAmount ?? 0) - (demandList.first.demandDetails?.first.collectionAmount ?? 0)) : 0;
 
     return res.length == 0 ? 0 : ((res.reduce((previousValue,

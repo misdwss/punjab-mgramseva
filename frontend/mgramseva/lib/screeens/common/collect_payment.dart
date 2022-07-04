@@ -25,6 +25,10 @@ import 'package:mgramseva/widgets/RadioButtonFieldBuilder.dart';
 import 'package:mgramseva/widgets/SideBar.dart';
 import 'package:mgramseva/widgets/TextFieldBuilder.dart';
 import 'package:provider/provider.dart';
+import '../../components/HouseConnectionandBill/NewConsumerBill.dart';
+import '../../providers/common_provider.dart';
+import '../../utils/global_variables.dart';
+import '../../widgets/CustomDetails.dart';
 import '../../widgets/customAppbar.dart';
 
 class ConnectionPaymentView extends StatefulWidget {
@@ -229,6 +233,7 @@ class _ConnectionPaymentViewState extends State<ConnectionPaymentView> {
   }
 
   Widget _buildViewDetails(FetchBill fetchBill) {
+    var penalty = CommonProvider.getPenalty(fetchBill.demandList ?? []);
     List res = [];
     num len = fetchBill.billDetails?.first.billAccountDetails?.length as num;
     if (fetchBill.billDetails!.isNotEmpty)
@@ -283,7 +288,28 @@ class _ConnectionPaymentViewState extends State<ConnectionPaymentView> {
                     '₹ ${fetchBill.billDetails?.first.billAccountDetails?.last.advanceAdjustedAmount}'),
                 _buildLabelValue(
                     i18.common.CORE_NET_AMOUNT_DUE,
-                    '₹ ${(fetchBill.totalAmount ?? 0) >= 0 ? fetchBill.totalAmount : 0}'),
+                    '₹ ${(fetchBill.totalAmount ?? 0) >= 0 ? (fetchBill.totalAmount! - penalty) : 0}'),
+                CustomDetailsCard(
+                    Column(
+                      children: [
+                        NewConsumerBillState.getLabelText(
+                            i18.billDetails.CORE_PENALTY,
+                            ('₹' +
+                                penalty
+                                    .toString()),
+                            context,
+                            subLabel: NewConsumerBillState.getDueDatePenalty('dueDate', context)),
+                        NewConsumerBillState.getLabelText(
+                            i18.billDetails.CORE_NET_DUE_AMOUNT_WITH_PENALTY,
+                            ('₹' +
+                                (fetchBill.billDetails?.first.billAccountDetails?.last.totalBillAmount ?? 0)
+                                    .toString()),
+                            context,
+                            subLabel: NewConsumerBillState.getDueDatePenalty('dueDate', context))
+
+                      ],
+                    )
+                )
               ],
             ),
           )
