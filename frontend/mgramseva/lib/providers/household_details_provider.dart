@@ -78,6 +78,8 @@ class HouseHoldProvider with ChangeNotifier {
         "businessService": "WS",
         // "status": "ACTIVE"
       }).then((value) {
+     value.demands = value.demands?.where((element) => element.status != 'CANCELLED').toList();
+
         if (value.demands!.length > 0) {
           value.demands!.sort((a, b) => b
               .demandDetails!.first.auditDetails!.createdTime!
