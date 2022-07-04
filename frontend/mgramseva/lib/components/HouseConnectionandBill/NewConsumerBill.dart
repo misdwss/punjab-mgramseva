@@ -192,7 +192,7 @@ class NewConsumerBillState extends State<NewConsumerBill> {
                                               ((billList.bill?.first.totalAmount ?? 0) >= 0 ? billList.bill?.first.totalAmount : 0)
                                                   .toString()),
                                           context),
-                                      if(false) CustomDetailsCard(
+                                       CustomDetailsCard(
                                           Column(
                                             children: [
                                               _getLabeltext(

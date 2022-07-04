@@ -545,7 +545,7 @@ class CommonProvider with ChangeNotifier {
   // }
 
   static  String getAdvanceAdjustedAmount(List<Demands> demandList) {
-    var amount = '0';
+    var amount = '0.0';
     var index = -1;
 
     if (demandList.isEmpty) return amount;
@@ -561,7 +561,7 @@ class CommonProvider with ChangeNotifier {
       if (index != -1) {
         var demandDetail = demandList[i].demandDetails?[index];
         if(demandDetail!.collectionAmount!.abs() < demandDetail.taxAmount!.abs()){
-         amount = filteredDemands.first.demandDetails?.last.collectionAmount?.toString() ?? '0';
+         amount = filteredDemands.first.demandDetails?.last.collectionAmount?.toString() ?? '0.0';
         }else if(demandDetail.collectionAmount! == demandDetail.taxAmount!){
           if(filteredDemands.first.demandDetails?.last.collectionAmount != 0){
             var list = <double>[];
@@ -574,7 +574,7 @@ class CommonProvider with ChangeNotifier {
             print(list);
             var collectedAmount = list.reduce((a, b) => a+b);
             amount = collectedAmount == demandDetail.collectionAmount?.abs()
-                ? filteredDemands.first.demandDetails?.last.collectionAmount?.toString() ?? '0' : '0';
+                ? filteredDemands.first.demandDetails?.last.collectionAmount?.toString() ?? '0.0' : '0.0';
           }
         }
       }
