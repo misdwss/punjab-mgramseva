@@ -66,7 +66,7 @@ class _HouseholdDetailState extends State<HouseholdDetail> {
             : Text(""),
         houseHoldProvider.waterConnection!.connectionType == 'Metered' &&
                 widget.mode == 'collect'
-            ? GenerateNewBill(houseHoldProvider.waterConnection)
+            ? GenerateNewBill(houseHoldProvider.waterConnection, data)
             : Text(""),
         data.demands!.isEmpty ||
                 (houseHoldProvider.waterConnection?.connectionType ==

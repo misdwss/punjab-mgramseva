@@ -34,14 +34,9 @@ class NewConsumerBill extends StatefulWidget {
 class NewConsumerBillState extends State<NewConsumerBill> {
   @override
   void initState() {
-    WidgetsBinding.instance.addPostFrameCallback((_) => afterViewBuild());
     super.initState();
   }
 
-  afterViewBuild() {
-    Provider.of<FetchBillProvider>(context, listen: false)
-      ..fetchBill(widget.waterConnection, context);
-  }
 
   _getLabeltext(label, value, context, {subLabel = ''}) {
     return Container(
@@ -82,34 +77,11 @@ class NewConsumerBillState extends State<NewConsumerBill> {
 
   @override
   Widget build(BuildContext context) {
-    var billpaymentsProvider =
-        Provider.of<FetchBillProvider>(context, listen: false);
-    return StreamBuilder(
-        stream: billpaymentsProvider.streamController.stream,
-        builder: (context, AsyncSnapshot snapshot) {
-          if (snapshot.hasData) {
-            return buidBillview(snapshot.data);
-          } else if (snapshot.hasError) {
-            return Notifiers.networkErrorPage(context, () {});
-          } else {
-            switch (snapshot.connectionState) {
-              case ConnectionState.waiting:
-                return Loaders.CircularLoader();
-              case ConnectionState.active:
-                return Loaders.CircularLoader();
-              default:
-                return Container();
-            }
-          }
-        });
+    return buidBillview(widget.waterConnection?.fetchBill ?? BillList());
   }
 
   buidBillview(BillList billList) {
     var commonProvider = Provider.of<CommonProvider>(context, listen: false);
-    // if (billList.bill!.isNotEmpty)
-    //   billList.bill?.first.billDetails!.forEach((element) {
-    //     res.add(element.amount);
-    //   });
 
     return LayoutBuilder(builder: (context, constraints) {
       var houseHoldProvider =
@@ -118,7 +90,7 @@ class NewConsumerBillState extends State<NewConsumerBill> {
           ?
       Text("")
           :
-      !(widget.demandList.first.demandDetails?.first.taxHeadMasterCode == 'WS_ADVANCE_CARRYFORWARD')
+      showBill(widget.demandList)
               ?
       houseHoldProvider.isfirstdemand == false &&
                       widget.mode != 'collect'
@@ -400,6 +372,49 @@ class NewConsumerBillState extends State<NewConsumerBill> {
 
   String getTotalBillAmount() {
     return ((widget.demandList.first.demandDetails?.first.taxAmount ?? 0) + CommonProvider.getArrearsAmount(widget.demandList)).toString();
+  }
+
+  bool showBill(List<Demands> demandList) {
+    var index = -1;
+
+    if(demandList.isEmpty){
+      return false;
+    }else if(demandList.first.demandDetails?.first.taxHeadMasterCode == 'WS_ADVANCE_CARRYFORWARD'){
+      return true;
+    }else if((widget.waterConnection?.fetchBill?.bill?.first.totalAmount ?? 0) > 0){
+      return true;
+    } else {
+      var filteredDemands = demandList.where((e) =>
+          (!(e.isPaymentCompleted ?? false) && e.status != 'CANCELLED'))
+          .toList();
+
+      if(filteredDemands.isEmpty) return false;
+
+      for (int i = 0; i < filteredDemands.length; i++) {
+        index = demandList[i].demandDetails?.lastIndexWhere((e) => e
+            .taxHeadMasterCode == 'WS_ADVANCE_CARRYFORWARD') ?? -1;
+
+        if (index != -1) {
+          var demandDetail = demandList[i].demandDetails?[index];
+        if(demandDetail!.collectionAmount! == demandDetail.taxAmount!){
+            if(filteredDemands.first.demandDetails?.last.collectionAmount != 0){
+              var list = <double>[];
+              for(int j = 0; j <= i ; j++){
+                for(int k = 0; k < (filteredDemands[j].demandDetails?.length ?? 0); k++) {
+                  if (k == index && j == i) break;
+                  list.add(filteredDemands[j].demandDetails![k].collectionAmount ?? 0);
+                }
+              }
+              var collectedAmount = list.reduce((a, b) => a+b);
+              return !(collectedAmount == demandDetail.collectionAmount?.abs());
+            }
+          }
+        }else{
+          return false;
+        }
+      }
+    }
+    return false;
   }
 
 }
