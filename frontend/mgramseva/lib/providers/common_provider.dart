@@ -599,7 +599,7 @@ class CommonProvider with ChangeNotifier {
     List res = [];
 
     if (demandList.isNotEmpty) {
-      var filteredDemands = demandList.where((e) => !(e.isPaymentCompleted ?? false))
+      var filteredDemands = demandList.where((e) => (!(e.isPaymentCompleted ?? false) && e.status != 'CANCELLED'))
           .toList();
       for (var demand in filteredDemands) {
         demand.demandDetails!.forEach((e) {

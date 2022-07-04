@@ -192,7 +192,7 @@ class NewConsumerBillState extends State<NewConsumerBill> {
                                               ((billList.bill?.first.totalAmount ?? 0) >= 0 ? billList.bill?.first.totalAmount : 0)
                                                   .toString()),
                                           context),
-                                       CustomDetailsCard(
+                                      if(false) CustomDetailsCard(
                                           Column(
                                             children: [
                                               _getLabeltext(
@@ -385,7 +385,7 @@ class NewConsumerBillState extends State<NewConsumerBill> {
       return true;
     } else {
       var filteredDemands = demandList.where((e) =>
-      !(e.isPaymentCompleted ?? false))
+          (!(e.isPaymentCompleted ?? false) && e.status != 'CANCELLED'))
           .toList();
 
       if(filteredDemands.isEmpty) return false;
