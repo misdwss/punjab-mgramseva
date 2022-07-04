@@ -23,6 +23,8 @@ class DemadDetailProvider with ChangeNotifier {
         // "status": "ACTIVE"
       }).then((value) {
         if (value.demands!.length > 0) {
+          value.demands = value.demands?.where((element) => element.status != 'CANCELLED').toList();
+
           value.demands!.sort((a, b) => b
               .demandDetails!.first.auditDetails!.createdTime!
               .compareTo(a.demandDetails!.first.auditDetails!.createdTime!));

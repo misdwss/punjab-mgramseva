@@ -219,6 +219,9 @@ class ConsumerProvider with ChangeNotifier {
                 .characters
                 .elementAt(4);
       }
+
+      demand = demand?.where((element) => element.status != 'CANCELLED').toList();
+
       if (demand?.isEmpty == true) {
         isfirstdemand = false;
       } else if (demand?.length == 1 &&

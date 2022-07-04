@@ -83,6 +83,8 @@ class CollectPaymentProvider with ChangeNotifier {
       if (paymentDetails != null) {
         paymentDetails.first.billDetails
             ?.sort((a, b) => b.fromPeriod!.compareTo(a.fromPeriod!));
+        demandList = demandList?.where((element) => element.status != 'CANCELLED').toList();
+
         // var demandDetails = await ConsumerRepository().getDemandDetails(query);
         // if (demandDetails != null)
         // paymentDetails.first.demand = demandDetails.first;
