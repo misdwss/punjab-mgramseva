@@ -290,24 +290,24 @@ class _ConnectionPaymentViewState extends State<ConnectionPaymentView> {
                     '₹ ${fetchBill.billDetails?.first.billAccountDetails?.last.advanceAdjustedAmount}'),
                 if(CommonProvider.getPenaltyOrAdvanceStatus(fetchBill.mdmsData, true)) _buildLabelValue(
                     i18.common.CORE_NET_AMOUNT_DUE,
-                    '₹ ${(fetchBill.totalAmount ?? 0) >= 0 ? (fetchBill.totalAmount! - penalty) : 0}'),
+                    '₹ ${(fetchBill.totalAmount ?? 0) >= 0 ? (fetchBill.totalAmount! - (penalty.penalty ?? 0)) : 0}'),
                 if(CommonProvider.getPenaltyOrAdvanceStatus(fetchBill.mdmsData, false, true))  CustomDetailsCard(
                     Column(
                       children: [
                         NewConsumerBillState.getLabelText(
                             i18.billDetails.CORE_PENALTY,
                             ('₹' +
-                                penalty
+                                penalty.penalty
                                     .toString()),
                             context,
-                            subLabel: NewConsumerBillState.getDueDatePenalty('dueDate', context)),
+                            subLabel: NewConsumerBillState.getDueDatePenalty(penalty.date, context)),
                         NewConsumerBillState.getLabelText(
                             i18.billDetails.CORE_NET_DUE_AMOUNT_WITH_PENALTY,
                             ('₹' +
                                 (fetchBill.billDetails?.first.billAccountDetails?.last.totalBillAmount ?? 0)
                                     .toString()),
                             context,
-                            subLabel: NewConsumerBillState.getDueDatePenalty('dueDate', context))
+                            subLabel: NewConsumerBillState.getDueDatePenalty(penalty.date, context))
 
                       ],
                     )

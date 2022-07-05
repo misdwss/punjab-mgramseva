@@ -583,13 +583,14 @@ class CommonProvider with ChangeNotifier {
     return amount;
   }
 
-  static num getPenalty(List<Demands> demandList) {
-    var penalty = 0.0;
+  static Penalty getPenalty(List<Demands> demandList) {
+    Penalty? penalty;
 
     demandList.forEach((billDetails) {
       billDetails.demandDetails?.forEach((billAccountDetails) {
-        if(billAccountDetails.taxHeadMasterCode == '10102' || billAccountDetails.taxHeadMasterCode == 'WS_TIME_ADHOC_PENALTY'){
-                  penalty += billAccountDetails.taxAmount ?? 0;
+        if(billAccountDetails.taxHeadMasterCode == 'WS_TIME_ADHOC_PENALTY'){
+                  var amount = billAccountDetails.taxAmount ?? 0;
+                  penalty = Penalty(amount, DateFormats.timeStampToDate(billAccountDetails.auditDetails!.createdTime));
                 }
       });
     });
@@ -610,7 +611,7 @@ class CommonProvider with ChangeNotifier {
     //    });
     //  });
     // }
-    return penalty;
+    return penalty ?? Penalty(0.0, '');
   }
 
   static  num getAdvanceAmount(List<Demands> demandList) {
@@ -673,4 +674,8 @@ class CommonProvider with ChangeNotifier {
     return false;
   }
 
+
+  void getPenaltyDueDate() {
+
+  }
 }
