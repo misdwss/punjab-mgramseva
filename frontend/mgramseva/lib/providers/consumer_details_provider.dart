@@ -540,6 +540,11 @@ class ConsumerProvider with ChangeNotifier {
     waterconnection.connectionType = val;
     waterconnection.meterIdCtrl.clear();
     waterconnection.previousReadingDateCtrl.clear();
+    billYear = null;
+    selectedcycle = null;
+    waterconnection.BillingCycleCtrl.clear();
+    waterconnection.meterInstallationDateCtrl.clear();
+    searchPickerKey?.currentState?.Options.clear();
 
     notifyListeners();
   }
