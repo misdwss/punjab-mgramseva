@@ -18,6 +18,7 @@ import 'package:mgramseva/model/localization/localization_label.dart';
 import 'package:mgramseva/repository/core_repo.dart';
 import 'package:mgramseva/routers/Routers.dart';
 import 'package:mgramseva/services/LocalStorage.dart';
+import 'package:mgramseva/services/MDMS.dart';
 import 'package:mgramseva/utils/Constants/I18KeyConstants.dart';
 import 'package:mgramseva/utils/Locilization/application_localizations.dart';
 import 'package:mgramseva/utils/constants.dart';
@@ -649,4 +650,27 @@ class CommonProvider with ChangeNotifier {
     previousValue +
         element) - arrearsDeduction) as double).abs();
   }
+
+  static Future<LanguageList> getMdmsBillingService() async {
+    try {
+      var commonProvider = Provider.of<CommonProvider>(
+          navigatorKey.currentContext!,
+          listen: false);
+
+     return await CoreRepository().getMdms(getMdmsPaymentModes(
+          commonProvider.userDetails!.userRequest!.tenantId.toString()));
+    }catch(e){
+      return LanguageList();
+    }
+  }
+
+ static bool getPenaltyOrAdvanceStatus(LanguageList? languageList, [isAdvance = false, bool isTimePenalty = false]) {
+    if(languageList == null) return false;
+    var index = languageList.mdmsRes?.billingService?.taxHeadMasterList?.indexWhere((e) => e.code == (isAdvance ? 'WS_ADVANCE_CARRYFORWARD' : isTimePenalty ? 'WS_TIME_PENALTY' : '10201'));
+    if(index != null && index != -1){
+      return (languageList.mdmsRes?.billingService?.taxHeadMasterList?[index].isRequired ?? false);
+    }
+    return false;
+  }
+
 }

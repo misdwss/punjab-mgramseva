@@ -71,6 +71,8 @@ class HouseHoldProvider with ChangeNotifier {
     waterConnection?.fetchBill = await Provider.of<FetchBillProvider>(navigatorKey.currentContext!, listen: false)
       .fetchBill(waterConnection, navigatorKey.currentContext!);
 
+    waterConnection?.mdmsData = await CommonProvider.getMdmsBillingService();
+
     try {
       await BillingServiceRepository().fetchdDemand({
         "tenantId": data.tenantId,

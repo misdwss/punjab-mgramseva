@@ -615,7 +615,7 @@ class _ConsumerDetailsState extends State<ConsumerDetails> {
               RegExp("[0-9.]"))
         ],
         key: Keys.createConsumer.CONSUMER_ARREARS_KEY,),
-    if(consumerProvider.getPenaltyOrAdvanceStatus())  BuildTextField(i18.common.CORE_PENALTY,
+    if(CommonProvider.getPenaltyOrAdvanceStatus(consumerProvider.languageList, false))  BuildTextField(i18.common.CORE_PENALTY,
         consumerProvider.waterconnection.penaltyCtrl,
         textInputType: TextInputType.number,
         inputFormatter: [

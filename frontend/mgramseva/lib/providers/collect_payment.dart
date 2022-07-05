@@ -30,6 +30,7 @@ import 'package:number_to_words/number_to_words.dart';
 import 'package:provider/provider.dart';
 import 'package:screenshot/screenshot.dart';
 import 'package:image/image.dart' as img;
+import '../model/localization/language.dart';
 import 'common_provider.dart';
 import 'package:mgramseva/repository/billing_service_repo.dart';
 import 'package:mgramseva/model/bill/billing.dart';
@@ -48,7 +49,7 @@ class CollectPaymentProvider with ChangeNotifier {
   }
 
   Future<void> getBillDetails(
-      BuildContext context, Map<String, dynamic> query, List<Bill>? bill, List<Demands>? demandList) async {
+      BuildContext context, Map<String, dynamic> query, List<Bill>? bill, List<Demands>? demandList, LanguageList? mdmsData) async {
     try {
 
 
@@ -81,7 +82,13 @@ class CollectPaymentProvider with ChangeNotifier {
       }
 
       if (paymentDetails != null) {
-        paymentDetails.first.billDetails
+        if(mdmsData == null){
+          mdmsData = await CommonProvider.getMdmsBillingService();
+          paymentDetails.first.mdmsData = mdmsData;
+        }
+
+
+          paymentDetails.first.billDetails
             ?.sort((a, b) => b.fromPeriod!.compareTo(a.fromPeriod!));
         demandList = demandList?.where((element) => element.status != 'CANCELLED').toList();
 
