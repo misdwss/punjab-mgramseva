@@ -123,8 +123,10 @@ public class EstimationService {
 			Map<String, JSONArray> timeBasedExemptionsMasterMap, RequestInfoWrapper requestInfoWrapper, boolean isconnectionCalculation) {
 		List<TaxHeadEstimate> estimates = new ArrayList<>();
 		// water_charge
-		estimates.add(TaxHeadEstimate.builder().taxHeadCode(isconnectionCalculation ? WSCalculationConstant.WS_CHARGE :WSCalculationConstant.WS_CHARGE_ARREAR)
-				.estimateAmount(waterCharge.get("arrears").setScale(2, 2)).build());
+		if(connection.getArrears()!=null) {
+			estimates.add(TaxHeadEstimate.builder().taxHeadCode(isconnectionCalculation ? WSCalculationConstant.WS_CHARGE :WSCalculationConstant.WS_CHARGE_ARREAR)
+					.estimateAmount(waterCharge.get("arrears").setScale(2, 2)).build());
+		}
 		if(connection.getPenalty()!=null) {
 			estimates.add(TaxHeadEstimate.builder().taxHeadCode(isconnectionCalculation ? WSCalculationConstant.WS_CHARGE :WSCalculationConstant.WS_PENALTY)
 					.estimateAmount(waterCharge.get("penalty").setScale(2, 2)).build());
