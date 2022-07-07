@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:mgramseva/model/demand/demand_list.dart';
+import 'package:mgramseva/model/localization/language.dart';
 import 'package:mgramseva/utils/constants.dart';
 
 import 'demand.dart';
@@ -54,6 +55,9 @@ class FetchBill {
 
   @JsonKey(ignore: true)
   Demands? demands;
+
+  @JsonKey(ignore: true)
+  LanguageList? mdmsData;
 
   FetchBill();
 

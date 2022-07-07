@@ -38,7 +38,7 @@ class NewConsumerBillState extends State<NewConsumerBill> {
   }
 
 
-  _getLabeltext(label, value, context, {subLabel = ''}) {
+  static getLabelText(label, value, context, {subLabel = ''}) {
     return Container(
         padding: EdgeInsets.only(top: 16, bottom: 16),
         child: (Row(
@@ -67,7 +67,7 @@ class NewConsumerBillState extends State<NewConsumerBill> {
         )));
   }
 
-  getDueDatePenalty(dueDate){
+  static getDueDatePenalty(dueDate, BuildContext context){
     late String localizationText;
     localizationText = '${ApplicationLocalizations.of(context).translate(i18.billDetails.CORE_PAID_AFTER)}';
     localizationText = localizationText.replaceFirst(
@@ -82,6 +82,7 @@ class NewConsumerBillState extends State<NewConsumerBill> {
 
   buidBillview(BillList billList) {
     var commonProvider = Provider.of<CommonProvider>(context, listen: false);
+    var penalty = CommonProvider.getPenalty(widget.demandList);
 
     return LayoutBuilder(builder: (context, constraints) {
       var houseHoldProvider =
@@ -149,7 +150,7 @@ class NewConsumerBillState extends State<NewConsumerBill> {
                                         ),
                                       ),
                                       houseHoldProvider.isfirstdemand == true
-                                          ? _getLabeltext(
+                                          ? getLabelText(
                                               i18.generateBillDetails
                                                   .LAST_BILL_GENERATION_DATE,
                                               DateFormats.timeStampToDate(
@@ -159,7 +160,7 @@ class NewConsumerBillState extends State<NewConsumerBill> {
                                                   .toString(),
                                               context)
                                           : Text(""),
-                                      _getLabeltext(
+                                      getLabelText(
                                           houseHoldProvider.isfirstdemand ==
                                                   true
                                               ? i18.billDetails.CURRENT_BILL
@@ -170,45 +171,45 @@ class NewConsumerBillState extends State<NewConsumerBill> {
                                                   .toString()),
                                           context),
                                       houseHoldProvider.isfirstdemand == true
-                                          ? _getLabeltext(
+                                          ? getLabelText(
                                               i18.billDetails.ARRERS_DUES,
                                               ('₹' + CommonProvider.getArrearsAmount(widget.demandList).toString()),
                                               context)
                                           : Text(""),
-                                      _getLabeltext(
+                                      getLabelText(
                                           i18.billDetails.TOTAL_AMOUNT,
                                           ('₹' +
                                               getTotalBillAmount()),
                                           context),
-                                      _getLabeltext(
+                                     if(CommonProvider.getPenaltyOrAdvanceStatus(widget.waterConnection?.mdmsData, true)) getLabelText(
                                           i18.common.CORE_ADVANCE_ADJUSTED,
                                           ('₹' +
                                               (CommonProvider.getAdvanceAdjustedAmount(widget.demandList))
                                                   .toString()),
                                           context),
-                                      _getLabeltext(
+                                      if(CommonProvider.getPenaltyOrAdvanceStatus(widget.waterConnection?.mdmsData, true)) getLabelText(
                                           i18.common.CORE_NET_DUE_AMOUNT,
                                           ('₹' +
-                                              ((billList.bill?.first.totalAmount ?? 0) >= 0 ? billList.bill?.first.totalAmount : 0)
+                                              ((billList.bill?.first.totalAmount ?? 0) >= 0 ? ((billList.bill?.first.totalAmount ?? 0) - (penalty?.penalty ?? 0)) : 0)
                                                   .toString()),
                                           context),
-                                      if(false) CustomDetailsCard(
+                                      if(CommonProvider.getPenaltyOrAdvanceStatus(widget.waterConnection?.mdmsData, false, true))  CustomDetailsCard(
                                           Column(
                                             children: [
-                                              _getLabeltext(
+                                              getLabelText(
                                                   i18.billDetails.CORE_PENALTY,
                                                   ('₹' +
-                                                      (billList.bill?.first.penalty ?? 0)
+                                                      penalty.penalty
                                                           .toString()),
                                                   context,
-                                                  subLabel: getDueDatePenalty('dueDate')),
-                                              _getLabeltext(
+                                                  subLabel: getDueDatePenalty(penalty.date, context)),
+                                              getLabelText(
                                                   i18.billDetails.CORE_NET_DUE_AMOUNT_WITH_PENALTY,
                                                   ('₹' +
-                                                      (billList.bill?.first.netAmountDueWithPenalty ?? 0)
+                                                      (billList.bill?.first.totalAmount ?? 0)
                                                           .toString()),
                                                   context,
-                                                  subLabel: getDueDatePenalty('dueDate'))
+                                                  subLabel: getDueDatePenalty(penalty.date, context))
 
                                             ],
                                           )

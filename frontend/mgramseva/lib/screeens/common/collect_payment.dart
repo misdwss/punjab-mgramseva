@@ -25,13 +25,19 @@ import 'package:mgramseva/widgets/RadioButtonFieldBuilder.dart';
 import 'package:mgramseva/widgets/SideBar.dart';
 import 'package:mgramseva/widgets/TextFieldBuilder.dart';
 import 'package:provider/provider.dart';
+import '../../components/HouseConnectionandBill/NewConsumerBill.dart';
+import '../../model/localization/language.dart';
+import '../../providers/common_provider.dart';
+import '../../utils/global_variables.dart';
+import '../../widgets/CustomDetails.dart';
 import '../../widgets/customAppbar.dart';
 
 class ConnectionPaymentView extends StatefulWidget {
   final Map<String, dynamic> query;
   final List<Bill>? bill;
   final List<Demands>? demandList;
-  const ConnectionPaymentView({Key? key, required this.query, this.bill, this.demandList})
+  final LanguageList? languageList;
+  const ConnectionPaymentView({Key? key, required this.query, this.bill, this.demandList, this.languageList})
       : super(key: key);
 
   @override
@@ -46,7 +52,7 @@ class _ConnectionPaymentViewState extends State<ConnectionPaymentView> {
   void initState() {
     var consumerPaymentProvider =
         Provider.of<CollectPaymentProvider>(context, listen: false);
-    consumerPaymentProvider.getBillDetails(context, widget.query, widget.bill, widget.demandList);
+    consumerPaymentProvider.getBillDetails(context, widget.query, widget.bill, widget.demandList, widget.languageList);
     super.initState();
   }
 
@@ -74,7 +80,7 @@ class _ConnectionPaymentViewState extends State<ConnectionPaymentView> {
               return Notifiers.networkErrorPage(
                   context,
                   () => consumerPaymentProvider.getBillDetails(
-                      context, widget.query, widget.bill, widget.demandList));
+                      context, widget.query, widget.bill, widget.demandList, widget.languageList));
             } else {
               switch (snapshot.connectionState) {
                 case ConnectionState.waiting:
@@ -229,6 +235,7 @@ class _ConnectionPaymentViewState extends State<ConnectionPaymentView> {
   }
 
   Widget _buildViewDetails(FetchBill fetchBill) {
+    var penalty = CommonProvider.getPenalty(fetchBill.demandList ?? []);
     List res = [];
     num len = fetchBill.billDetails?.first.billAccountDetails?.length as num;
     if (fetchBill.billDetails!.isNotEmpty)
@@ -278,12 +285,33 @@ class _ConnectionPaymentViewState extends State<ConnectionPaymentView> {
                 _buildLabelValue(
                     i18.common.CORE_TOTAL_BILL_AMOUNT,
                     '₹ ${fetchBill.billDetails?.first.billAccountDetails?.last.totalBillAmount}'),
-                _buildLabelValue(
+                if(CommonProvider.getPenaltyOrAdvanceStatus(fetchBill.mdmsData, true)) _buildLabelValue(
                     i18.common.CORE_ADVANCE_ADJUSTED,
                     '₹ ${fetchBill.billDetails?.first.billAccountDetails?.last.advanceAdjustedAmount}'),
-                _buildLabelValue(
+                if(CommonProvider.getPenaltyOrAdvanceStatus(fetchBill.mdmsData, true)) _buildLabelValue(
                     i18.common.CORE_NET_AMOUNT_DUE,
-                    '₹ ${(fetchBill.totalAmount ?? 0) >= 0 ? fetchBill.totalAmount : 0}'),
+                    '₹ ${(fetchBill.totalAmount ?? 0) >= 0 ? (fetchBill.totalAmount! - (penalty.penalty ?? 0)) : 0}'),
+                if(CommonProvider.getPenaltyOrAdvanceStatus(fetchBill.mdmsData, false, true))  CustomDetailsCard(
+                    Column(
+                      children: [
+                        NewConsumerBillState.getLabelText(
+                            i18.billDetails.CORE_PENALTY,
+                            ('₹' +
+                                penalty.penalty
+                                    .toString()),
+                            context,
+                            subLabel: NewConsumerBillState.getDueDatePenalty(penalty.date, context)),
+                        NewConsumerBillState.getLabelText(
+                            i18.billDetails.CORE_NET_DUE_AMOUNT_WITH_PENALTY,
+                            ('₹' +
+                                (fetchBill.billDetails?.first.billAccountDetails?.last.totalBillAmount ?? 0)
+                                    .toString()),
+                            context,
+                            subLabel: NewConsumerBillState.getDueDatePenalty(penalty.date, context))
+
+                      ],
+                    )
+                )
               ],
             ),
           )

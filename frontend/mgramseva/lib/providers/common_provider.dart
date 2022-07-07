@@ -18,6 +18,7 @@ import 'package:mgramseva/model/localization/localization_label.dart';
 import 'package:mgramseva/repository/core_repo.dart';
 import 'package:mgramseva/routers/Routers.dart';
 import 'package:mgramseva/services/LocalStorage.dart';
+import 'package:mgramseva/services/MDMS.dart';
 import 'package:mgramseva/utils/Constants/I18KeyConstants.dart';
 import 'package:mgramseva/utils/Locilization/application_localizations.dart';
 import 'package:mgramseva/utils/constants.dart';
@@ -582,6 +583,37 @@ class CommonProvider with ChangeNotifier {
     return amount;
   }
 
+  static Penalty getPenalty(List<Demands> demandList) {
+    Penalty? penalty;
+
+    demandList.forEach((billDetails) {
+      billDetails.demandDetails?.forEach((billAccountDetails) {
+        if(billAccountDetails.taxHeadMasterCode == 'WS_TIME_ADHOC_PENALTY'){
+                  var amount = billAccountDetails.taxAmount ?? 0;
+                  penalty = Penalty(amount, DateFormats.timeStampToDate(billAccountDetails.auditDetails!.createdTime));
+                }
+      });
+    });
+    // if(billList is List<Bill>){
+    //   billList.first.billDetails!.forEach((bill) {
+    //     bill.billAccountDetails?.forEach((billAccountDetails) {
+    //       if(billAccountDetails.taxHeadCode == '10102' || billAccountDetails.taxHeadCode == 'WS_TIME_ADHOC_PENALTY'){
+    //         penalty += billAccountDetails.amount ?? 0;
+    //       }
+    //     });
+    //   });
+    // }else if(billList is FetchBill ){
+    //  billList.billDetails?.forEach((bill) {
+    //    bill.billAccountDetails?.forEach((billAccountDetails) {
+    //      if(billAccountDetails.taxHeadCode == '10102' || billAccountDetails.taxHeadCode == 'WS_TIME_ADHOC_PENALTY'){
+    //        penalty += billAccountDetails.amount ?? 0;
+    //      }
+    //    });
+    //  });
+    // }
+    return penalty ?? Penalty(0.0, '');
+  }
+
   static  num getAdvanceAmount(List<Demands> demandList) {
     var amount = 0.0;
     var index = -1;
@@ -603,19 +635,47 @@ class CommonProvider with ChangeNotifier {
           .toList();
       for (var demand in filteredDemands) {
         demand.demandDetails!.forEach((e) {
-          if (e.taxHeadMasterCode != 'WS_ADVANCE_CARRYFORWARD'){
+          if (e.taxHeadMasterCode != 'WS_ADVANCE_CARRYFORWARD' && e.taxHeadMasterCode != '10102' && e.taxHeadMasterCode != 'WS_TIME_ADHOC_PENALTY'){
             res.add((e.taxAmount ?? 0) - (e.collectionAmount ?? 0));
           }
         });
       }
     }
 
-    var arrearsDeduction = demandList.first.demandDetails?.first.taxHeadMasterCode != 'WS_ADVANCE_CARRYFORWARD' ?
+    var arrearsDeduction = (demandList.first.demandDetails?.first.taxHeadMasterCode != 'WS_ADVANCE_CARRYFORWARD' && demandList.first.demandDetails?.first.taxHeadMasterCode != '10102'
+    && demandList.first.demandDetails?.first.taxHeadMasterCode != 'WS_TIME_ADHOC_PENALTY') ?
      ((demandList.first.demandDetails?.first.taxAmount ?? 0) - (demandList.first.demandDetails?.first.collectionAmount ?? 0)) : 0;
 
     return res.length == 0 ? 0 : ((res.reduce((previousValue,
         element) =>
     previousValue +
         element) - arrearsDeduction) as double).abs();
+  }
+
+  static Future<LanguageList> getMdmsBillingService() async {
+    try {
+      var commonProvider = Provider.of<CommonProvider>(
+          navigatorKey.currentContext!,
+          listen: false);
+
+     return await CoreRepository().getMdms(getMdmsPaymentModes(
+          commonProvider.userDetails!.userRequest!.tenantId.toString()));
+    }catch(e){
+      return LanguageList();
+    }
+  }
+
+ static bool getPenaltyOrAdvanceStatus(LanguageList? languageList, [isAdvance = false, bool isTimePenalty = false]) {
+    if(languageList == null) return false;
+    var index = languageList.mdmsRes?.billingService?.taxHeadMasterList?.indexWhere((e) => e.code == (isAdvance ? 'WS_ADVANCE_CARRYFORWARD' : isTimePenalty ? 'WS_TIME_PENALTY' : '10201'));
+    if(index != null && index != -1){
+      return (languageList.mdmsRes?.billingService?.taxHeadMasterList?[index].isRequired ?? false);
+    }
+    return false;
+  }
+
+
+  void getPenaltyDueDate() {
+
   }
 }

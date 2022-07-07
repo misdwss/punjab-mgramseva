@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:mgramseva/model/bill/billing.dart';
 import 'package:mgramseva/model/connection/property.dart';
+import 'package:mgramseva/model/localization/language.dart';
 import 'package:mgramseva/model/mdms/sub_category_type.dart';
 import 'package:mgramseva/utils/constants.dart';
 import 'package:mgramseva/utils/date_formats.dart';
@@ -71,6 +72,9 @@ class WaterConnection {
 
   @JsonKey(ignore: true)
   BillList? fetchBill;
+
+  @JsonKey(ignore: true)
+  LanguageList? mdmsData;
 
   @JsonKey(ignore: true)
   var arrearsCtrl = TextEditingController();
