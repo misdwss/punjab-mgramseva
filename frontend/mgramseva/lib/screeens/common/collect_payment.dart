@@ -291,7 +291,7 @@ class _ConnectionPaymentViewState extends State<ConnectionPaymentView> {
                 if(CommonProvider.getPenaltyOrAdvanceStatus(fetchBill.mdmsData, true)) _buildLabelValue(
                     i18.common.CORE_NET_AMOUNT_DUE,
                     '₹ ${(fetchBill.totalAmount ?? 0) >= 0 ? (fetchBill.totalAmount! - (penalty.penalty ?? 0)) : 0}'),
-                if(CommonProvider.getPenaltyOrAdvanceStatus(fetchBill.mdmsData, false, true))  CustomDetailsCard(
+                if(false && CommonProvider.getPenaltyOrAdvanceStatus(fetchBill.mdmsData, false, true))  CustomDetailsCard(
                     Column(
                       children: [
                         NewConsumerBillState.getLabelText(
