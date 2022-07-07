@@ -516,6 +516,8 @@ class _Payment {
   String get BILL_DETAILS => 'BILL_DETAILS';
   String get CORE_CHANGE_THE_AMOUNT => 'CORE_CHANGE_THE_AMOUNT';
   String get CORE_AMOUNT_CONFIRMATION => 'CORE_AMOUNT_CONFIRMATION';
+  String get CORE_I_AGREE_TO_THE => 'CORE_I_AGREE_TO_THE';
+  String get TERMS_N_CONDITIONS => 'TERMS_N_CONDITIONS';
 }
 
 class _HomeWalkThroughMsg {
