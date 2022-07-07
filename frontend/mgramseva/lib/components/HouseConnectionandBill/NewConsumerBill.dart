@@ -190,10 +190,10 @@ class NewConsumerBillState extends State<NewConsumerBill> {
                                       if(CommonProvider.getPenaltyOrAdvanceStatus(widget.waterConnection?.mdmsData, true)) getLabelText(
                                           i18.common.CORE_NET_DUE_AMOUNT,
                                           ('₹' +
-                                              ((billList.bill?.first.totalAmount ?? 0) >= 0 ? ((billList.bill?.first.totalAmount ?? 0) - (penalty?.penalty ?? 0)) : 0)
+                                              ((billList.bill?.first.totalAmount ?? 0) >= 0 ? ((billList.bill?.first.totalAmount ?? 0) - (penalty.penalty)) : 0)
                                                   .toString()),
                                           context),
-                                      if(CommonProvider.getPenaltyOrAdvanceStatus(widget.waterConnection?.mdmsData, false, true))  CustomDetailsCard(
+                                      if(false && CommonProvider.getPenaltyOrAdvanceStatus(widget.waterConnection?.mdmsData, false, true))  CustomDetailsCard(
                                           Column(
                                             children: [
                                               getLabelText(
