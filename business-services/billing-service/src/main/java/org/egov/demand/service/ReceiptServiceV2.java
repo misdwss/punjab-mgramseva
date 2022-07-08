@@ -124,8 +124,7 @@ public class ReceiptServiceV2 {
 	 */
 	private void updateDemandFromBillDetail(BillDetailV2 billDetail, Demand demand, Boolean isRecieptCancellation, String advanceTaxHead) {
 
-		if(billDetail.getAmount().compareTo(BigDecimal.ZERO) != 0 
-				&& billDetail.getAmountPaid().compareTo(BigDecimal.ZERO) == 0)
+		if(billDetail.getAmountPaid().compareTo(BigDecimal.ZERO) == 0)
 			return; 
 		
 		Map<String, List<DemandDetail>> taxHeadCodeDemandDetailgroup = demand.getDemandDetails().stream()
