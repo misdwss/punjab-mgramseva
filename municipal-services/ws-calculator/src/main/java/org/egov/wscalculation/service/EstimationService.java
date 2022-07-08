@@ -90,14 +90,15 @@ public class EstimationService {
 
 		 Map<String, BigDecimal> taxAmt = new HashMap<>();
 	
-		if (isAdvanceCalculation) {
+		 if (!isconnectionCalculation) {
+			 if (isAdvanceCalculation) {
 				taxAmt.put("advance", criteria.getWaterConnection().getAdvance());
-			} else if (!isconnectionCalculation) {
+			}else{
 				taxAmt.put("arrears", criteria.getWaterConnection().getArrears());
-				if (criteria.getWaterConnection().getPenalty() != null
-						&& criteria.getWaterConnection().getPenalty().toString() != "0") {
-					taxAmt.put("penalty", criteria.getWaterConnection().getPenalty());
-				}
+			 }
+			if (criteria.getWaterConnection().getPenalty() != null && criteria.getWaterConnection().getPenalty().toString() != "0") {
+				taxAmt.put("penalty", criteria.getWaterConnection().getPenalty());
+			}
 			} else {
 				taxAmt.put("waterCharge", getWaterEstimationCharge(criteria.getWaterConnection(), criteria,
 						billingSlabMaster, billingSlabIds, requestInfo));
@@ -127,8 +128,7 @@ public class EstimationService {
 		// water_charge
 
 		if(!isAdvanceCalculation) {
-			
-      if(connection.getArrears()!=null) {
+		if(connection.getArrears()!=null) {
 			estimates.add(TaxHeadEstimate.builder().taxHeadCode(isconnectionCalculation ? WSCalculationConstant.WS_CHARGE :WSCalculationConstant.WS_CHARGE_ARREAR)
 					.estimateAmount(waterCharge.get("arrears").setScale(2, 2)).build());
 		}
@@ -137,7 +137,7 @@ public class EstimationService {
 					.estimateAmount(waterCharge.get("penalty").setScale(2, 2)).build());
 		}
 		}else {
-			estimates.add(TaxHeadEstimate.builder().taxHeadCode(WSCalculationConstant.ADVANCE_COLLECTION)
+			estimates.add(TaxHeadEstimate.builder().taxHeadCode(isconnectionCalculation ? WSCalculationConstant.WS_CHARGE :WSCalculationConstant.ADVANCE_COLLECTION)
 					.estimateAmount(waterCharge.get("advance").setScale(2, 2)).build());
 		}
 
