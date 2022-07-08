@@ -193,7 +193,7 @@ class Common {
   String get SESSION_EXPIRED => 'SESSION_EXPIRED';
   String get RECEIPT_FOOTER => 'RECEIPT_FOOTER';
   String get SHARE_BILL_PDF => 'SHARE_BILL_PDF';
-  String get CORE_PENALTY => 'PENALTY';
+  String get CORE_PENALTY => 'CORE_PENALTY';
   String get CORE_ADVANCE => 'ADVANCE';
   String get CORE_ADVANCE_ADJUSTED => 'CORE_ADVANCE_ADJUSTED';
   String get CORE_NET_DUE_AMOUNT => 'CORE_NET_DUE_AMOUNT';
@@ -202,6 +202,7 @@ class Common {
   String get CORE_CANCEL => 'CORE_CANCEL';
   String get CORE_GO_BACK => 'CORE_GO_BACK';
   String get CORE_CONFIRM => 'CORE_CONFIRM';
+  String get CORE_ADVANCE_RUPEE => 'CORE_ADVANCE_RUPEE';
 }
 
 class Password {
@@ -452,6 +453,9 @@ class BillDetails {
   String get ARRERS_DUES => 'ARRERS_DUES';
   String get TOTAL_AMOUNT => 'TOTAL_AMOUNT';
   String get COLLECT_PAYMENT => 'COLLECT_PAYMENT';
+  String get CORE_PAID_AFTER => 'CORE_PAID_AFTER';
+  String get CORE_PENALTY => 'CORE_PENALTY';
+  String get CORE_NET_DUE_AMOUNT_WITH_PENALTY => 'CORE_NET_DUE_AMOUNT_WITH_PENALTY';
 }
 
 class GenerateBillDetails {

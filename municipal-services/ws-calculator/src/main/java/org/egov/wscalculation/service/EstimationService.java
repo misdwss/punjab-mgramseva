@@ -61,7 +61,7 @@ public class EstimationService {
 	 */
 	@SuppressWarnings("rawtypes")
 	public Map<String, List> getEstimationMap(CalculationCriteria criteria, RequestInfo requestInfo,
-			Map<String, Object> masterData,boolean isconnectionCalculation) {
+			Map<String, Object> masterData,boolean isconnectionCalculation, boolean isAdvanceCalculation) {
 		String tenantId = criteria.getTenantId();
 		if (criteria.getWaterConnection() == null && !StringUtils.isEmpty(criteria.getConnectionNo())) {
 			List<WaterConnection> waterConnectionList = calculatorUtil.getWaterConnection(requestInfo, criteria.getConnectionNo(), tenantId);
@@ -87,21 +87,23 @@ public class EstimationService {
 		// mDataService.setWaterConnectionMasterValues(requestInfo, tenantId,
 		// billingSlabMaster,
 		// timeBasedExemptionMasterMap);
-		if(criteria.getWaterConnection().getPenalty()!=null && criteria.getWaterConnection().getPenalty().toString()!="0") {
-			
-		}
+
 		 Map<String, BigDecimal> taxAmt = new HashMap<>();
-		if(!isconnectionCalculation) {
-			taxAmt.put("arrears", criteria.getWaterConnection().getArrears());
-			if(criteria.getWaterConnection().getPenalty()!=null && criteria.getWaterConnection().getPenalty().toString()!="0") {
-				taxAmt.put("penalty", criteria.getWaterConnection().getPenalty());
+	
+		if (isAdvanceCalculation) {
+				taxAmt.put("advance", criteria.getWaterConnection().getAdvance());
+			} else if (!isconnectionCalculation) {
+				taxAmt.put("arrears", criteria.getWaterConnection().getArrears());
+				if (criteria.getWaterConnection().getPenalty() != null
+						&& criteria.getWaterConnection().getPenalty().toString() != "0") {
+					taxAmt.put("penalty", criteria.getWaterConnection().getPenalty());
+				}
+			} else {
+				taxAmt.put("waterCharge", getWaterEstimationCharge(criteria.getWaterConnection(), criteria,
+						billingSlabMaster, billingSlabIds, requestInfo));
 			}
-		}else {
-			taxAmt.put("waterCharge", getWaterEstimationCharge(criteria.getWaterConnection(), criteria, billingSlabMaster, billingSlabIds,
-					requestInfo));
-		}
 		List<TaxHeadEstimate> taxHeadEstimates = getEstimatesForTax(taxAmt, criteria.getWaterConnection(),
-				timeBasedExemptionMasterMap, RequestInfoWrapper.builder().requestInfo(requestInfo).build(),isconnectionCalculation);
+				timeBasedExemptionMasterMap, RequestInfoWrapper.builder().requestInfo(requestInfo).build(),isconnectionCalculation,isAdvanceCalculation);
 
 		Map<String, List> estimatesAndBillingSlabs = new HashMap<>();
 		estimatesAndBillingSlabs.put("estimates", taxHeadEstimates);
@@ -120,10 +122,13 @@ public class EstimationService {
 	 */
 	private List<TaxHeadEstimate> getEstimatesForTax(Map<String, BigDecimal> waterCharge,
 			WaterConnection connection,
-			Map<String, JSONArray> timeBasedExemptionsMasterMap, RequestInfoWrapper requestInfoWrapper, boolean isconnectionCalculation) {
+			Map<String, JSONArray> timeBasedExemptionsMasterMap, RequestInfoWrapper requestInfoWrapper, boolean isconnectionCalculation,boolean isAdvanceCalculation) {
 		List<TaxHeadEstimate> estimates = new ArrayList<>();
 		// water_charge
-		if(connection.getArrears()!=null) {
+
+		if(!isAdvanceCalculation) {
+			
+      if(connection.getArrears()!=null) {
 			estimates.add(TaxHeadEstimate.builder().taxHeadCode(isconnectionCalculation ? WSCalculationConstant.WS_CHARGE :WSCalculationConstant.WS_CHARGE_ARREAR)
 					.estimateAmount(waterCharge.get("arrears").setScale(2, 2)).build());
 		}
@@ -131,7 +136,11 @@ public class EstimationService {
 			estimates.add(TaxHeadEstimate.builder().taxHeadCode(isconnectionCalculation ? WSCalculationConstant.WS_CHARGE :WSCalculationConstant.WS_PENALTY)
 					.estimateAmount(waterCharge.get("penalty").setScale(2, 2)).build());
 		}
-		
+		}else {
+			estimates.add(TaxHeadEstimate.builder().taxHeadCode(WSCalculationConstant.ADVANCE_COLLECTION)
+					.estimateAmount(waterCharge.get("advance").setScale(2, 2)).build());
+		}
+
 		// Water_cess
 		if (timeBasedExemptionsMasterMap.get(WSCalculationConstant.WC_WATER_CESS_MASTER) != null) {
 			List<Object> waterCessMasterList = timeBasedExemptionsMasterMap

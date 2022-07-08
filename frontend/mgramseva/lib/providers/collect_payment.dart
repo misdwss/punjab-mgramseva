@@ -30,7 +30,11 @@ import 'package:number_to_words/number_to_words.dart';
 import 'package:provider/provider.dart';
 import 'package:screenshot/screenshot.dart';
 import 'package:image/image.dart' as img;
+import '../model/localization/language.dart';
 import 'common_provider.dart';
+import 'package:mgramseva/repository/billing_service_repo.dart';
+import 'package:mgramseva/model/bill/billing.dart';
+import 'package:mgramseva/model/demand/demand_list.dart';
 
 class CollectPaymentProvider with ChangeNotifier {
   var paymentStreamController = StreamController.broadcast();
@@ -45,17 +49,59 @@ class CollectPaymentProvider with ChangeNotifier {
   }
 
   Future<void> getBillDetails(
-      BuildContext context, Map<String, dynamic> query) async {
+      BuildContext context, Map<String, dynamic> query, List<Bill>? bill, List<Demands>? demandList, LanguageList? mdmsData) async {
     try {
-      var paymentDetails = await ConsumerRepository().getBillDetails(query);
+
+
+      List<FetchBill>? paymentDetails;
+
+      // if(bill == null) {
+        paymentDetails = await ConsumerRepository().getBillDetails(query);
+      // }else{
+      //   paymentDetails = (bill.map((e)=> e.toJson()).toList()).map<FetchBill>((e)=> FetchBill.fromJson(e)).toList();
+      // }
+
+
+      if(demandList == null) {
+        var demand = await BillingServiceRepository().fetchdDemand({
+          "tenantId": query['tenantId'],
+          "consumerCode": query['consumerCode'],
+          "businessService": "WS",
+          // "status": "ACTIVE"
+        });
+
+        demandList = demand.demands;
+
+        if (demandList != null && demandList.length > 0) {
+          demandList.sort((a, b) =>
+              b
+                  .demandDetails!.first.auditDetails!.createdTime!
+                  .compareTo(
+                  a.demandDetails!.first.auditDetails!.createdTime!));
+        }
+      }
+
       if (paymentDetails != null) {
-        paymentDetails.first.billDetails
+        if(mdmsData == null){
+          mdmsData = await CommonProvider.getMdmsBillingService();
+          paymentDetails.first.mdmsData = mdmsData;
+        }
+
+
+          paymentDetails.first.billDetails
             ?.sort((a, b) => b.fromPeriod!.compareTo(a.fromPeriod!));
+        demandList = demandList?.where((element) => element.status != 'CANCELLED').toList();
+
         // var demandDetails = await ConsumerRepository().getDemandDetails(query);
         // if (demandDetails != null)
         // paymentDetails.first.demand = demandDetails.first;
         getPaymentModes(paymentDetails.first);
-        paymentDetails.first.customAmountCtrl.text = paymentDetails.first.totalAmount!.toInt().toString();
+        paymentDetails.first.customAmountCtrl.text = paymentDetails.first.totalAmount!.toInt() > 0 ? paymentDetails.first.totalAmount!.toInt().toString() : '';
+        paymentDetails.first.billDetails?.first.billAccountDetails?.last.advanceAdjustedAmount = double.parse(CommonProvider.getAdvanceAdjustedAmount(demandList ?? []));
+        paymentDetails.first.billDetails?.first.billAccountDetails?.last.arrearsAmount = CommonProvider.getArrearsAmount(demandList ?? []);
+        paymentDetails.first.billDetails?.first.billAccountDetails?.last.totalBillAmount = ((demandList?.first.demandDetails!.first.taxAmount ?? 0) + (paymentDetails.first.billDetails?.first.billAccountDetails?.last.arrearsAmount ?? 0));
+        paymentDetails.first.demands = demandList?.first;
+        paymentDetails.first.demandList = demandList;
         paymentStreamController.add(paymentDetails.first);
         notifyListeners();
       }

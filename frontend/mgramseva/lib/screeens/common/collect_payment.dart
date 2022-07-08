@@ -3,8 +3,10 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_focus_watcher/flutter_focus_watcher.dart';
+import 'package:mgramseva/model/bill/billing.dart';
 import 'package:mgramseva/model/common/fetch_bill.dart' as billDetails;
 import 'package:mgramseva/model/common/fetch_bill.dart';
+import 'package:mgramseva/model/demand/demand_list.dart';
 import 'package:mgramseva/providers/collect_payment.dart';
 import 'package:mgramseva/utils/Constants/I18KeyConstants.dart';
 import 'package:mgramseva/utils/Locilization/application_localizations.dart';
@@ -23,11 +25,19 @@ import 'package:mgramseva/widgets/RadioButtonFieldBuilder.dart';
 import 'package:mgramseva/widgets/SideBar.dart';
 import 'package:mgramseva/widgets/TextFieldBuilder.dart';
 import 'package:provider/provider.dart';
+import '../../components/HouseConnectionandBill/NewConsumerBill.dart';
+import '../../model/localization/language.dart';
+import '../../providers/common_provider.dart';
+import '../../utils/global_variables.dart';
+import '../../widgets/CustomDetails.dart';
 import '../../widgets/customAppbar.dart';
 
 class ConnectionPaymentView extends StatefulWidget {
   final Map<String, dynamic> query;
-  const ConnectionPaymentView({Key? key, required this.query})
+  final List<Bill>? bill;
+  final List<Demands>? demandList;
+  final LanguageList? languageList;
+  const ConnectionPaymentView({Key? key, required this.query, this.bill, this.demandList, this.languageList})
       : super(key: key);
 
   @override
@@ -42,7 +52,7 @@ class _ConnectionPaymentViewState extends State<ConnectionPaymentView> {
   void initState() {
     var consumerPaymentProvider =
         Provider.of<CollectPaymentProvider>(context, listen: false);
-    consumerPaymentProvider.getBillDetails(context, widget.query);
+    consumerPaymentProvider.getBillDetails(context, widget.query, widget.bill, widget.demandList, widget.languageList);
     super.initState();
   }
 
@@ -70,7 +80,7 @@ class _ConnectionPaymentViewState extends State<ConnectionPaymentView> {
               return Notifiers.networkErrorPage(
                   context,
                   () => consumerPaymentProvider.getBillDetails(
-                      context, widget.query));
+                      context, widget.query, widget.bill, widget.demandList, widget.languageList));
             } else {
               switch (snapshot.connectionState) {
                 case ConnectionState.waiting:
@@ -157,7 +167,7 @@ class _ConnectionPaymentViewState extends State<ConnectionPaymentView> {
                   child: _buildViewDetails(fetchBill)),
             ),
             _buildLabelValue(i18.common.TOTAL_DUE_AMOUNT,
-                '₹ ${fetchBill.totalAmount}', FontWeight.w700),
+                '₹ ${(fetchBill.totalAmount ?? 0) >= 0 ? fetchBill.totalAmount : 0}', FontWeight.w700),
             Consumer<CollectPaymentProvider>(
               builder: (_, consumerPaymentProvider, child) => Padding(
                 padding: const EdgeInsets.symmetric(vertical: 10),
@@ -225,11 +235,12 @@ class _ConnectionPaymentViewState extends State<ConnectionPaymentView> {
   }
 
   Widget _buildViewDetails(FetchBill fetchBill) {
+    var penalty = CommonProvider.getPenalty(fetchBill.demandList ?? []);
     List res = [];
     num len = fetchBill.billDetails?.first.billAccountDetails?.length as num;
     if (fetchBill.billDetails!.isNotEmpty)
       fetchBill.billDetails?.forEach((element) {
-        res.add(element.amount);
+        if(element.amount != 0) res.add(element.amount);
       });
     return LayoutBuilder(
       builder: (_, constraints) => Column(
@@ -255,33 +266,52 @@ class _ConnectionPaymentViewState extends State<ConnectionPaymentView> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                             _buildLabelValue(
-                                'WS_${fetchBill.billDetails?.first.billAccountDetails?.last.taxHeadCode}',
-                                '₹ ${fetchBill.billDetails?.first.billAccountDetails?.last.amount}'),
-                            (res.reduce((value, element) => value + element) -
-                                        fetchBill.billDetails?.first
-                                            .billAccountDetails?.last.amount) >
+                                'WS_${fetchBill.demands?.demandDetails?.first.taxHeadMasterCode}',
+                                '₹ ${fetchBill.demands?.demandDetails?.first.taxAmount}'),
+                          (fetchBill.billDetails?.first.billAccountDetails?.last.arrearsAmount ?? 0) >
                                     0
                                 ? _buildLabelValue(i18.billDetails.ARRERS_DUES,
-                                    '₹ ${(res.reduce((value, element) => value + element) - fetchBill.billDetails?.first.billAccountDetails?.last.amount).toString()}')
+                                    '₹ ${fetchBill.billDetails?.first.billAccountDetails?.last.arrearsAmount.toString()}')
                                 : SizedBox(
                                     height: 0,
                                   )
                           ])
                     : _buildLabelValue(
-                        'WS_${fetchBill.billDetails?.first.billAccountDetails?.last.taxHeadCode}',
-                        '₹ ${fetchBill.billDetails?.first.billAccountDetails?.last.amount}'),
+                        'WS_${fetchBill.demands?.demandDetails?.last.taxHeadMasterCode}',
+                        '₹ ${fetchBill.demands?.demandDetails?.last.taxAmount}'),
                 // }),
                 if (fetchBill.billDetails != null && res.length > 1)
                   _buildWaterCharges(fetchBill, constraints),
                 _buildLabelValue(
                     i18.common.CORE_TOTAL_BILL_AMOUNT,
-                    '₹ ${fetchBill.billDetails?.first.billAccountDetails?.last.amount}'),
-                _buildLabelValue(
+                    '₹ ${fetchBill.billDetails?.first.billAccountDetails?.last.totalBillAmount}'),
+                if(CommonProvider.getPenaltyOrAdvanceStatus(fetchBill.mdmsData, true)) _buildLabelValue(
                     i18.common.CORE_ADVANCE_ADJUSTED,
-                    '₹'),
-                _buildLabelValue(
+                    '₹ ${fetchBill.billDetails?.first.billAccountDetails?.last.advanceAdjustedAmount}'),
+                if(CommonProvider.getPenaltyOrAdvanceStatus(fetchBill.mdmsData, true)) _buildLabelValue(
                     i18.common.CORE_NET_AMOUNT_DUE,
-                    '₹'),
+                    '₹ ${(fetchBill.totalAmount ?? 0) >= 0 ? (fetchBill.totalAmount! - (penalty.penalty ?? 0)) : 0}'),
+                if(false && CommonProvider.getPenaltyOrAdvanceStatus(fetchBill.mdmsData, false, true))  CustomDetailsCard(
+                    Column(
+                      children: [
+                        NewConsumerBillState.getLabelText(
+                            i18.billDetails.CORE_PENALTY,
+                            ('₹' +
+                                penalty.penalty
+                                    .toString()),
+                            context,
+                            subLabel: NewConsumerBillState.getDueDatePenalty(penalty.date, context)),
+                        NewConsumerBillState.getLabelText(
+                            i18.billDetails.CORE_NET_DUE_AMOUNT_WITH_PENALTY,
+                            ('₹' +
+                                (fetchBill.billDetails?.first.billAccountDetails?.last.totalBillAmount ?? 0)
+                                    .toString()),
+                            context,
+                            subLabel: NewConsumerBillState.getDueDatePenalty(penalty.date, context))
+
+                      ],
+                    )
+                )
               ],
             ),
           )
@@ -303,6 +333,7 @@ class _ConnectionPaymentViewState extends State<ConnectionPaymentView> {
         child: constraints.maxWidth > 760
             ? Column(
                 children: List.generate(bill.billDetails?.length ?? 0, (index) {
+                if(bill.billDetails?[index].billAccountDetails?.first.taxHeadCode == 'WS_ADVANCE_CARRYFORWARD') return Container();
                 if (index != 0) {
                   return Row(
                     children: [
@@ -328,7 +359,7 @@ class _ConnectionPaymentViewState extends State<ConnectionPaymentView> {
             : Table(
                 defaultVerticalAlignment: TableCellVerticalAlignment.middle,
                 children: List.generate(bill.billDetails?.length ?? 0, (index) {
-                  if (index == 0) {
+                  if (index == 0 || bill.billDetails?[index].billAccountDetails?.first.taxHeadCode == 'WS_ADVANCE_CARRYFORWARD') {
                     return TableRow(children: [
                       TableCell(child: Text("")),
                       TableCell(child: Text(""))

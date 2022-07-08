@@ -1,7 +1,9 @@
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:mgramseva/model/bill/billing.dart';
 import 'package:mgramseva/model/connection/water_connection.dart';
+import 'package:mgramseva/model/demand/demand_list.dart';
 import 'package:mgramseva/model/expensesDetails/expenses_details.dart';
 import 'package:mgramseva/providers/common_provider.dart';
 import 'package:mgramseva/routers/Routers.dart';
@@ -370,10 +372,14 @@ class router {
             return pageNotAvailable;
           }
         } else {
-          localQuery = settings.arguments as Map<String, dynamic>;
+          var cloneQuery = <String, dynamic>{};
+          cloneQuery.addAll(settings.arguments as Map<String, dynamic>);
+          localQuery = cloneQuery;
+          localQuery.remove('demandList');
+          localQuery.remove('fetchBill');
         }
         return MaterialPageRoute(
-            builder: (_) => ConnectionPaymentView(query: localQuery),
+            builder: (_) => ConnectionPaymentView(query: localQuery, bill: (settings.arguments as Map?)?['fetchBill'] as List<Bill>?, demandList: (settings.arguments as Map?)?['demandList'] as List<Demands>?),
             settings: RouteSettings(
                 name:
                     '${Routes.HOUSEHOLD_DETAILS_COLLECT_PAYMENT}?${Uri(queryParameters: localQuery).query}'));

@@ -136,9 +136,22 @@ public class WaterConnectionValidator {
 				data.add(demand.isPaymentCompleted());
 			}
 		}
-		if(request.getWaterConnection().getStatus().equals(StatusEnum.INACTIVE) && demands.size() == data.size() || request.getWaterConnection().getArrears() == null || request.getWaterConnection().getArrears().toString() == "0") {
+		Boolean isArrear = false;
+		Boolean isAdvance = false;
+		
+		if(request.getWaterConnection().getAdvance()!=null && request.getWaterConnection().getAdvance().toString() == "0") {
+			isAdvance =  true;
+		}
+		if(request.getWaterConnection().getArrears()!=null && request.getWaterConnection().getArrears().toString() == "0") {
+			isArrear =  true;
+		}
+		if ((request.getWaterConnection().getStatus().equals(StatusEnum.INACTIVE) && demands.size() == data.size())
+				|| (searchResult.getArrears() != null && request.getWaterConnection().getArrears() == null
+						|| isArrear)|| (request.getWaterConnection().getStatus().equals(StatusEnum.INACTIVE) && demands.size() == data.size())
+				|| (searchResult.getAdvance() != null && request.getWaterConnection().getAdvance() == null
+				|| isAdvance)) {
 			for (Demand demand : demands) {
-					demand.setStatus(org.egov.waterconnection.web.models.Demand.StatusEnum.CANCELLED);
+				demand.setStatus(org.egov.waterconnection.web.models.Demand.StatusEnum.CANCELLED);
 			}
 			updateDemand(request.getRequestInfo(), demands);
 
@@ -155,6 +168,7 @@ public class WaterConnectionValidator {
 		url.append(config.getBillingHost()).append(config.getDemandSearchUri());
 		url.append("?consumerCode=").append(request.getWaterConnection().getConnectionNo());
 		url.append("&tenantId=").append(request.getWaterConnection().getTenantId());
+		url.append("&status=ACTIVE");
 		url.append("&businessService=WS");
 		DemandResponse demandResponse = null;
 		try {
@@ -169,8 +183,12 @@ public class WaterConnectionValidator {
 		if( demandResponse!= null && demandResponse.getDemands().size() >0 ) {
 			List<Demand> demands = demandResponse.getDemands().stream().filter( d-> !d.getConsumerType().equalsIgnoreCase("waterConnection-arrears")).collect(Collectors.toList());
 			List<Demand> arrearDemands = demandResponse.getDemands().stream().filter( d-> d.getConsumerType().equalsIgnoreCase("waterConnection-arrears")).collect(Collectors.toList());
-			List<DemandDetail> collect = arrearDemands.size() > 0 ? arrearDemands.get(0).getDemandDetails().stream().filter( d-> d.getCollectionAmount().intValue()>0).collect(Collectors.toList()): new ArrayList<DemandDetail>();
-			if(demands.size() > 0 || collect.size() >0 ) {
+			List<Demand> advanceDemands = demandResponse.getDemands().stream().filter( d-> d.getConsumerType().equalsIgnoreCase("waterConnection-advance")).collect(Collectors.toList());
+
+			List<DemandDetail> collectArrears = arrearDemands.size() > 0 ? arrearDemands.get(0).getDemandDetails().stream().filter( d-> d.getCollectionAmount().intValue()>0).collect(Collectors.toList()): new ArrayList<DemandDetail>();
+			List<DemandDetail> collectAdvance = advanceDemands.size() > 0 ? advanceDemands.get(0).getDemandDetails().stream().filter( d-> d.getCollectionAmount().intValue()>0).collect(Collectors.toList()): new ArrayList<DemandDetail>();
+
+			if(demands.size() > 0 || collectArrears.size() >0  || collectAdvance.size() > 0) {
 				if(!searchResult.getOldConnectionNo().equalsIgnoreCase(request.getWaterConnection().getOldConnectionNo())) {
 					errorMap.put("INVALID_UPDATE_OLD_CONNO", "Old ConnectionNo cannot be modified!!");
 				}

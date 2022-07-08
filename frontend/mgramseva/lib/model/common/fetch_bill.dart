@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:json_annotation/json_annotation.dart';
+import 'package:mgramseva/model/demand/demand_list.dart';
+import 'package:mgramseva/model/localization/language.dart';
 import 'package:mgramseva/utils/constants.dart';
 
 import 'demand.dart';
@@ -49,7 +51,13 @@ class FetchBill {
   var customAmountCtrl = new TextEditingController();
 
   @JsonKey(ignore: true)
-  Demand? demand;
+  List<Demands>? demandList;
+
+  @JsonKey(ignore: true)
+  Demands? demands;
+
+  @JsonKey(ignore: true)
+  LanguageList? mdmsData;
 
   FetchBill();
 
@@ -121,6 +129,15 @@ class BillAccountDetails {
 
   @JsonKey(name: "adjustedAmount")
   double? adjustedAmount;
+
+  @JsonKey(name: "advanceAdjustedAmount")
+  double? advanceAdjustedAmount;
+
+  @JsonKey(ignore: true)
+  double? arrearsAmount;
+
+  @JsonKey(ignore: true)
+  double? totalBillAmount;
 
   @JsonKey(name: "taxHeadCode")
   String taxHeadCode = '';

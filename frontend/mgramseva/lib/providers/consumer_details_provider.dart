@@ -179,7 +179,7 @@ class ConsumerProvider with ChangeNotifier {
         "consumerCode": waterconnection.connectionNo,
         "businessService": "WS",
         "tenantId": waterconnection.tenantId,
-        "status": "ACTIVE"
+        // "status": "ACTIVE"
       });
 
       var paymentDetails = await BillingServiceRepository().fetchdBillPayments({
@@ -219,10 +219,15 @@ class ConsumerProvider with ChangeNotifier {
                 .characters
                 .elementAt(4);
       }
+
+      demand = demand?.where((element) => element.status != 'CANCELLED').toList();
+
       if (demand?.isEmpty == true) {
         isfirstdemand = false;
       } else if (demand?.length == 1 &&
           demand?.first.consumerType == 'waterConnection-arrears') {
+        isfirstdemand = false;
+      }else if(demand?.length == 1 && demand?.first.demandDetails?.length == 1 && demand?.first.demandDetails?.first.taxHeadMasterCode == 'WS_ADVANCE_CARRYFORWARD'){
         isfirstdemand = false;
       } else {
         isfirstdemand = true;
@@ -535,6 +540,11 @@ class ConsumerProvider with ChangeNotifier {
     waterconnection.connectionType = val;
     waterconnection.meterIdCtrl.clear();
     waterconnection.previousReadingDateCtrl.clear();
+    billYear = null;
+    selectedcycle = null;
+    waterconnection.BillingCycleCtrl.clear();
+    waterconnection.meterInstallationDateCtrl.clear();
+    searchPickerKey?.currentState?.Options.clear();
 
     notifyListeners();
   }
@@ -637,6 +647,7 @@ class ConsumerProvider with ChangeNotifier {
 
   List<DropdownMenuItem<Object>> getFinancialYearList() {
     if (languageList?.mdmsRes?.billingService?.taxPeriodList != null) {
+      CommonMethods.getFilteredFinancialYearList(languageList?.mdmsRes?.billingService?.taxPeriodList ?? <TaxPeriod>[]);
       return (languageList?.mdmsRes?.billingService?.taxPeriodList ??
           <TaxPeriod>[])
           .map((value) {
@@ -649,15 +660,8 @@ class ConsumerProvider with ChangeNotifier {
     return <DropdownMenuItem<Object>>[];
   }
 
-  List<KeyValue> getAmountTypeList() {
-    return [
-      KeyValue(i18.common.ARREARS, 'arrears'),
-      KeyValue(i18.common.CORE_ADVANCE, 'advance'),
-    ];
-  }
-
   void onChangeOfAmountType(value){
-    waterconnection.amountType = value;
+    waterconnection.paymentType = value;
 
     if(!isEdit) {
       waterconnection.penaltyCtrl.clear();
@@ -667,5 +671,10 @@ class ConsumerProvider with ChangeNotifier {
       
     }
     notifyListeners();
+  }
+
+  List<KeyValue> getPaymentTypeList() {
+    if(CommonProvider.getPenaltyOrAdvanceStatus(languageList, true)) return Constants.CONSUMER_PAYMENT_TYPE;
+    return [Constants.CONSUMER_PAYMENT_TYPE.first];
   }
 }

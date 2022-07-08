@@ -141,7 +141,7 @@ public class DemandService {
 	 *                     generated or updated
 	 */
 	public List<Demand> generateDemand(RequestInfo requestInfo, List<Calculation> calculations,
-			Map<String, Object> masterMap, boolean isForConnectionNo, boolean isWSUpdateSMS) {
+			Map<String, Object> masterMap, boolean isForConnectionNo, boolean isWSUpdateSMS, boolean isAdvance) {
 		@SuppressWarnings("unchecked")
 		Map<String, Object> financialYearMaster = (Map<String, Object>) masterMap
 				.get(WSCalculationConstant.BILLING_PERIOD);
@@ -170,6 +170,12 @@ public class DemandService {
 						.filter(demand -> demand.getConsumerType()
 								.equalsIgnoreCase(isForConnectionNo ? "waterConnection" : "waterConnection-arrears"))
 						.map(Demand::getConsumerCode).collect(Collectors.toSet());
+				if(isAdvance) {
+					connectionNumbersFromDemands = demands.stream()
+							.filter(demand -> demand.getConsumerType()
+									.equalsIgnoreCase("waterConnection-advance"))
+							.map(Demand::getConsumerCode).collect(Collectors.toSet());
+				}
 			}
 			// If demand already exists add it updateCalculations else
 			// createCalculations
@@ -182,7 +188,7 @@ public class DemandService {
 		}
 		List<Demand> createdDemands = new ArrayList<>();
 		if (!CollectionUtils.isEmpty(createCalculations))
-			createdDemands = createDemand(requestInfo, createCalculations, masterMap, isForConnectionNo, isWSUpdateSMS);
+			createdDemands = createDemand(requestInfo, createCalculations, masterMap, isForConnectionNo, isWSUpdateSMS,isAdvance);
 
 		if (!CollectionUtils.isEmpty(updateCalculations))
 			createdDemands = updateDemandForCalculation(requestInfo, updateCalculations, fromDate, toDate,
@@ -198,7 +204,7 @@ public class DemandService {
 	 * @return Returns list of demands
 	 */
 	private List<Demand> createDemand(RequestInfo requestInfo, List<Calculation> calculations,
-			Map<String, Object> masterMap, boolean isForConnectionNO, boolean isWSUpdateSMS) {
+			Map<String, Object> masterMap, boolean isForConnectionNO, boolean isWSUpdateSMS, boolean isAdvance) {
 		List<Demand> demands = new LinkedList<>();
 		List<SMSRequest> smsRequests = new LinkedList<>();
 		DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("d/MM/uuuu");
@@ -248,12 +254,21 @@ public class DemandService {
 			
 			billCycle = firstDate.format(dateTimeFormatter) + " - " + lastDate.format(dateTimeFormatter);
 			addRoundOffTaxHead(calculation.getTenantId(), demandDetails);
-
-			demands.add(Demand.builder().consumerCode(consumerCode).demandDetails(demandDetails).payer(owner)
-					.minimumAmountPayable(minimumPayableAmount).tenantId(tenantId).taxPeriodFrom(fromDate)
-					.taxPeriodTo(toDate).consumerType(isForConnectionNO ? "waterConnection" : "waterConnection-arrears")
-					.businessService(businessService).status(StatusEnum.valueOf("ACTIVE")).billExpiryTime(expiryDate)
-					.build());
+			
+			if(isAdvance) {
+				demands.add(Demand.builder().consumerCode(consumerCode).demandDetails(demandDetails).payer(owner)
+						.minimumAmountPayable(minimumPayableAmount).tenantId(tenantId).taxPeriodFrom(fromDate)
+						.taxPeriodTo(toDate).consumerType("waterConnection-advance")
+						.businessService(businessService).status(StatusEnum.valueOf("ACTIVE")).billExpiryTime(expiryDate)
+						.build());
+			}else {
+				demands.add(Demand.builder().consumerCode(consumerCode).demandDetails(demandDetails).payer(owner)
+						.minimumAmountPayable(minimumPayableAmount).tenantId(tenantId).taxPeriodFrom(fromDate)
+						.taxPeriodTo(toDate).consumerType(isForConnectionNO ? "waterConnection" : "waterConnection-arrears")
+						.businessService(businessService).status(StatusEnum.valueOf("ACTIVE")).billExpiryTime(expiryDate)
+						.build());
+			}
+		
 			if (!isWSUpdateSMS) {
 
 				HashMap<String, String> localizationMessage = util.getLocalizationMessage(requestInfo,

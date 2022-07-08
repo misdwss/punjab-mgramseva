@@ -6,6 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_share_me/flutter_share_me.dart';
 import 'package:mgramseva/model/bill/bill_payments.dart';
+import 'package:mgramseva/model/bill/billing.dart';
+import 'package:mgramseva/model/demand/demand_list.dart';
 import 'package:mgramseva/model/file/file_store.dart';
 import 'package:mgramseva/model/localization/language.dart';
 import 'package:mgramseva/model/user/user_details.dart';
@@ -16,6 +18,7 @@ import 'package:mgramseva/model/localization/localization_label.dart';
 import 'package:mgramseva/repository/core_repo.dart';
 import 'package:mgramseva/routers/Routers.dart';
 import 'package:mgramseva/services/LocalStorage.dart';
+import 'package:mgramseva/services/MDMS.dart';
 import 'package:mgramseva/utils/Constants/I18KeyConstants.dart';
 import 'package:mgramseva/utils/Locilization/application_localizations.dart';
 import 'package:mgramseva/utils/constants.dart';
@@ -513,5 +516,166 @@ class CommonProvider with ChangeNotifier {
         return pw.Font.ttf(
             await rootBundle.load('assets/fonts/Roboto/punjabi.ttf'));
     }
+  }
+
+  // static  String getAdvanceAdjustedAmount(List<Demands> demandList) {
+  //   var amount = '0';
+  //   var index = -1;
+  //   for(int i =0; i < demandList.length; i++){
+  //     index = demandList[i].demandDetails?.lastIndexWhere((e) => e.taxHeadMasterCode == 'WS_ADVANCE_CARRYFORWARD') ?? -1;
+  //     if(index != -1){
+  //
+  //       if(demandList[i].demandDetails?.length == 1){
+  //
+  //       }else if(demandList[i].demandDetails?.length == 2){
+  //         amount = (demandList[i].demandDetails![index].collectionAmount ?? 0).toString();
+  //       } else if(demandList[i].demandDetails?[index].collectionAmount == demandList[i].demandDetails?[index].taxAmount){
+  //         if((demandList.first.demandDetails?.first.collectionAmount ?? 0) > 0){
+  //          amount = (-(demandList.first.demandDetails!.first.collectionAmount ?? 0)).toString();
+  //         }else {
+  //           amount = (demandList[i].demandDetails![index].collectionAmount ?? 0).toString();
+  //         }
+  //         }
+  //       else{
+  //         amount = ((demandList[i].demandDetails![index].collectionAmount ?? 0) -  (demandList[i].demandDetails![index-1].collectionAmount ?? 0)).toString();
+  //       }
+  //       break;
+  //     }
+  //   }
+  //   return amount;
+  // }
+
+  static  String getAdvanceAdjustedAmount(List<Demands> demandList) {
+    var amount = '0.0';
+    var index = -1;
+
+    if (demandList.isEmpty) return amount;
+
+    var filteredDemands = demandList.where((e) =>
+    !(e.isPaymentCompleted ?? false))
+        .toList();
+
+    for (int i = 0; i < filteredDemands.length; i++) {
+      index = demandList[i].demandDetails?.lastIndexWhere((e) => e
+          .taxHeadMasterCode == 'WS_ADVANCE_CARRYFORWARD') ?? -1;
+
+      if (index != -1) {
+        var demandDetail = demandList[i].demandDetails?[index];
+        if(demandDetail!.collectionAmount!.abs() < demandDetail.taxAmount!.abs()){
+         amount = filteredDemands.first.demandDetails?.last.collectionAmount?.toString() ?? '0.0';
+        }else if(demandDetail.collectionAmount! == demandDetail.taxAmount!){
+          if(filteredDemands.first.demandDetails?.last.collectionAmount != 0){
+            var list = <double>[];
+            for(int j = 0; j <= i ; j++){
+              for(int k = 0; k < (filteredDemands[j].demandDetails?.length ?? 0); k++) {
+                if (k == index && j == i) break;
+                list.add(filteredDemands[j].demandDetails![k].collectionAmount ?? 0);
+              }
+            }
+            print(list);
+            var collectedAmount = list.reduce((a, b) => a+b);
+            amount = collectedAmount == demandDetail.collectionAmount?.abs()
+                ? filteredDemands.first.demandDetails?.last.collectionAmount?.toString() ?? '0.0' : '0.0';
+          }
+        }
+      }
+    }
+    return amount;
+  }
+
+  static Penalty getPenalty(List<Demands> demandList) {
+    Penalty? penalty;
+
+    demandList.forEach((billDetails) {
+      billDetails.demandDetails?.forEach((billAccountDetails) {
+        if(billAccountDetails.taxHeadMasterCode == 'WS_TIME_ADHOC_PENALTY'){
+                  var amount = billAccountDetails.taxAmount ?? 0;
+                  penalty = Penalty(amount, DateFormats.timeStampToDate(billAccountDetails.auditDetails!.createdTime));
+                }
+      });
+    });
+    // if(billList is List<Bill>){
+    //   billList.first.billDetails!.forEach((bill) {
+    //     bill.billAccountDetails?.forEach((billAccountDetails) {
+    //       if(billAccountDetails.taxHeadCode == '10102' || billAccountDetails.taxHeadCode == 'WS_TIME_ADHOC_PENALTY'){
+    //         penalty += billAccountDetails.amount ?? 0;
+    //       }
+    //     });
+    //   });
+    // }else if(billList is FetchBill ){
+    //  billList.billDetails?.forEach((bill) {
+    //    bill.billAccountDetails?.forEach((billAccountDetails) {
+    //      if(billAccountDetails.taxHeadCode == '10102' || billAccountDetails.taxHeadCode == 'WS_TIME_ADHOC_PENALTY'){
+    //        penalty += billAccountDetails.amount ?? 0;
+    //      }
+    //    });
+    //  });
+    // }
+    return penalty ?? Penalty(0.0, '');
+  }
+
+  static  num getAdvanceAmount(List<Demands> demandList) {
+    var amount = 0.0;
+    var index = -1;
+    for(int i =0; i < demandList.length; i++){
+      index = demandList[i].demandDetails?.lastIndexWhere((e) => e.taxHeadMasterCode == 'WS_ADVANCE_CARRYFORWARD') ?? -1;
+      if(index != -1){
+        amount = (demandList[i].demandDetails![index].taxAmount ?? 0) - (demandList[i].demandDetails![index].collectionAmount ?? 0);
+        break;
+      }
+    }
+    return amount;
+  }
+
+  static double getArrearsAmount(List<Demands> demandList) {
+    List res = [];
+
+    if (demandList.isNotEmpty) {
+      var filteredDemands = demandList.where((e) => (!(e.isPaymentCompleted ?? false) && e.status != 'CANCELLED'))
+          .toList();
+      for (var demand in filteredDemands) {
+        demand.demandDetails!.forEach((e) {
+          if (e.taxHeadMasterCode != 'WS_ADVANCE_CARRYFORWARD' && e.taxHeadMasterCode != '10102' && e.taxHeadMasterCode != 'WS_TIME_ADHOC_PENALTY'){
+            res.add((e.taxAmount ?? 0) - (e.collectionAmount ?? 0));
+          }
+        });
+      }
+    }
+
+    var arrearsDeduction = (demandList.first.demandDetails?.first.taxHeadMasterCode != 'WS_ADVANCE_CARRYFORWARD' && demandList.first.demandDetails?.first.taxHeadMasterCode != '10102'
+    && demandList.first.demandDetails?.first.taxHeadMasterCode != 'WS_TIME_ADHOC_PENALTY') ?
+     ((demandList.first.demandDetails?.first.taxAmount ?? 0) - (demandList.first.demandDetails?.first.collectionAmount ?? 0)) : 0;
+
+    return res.length == 0 ? 0 : ((res.reduce((previousValue,
+        element) =>
+    previousValue +
+        element) - arrearsDeduction) as double).abs();
+  }
+
+  static Future<LanguageList> getMdmsBillingService() async {
+    try {
+      var commonProvider = Provider.of<CommonProvider>(
+          navigatorKey.currentContext!,
+          listen: false);
+
+     return await CoreRepository().getMdms(getMdmsPaymentModes(
+          commonProvider.userDetails!.userRequest!.tenantId.toString()));
+    }catch(e){
+      return LanguageList();
+    }
+  }
+
+ static bool getPenaltyOrAdvanceStatus(LanguageList? languageList, [isAdvance = false, bool isTimePenalty = false]) {
+    if(languageList == null) return false;
+    var index = languageList.mdmsRes?.billingService?.taxHeadMasterList?.indexWhere((e) => e.code == (isAdvance ? 'WS_ADVANCE_CARRYFORWARD' : isTimePenalty ? 'WS_TIME_PENALTY' : '10201'));
+    if(index != null && index != -1){
+      return (languageList.mdmsRes?.billingService?.taxHeadMasterList?[index].isRequired ?? false);
+    }
+    return false;
+  }
+
+
+  void getPenaltyDueDate() {
+
   }
 }

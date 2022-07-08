@@ -36,7 +36,7 @@ class HouseholdDetail extends StatefulWidget {
 
 class _HouseholdDetailState extends State<HouseholdDetail> {
   void initState() {
-    WidgetsBinding.instance?.addPostFrameCallback((_) => afterViewBuild());
+    WidgetsBinding.instance.addPostFrameCallback((_) => afterViewBuild());
     super.initState();
   }
 
@@ -66,14 +66,14 @@ class _HouseholdDetailState extends State<HouseholdDetail> {
             : Text(""),
         houseHoldProvider.waterConnection!.connectionType == 'Metered' &&
                 widget.mode == 'collect'
-            ? GenerateNewBill(houseHoldProvider.waterConnection)
+            ? GenerateNewBill(houseHoldProvider.waterConnection, data)
             : Text(""),
         data.demands!.isEmpty ||
                 (houseHoldProvider.waterConnection?.connectionType ==
                         'Metered' &&
                     houseHoldProvider.isfirstdemand == false)
             ? Text("")
-            : NewConsumerBill(widget.mode, houseHoldProvider.waterConnection),
+            : NewConsumerBill(widget.mode, houseHoldProvider.waterConnection, data.demands!),
         ConsumerBillPayments(houseHoldProvider.waterConnection)
       ],
     );
