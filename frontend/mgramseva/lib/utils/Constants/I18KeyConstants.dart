@@ -456,6 +456,7 @@ class BillDetails {
   String get CORE_PAID_AFTER => 'CORE_PAID_AFTER';
   String get CORE_PENALTY => 'CORE_PENALTY';
   String get CORE_NET_DUE_AMOUNT_WITH_PENALTY => 'CORE_NET_DUE_AMOUNT_WITH_PENALTY';
+  String get WS_10201 => 'WS_10201';
 }
 
 class GenerateBillDetails {
