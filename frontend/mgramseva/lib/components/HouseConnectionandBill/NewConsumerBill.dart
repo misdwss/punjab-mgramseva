@@ -378,33 +378,38 @@ class NewConsumerBillState extends State<NewConsumerBill> {
 
   bool showBill(List<Demands> demandList) {
     var index = -1;
+    var houseHoldRegister = Provider.of<HouseHoldProvider>(context, listen: false);
+
+    demandList = demandList.where((e) =>
+    (!(e.isPaymentCompleted ?? false) && e.status != 'CANCELLED'))
+        .toList();
 
     if(demandList.isEmpty){
+      return false;
+    }else if(!houseHoldRegister.isfirstdemand && widget.waterConnection?.connectionType != 'Metered'
+        && (widget.waterConnection?.fetchBill?.bill?.first.totalAmount ?? 0) <= 0){
       return false;
     }else if(demandList.first.demandDetails?.first.taxHeadMasterCode == 'WS_ADVANCE_CARRYFORWARD'){
       return true;
     }else if((widget.waterConnection?.fetchBill?.bill?.first.totalAmount ?? 0) > 0){
       return true;
     } else {
-      var filteredDemands = demandList.where((e) =>
-          (!(e.isPaymentCompleted ?? false) && e.status != 'CANCELLED'))
-          .toList();
 
-      if(filteredDemands.isEmpty) return false;
+      if(demandList.isEmpty) return false;
 
-      for (int i = 0; i < filteredDemands.length; i++) {
+      for (int i = 0; i < demandList.length; i++) {
         index = demandList[i].demandDetails?.lastIndexWhere((e) => e
             .taxHeadMasterCode == 'WS_ADVANCE_CARRYFORWARD') ?? -1;
 
         if (index != -1) {
           var demandDetail = demandList[i].demandDetails?[index];
         if(demandDetail!.collectionAmount! == demandDetail.taxAmount!){
-            if(filteredDemands.first.demandDetails?.last.collectionAmount != 0){
+            if(demandList.first.demandDetails?.last.collectionAmount != 0){
               var list = <double>[];
               for(int j = 0; j <= i ; j++){
-                for(int k = 0; k < (filteredDemands[j].demandDetails?.length ?? 0); k++) {
+                for(int k = 0; k < (demandList[j].demandDetails?.length ?? 0); k++) {
                   if (k == index && j == i) break;
-                  list.add(filteredDemands[j].demandDetails![k].collectionAmount ?? 0);
+                  list.add(demandList[j].demandDetails![k].collectionAmount ?? 0);
                 }
               }
               var collectedAmount = list.reduce((a, b) => a+b);

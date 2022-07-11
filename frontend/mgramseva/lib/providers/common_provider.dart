@@ -583,7 +583,7 @@ class CommonProvider with ChangeNotifier {
     return amount;
   }
 
-  static getTotalBillAmount(List<Demands> demandList) {
+  static double getTotalBillAmount(List<Demands> demandList) {
 
     if(!isFirstDemand(demandList)){
       var amount = 0.0;
@@ -592,7 +592,7 @@ class CommonProvider with ChangeNotifier {
       });
       return amount;
     }
-    return ((demandList.first.demandDetails?.first.taxAmount ?? 0) + CommonProvider.getArrearsAmount(demandList)).toString();
+    return ((demandList.first.demandDetails?.first.taxAmount ?? 0) + CommonProvider.getArrearsAmount(demandList));
 
   }
 

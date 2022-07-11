@@ -136,8 +136,26 @@ class _GenerateNewBillState extends State<GenerateNewBill> {
                                     .currentReading
                                     .toString(),
                             context),
-                        _getLabeltext(i18.generateBillDetails.PENDING_AMOUNT,
-                            ('₹' + getPendingAmount.toString()), context),
+                        if(CommonProvider.getPenaltyOrAdvanceStatus(widget.waterconnection?.mdmsData, false) && !billpaymentsProvider.isfirstdemand &&
+                            widget.demandList.demands?.first.demandDetails?.first.taxHeadMasterCode != 'WS_ADVANCE_CARRYFORWARD')
+                          _getLabeltext(
+                              'WS_${widget.demandList.demands?.first.demandDetails?.first.taxHeadMasterCode}',
+                              ('₹' +  (widget.demandList.demands?.first.demandDetails?.first.taxAmount).toString()),
+                              context),
+                        if(!billpaymentsProvider.isfirstdemand &&  widget.demandList.demands?.first.demandDetails?.first.taxHeadMasterCode == '10201'
+                        && CommonProvider.getArrearsAmount(widget.demandList.demands ?? []) > 0)
+                          _getLabeltext(
+                              'WS_${widget.demandList.demands?.first.demandDetails?.last.taxHeadMasterCode}',
+                              ('₹' + (widget.demandList.demands?.first.demandDetails?.last.taxAmount).toString()),
+                              context),
+                        !billpaymentsProvider.isfirstdemand && getPendingAmount > 0 ?
+                        _getLabeltext(
+                            i18.billDetails.TOTAL_AMOUNT,
+                            ('₹' +
+                                CommonProvider.getTotalBillAmount(widget.demandList.demands ?? []).toString()),
+                            context)
+                : _getLabeltext(i18.generateBillDetails.PENDING_AMOUNT,
+                            ('₹' + (getPendingAmount > 0 ? getPendingAmount : 0).toString()), context),
                         billpaymentsProvider.isfirstdemand == false &&
                             getPendingAmount > 0
                             ? new Column(
