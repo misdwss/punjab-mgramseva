@@ -25,10 +25,13 @@ import 'package:mgramseva/widgets/RadioButtonFieldBuilder.dart';
 import 'package:mgramseva/widgets/SideBar.dart';
 import 'package:mgramseva/widgets/TextFieldBuilder.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../components/HouseConnectionandBill/NewConsumerBill.dart';
 import '../../model/localization/language.dart';
 import '../../providers/common_provider.dart';
+import '../../utils/error_logging.dart';
 import '../../utils/global_variables.dart';
+import '../../widgets/CustomCheckBoxWidget.dart';
 import '../../widgets/CustomDetails.dart';
 import '../../widgets/customAppbar.dart';
 
@@ -47,6 +50,7 @@ class ConnectionPaymentView extends StatefulWidget {
 class _ConnectionPaymentViewState extends State<ConnectionPaymentView> {
   final formKey = GlobalKey<FormState>();
   var autoValidation = false;
+  var checkValue = false;
 
   @override
   void initState() {
@@ -97,22 +101,9 @@ class _ConnectionPaymentViewState extends State<ConnectionPaymentView> {
             visible: fetchBill != null,
             child: BottomButtonBar(
                 '${ApplicationLocalizations.of(context).translate(i18.common.COLLECT_PAYMENT)}',
-                () => showGeneralDialog(
-                    barrierLabel: "Label",
-                    barrierDismissible: false,
-                    barrierColor: Colors.black.withOpacity(0.5),
-                    context: context,
-                    pageBuilder: (context, anim1, anim2) {
-                      return Align(
-                          alignment: Alignment.center,
-                          child: ConfirmationPopUp(
-                            textString: i18.payment.CORE_AMOUNT_CONFIRMATION,
-                            subTextString: '₹ ${fetchBill?.customAmountCtrl.text}',
-                            cancelLabel: i18.common.CORE_GO_BACK,
-                            confirmLabel: i18.common.CORE_CONFIRM,
-                            onConfirm: () => paymentInfo(fetchBill!, context),
-                          ));
-                    },))),
+                checkValue  ?
+                () => checkAmount(fetchBill!, context)
+                    : null )),
       ),
     ));
   }
@@ -207,8 +198,8 @@ class _ConnectionPaymentViewState extends State<ConnectionPaymentView> {
                 inputFormatter: [
                   FilteringTextInputFormatter.allow(RegExp("[0-9]"))
                 ],
-                validator:
-                    Validators.partialAmountValidatior,
+                validator: (val) =>
+                    Validators.partialAmountValidatior(val, fetchBill.totalAmount),
                 prefixText: '₹ ',
               )),
           Padding(
@@ -228,7 +219,17 @@ class _ConnectionPaymentViewState extends State<ConnectionPaymentView> {
               true,
               consumerPaymentProvider.paymentModeList,
               (val) => consumerPaymentProvider.onChangeOfPaymentAmountOrMethod(
-                  fetchBill, val))
+                  fetchBill, val)),
+          CustomCheckBoxWidget(
+              checkValue,
+              i18.payment.CORE_I_AGREE_TO_THE,
+                  () => (bool? newVal) {
+                setState(() {
+                  checkValue = newVal!;
+                });
+              },
+              linkText: i18.payment.TERMS_N_CONDITIONS,
+              onTapLink: () => onAgreeTermsNConditions(''))
         ],
       )),
     );
@@ -454,9 +455,48 @@ class _ConnectionPaymentViewState extends State<ConnectionPaymentView> {
       autoValidation = false;
       consumerPaymentProvider.updatePaymentInformation(fetchBill, context);
     } else {
+      Navigator.pop(context);
       setState(() {
         autoValidation = true;
       });
+    }
+  }
+
+  checkAmount(FetchBill fetchBill, BuildContext context) {
+    if (formKey.currentState!.validate()) {
+      autoValidation = false;
+      showGeneralDialog(
+        barrierLabel: "Label",
+        barrierDismissible: false,
+        barrierColor: Colors.black.withOpacity(0.5),
+        context: context,
+        pageBuilder: (context, anim1, anim2) {
+          return Align(
+              alignment: Alignment.center,
+              child: ConfirmationPopUp(
+                textString: i18.payment.CORE_AMOUNT_CONFIRMATION,
+                subTextString: '₹ ${fetchBill.customAmountCtrl.text}',
+                cancelLabel: i18.common.CORE_GO_BACK,
+                confirmLabel: i18.common.CORE_CONFIRM,
+                onConfirm: () => paymentInfo(fetchBill, context),
+              ));
+        },);
+    } else {
+      setState(() {
+        autoValidation = true;
+      });
+    }
+  }
+
+  void onAgreeTermsNConditions(String link) async {
+    try {
+      if (await canLaunch(link)) {
+        await launch(link);
+      } else {
+        throw 'Could not launch appStoreLink';
+      }
+    } catch(e){
+      ErrorHandler.logError('failed to launch the url ${link}');
     }
   }
 
