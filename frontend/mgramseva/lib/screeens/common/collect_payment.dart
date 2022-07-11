@@ -269,7 +269,7 @@ class _ConnectionPaymentViewState extends State<ConnectionPaymentView> {
                             _buildLabelValue(
                                 'WS_${fetchBill.demands?.demandDetails?.first.taxHeadMasterCode}',
                                 '₹ ${fetchBill.demands?.demandDetails?.first.taxAmount}'),
-                          if(fetchBill.demandList?.first.demandDetails?.first.taxHeadMasterCode == '10201' && fetchBill.demandList?.first.demandDetails?.first.taxHeadMasterCode == '10102')
+                          if(fetchBill.demandList?.first.demandDetails?.first.taxHeadMasterCode == '10201' && fetchBill.demandList?.first.demandDetails?.last.taxHeadMasterCode == '10102')
                                    _buildLabelValue('WS_${fetchBill.demands?.demandDetails?.last.taxHeadMasterCode}',
                                     '₹ ${fetchBill.demands?.demandDetails?.last.taxAmount.toString()}')
                           ])
@@ -299,7 +299,7 @@ class _ConnectionPaymentViewState extends State<ConnectionPaymentView> {
                 if(CommonProvider.getPenaltyOrAdvanceStatus(fetchBill.mdmsData, true)) _buildLabelValue(
                     i18.common.CORE_NET_AMOUNT_DUE,
                     '₹ ${CommonProvider.getNetDueAmountWithWithOutPenalty(fetchBill.totalAmount ?? 0, penalty)}'),
-                if(CommonProvider.getPenaltyOrAdvanceStatus(fetchBill.mdmsData, false, true) && isFirstDemand)  CustomDetailsCard(
+                if(false ?? CommonProvider.getPenaltyOrAdvanceStatus(fetchBill.mdmsData, false, true) && isFirstDemand)  CustomDetailsCard(
                     Column(
                       children: [
                         NewConsumerBillState.getLabelText(
