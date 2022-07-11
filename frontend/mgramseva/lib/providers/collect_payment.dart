@@ -99,7 +99,7 @@ class CollectPaymentProvider with ChangeNotifier {
         paymentDetails.first.customAmountCtrl.text = paymentDetails.first.totalAmount!.toInt() > 0 ? paymentDetails.first.totalAmount!.toInt().toString() : '';
         paymentDetails.first.billDetails?.first.billAccountDetails?.last.advanceAdjustedAmount = double.parse(CommonProvider.getAdvanceAdjustedAmount(demandList ?? []));
         paymentDetails.first.billDetails?.first.billAccountDetails?.last.arrearsAmount = CommonProvider.getArrearsAmount(demandList ?? []);
-        paymentDetails.first.billDetails?.first.billAccountDetails?.last.totalBillAmount = ((demandList?.first.demandDetails!.first.taxAmount ?? 0) + (paymentDetails.first.billDetails?.first.billAccountDetails?.last.arrearsAmount ?? 0));
+        paymentDetails.first.billDetails?.first.billAccountDetails?.last.totalBillAmount = CommonProvider.getTotalBillAmount(demandList ?? []);
         paymentDetails.first.demands = demandList?.first;
         paymentDetails.first.demandList = demandList;
         paymentStreamController.add(paymentDetails.first);

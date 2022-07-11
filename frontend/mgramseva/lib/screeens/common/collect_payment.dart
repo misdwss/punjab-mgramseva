@@ -236,6 +236,7 @@ class _ConnectionPaymentViewState extends State<ConnectionPaymentView> {
 
   Widget _buildViewDetails(FetchBill fetchBill) {
     var penalty = CommonProvider.getPenalty(fetchBill.demandList ?? []);
+    var isFirstDemand = CommonProvider.isFirstDemand(fetchBill.demandList ?? []);
     List res = [];
     num len = fetchBill.billDetails?.first.billAccountDetails?.length as num;
     if (fetchBill.billDetails!.isNotEmpty)
@@ -261,24 +262,31 @@ class _ConnectionPaymentViewState extends State<ConnectionPaymentView> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                len > 0
+                !isFirstDemand
                     ? Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                             _buildLabelValue(
                                 'WS_${fetchBill.demands?.demandDetails?.first.taxHeadMasterCode}',
                                 '₹ ${fetchBill.demands?.demandDetails?.first.taxAmount}'),
-                          (fetchBill.billDetails?.first.billAccountDetails?.last.arrearsAmount ?? 0) >
-                                    0
-                                ? _buildLabelValue(i18.billDetails.ARRERS_DUES,
-                                    '₹ ${fetchBill.billDetails?.first.billAccountDetails?.last.arrearsAmount.toString()}')
-                                : SizedBox(
-                                    height: 0,
-                                  )
+                          if(fetchBill.demandList?.first.demandDetails?.first.taxHeadMasterCode == '10201' && fetchBill.demandList?.first.demandDetails?.last.taxHeadMasterCode == '10102')
+                                   _buildLabelValue('WS_${fetchBill.demands?.demandDetails?.last.taxHeadMasterCode}',
+                                    '₹ ${fetchBill.demands?.demandDetails?.last.taxAmount.toString()}')
                           ])
-                    : _buildLabelValue(
-                        'WS_${fetchBill.demands?.demandDetails?.last.taxHeadMasterCode}',
-                        '₹ ${fetchBill.demands?.demandDetails?.last.taxAmount}'),
+                    : Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _buildLabelValue(
+                          'WS_${fetchBill.demands?.demandDetails?.first.taxHeadMasterCode}',
+                          '₹ ${fetchBill.demands?.demandDetails?.first.taxAmount}'),
+                      (fetchBill.billDetails?.first.billAccountDetails?.last.arrearsAmount ?? 0) >
+                          0
+                          ? _buildLabelValue(i18.billDetails.ARRERS_DUES,
+                          '₹ ${fetchBill.billDetails?.first.billAccountDetails?.last.arrearsAmount.toString()}')
+                          : SizedBox(
+                        height: 0,
+                      )
+                    ]),
                 // }),
                 if (fetchBill.billDetails != null && res.length > 1)
                   _buildWaterCharges(fetchBill, constraints),
@@ -290,8 +298,8 @@ class _ConnectionPaymentViewState extends State<ConnectionPaymentView> {
                     '₹ ${fetchBill.billDetails?.first.billAccountDetails?.last.advanceAdjustedAmount}'),
                 if(CommonProvider.getPenaltyOrAdvanceStatus(fetchBill.mdmsData, true)) _buildLabelValue(
                     i18.common.CORE_NET_AMOUNT_DUE,
-                    '₹ ${(fetchBill.totalAmount ?? 0) >= 0 ? (fetchBill.totalAmount! - (penalty.penalty ?? 0)) : 0}'),
-                if(false && CommonProvider.getPenaltyOrAdvanceStatus(fetchBill.mdmsData, false, true))  CustomDetailsCard(
+                    '₹ ${CommonProvider.getNetDueAmountWithWithOutPenalty(fetchBill.totalAmount ?? 0, penalty)}'),
+                if(false ?? CommonProvider.getPenaltyOrAdvanceStatus(fetchBill.mdmsData, false, true) && isFirstDemand)  CustomDetailsCard(
                     Column(
                       children: [
                         NewConsumerBillState.getLabelText(

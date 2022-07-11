@@ -142,5 +142,6 @@ class HexColor extends Color {
 class Penalty {
   double penalty;
   String date;
-  Penalty(this.penalty, this.date);
+  bool isDueDateCrossed = false;
+  Penalty(this.penalty, this.date, this.isDueDateCrossed);
 }

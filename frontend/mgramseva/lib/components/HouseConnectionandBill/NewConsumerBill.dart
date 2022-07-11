@@ -160,14 +160,19 @@ class NewConsumerBillState extends State<NewConsumerBill> {
                                                   .toString(),
                                               context)
                                           : Text(""),
+                                      if(CommonProvider.getPenaltyOrAdvanceStatus(widget.waterConnection?.mdmsData, false) && !houseHoldProvider.isfirstdemand && widget.demandList.first.demandDetails?.first.taxHeadMasterCode == '10201')
+                                        getLabelText(
+                                            i18.billDetails.WS_10201,
+                                            ('₹' + CommonProvider.getNormalPenalty(widget.demandList).toString()),
+                                            context),
                                       getLabelText(
                                           houseHoldProvider.isfirstdemand ==
                                                   true
                                               ? i18.billDetails.CURRENT_BILL
                                               : i18.billDetails.ARRERS_DUES,
                                           ('₹' +
-                                              widget.demandList.first.demandDetails!
-                                                  .first.taxAmount
+      (houseHoldProvider.isfirstdemand ?  widget.demandList.first.demandDetails!
+                                                  .first.taxAmount : CommonProvider.getArrearsAmount(widget.demandList))
                                                   .toString()),
                                           context),
                                       houseHoldProvider.isfirstdemand == true
@@ -179,7 +184,7 @@ class NewConsumerBillState extends State<NewConsumerBill> {
                                       getLabelText(
                                           i18.billDetails.TOTAL_AMOUNT,
                                           ('₹' +
-                                              getTotalBillAmount()),
+                                              CommonProvider.getTotalBillAmount(widget.demandList).toString()),
                                           context),
                                      if(CommonProvider.getPenaltyOrAdvanceStatus(widget.waterConnection?.mdmsData, true) && houseHoldProvider.isfirstdemand) getLabelText(
                                           i18.common.CORE_ADVANCE_ADJUSTED,
@@ -190,10 +195,10 @@ class NewConsumerBillState extends State<NewConsumerBill> {
                                       if(CommonProvider.getPenaltyOrAdvanceStatus(widget.waterConnection?.mdmsData, true) && houseHoldProvider.isfirstdemand) getLabelText(
                                           i18.common.CORE_NET_DUE_AMOUNT,
                                           ('₹' +
-                                              ((billList.bill?.first.totalAmount ?? 0) >= 0 ? ((billList.bill?.first.totalAmount ?? 0) - (penalty.penalty)) : 0)
+                                              ( CommonProvider.getNetDueAmountWithWithOutPenalty(billList.bill?.first.totalAmount ?? 0, penalty))
                                                   .toString()),
                                           context),
-                                      if(false && CommonProvider.getPenaltyOrAdvanceStatus(widget.waterConnection?.mdmsData, false, true))  CustomDetailsCard(
+                                      if(false && CommonProvider.getPenaltyOrAdvanceStatus(widget.waterConnection?.mdmsData, false, true) && houseHoldProvider.isfirstdemand)  CustomDetailsCard(
                                           Column(
                                             children: [
                                               getLabelText(
@@ -206,7 +211,7 @@ class NewConsumerBillState extends State<NewConsumerBill> {
                                               getLabelText(
                                                   i18.billDetails.CORE_NET_DUE_AMOUNT_WITH_PENALTY,
                                                   ('₹' +
-                                                      (billList.bill?.first.totalAmount ?? 0)
+                                                      CommonProvider.getNetDueAmountWithWithOutPenalty(billList.bill?.first.totalAmount ?? 0, penalty, true)
                                                           .toString()),
                                                   context,
                                                   subLabel: getDueDatePenalty(penalty.date, context))
@@ -369,10 +374,6 @@ class NewConsumerBillState extends State<NewConsumerBill> {
     };
     Navigator.pushNamed(context, Routes.HOUSEHOLD_DETAILS_COLLECT_PAYMENT,
         arguments: query);
-  }
-
-  String getTotalBillAmount() {
-    return ((widget.demandList.first.demandDetails?.first.taxAmount ?? 0) + CommonProvider.getArrearsAmount(widget.demandList)).toString();
   }
 
   bool showBill(List<Demands> demandList) {
