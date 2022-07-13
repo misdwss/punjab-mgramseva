@@ -22,7 +22,8 @@ class LanguageProvider with ChangeNotifier {
     super.dispose();
   }
 
-  Future<void> getLocalizationData(BuildContext context) async {
+  Future<List<StateInfo>> getLocalizationData(BuildContext context) async {
+    var localizationData = <StateInfo>[];
     try {
       var res = await getLanguages();
       if (res != null) {
@@ -33,6 +34,7 @@ class LanguageProvider with ChangeNotifier {
             .load();
         var stateInfos = <StateInfo>[];
         stateInfos.add(new StateInfo.fromJson(res.toJson()));
+        localizationData = stateInfos;
         streamController.add(stateInfos);
       } else {
         var localizationList =
@@ -45,6 +47,8 @@ class LanguageProvider with ChangeNotifier {
                   selectedLanguage?.label ?? '', selectedLanguage?.value))
               .load();
         }
+        localizationData = localizationList.mdmsRes?.commonMasters?.stateInfo ??
+            <StateInfo>[];
         streamController.add(
             localizationList.mdmsRes?.commonMasters?.stateInfo ??
                 <StateInfo>[]);
@@ -56,6 +60,7 @@ class LanguageProvider with ChangeNotifier {
       ErrorHandler.logError(e.toString(), s);
       streamController.add('error');
     }
+    return localizationData;
   }
 
   void onSelectionOfLanguage(

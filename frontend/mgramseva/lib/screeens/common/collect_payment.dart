@@ -40,7 +40,8 @@ class ConnectionPaymentView extends StatefulWidget {
   final List<Bill>? bill;
   final List<Demands>? demandList;
   final LanguageList? languageList;
-  const ConnectionPaymentView({Key? key, required this.query, this.bill, this.demandList, this.languageList})
+  final bool isConsumer;
+  const ConnectionPaymentView({Key? key, required this.query, this.bill, this.demandList, this.languageList, this.isConsumer = false})
       : super(key: key);
 
   @override
@@ -56,7 +57,7 @@ class _ConnectionPaymentViewState extends State<ConnectionPaymentView> {
   void initState() {
     var consumerPaymentProvider =
         Provider.of<CollectPaymentProvider>(context, listen: false);
-    consumerPaymentProvider.getBillDetails(context, widget.query, widget.bill, widget.demandList, widget.languageList);
+    consumerPaymentProvider.getBillDetails(context, widget.query, widget.bill, widget.demandList, widget.languageList, widget.isConsumer);
     super.initState();
   }
 
@@ -70,7 +71,11 @@ class _ConnectionPaymentViewState extends State<ConnectionPaymentView> {
           drawer: DrawerWrapper(
             Drawer(child: SideBar()),
           ),
-          appBar: CustomAppBar(),
+          appBar: widget.isConsumer ? AppBar(
+            title: Text('mGramSeva'),
+            automaticallyImplyLeading: false,
+            actions: [consumerPaymentProvider.buildDropDown(context)],
+          ) : PreferredSize(preferredSize: const Size.fromHeight(56), child : CustomAppBar()),
           body: StreamBuilder(
           stream: consumerPaymentProvider.paymentStreamController.stream,
           builder: (context, AsyncSnapshot snapshot) {
@@ -84,7 +89,7 @@ class _ConnectionPaymentViewState extends State<ConnectionPaymentView> {
               return Notifiers.networkErrorPage(
                   context,
                   () => consumerPaymentProvider.getBillDetails(
-                      context, widget.query, widget.bill, widget.demandList, widget.languageList));
+                      context, widget.query, widget.bill, widget.demandList, widget.languageList, widget.isConsumer));
             } else {
               switch (snapshot.connectionState) {
                 case ConnectionState.waiting:
@@ -100,6 +105,7 @@ class _ConnectionPaymentViewState extends State<ConnectionPaymentView> {
         builder: (_, consumerPaymentProvider, child) => Visibility(
             visible: fetchBill != null,
             child: BottomButtonBar(
+                widget.isConsumer ? '${ApplicationLocalizations.of(context).translate(i18.payment.PROCEED_TO_COLLECT)}' :
                 '${ApplicationLocalizations.of(context).translate(i18.common.COLLECT_PAYMENT)}',
                 checkValue  ?
                 () => checkAmount(fetchBill!, context)
@@ -119,7 +125,7 @@ class _ConnectionPaymentViewState extends State<ConnectionPaymentView> {
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              HomeBack(),
+              if(!widget.isConsumer) HomeBack(),
               LayoutBuilder(
                 builder: (_, constraints) => Column(
                   children: [
@@ -220,7 +226,7 @@ class _ConnectionPaymentViewState extends State<ConnectionPaymentView> {
               consumerPaymentProvider.paymentModeList,
               (val) => consumerPaymentProvider.onChangeOfPaymentAmountOrMethod(
                   fetchBill, val)),
-          CustomCheckBoxWidget(
+          if(widget.isConsumer) CustomCheckBoxWidget(
               checkValue,
               i18.payment.CORE_I_AGREE_TO_THE,
                   () => (bool? newVal) {

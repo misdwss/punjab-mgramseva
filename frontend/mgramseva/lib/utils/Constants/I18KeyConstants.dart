@@ -519,6 +519,7 @@ class _Payment {
   String get CORE_AMOUNT_CONFIRMATION => 'CORE_AMOUNT_CONFIRMATION';
   String get CORE_I_AGREE_TO_THE => 'CORE_I_AGREE_TO_THE';
   String get TERMS_N_CONDITIONS => 'TERMS_N_CONDITIONS';
+  String get PROCEED_TO_COLLECT => 'PROCEED_TO_COLLECT';
 }
 
 class _HomeWalkThroughMsg {

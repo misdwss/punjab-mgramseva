@@ -41,6 +41,8 @@ class CollectPaymentProvider with ChangeNotifier {
 
   ScreenshotController screenshotController = ScreenshotController();
   var paymentModeList = <KeyValue>[];
+  List<StateInfo>? stateList;
+  Languages? selectedLanguage;
 
   @override
   void dispose() {
@@ -49,12 +51,24 @@ class CollectPaymentProvider with ChangeNotifier {
   }
 
   Future<void> getBillDetails(
-      BuildContext context, Map<String, dynamic> query, List<Bill>? bill, List<Demands>? demandList, LanguageList? mdmsData) async {
+      BuildContext context, Map<String, dynamic> query, List<Bill>? bill, List<Demands>? demandList, LanguageList? mdmsData, bool isConsumer) async {
     try {
 
 
       List<FetchBill>? paymentDetails;
 
+      if(isConsumer) {
+       var stateData = await Provider.of<LanguageProvider>(context, listen: false)
+            .getLocalizationData(context);
+        stateList = stateData;
+        var index = stateData.first.languages
+            ?.indexWhere((element) => element.isSelected);
+        if (index != null && index != -1) {
+          selectedLanguage = stateData.first.languages?[index];
+        } else {
+          selectedLanguage = stateData.first.languages?.first;
+        }
+      }
       // if(bill == null) {
         paymentDetails = await ConsumerRepository().getBillDetails(query);
       // }else{
@@ -481,5 +495,41 @@ class CollectPaymentProvider with ChangeNotifier {
     //   fetchBill.paymentMethod = val;
     // }
     // notifyListeners();
+  }
+
+
+  Widget buildDropDown(BuildContext context) {
+    return Consumer<CollectPaymentProvider>(
+      builder: (_, provider, child) => Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 5),
+        child: DropdownButton(
+            value: selectedLanguage,
+            style: TextStyle(color: Theme.of(context).primaryColor, fontSize: 16),
+            items: dropDownItems,
+            onChanged: onChangeOfLanguage),
+      ),
+    );
+  }
+
+  void onChangeOfLanguage(value) {
+    selectedLanguage = value;
+    var languageProvider =
+    Provider.of<LanguageProvider>(navigatorKey.currentState!.context, listen: false);
+    languageProvider.onSelectionOfLanguage(
+        value!, stateList?.first.languages ?? []);
+  }
+
+  callNotifyer() async {
+    await Future.delayed(Duration(seconds: 1));
+    notifyListeners();
+  }
+
+  get dropDownItems {
+    return stateList?.first.languages?.map((value) {
+      return DropdownMenuItem(
+        value: value,
+        child: Text('${value.label}'),
+      );
+    }).toList();
   }
 }
