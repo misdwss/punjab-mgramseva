@@ -152,7 +152,7 @@ public class WSCalculationServiceImpl implements WSCalculationService {
 	 */
 	public List<Calculation> bulkDemandGeneration(CalculationReq request, Map<String, Object> masterMap) {
 		List<Calculation> calculations = getCalculations(request, masterMap);
-		demandService.generateDemand(request.getRequestInfo(), calculations, masterMap, true, false, false);
+		demandService.generateDemand(request.getRequestInfo(), calculations, masterMap, true, false, request.getIsAdvanceCalculation());
 		return calculations;
 	}
 

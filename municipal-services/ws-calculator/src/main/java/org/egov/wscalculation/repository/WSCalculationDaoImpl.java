@@ -4,10 +4,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.egov.wscalculation.producer.WSCalculationProducer;
 import org.egov.wscalculation.repository.builder.WSCalculatorQueryBuilder;
+import org.egov.wscalculation.repository.rowmapper.DemandListSchedulerRowMapper;
 import org.egov.wscalculation.repository.rowmapper.DemandSchedulerRowMapper;
 import org.egov.wscalculation.repository.rowmapper.MeterReadingCurrentReadingRowMapper;
 import org.egov.wscalculation.repository.rowmapper.MeterReadingRowMapper;
@@ -42,6 +44,9 @@ public class WSCalculationDaoImpl implements WSCalculationDao {
 
 	@Autowired
 	private DemandSchedulerRowMapper demandSchedulerRowMapper;
+	
+	@Autowired
+	private DemandListSchedulerRowMapper demandListSchedulerRowMapper;
 
 	@Value("${egov.meterservice.createmeterconnection}")
 	private String createMeterConnection;
@@ -125,19 +130,19 @@ public class WSCalculationDaoImpl implements WSCalculationDao {
 	}
 
 	@Override
-	public List<String> getConnectionsNoList(String tenantId, String connectionType) {
+	public Map<String, String> getConnectionsNoList(String tenantId, String connectionType) {
 		List<Object> preparedStatement = new ArrayList<>();
 		String query = queryBuilder.getConnectionNumberList(tenantId, connectionType, preparedStatement);
 		log.info("water " + connectionType + " connection list : " + query);
-		return jdbcTemplate.query(query, preparedStatement.toArray(), demandSchedulerRowMapper);
+		return jdbcTemplate.query(query, preparedStatement.toArray(), demandListSchedulerRowMapper);
 	}
 
 	@Override
-	public List<String> getNonMeterConnectionsList(String tenantId, Long dayStartTime, Long dayEndTime) {
+	public Map<String, String> getNonMeterConnectionsList(String tenantId, Long dayStartTime, Long dayEndTime) {
 		List<Object> preparedStatement = new ArrayList<>();
 		String query = queryBuilder.getNonMeteredConnectionsList(tenantId, dayStartTime, dayEndTime, preparedStatement);
 		log.info("water NMconnection list query: " + query);
-		return jdbcTemplate.query(query, preparedStatement.toArray(), demandSchedulerRowMapper);
+		return jdbcTemplate.query(query, preparedStatement.toArray(), demandListSchedulerRowMapper);
 	}
 
 	@Override

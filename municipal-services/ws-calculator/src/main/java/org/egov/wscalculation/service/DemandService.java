@@ -24,6 +24,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
@@ -894,11 +895,11 @@ public class DemandService {
 		Long dayEndTime = LocalDateTime.of(toDate.getYear(), toDate.getMonth(), toDate.getDayOfMonth(), 23, 59, 59, 999000000)
 				.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
 
-		List<String> connectionNos = waterCalculatorDao.getNonMeterConnectionsList(tenantId, dayStartTime, dayEndTime);;
-		Set<String> connectionSet = connectionNos.stream().collect(Collectors.toSet());
-
+		Map<String, String> connectionNosAndConsumerTypes = waterCalculatorDao.getNonMeterConnectionsList(tenantId, dayStartTime, dayEndTime);;
 		
-		if( connectionNos.size() == 0) {
+		Set<String> connectionSet = connectionNosAndConsumerTypes.keySet().stream().collect(Collectors.toSet());
+
+		if( connectionNosAndConsumerTypes.size() == 0) {
 			List<String> allConnections = waterCalculatorDao.searchConnectionNos(WSCalculationConstant.nonMeterdConnection, tenantId);
 			throw new CustomException("NO_CONNECTIONS_TO_GENERATE_DEMANDS",
 					"Zero Demands Generated Successfully, "+ allConnections.size() +" connections already have demands in this billing cycle!");

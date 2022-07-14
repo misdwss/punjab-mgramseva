@@ -281,9 +281,9 @@ public class DemandGenerationConsumer {
 				.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
 
 		
-		List<String> connectionNos = waterCalculatorDao.getNonMeterConnectionsList(tenantId, dayStartTime, dayEndTime);
+		Map<String, String> connectionNos = waterCalculatorDao.getNonMeterConnectionsList(tenantId, dayStartTime, dayEndTime);
 
-		List<String> meteredConnectionNos = waterCalculatorDao.getConnectionsNoList(tenantId,
+		Map<String, String> meteredConnectionNos = waterCalculatorDao.getConnectionsNoList(tenantId,
 				WSCalculationConstant.meteredConnectionType);
 		
 		
@@ -300,13 +300,22 @@ public class DemandGenerationConsumer {
 		
 		String assessmentYear = estimationService.getAssessmentYear();
 		ArrayList<String> failedConnectionNos = new ArrayList<String>();
-		for (String connectionNo : connectionNos) {
+		for (Map.Entry<String, String> entry : connectionNos.entrySet()) {
+			String connectionNo = entry.getKey();
 			CalculationCriteria calculationCriteria = CalculationCriteria.builder().tenantId(tenantId)
 					.assessmentYear(assessmentYear).connectionNo(connectionNo).from(dayStartTime).to(dayEndTime).build();
 			List<CalculationCriteria> calculationCriteriaList = new ArrayList<>();
 			calculationCriteriaList.add(calculationCriteria);
-			CalculationReq calculationReq = CalculationReq.builder().calculationCriteria(calculationCriteriaList)
-					.requestInfo(requestInfo).isconnectionCalculation(true).build();
+			CalculationReq calculationReq = null;
+			if(entry.getValue().equalsIgnoreCase("waterConnection-advance")) {
+				calculationReq = CalculationReq.builder().calculationCriteria(calculationCriteriaList)
+						.requestInfo(requestInfo).isconnectionCalculation(true).isAdvanceCalculation(true).build();
+			}
+			else {
+				calculationReq = CalculationReq.builder().calculationCriteria(calculationCriteriaList)
+						.requestInfo(requestInfo).isconnectionCalculation(true).build();
+			}
+			
 
 			Map<String, Object> masterMap = mDataService.loadMasterData(calculationReq.getRequestInfo(),
 					calculationReq.getCalculationCriteria().get(0).getTenantId());
