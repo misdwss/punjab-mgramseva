@@ -313,7 +313,7 @@ public class DemandGenerationConsumer {
 			}
 			else {
 				calculationReq = CalculationReq.builder().calculationCriteria(calculationCriteriaList)
-						.requestInfo(requestInfo).isconnectionCalculation(true).build();
+						.requestInfo(requestInfo).isconnectionCalculation(true).isAdvanceCalculation(false).build();
 			}
 			
 
