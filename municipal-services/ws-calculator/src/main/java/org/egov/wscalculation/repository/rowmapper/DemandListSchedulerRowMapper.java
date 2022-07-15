@@ -19,7 +19,7 @@ public class DemandListSchedulerRowMapper implements ResultSetExtractor<Map<Stri
 		Map<String, String> connectionAndConsumerTypeLists = new HashMap<>();
 
 		while (rs.next()) {
-			connectionAndConsumerTypeLists.put(rs.getString("connectionno"), rs.getString("consumertype"));
+			connectionAndConsumerTypeLists.put(rs.getString("connectionno"), rs.getString("paymenttype"));
 		}
 		return connectionAndConsumerTypeLists;
 	}
