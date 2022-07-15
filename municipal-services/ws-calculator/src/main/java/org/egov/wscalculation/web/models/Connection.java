@@ -135,8 +135,35 @@ public class Connection {
 	@NotNull
 	private BigDecimal arrears = null;
 
+	public enum PaymentTypeEnum {
+		ARREARS("Arrears"),
+
+		ADVANCE("Advance");
+
+		private String value;
+
+		PaymentTypeEnum(String value) {
+			this.value = value;
+		}
+
+		@Override
+		@JsonValue
+		public String toString() {
+			return String.valueOf(value);
+		}
+
+		@JsonCreator
+		public static StatusEnum fromValue(String text) {
+			for (StatusEnum b : StatusEnum.values()) {
+				if (String.valueOf(b.value).equals(text)) {
+					return b;
+				}
+			}
+			return null;
+		}
+	}
 	@JsonProperty("paymentType")
-	private String paymentType = null;
+	private PaymentTypeEnum paymentType = null;
 	
 	@JsonProperty("penalty")
 	private BigDecimal penalty = null;
@@ -145,11 +172,11 @@ public class Connection {
 	private BigDecimal advance = null;
 	
 
-	public String getPaymentType() {
+	public PaymentTypeEnum getPaymentType() {
 		return paymentType;
 	}
 
-	public void setPaymentType(String paymentType) {
+	public void setPaymentType(PaymentTypeEnum paymentType) {
 		this.paymentType = paymentType;
 	}
 

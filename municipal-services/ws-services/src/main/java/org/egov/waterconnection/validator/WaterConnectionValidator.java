@@ -23,6 +23,7 @@ import org.egov.waterconnection.web.models.RequestInfoWrapper;
 import org.egov.waterconnection.web.models.ValidatorResult;
 import org.egov.waterconnection.web.models.WaterConnection;
 import org.egov.waterconnection.web.models.WaterConnectionRequest;
+import org.egov.waterconnection.web.models.Connection.PaymentTypeEnum;
 import org.egov.waterconnection.web.models.Connection.StatusEnum;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -85,16 +86,15 @@ public class WaterConnectionValidator {
 		if(waterConnectionRequest.getWaterConnection().getProcessInstance().getAction().equalsIgnoreCase("PAY"))
 			errorMap.put("INVALID_ACTION","Pay action cannot be perform directly");
 		
-		if (waterConnectionRequest.getWaterConnection().getPaymentType() != null
-				&& !waterConnectionRequest.getWaterConnection().getPaymentType().isEmpty()) {
+		if (waterConnectionRequest.getWaterConnection().getPaymentType() != null) {
 
 			if (waterConnectionRequest.getWaterConnection().getPaymentType()
-					.equalsIgnoreCase(WCConstants.PAYMENT_TYPE_ARREARS)
+					.equals(PaymentTypeEnum.ARREARS)
 					&& waterConnectionRequest.getWaterConnection().getAdvance() != null) {
 				errorMap.put("INVALID_PARAMETER", "Advance value is not considered when Paymenttype is arrears.");
 			}
 			if (waterConnectionRequest.getWaterConnection().getPaymentType()
-					.equalsIgnoreCase(WCConstants.PAYMENT_TYPE_ADVANCE)
+					.equals(PaymentTypeEnum.ADVANCE)
 					&& (waterConnectionRequest.getWaterConnection().getArrears() != null
 							|| waterConnectionRequest.getWaterConnection().getPenalty() != null)) {
 				errorMap.put("INVALID_PARAMETER",
