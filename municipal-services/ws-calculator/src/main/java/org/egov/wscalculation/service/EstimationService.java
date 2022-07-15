@@ -130,15 +130,15 @@ public class EstimationService {
 		if(!isAdvanceCalculation) {
 		if(connection.getArrears()!=null) {
 			estimates.add(TaxHeadEstimate.builder().taxHeadCode(isconnectionCalculation ? WSCalculationConstant.WS_CHARGE :WSCalculationConstant.WS_CHARGE_ARREAR)
-					.estimateAmount(waterCharge.get("arrears").setScale(2, 2)).build());
+					.estimateAmount(isconnectionCalculation ? waterCharge.get("waterCharge") : waterCharge.get("arrears").setScale(2, 2)).build());
 		}
 		if(connection.getPenalty()!=null) {
 			estimates.add(TaxHeadEstimate.builder().taxHeadCode(isconnectionCalculation ? WSCalculationConstant.WS_CHARGE :WSCalculationConstant.WS_PENALTY)
-					.estimateAmount(waterCharge.get("penalty").setScale(2, 2)).build());
+					.estimateAmount(isconnectionCalculation ? waterCharge.get("waterCharge") :waterCharge.get("penalty").setScale(2, 2)).build());
 		}
 		}else {
 			estimates.add(TaxHeadEstimate.builder().taxHeadCode(isconnectionCalculation ? WSCalculationConstant.WS_CHARGE :WSCalculationConstant.ADVANCE_COLLECTION)
-					.estimateAmount(waterCharge.get("advance").setScale(2, 2)).build());
+					.estimateAmount(isconnectionCalculation ? waterCharge.get("waterCharge") :waterCharge.get("advance").setScale(2, 2)).build());
 		}
 
 		// Water_cess
