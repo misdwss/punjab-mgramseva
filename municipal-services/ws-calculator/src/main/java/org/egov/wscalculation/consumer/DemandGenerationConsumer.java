@@ -306,15 +306,11 @@ public class DemandGenerationConsumer {
 					.assessmentYear(assessmentYear).connectionNo(connectionNo).from(dayStartTime).to(dayEndTime).build();
 			List<CalculationCriteria> calculationCriteriaList = new ArrayList<>();
 			calculationCriteriaList.add(calculationCriteria);
-			CalculationReq calculationReq = null;
-			if(entry.getValue().equalsIgnoreCase("advance")) {
-				calculationReq = CalculationReq.builder().calculationCriteria(calculationCriteriaList)
-						.requestInfo(requestInfo).isconnectionCalculation(true).isAdvanceCalculation(true).build();
-			}
-			else {
-				calculationReq = CalculationReq.builder().calculationCriteria(calculationCriteriaList)
+			
+			
+			CalculationReq calculationReq = CalculationReq.builder().calculationCriteria(calculationCriteriaList)
 						.requestInfo(requestInfo).isconnectionCalculation(true).isAdvanceCalculation(false).build();
-			}
+			
 			
 
 			Map<String, Object> masterMap = mDataService.loadMasterData(calculationReq.getRequestInfo(),
