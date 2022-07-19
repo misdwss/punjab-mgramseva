@@ -203,6 +203,7 @@ class Common {
   String get CORE_GO_BACK => 'CORE_GO_BACK';
   String get CORE_CONFIRM => 'CORE_CONFIRM';
   String get CORE_ADVANCE_RUPEE => 'CORE_ADVANCE_RUPEE';
+  String get ADVANCE_AVAILABLE => 'ADVANCE_AVAILABLE';
 }
 
 class Password {

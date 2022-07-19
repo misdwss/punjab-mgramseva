@@ -154,8 +154,8 @@ class _GenerateNewBillState extends State<GenerateNewBill> {
                             ('₹' +
                                 CommonProvider.getTotalBillAmount(widget.demandList.demands ?? []).toString()),
                             context)
-                : _getLabeltext(i18.generateBillDetails.PENDING_AMOUNT,
-                            ('₹' + (getPendingAmount > 0 ? getPendingAmount : 0).toString()), context),
+                : _getLabeltext( getPendingAmount >= 0 ? i18.generateBillDetails.PENDING_AMOUNT : i18.common.ADVANCE_AVAILABLE,
+                            ('₹' + (getPendingAmount >= 0 ? getPendingAmount : getPendingAmount.abs()).toString()), context),
                         billpaymentsProvider.isfirstdemand == false &&
                             getPendingAmount > 0
                             ? new Column(
