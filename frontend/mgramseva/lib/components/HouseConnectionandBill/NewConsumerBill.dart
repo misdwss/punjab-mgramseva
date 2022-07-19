@@ -165,7 +165,7 @@ class NewConsumerBillState extends State<NewConsumerBill> {
                                             i18.billDetails.WS_10201,
                                             ('₹' + CommonProvider.getNormalPenalty(widget.demandList).toString()),
                                             context),
-                                      getLabelText(
+                                     if(!houseHoldProvider.isfirstdemand && (billList.bill?.first.totalAmount ?? 0) >= 0) getLabelText(
                                           houseHoldProvider.isfirstdemand ==
                                                   true
                                               ? i18.billDetails.CURRENT_BILL
@@ -175,16 +175,17 @@ class NewConsumerBillState extends State<NewConsumerBill> {
                                                   .first.taxAmount : CommonProvider.getArrearsAmount(widget.demandList))
                                                   .toString()),
                                           context),
-                                      houseHoldProvider.isfirstdemand == true
-                                          ? getLabelText(
+                                      if(houseHoldProvider.isfirstdemand == true)
+                                          getLabelText(
                                               i18.billDetails.ARRERS_DUES,
                                               ('₹' + CommonProvider.getArrearsAmount(widget.demandList).toString()),
-                                              context)
-                                          : Text(""),
+                                              context),
                                       getLabelText(
-                                          i18.billDetails.TOTAL_AMOUNT,
+                                          (widget.waterConnection?.fetchBill?.bill?.first.totalAmount ?? 0) >= 0 ?
+                                          (!houseHoldProvider.isfirstdemand ? i18.generateBillDetails.PENDING_AMOUNT : i18.billDetails.TOTAL_AMOUNT) : i18.common.ADVANCE_AVAILABLE,
                                           ('₹' +
-                                              CommonProvider.getTotalBillAmount(widget.demandList).toString()),
+                                              ((widget.waterConnection?.fetchBill?.bill?.first.totalAmount ?? 0) < 0 ?
+                                          (widget.waterConnection?.fetchBill?.bill?.first.totalAmount ?? 0).abs() : CommonProvider.getTotalBillAmount(widget.demandList).toString()).toString()),
                                           context),
                                      if(CommonProvider.getPenaltyOrAdvanceStatus(widget.waterConnection?.mdmsData, true) && houseHoldProvider.isfirstdemand) getLabelText(
                                           i18.common.CORE_ADVANCE_ADJUSTED,
@@ -265,14 +266,17 @@ class NewConsumerBillState extends State<NewConsumerBill> {
                                                               billList
                                                                   .bill!,
                                                               context))
-                                                  : ShortButton(
-                                                      i18.billDetails
-                                                          .COLLECT_PAYMENT,
-                                                      () =>
-                                                          onClickOfCollectPayment(
-                                                              billList
-                                                                  .bill!,
-                                                              context)))
+                                                  : Visibility(
+                                                visible: (billList.bill?.first.totalAmount ?? 0) > 0,
+                                                    child: ShortButton(
+                                                        i18.billDetails
+                                                            .COLLECT_PAYMENT,
+                                                        () =>
+                                                            onClickOfCollectPayment(
+                                                                billList
+                                                                    .bill!,
+                                                                context)),
+                                                  ))
                                           : houseHoldProvider.isfirstdemand ==
                                                   true
                                               ? Container(
@@ -387,7 +391,7 @@ class NewConsumerBillState extends State<NewConsumerBill> {
     if(demandList.isEmpty){
       return false;
     }else if(!houseHoldRegister.isfirstdemand && widget.waterConnection?.connectionType != 'Metered'
-        && (widget.waterConnection?.fetchBill?.bill?.first.totalAmount ?? 0) <= 0){
+        && (widget.waterConnection?.fetchBill?.bill?.first.totalAmount ?? 0) == 0){
       return false;
     }else if(demandList.first.demandDetails?.first.taxHeadMasterCode == 'WS_ADVANCE_CARRYFORWARD'){
       return true;
