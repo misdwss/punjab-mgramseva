@@ -152,7 +152,7 @@ public class WSCalculationServiceImpl implements WSCalculationService {
 	 */
 	public List<Calculation> bulkDemandGeneration(CalculationReq request, Map<String, Object> masterMap) {
 		List<Calculation> calculations = getCalculations(request, masterMap);
-		demandService.generateDemand(request.getRequestInfo(), calculations, masterMap, true, false, false);
+		demandService.generateDemand(request.getRequestInfo(), calculations, masterMap, true, false, request.getIsAdvanceCalculation());
 		return calculations;
 	}
 
@@ -267,7 +267,7 @@ public class WSCalculationServiceImpl implements WSCalculationService {
 		List<Calculation> calculations = new ArrayList<>(request.getCalculationCriteria().size());
 		for (CalculationCriteria criteria : request.getCalculationCriteria()) {
 			Map<String, List> estimationMap = null;
-			if(request.getIsAdvanceCalculation() == null) {
+			if(request.getIsAdvanceCalculation() == null || (!request.getIsAdvanceCalculation().booleanValue())) {
 				estimationMap	= estimationService.getEstimationMap(criteria, request.getRequestInfo(),
 						masterMap,request.getIsconnectionCalculation(),false);
 			}else {
