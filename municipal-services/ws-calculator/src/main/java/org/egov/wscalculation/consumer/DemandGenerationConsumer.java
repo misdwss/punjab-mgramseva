@@ -307,9 +307,19 @@ public class DemandGenerationConsumer {
 			List<CalculationCriteria> calculationCriteriaList = new ArrayList<>();
 			calculationCriteriaList.add(calculationCriteria);
 			
-			
-			CalculationReq calculationReq = CalculationReq.builder().calculationCriteria(calculationCriteriaList)
-						.requestInfo(requestInfo).isconnectionCalculation(true).isAdvanceCalculation(false).build();
+			CalculationReq calculationReq = null;
+			if(entry.getValue().equalsIgnoreCase("advance")) {
+				calculationReq = CalculationReq.builder().calculationCriteria(calculationCriteriaList)
+						.requestInfo(requestInfo).isconnectionCalculation(true).isAdvanceCalculation(false).
+						isAdvanceDemand(true).build();
+				
+				
+			}
+			else {
+				calculationReq = CalculationReq.builder().calculationCriteria(calculationCriteriaList)
+						.requestInfo(requestInfo).isconnectionCalculation(true).isAdvanceCalculation(false).
+						isAdvanceDemand(false).build();
+			}
 			
 			
 

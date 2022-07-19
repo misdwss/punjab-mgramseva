@@ -43,6 +43,9 @@ public class CalculationReq  {
         private Boolean isconnectionCalculation;
 		
         private Boolean isAdvanceCalculation;
+        
+        private Boolean isAdvanceDemand;
+
 
         @Valid
         @NotNull

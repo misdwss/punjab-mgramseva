@@ -142,7 +142,7 @@ public class DemandService {
 	 *                     generated or updated
 	 */
 	public List<Demand> generateDemand(RequestInfo requestInfo, List<Calculation> calculations,
-			Map<String, Object> masterMap, boolean isForConnectionNo, boolean isWSUpdateSMS, boolean isAdvance) {
+			Map<String, Object> masterMap, boolean isForConnectionNo, boolean isWSUpdateSMS, boolean isAdvance, boolean isAdvanceDemand) {
 		@SuppressWarnings("unchecked")
 		Map<String, Object> financialYearMaster = (Map<String, Object>) masterMap
 				.get(WSCalculationConstant.BILLING_PERIOD);
@@ -189,7 +189,7 @@ public class DemandService {
 		}
 		List<Demand> createdDemands = new ArrayList<>();
 		if (!CollectionUtils.isEmpty(createCalculations))
-			createdDemands = createDemand(requestInfo, createCalculations, masterMap, isForConnectionNo, isWSUpdateSMS,isAdvance);
+			createdDemands = createDemand(requestInfo, createCalculations, masterMap, isForConnectionNo, isWSUpdateSMS,isAdvance,isAdvanceDemand);
 
 		if (!CollectionUtils.isEmpty(updateCalculations))
 			createdDemands = updateDemandForCalculation(requestInfo, updateCalculations, fromDate, toDate,
@@ -205,7 +205,7 @@ public class DemandService {
 	 * @return Returns list of demands
 	 */
 	private List<Demand> createDemand(RequestInfo requestInfo, List<Calculation> calculations,
-			Map<String, Object> masterMap, boolean isForConnectionNO, boolean isWSUpdateSMS, boolean isAdvance) {
+			Map<String, Object> masterMap, boolean isForConnectionNO, boolean isWSUpdateSMS, boolean isAdvance, boolean isAdvanceDemand) {
 		List<Demand> demands = new LinkedList<>();
 		List<SMSRequest> smsRequests = new LinkedList<>();
 		DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("d/MM/uuuu");
@@ -315,9 +315,11 @@ public class DemandService {
 				}
 			}
 		}
-		log.info("Demand Object" + demands.toString());
-		List<Demand> demandRes = demandRepository.saveDemand(requestInfo, demands);
 
+			log.info("Demand Object" + demands.toString());
+			List<Demand> demandRes = demandRepository.saveDemand(requestInfo, demands);
+		
+		
 		return demandRes;
 	}
 
