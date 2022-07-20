@@ -175,17 +175,26 @@ class NewConsumerBillState extends State<NewConsumerBill> {
                                                   .first.taxAmount : CommonProvider.getArrearsAmount(widget.demandList))
                                                   .toString()),
                                           context),
+                                      if(houseHoldProvider.isfirstdemand) getLabelText(
+                                          houseHoldProvider.isfirstdemand ==
+                                              true
+                                              ? i18.billDetails.CURRENT_BILL
+                                              : i18.billDetails.ARRERS_DUES,
+                                          ('₹' +
+                                              (houseHoldProvider.isfirstdemand ?  widget.demandList.first.demandDetails!
+                                                  .first.taxAmount : CommonProvider.getArrearsAmount(widget.demandList))
+                                                  .toString()),
+                                          context),
                                       if(houseHoldProvider.isfirstdemand == true)
                                           getLabelText(
                                               i18.billDetails.ARRERS_DUES,
                                               ('₹' + CommonProvider.getArrearsAmount(widget.demandList).toString()),
                                               context),
                                       getLabelText(
-                                          (widget.waterConnection?.fetchBill?.bill?.first.totalAmount ?? 0) >= 0 ?
-                                          (!houseHoldProvider.isfirstdemand ? i18.generateBillDetails.PENDING_AMOUNT : i18.billDetails.TOTAL_AMOUNT) : i18.common.ADVANCE_AVAILABLE,
+                                          !houseHoldProvider.isfirstdemand ? ((widget.waterConnection?.fetchBill?.bill?.first.totalAmount ?? 0) >= 0 ? i18.generateBillDetails.PENDING_AMOUNT : i18.common.ADVANCE_AVAILABLE) : i18.billDetails.TOTAL_AMOUNT,
                                           ('₹' +
-                                              ((widget.waterConnection?.fetchBill?.bill?.first.totalAmount ?? 0) < 0 ?
-                                          (widget.waterConnection?.fetchBill?.bill?.first.totalAmount ?? 0).abs() : CommonProvider.getTotalBillAmount(widget.demandList).toString()).toString()),
+                                              (!houseHoldProvider.isfirstdemand ?
+                                          (widget.waterConnection?.fetchBill?.bill?.first.totalAmount ?? 0).abs() : CommonProvider.getTotalBillAmount(widget.demandList)).toString()),
                                           context),
                                      if(CommonProvider.getPenaltyOrAdvanceStatus(widget.waterConnection?.mdmsData, true) && houseHoldProvider.isfirstdemand) getLabelText(
                                           i18.common.CORE_ADVANCE_ADJUSTED,
@@ -388,13 +397,21 @@ class NewConsumerBillState extends State<NewConsumerBill> {
     (!(e.isPaymentCompleted ?? false) && e.status != 'CANCELLED'))
         .toList();
 
+    demandList = demandList.map((e) => Demands.fromJson(e.toJson())).toList();
+
+    demandList.forEach((e) {
+      e.demandDetails?.sort((a, b) => a
+          .auditDetails!.createdTime!
+          .compareTo(b.auditDetails!.createdTime!));
+    });
+
     if(demandList.isEmpty){
       return false;
     }else if(!houseHoldRegister.isfirstdemand && widget.waterConnection?.connectionType != 'Metered'
         && (widget.waterConnection?.fetchBill?.bill?.first.totalAmount ?? 0) == 0){
       return false;
-    }else if(demandList.first.demandDetails?.first.taxHeadMasterCode == 'WS_ADVANCE_CARRYFORWARD'){
-      return true;
+    }else if(demandList.first.demandDetails?.last.taxHeadMasterCode == 'WS_ADVANCE_CARRYFORWARD'){
+      return !houseHoldRegister.isfirstdemand;
     }else if((widget.waterConnection?.fetchBill?.bill?.first.totalAmount ?? 0) > 0){
       return true;
     } else {
@@ -417,11 +434,11 @@ class NewConsumerBillState extends State<NewConsumerBill> {
                 }
               }
               var collectedAmount = list.reduce((a, b) => a+b);
-              return !(collectedAmount == demandDetail.collectionAmount?.abs());
+               return collectedAmount == demandDetail.collectionAmount?.abs();
             }
-          }
-        }else{
-          return false;
+          }else if(demandDetail.taxAmount! < demandDetail.collectionAmount!){
+          return true;
+        }
         }
       }
     }
