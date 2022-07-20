@@ -92,7 +92,7 @@ public class WSCalculationValidator {
 		}
 		
 		if (meterReading.getCurrentReadingDate().equals(meterReading.getLastReadingDate())) {
-			errorMap.put("INVALID_METER_READING_LAST_READING",
+			errorMap.put("INVALID_METER_READING_DATE",
 					"Current Meter Reading Date cannot be same as last meter reading date");
 		}
 
