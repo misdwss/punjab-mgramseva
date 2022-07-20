@@ -14,6 +14,8 @@ import 'package:mgramseva/widgets/ListLabelText.dart';
 import 'package:mgramseva/widgets/ShortButton.dart';
 import 'package:provider/provider.dart';
 
+import '../../providers/household_details_provider.dart';
+
 class GenerateNewBill extends StatefulWidget {
   final WaterConnection? waterconnection;
   final DemandList demandList;
@@ -53,8 +55,8 @@ class _GenerateNewBillState extends State<GenerateNewBill> {
     DemandList demandList = widget.demandList;
     if (demandList.demands!.isNotEmpty) {
       int? num = demandList.demands?.first.auditDetails?.createdTime;
-      var billpaymentsProvider =
-          Provider.of<DemadDetailProvider>(context, listen: false);
+      var houseHoldProvider =
+      Provider.of<HouseHoldProvider>(context, listen: false);;
       return LayoutBuilder(builder: (context, constraints) {
         return Column(
           children: [
@@ -68,7 +70,7 @@ class _GenerateNewBillState extends State<GenerateNewBill> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        billpaymentsProvider.isfirstdemand != false
+                        houseHoldProvider.isfirstdemand != false
                             ? Row(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 mainAxisAlignment:
@@ -136,19 +138,19 @@ class _GenerateNewBillState extends State<GenerateNewBill> {
                                     .currentReading
                                     .toString(),
                             context),
-                        if(CommonProvider.getPenaltyOrAdvanceStatus(widget.waterconnection?.mdmsData, false) && !billpaymentsProvider.isfirstdemand &&
+                        if(CommonProvider.getPenaltyOrAdvanceStatus(widget.waterconnection?.mdmsData, false) && !houseHoldProvider.isfirstdemand &&
                             widget.demandList.demands?.first.demandDetails?.first.taxHeadMasterCode != 'WS_ADVANCE_CARRYFORWARD')
                           _getLabeltext(
                               'WS_${widget.demandList.demands?.first.demandDetails?.first.taxHeadMasterCode}',
                               ('₹' +  (widget.demandList.demands?.first.demandDetails?.first.taxAmount).toString()),
                               context),
-                        if(!billpaymentsProvider.isfirstdemand &&  widget.demandList.demands?.first.demandDetails?.first.taxHeadMasterCode == '10201'
+                        if(!houseHoldProvider.isfirstdemand &&  widget.demandList.demands?.first.demandDetails?.first.taxHeadMasterCode == '10201'
                         && CommonProvider.getArrearsAmount(widget.demandList.demands ?? []) > 0)
                           _getLabeltext(
                               'WS_${widget.demandList.demands?.first.demandDetails?.last.taxHeadMasterCode}',
                               ('₹' + (widget.demandList.demands?.first.demandDetails?.last.taxAmount).toString()),
                               context),
-                        !billpaymentsProvider.isfirstdemand && getPendingAmount > 0 ?
+                        !houseHoldProvider.isfirstdemand && getPendingAmount > 0 ?
                         _getLabeltext(
                             i18.billDetails.TOTAL_AMOUNT,
                             ('₹' +
@@ -156,7 +158,7 @@ class _GenerateNewBillState extends State<GenerateNewBill> {
                             context)
                 : _getLabeltext( getPendingAmount >= 0 ? i18.generateBillDetails.PENDING_AMOUNT : i18.common.ADVANCE_AVAILABLE,
                             ('₹' + (getPendingAmount >= 0 ? getPendingAmount : getPendingAmount.abs()).toString()), context),
-                        billpaymentsProvider.isfirstdemand == false &&
+                        houseHoldProvider.isfirstdemand == false &&
                             getPendingAmount > 0
                             ? new Column(
                                 mainAxisAlignment: MainAxisAlignment.start,
