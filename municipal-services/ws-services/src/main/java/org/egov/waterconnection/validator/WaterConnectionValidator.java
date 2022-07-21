@@ -88,6 +88,13 @@ public class WaterConnectionValidator {
 		if (waterConnectionRequest.getWaterConnection().getPaymentType() != null
 				&& !waterConnectionRequest.getWaterConnection().getPaymentType().isEmpty()) {
 
+			if(!(waterConnectionRequest.getWaterConnection().getPaymentType()
+					.equalsIgnoreCase(WCConstants.PAYMENT_TYPE_ARREARS)) ||
+					!(waterConnectionRequest.getWaterConnection().getPaymentType()
+					.equalsIgnoreCase(WCConstants.PAYMENT_TYPE_ADVANCE))) {
+				errorMap.put("INVALID_PARAMETER",
+						"Payment type not allowed");
+			}
 			if (waterConnectionRequest.getWaterConnection().getPaymentType()
 					.equalsIgnoreCase(WCConstants.PAYMENT_TYPE_ARREARS)
 					&& waterConnectionRequest.getWaterConnection().getAdvance() != null) {
@@ -99,10 +106,6 @@ public class WaterConnectionValidator {
 							|| waterConnectionRequest.getWaterConnection().getPenalty() != null)) {
 				errorMap.put("INVALID_PARAMETER",
 						"Arrears and Penalty value is not considered when Paymenttype is Advanced.");
-			}
-			else {
-				errorMap.put("INVALID_PARAMETER",
-						"Payment type not allowed");
 			}
 		}	
 		
