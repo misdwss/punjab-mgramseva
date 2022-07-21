@@ -703,14 +703,14 @@ class CommonProvider with ChangeNotifier {
           .toList();
       for (var demand in filteredDemands) {
         demand.demandDetails!.forEach((e) {
-          if (e.taxHeadMasterCode != 'WS_ADVANCE_CARRYFORWARD' && e.taxHeadMasterCode != '10201' && e.taxHeadMasterCode != 'WS_TIME_ADHOC_PENALTY'){
+          if (e.taxHeadMasterCode != 'WS_ADVANCE_CARRYFORWARD' && e.taxHeadMasterCode != 'WS_TIME_ADHOC_PENALTY'){
             res.add((e.taxAmount ?? 0) - (e.collectionAmount ?? 0));
           }
         });
       }
     }
 
-    var arrearsDeduction = (demandList.first.demandDetails?.first.taxHeadMasterCode != 'WS_ADVANCE_CARRYFORWARD' && demandList.first.demandDetails?.first.taxHeadMasterCode != '10201'
+    var arrearsDeduction = (demandList.first.demandDetails?.first.taxHeadMasterCode != 'WS_ADVANCE_CARRYFORWARD'
         && demandList.first.demandDetails?.first.taxHeadMasterCode != 'WS_TIME_ADHOC_PENALTY') ?
     ((demandList.first.demandDetails?.first.taxAmount ?? 0) - (demandList.first.demandDetails?.first.collectionAmount ?? 0)) : 0;
 
