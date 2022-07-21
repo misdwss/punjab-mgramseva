@@ -100,7 +100,7 @@ public class WaterConnectionValidator {
 					&& waterConnectionRequest.getWaterConnection().getAdvance() != null) {
 				errorMap.put("INVALID_PARAMETER", "Advance value is not considered when Paymenttype is arrears.");
 			}
-			else if (waterConnectionRequest.getWaterConnection().getPaymentType()
+			if (waterConnectionRequest.getWaterConnection().getPaymentType()
 					.equalsIgnoreCase(WCConstants.PAYMENT_TYPE_ADVANCE)
 					&& (waterConnectionRequest.getWaterConnection().getArrears() != null
 							|| waterConnectionRequest.getWaterConnection().getPenalty() != null)) {
