@@ -644,7 +644,7 @@ class CommonProvider with ChangeNotifier {
 
     filteredDemands.forEach((billDetails) {
       billDetails.demandDetails?.forEach((billAccountDetails) {
-        if(billAccountDetails.taxHeadMasterCode == 'WS_TIME_ADHOC_PENALTY'){
+        if(billAccountDetails.taxHeadMasterCode == 'WS_TIME_PENALTY'){
           var amount = billAccountDetails.taxAmount ?? 0;
           DateTime billGenerationDate,expiryDate;
           var date = DateTime.fromMillisecondsSinceEpoch(billAccountDetails.auditDetails!.createdTime ?? 0);
@@ -731,6 +731,19 @@ class CommonProvider with ChangeNotifier {
     }catch(e){
       return LanguageList();
     }
+  }
+
+  static bool checkAdvance (List<Demands> demandList) {
+    var advance = false;
+    var index = -1;
+    for(int i =0; i < demandList.length; i++){
+      index = demandList[i].demandDetails?.lastIndexWhere((e) => e.taxHeadMasterCode == 'WS_ADVANCE_CARRYFORWARD') ?? -1;
+      if(index != -1){
+        advance = true;
+        break;
+      }
+    }
+    return advance;
   }
 
  static bool getPenaltyOrAdvanceStatus(LanguageList? languageList, [isAdvance = false, bool isTimePenalty = false]) {
