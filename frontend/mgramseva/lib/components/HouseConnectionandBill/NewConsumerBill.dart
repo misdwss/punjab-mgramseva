@@ -1,3 +1,4 @@
+
 import 'package:flutter/material.dart';
 import 'package:mgramseva/model/bill/billing.dart';
 import 'package:mgramseva/model/connection/water_connection.dart';
@@ -270,7 +271,11 @@ class NewConsumerBillState extends State<NewConsumerBill> {
                                                                   billList.bill!
                                                                       .first,
                                                                   "Share"),
-                                                      () =>
+                                                            CommonProvider.getPenaltyOrAdvanceStatus(widget.waterConnection?.mdmsData, true)
+                                                            && CommonProvider.checkAdvance(widget.demandList)
+                                                            && ( CommonProvider.getNetDueAmountWithWithOutPenalty(billList.bill?.first.totalAmount ?? 0, penalty) == 0)
+                                                            ? null
+                                                                : () =>
                                                           onClickOfCollectPayment(
                                                               billList
                                                                   .bill!,
@@ -280,7 +285,12 @@ class NewConsumerBillState extends State<NewConsumerBill> {
                                                     child: ShortButton(
                                                         i18.billDetails
                                                             .COLLECT_PAYMENT,
-                                                        () =>
+                                                  CommonProvider.getPenaltyOrAdvanceStatus(widget.waterConnection?.mdmsData, true)
+                                                  && CommonProvider.checkAdvance(widget.demandList)
+                                                  && CommonProvider.getAdvanceAmount(widget.demandList) == 0
+                                                  && ( CommonProvider.getNetDueAmountWithWithOutPenalty(billList.bill?.first.totalAmount ?? 0, penalty) == 0)
+                                                      ? null
+                                                      : () =>
                                                             onClickOfCollectPayment(
                                                                 billList
                                                                     .bill!,
