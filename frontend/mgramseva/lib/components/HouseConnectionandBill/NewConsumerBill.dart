@@ -1,4 +1,3 @@
-import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:mgramseva/model/bill/billing.dart';
@@ -85,7 +84,6 @@ class NewConsumerBillState extends State<NewConsumerBill> {
   buidBillview(BillList billList) {
     var commonProvider = Provider.of<CommonProvider>(context, listen: false);
     var penalty = CommonProvider.getPenalty(widget.demandList);
-    print(penalty);
 
     return LayoutBuilder(builder: (context, constraints) {
       var houseHoldProvider =
