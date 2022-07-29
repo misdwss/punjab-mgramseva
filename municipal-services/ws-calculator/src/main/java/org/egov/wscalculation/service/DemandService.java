@@ -50,6 +50,7 @@ import org.egov.wscalculation.web.models.Demand;
 import org.egov.wscalculation.web.models.Demand.StatusEnum;
 import org.egov.wscalculation.web.models.DemandDetail;
 import org.egov.wscalculation.web.models.DemandDetailAndCollection;
+import org.egov.wscalculation.web.models.DemandPenaltyResponse;
 import org.egov.wscalculation.web.models.DemandRequest;
 import org.egov.wscalculation.web.models.DemandResponse;
 import org.egov.wscalculation.web.models.GetBillCriteria;
@@ -1094,6 +1095,21 @@ public class DemandService {
 		log.info("Updated Demand Details " + demands.toString());
 		demandRepository.updateDemand(requestInfo, demands);
 		return calculations;
+	}
+
+	public DemandPenaltyResponse getPenaltyDetails(@Valid GetBillCriteria getBillCriteria,
+			@Valid RequestInfoWrapper requestInfoWrapper) {
+		List<Demand> demands = updateDemands(getBillCriteria, requestInfoWrapper);
+		BigDecimal totalApplicablePenalty = BigDecimal.ZERO;
+		for(Demand demand: demands) {
+			for(DemandDetail demanddetail: demand.getDemandDetails()) {
+				if(demanddetail.getTaxHeadMasterCode().equalsIgnoreCase(WSCalculationConstant.WS_TIME_PENALTY)) {
+					totalApplicablePenalty = totalApplicablePenalty.add(demanddetail.getTaxAmount());
+				}
+			}
+		}
+		DemandPenaltyResponse response = DemandPenaltyResponse.builder().totalApplicablePenalty(totalApplicablePenalty).demands(demands).build();
+		return response;
 	}
 
 }
