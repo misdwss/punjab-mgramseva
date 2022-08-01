@@ -800,7 +800,7 @@ public class DemandService {
 			
 			for (DemandDetail detail : demand.getDemandDetails()) {
 				if (WSCalculationConstant.TAX_APPLICABLE.contains(detail.getTaxHeadMasterCode())) {
-					waterChargeApplicable = waterChargeApplicable.add(detail.getTaxAmount());
+					waterChargeApplicable = waterChargeApplicable.add(detail.getTaxAmount()).subtract(detail.getCollectionAmount());
 				}
 				if (detail.getTaxHeadMasterCode().equalsIgnoreCase(WSCalculationConstant.WS_TIME_PENALTY)) {
 					oldPenalty = oldPenalty.add(detail.getTaxAmount());
