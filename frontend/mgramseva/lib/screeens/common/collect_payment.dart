@@ -294,7 +294,7 @@ class _ConnectionPaymentViewState extends State<ConnectionPaymentView> {
                   _buildWaterCharges(fetchBill, constraints),
                 _buildLabelValue(
                     i18.common.CORE_TOTAL_BILL_AMOUNT,
-                    '₹ ${fetchBill.billDetails?.first.billAccountDetails?.last.totalBillAmount}'),
+                    '₹ ${fetchBill.demands?.demandDetails?.first.taxAmount}'),
                 if(CommonProvider.getPenaltyOrAdvanceStatus(fetchBill.mdmsData, true)) _buildLabelValue(
                     i18.common.CORE_ADVANCE_ADJUSTED,
                     '₹ ${fetchBill.billDetails?.first.billAccountDetails?.last.advanceAdjustedAmount}'),
@@ -314,7 +314,8 @@ class _ConnectionPaymentViewState extends State<ConnectionPaymentView> {
                         NewConsumerBillState.getLabelText(
                             i18.billDetails.CORE_NET_DUE_AMOUNT_WITH_PENALTY,
                             ('₹' +
-                                (fetchBill.billDetails?.first.billAccountDetails?.last.totalBillAmount ?? 0)
+                                (CommonProvider.getNetDueAmountWithWithOutPenalty(fetchBill.totalAmount ?? 0, penalty, true)
+                                    .toString())
                                     .toString()),
                             context,
                             subLabel: NewConsumerBillState.getDueDatePenalty(penalty.date, context))

@@ -650,8 +650,8 @@ class CommonProvider with ChangeNotifier {
           DateTime billGenerationDate,expiryDate;
           var date = DateTime.fromMillisecondsSinceEpoch(filteredDemands.first.auditDetails!.createdTime ?? 0);
           billGenerationDate = expiryDate = DateTime(date.year, date.month, date.day);
-          expiryDate = expiryDate.add(Duration(milliseconds: billDetails.billExpiryTime ?? 0, days: 1));
-          penalty = Penalty(amount, DateFormats.getFilteredDate(expiryDate.toString()), expiryDate.isAfter(DateTime.now()));
+          expiryDate = (expiryDate.add(Duration(milliseconds: billDetails.billExpiryTime ?? 0, days: 0))).subtract(Duration(days: 1));
+          penalty = Penalty(amount, DateFormats.getFilteredDate(expiryDate.toString()), expiryDate.isBefore(DateTime.now()));
         }
       });
     });
