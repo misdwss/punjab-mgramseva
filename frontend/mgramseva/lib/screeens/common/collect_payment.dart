@@ -237,7 +237,7 @@ class _ConnectionPaymentViewState extends State<ConnectionPaymentView> {
   }
 
   Widget _buildViewDetails(FetchBill fetchBill) {
-    var penalty = CommonProvider.getPenalty(fetchBill.updateDemandList ?? []);
+    var penalty = CommonProvider.getPenalty(fetchBill.updateDemandList ?? [], fetchBill.demandList ?? []);
     var isFirstDemand = CommonProvider.isFirstDemand(fetchBill.demandList ?? []);
     List res = [];
     num len = fetchBill.billDetails?.first.billAccountDetails?.length as num;
@@ -245,8 +245,6 @@ class _ConnectionPaymentViewState extends State<ConnectionPaymentView> {
       fetchBill.billDetails?.forEach((element) {
         if(element.amount != 0) res.add(element.amount);
       });
-    print("isFirstDemand");
-    print(!isFirstDemand);
     return LayoutBuilder(
       builder: (_, constraints) => Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -305,7 +303,7 @@ class _ConnectionPaymentViewState extends State<ConnectionPaymentView> {
                 if(CommonProvider.getPenaltyOrAdvanceStatus(fetchBill.mdmsData, true)) _buildLabelValue(
                     i18.common.CORE_NET_AMOUNT_DUE,
                     '₹ ${CommonProvider.getNetDueAmountWithWithOutPenalty(fetchBill.totalAmount ?? 0, penalty)}'),
-                if(CommonProvider.getPenaltyOrAdvanceStatus(fetchBill.mdmsData, false, true) && isFirstDemand)  CustomDetailsCard(
+                if(penalty.date.isNotEmpty &&CommonProvider.getPenaltyOrAdvanceStatus(fetchBill.mdmsData, false, true) && isFirstDemand)  CustomDetailsCard(
                     Column(
                       children: [
                         NewConsumerBillState.getLabelText(

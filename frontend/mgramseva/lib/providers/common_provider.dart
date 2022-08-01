@@ -636,22 +636,43 @@ class CommonProvider with ChangeNotifier {
     return penalty;
   }
 
-  static Penalty getPenalty(List<UpdateDemands>? demandList) {
+  static Penalty getPenalty(List<UpdateDemands>? demandList , List<Demands>? demands) {
     Penalty? penalty;
+    DateTime expiryDate;
 
     var filteredDemands = demandList?.where((e) =>
     !(e.isPaymentCompleted ?? false))
         .toList();
+    var filterDemands = demands?.where((e) =>
+    !(e.isPaymentCompleted ?? false))
+        .toList();
 
+    filterDemands?.forEach((bill) {
+      bill.demandDetails?.forEach((billAccount) {
+        if(billAccount.taxHeadMasterCode == 'WS_TIME_PENALTY'){
+          DateTime billGenerationDate,expiryDate;
+          var date = DateTime.fromMillisecondsSinceEpoch(billAccount.auditDetails!.createdTime ?? 0);
+          billGenerationDate = expiryDate = DateTime(date.year, date.month, date.day);
+          expiryDate = (expiryDate.add(Duration(milliseconds: bill.billExpiryTime ?? 0, days: 0))).subtract(Duration(days: 1));
+        }
+      });
+    });
     filteredDemands?.forEach((billDetails) {
       billDetails.demandDetails?.forEach((billAccountDetails) {
         if(billAccountDetails.taxHeadMasterCode == 'WS_TIME_PENALTY'){
           var amount = billAccountDetails.taxAmount ?? 0;
           DateTime billGenerationDate,expiryDate;
-          var date = DateTime.fromMillisecondsSinceEpoch(filteredDemands.first.auditDetails!.createdTime ?? 0);
-          billGenerationDate = expiryDate = DateTime(date.year, date.month, date.day);
-          expiryDate = (expiryDate.add(Duration(milliseconds: billDetails.billExpiryTime ?? 0, days: 0))).subtract(Duration(days: 1));
-          penalty = Penalty(amount, DateFormats.getFilteredDate(expiryDate.toString()), expiryDate.isBefore(DateTime.now()));
+          filterDemands?.forEach((bill) {
+            bill.demandDetails?.forEach((billAccount) {
+              if(billAccount.taxHeadMasterCode == 'WS_TIME_PENALTY'){
+                DateTime billGenerationDate,expiryDate;
+                var date = DateTime.fromMillisecondsSinceEpoch(billAccount.auditDetails!.createdTime ?? 0);
+                billGenerationDate = expiryDate = DateTime(date.year, date.month, date.day);
+                expiryDate = expiryDate.add(Duration(milliseconds: bill.billExpiryTime ?? 0, days: 0));
+                penalty = Penalty(amount, DateFormats.getFilteredDate(expiryDate.toString()), expiryDate.isBefore(DateTime.now()));
+              }
+            });
+          });
         }
       });
     });
