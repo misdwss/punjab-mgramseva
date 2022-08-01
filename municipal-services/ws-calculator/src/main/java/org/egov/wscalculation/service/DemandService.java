@@ -819,7 +819,7 @@ public class DemandService {
 			latestWaterChargeDemandDetail = utils.getLatestDemandDetailByTaxHead(WSCalculationConstant.WS_CHARGE,
 					details);
 			if(latestWaterChargeDemandDetail != null) {
-				currentMonthDemand = currentMonthDemand.add(latestWaterChargeDemandDetail.getLatestDemandDetail().getTaxAmount());
+				currentMonthDemand = currentMonthDemand.add(latestWaterChargeDemandDetail.getLatestDemandDetail().getTaxAmount()).subtract(latestWaterChargeDemandDetail.getLatestDemandDetail().getCollectionAmount());
 			}
 			Map<String, BigDecimal> interestPenaltyEstimates = payService.applyPenaltyRebateAndInterest(
 					waterChargeApplicable, taxPeriod.getFinancialYear(), timeBasedExemptionMasterMap, expiryDate,currentMonthDemand,isGetPenaltyEstimate);
