@@ -210,7 +210,7 @@ class NewConsumerBillState extends State<NewConsumerBill> {
                                               ( CommonProvider.getNetDueAmountWithWithOutPenalty(billList.bill?.first.totalAmount ?? 0, penalty))
                                                   .toString()),
                                           context),
-                                      if(CommonProvider.getPenaltyOrAdvanceStatus(widget.waterConnection?.mdmsData, false, true) && houseHoldProvider.isfirstdemand)  CustomDetailsCard(
+                                      if(penalty.date.isNotEmpty && CommonProvider.getPenaltyOrAdvanceStatus(widget.waterConnection?.mdmsData, false, true) && houseHoldProvider.isfirstdemand)  CustomDetailsCard(
                                           Column(
                                             children: [
                                               getLabelText(

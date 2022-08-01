@@ -589,7 +589,8 @@ class CommonProvider with ChangeNotifier {
     if(!isFirstDemand(demandList)){
       var amount = 0.0;
       demandList.first.demandDetails?.forEach((demand) {
-        if(demand.taxHeadMasterCode == '10102' || demand.taxHeadMasterCode == '10201') amount += demand.taxAmount ?? 0;
+        if(demand.taxHeadMasterCode == '10102' || demand.taxHeadMasterCode == '10201')
+          amount += demand.taxAmount ?? 0;
       });
       return amount;
     }
@@ -646,12 +647,12 @@ class CommonProvider with ChangeNotifier {
     filteredDemands?.forEach((billDetails) {
       billDetails.demandDetails?.forEach((billAccountDetails) {
         if(billAccountDetails.taxHeadMasterCode == 'WS_TIME_PENALTY'){
-          var amount = billAccountDetails.taxAmount ?? 0;
+          var amount = billAccountDetails.taxAmount?.round() ?? 0;
           DateTime billGenerationDate,expiryDate;
           var date = DateTime.fromMillisecondsSinceEpoch(filteredDemands.first.auditDetails!.createdTime ?? 0);
           billGenerationDate = expiryDate = DateTime(date.year, date.month, date.day);
-          expiryDate = expiryDate.add(Duration(milliseconds: billDetails.billExpiryTime ?? 0, days: 1));
-          penalty = Penalty(amount, DateFormats.getFilteredDate(expiryDate.toString()), expiryDate.isAfter(DateTime.now()));
+          expiryDate = (expiryDate.add(Duration(milliseconds: billDetails.billExpiryTime ?? 0, days: 0))).subtract(Duration(days: 1));
+          penalty = Penalty(amount.toDouble(), DateFormats.getFilteredDate(expiryDate.toString()), expiryDate.isBefore(DateTime.now()));
         }
       });
     });
