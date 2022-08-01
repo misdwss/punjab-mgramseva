@@ -84,7 +84,7 @@ class NewConsumerBillState extends State<NewConsumerBill> {
 
   buidBillview(BillList billList) {
     var commonProvider = Provider.of<CommonProvider>(context, listen: false);
-    var penalty = CommonProvider.getPenalty(widget.waterConnection?.demands , widget.demandList);
+    var penalty = CommonProvider.getPenalty(widget.waterConnection?.demands);
 
     return LayoutBuilder(builder: (context, constraints) {
       var houseHoldProvider =

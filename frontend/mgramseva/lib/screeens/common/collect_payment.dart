@@ -237,7 +237,7 @@ class _ConnectionPaymentViewState extends State<ConnectionPaymentView> {
   }
 
   Widget _buildViewDetails(FetchBill fetchBill) {
-    var penalty = CommonProvider.getPenalty(fetchBill.updateDemandList ?? [], fetchBill.demandList ?? []);
+    var penalty = CommonProvider.getPenalty(fetchBill.updateDemandList ?? []);
     var isFirstDemand = CommonProvider.isFirstDemand(fetchBill.demandList ?? []);
     List res = [];
     num len = fetchBill.billDetails?.first.billAccountDetails?.length as num;
