@@ -26,6 +26,7 @@ import 'package:mgramseva/widgets/SideBar.dart';
 import 'package:mgramseva/widgets/TextFieldBuilder.dart';
 import 'package:provider/provider.dart';
 import '../../components/HouseConnectionandBill/NewConsumerBill.dart';
+import '../../model/demand/update_demand_list.dart';
 import '../../model/localization/language.dart';
 import '../../providers/common_provider.dart';
 import '../../utils/global_variables.dart';
@@ -37,7 +38,8 @@ class ConnectionPaymentView extends StatefulWidget {
   final List<Bill>? bill;
   final List<Demands>? demandList;
   final LanguageList? languageList;
-  const ConnectionPaymentView({Key? key, required this.query, this.bill, this.demandList, this.languageList})
+  final List<UpdateDemands>? updateDemandList;
+  const ConnectionPaymentView({Key? key, required this.query, this.bill, this.demandList, this.languageList, this.updateDemandList})
       : super(key: key);
 
   @override
@@ -52,7 +54,7 @@ class _ConnectionPaymentViewState extends State<ConnectionPaymentView> {
   void initState() {
     var consumerPaymentProvider =
         Provider.of<CollectPaymentProvider>(context, listen: false);
-    consumerPaymentProvider.getBillDetails(context, widget.query, widget.bill, widget.demandList, widget.languageList);
+    consumerPaymentProvider.getBillDetails(context, widget.query, widget.bill, widget.demandList, widget.languageList, widget.updateDemandList);
     super.initState();
   }
 
@@ -80,7 +82,7 @@ class _ConnectionPaymentViewState extends State<ConnectionPaymentView> {
               return Notifiers.networkErrorPage(
                   context,
                   () => consumerPaymentProvider.getBillDetails(
-                      context, widget.query, widget.bill, widget.demandList, widget.languageList));
+                      context, widget.query, widget.bill, widget.demandList, widget.languageList, widget.updateDemandList));
             } else {
               switch (snapshot.connectionState) {
                 case ConnectionState.waiting:
@@ -235,7 +237,7 @@ class _ConnectionPaymentViewState extends State<ConnectionPaymentView> {
   }
 
   Widget _buildViewDetails(FetchBill fetchBill) {
-    var penalty = CommonProvider.getPenalty(fetchBill.demandList ?? []);
+    var penalty = CommonProvider.getPenalty(fetchBill.updateDemandList ?? []);
     var isFirstDemand = CommonProvider.isFirstDemand(fetchBill.demandList ?? []);
     List res = [];
     num len = fetchBill.billDetails?.first.billAccountDetails?.length as num;
@@ -268,7 +270,7 @@ class _ConnectionPaymentViewState extends State<ConnectionPaymentView> {
                         children: [
                             _buildLabelValue(
                                 'WS_${fetchBill.demands?.demandDetails?.first.taxHeadMasterCode}',
-                                '₹ ${fetchBill.demands?.demandDetails?.first.taxAmount}'),
+                                '₹ ${CommonProvider.getArrearsAmount(fetchBill.demandList ?? [])}'),
                           if(fetchBill.demandList?.first.demandDetails?.first.taxHeadMasterCode == '10201' && fetchBill.demandList?.first.demandDetails?.last.taxHeadMasterCode == '10102')
                                    _buildLabelValue('WS_${fetchBill.demands?.demandDetails?.last.taxHeadMasterCode}',
                                     '₹ ${fetchBill.demands?.demandDetails?.last.taxAmount.toString()}')
@@ -299,7 +301,7 @@ class _ConnectionPaymentViewState extends State<ConnectionPaymentView> {
                 if(CommonProvider.getPenaltyOrAdvanceStatus(fetchBill.mdmsData, true)) _buildLabelValue(
                     i18.common.CORE_NET_AMOUNT_DUE,
                     '₹ ${CommonProvider.getNetDueAmountWithWithOutPenalty(fetchBill.totalAmount ?? 0, penalty)}'),
-                if(false ?? CommonProvider.getPenaltyOrAdvanceStatus(fetchBill.mdmsData, false, true) && isFirstDemand)  CustomDetailsCard(
+                if(CommonProvider.getPenaltyOrAdvanceStatus(fetchBill.mdmsData, false, true) && isFirstDemand)  CustomDetailsCard(
                     Column(
                       children: [
                         NewConsumerBillState.getLabelText(

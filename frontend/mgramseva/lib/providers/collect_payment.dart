@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:typed_data';
+import 'package:mgramseva/model/demand/update_demand_list.dart';
 import 'package:mgramseva/providers/language.dart';
 
 import '../components/HouseConnectionandBill/jsconnnector.dart' as js;
@@ -49,7 +50,7 @@ class CollectPaymentProvider with ChangeNotifier {
   }
 
   Future<void> getBillDetails(
-      BuildContext context, Map<String, dynamic> query, List<Bill>? bill, List<Demands>? demandList, LanguageList? mdmsData) async {
+      BuildContext context, Map<String, dynamic> query, List<Bill>? bill, List<Demands>? demandList, LanguageList? mdmsData, List<UpdateDemands>? updateDemandList ) async {
     try {
 
 
@@ -81,6 +82,31 @@ class CollectPaymentProvider with ChangeNotifier {
         }
       }
 
+      if(updateDemandList == null) {
+        var demand = await BillingServiceRepository().fetchUpdateDemand({
+          "tenantId": query['tenantId'],
+          "consumerCodes": query['consumerCode'],
+          "isGetPenaltyEstimate": "true"
+        },
+            {
+              "GetBillCriteria": {
+                "tenantId": query['tenantId'],
+                "billId": null,
+                "isGetPenaltyEstimate": true,
+                "consumerCodes": [query['consumerCode']]
+              }
+            });
+        updateDemandList = demand.demands;
+
+        if (updateDemandList != null && updateDemandList.length > 0) {
+          updateDemandList.sort((a, b) =>
+              b
+                  .demandDetails!.first.auditDetails!.createdTime!
+                  .compareTo(
+                  a.demandDetails!.first.auditDetails!.createdTime!));
+        }
+      }
+
       if (paymentDetails != null) {
         if(mdmsData == null){
           mdmsData = await CommonProvider.getMdmsBillingService();
@@ -91,6 +117,7 @@ class CollectPaymentProvider with ChangeNotifier {
           paymentDetails.first.billDetails
             ?.sort((a, b) => b.fromPeriod!.compareTo(a.fromPeriod!));
         demandList = demandList?.where((element) => element.status != 'CANCELLED').toList();
+        updateDemandList = updateDemandList?.where((element) => element.status != 'CANCELLED').toList();
 
         // var demandDetails = await ConsumerRepository().getDemandDetails(query);
         // if (demandDetails != null)
@@ -102,6 +129,8 @@ class CollectPaymentProvider with ChangeNotifier {
         paymentDetails.first.billDetails?.first.billAccountDetails?.last.totalBillAmount = CommonProvider.getTotalBillAmount(demandList ?? []);
         paymentDetails.first.demands = demandList?.first;
         paymentDetails.first.demandList = demandList;
+        paymentDetails.first.updateDemands = updateDemandList?.first;
+        paymentDetails.first.updateDemandList = updateDemandList;
         paymentStreamController.add(paymentDetails.first);
         notifyListeners();
       }
