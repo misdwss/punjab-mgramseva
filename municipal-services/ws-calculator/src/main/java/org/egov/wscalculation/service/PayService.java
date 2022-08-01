@@ -151,7 +151,7 @@ public class PayService {
 						.valueOf(((Number) penaltyMaster.get(WSCalculationConstant.AMOUNT_FIELD_NAME)).doubleValue())
 				: null;
 		
-		if(subType.equalsIgnoreCase("outstanding") && (currentMonthDemand.compareTo(BigDecimal.ZERO))==0) {
+		if(subType.equalsIgnoreCase("outstanding")) {
 			applicablePenalty = calculateApplicablePenaltyAmount(waterCharge, type, rate, flatAmt, amount);
 		}
 		if(subType.equalsIgnoreCase("currentMonth") && (currentMonthDemand.compareTo(BigDecimal.ZERO))>0) {
