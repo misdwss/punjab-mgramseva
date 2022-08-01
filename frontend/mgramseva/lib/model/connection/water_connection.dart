@@ -8,6 +8,8 @@ import 'package:mgramseva/model/mdms/sub_category_type.dart';
 import 'package:mgramseva/utils/constants.dart';
 import 'package:mgramseva/utils/date_formats.dart';
 
+import '../demand/update_demand_list.dart';
+
 part 'water_connection.g.dart';
 
 @JsonSerializable()
@@ -75,6 +77,9 @@ class WaterConnection {
 
   @JsonKey(ignore: true)
   LanguageList? mdmsData;
+
+  @JsonKey(ignore: true)
+  List<UpdateDemands>? demands;
 
   @JsonKey(ignore: true)
   var arrearsCtrl = TextEditingController();

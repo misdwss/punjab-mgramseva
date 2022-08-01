@@ -18,6 +18,7 @@ import 'package:mgramseva/widgets/ShortButton.dart';
 import 'package:provider/provider.dart';
 import "package:collection/collection.dart";
 
+import '../../model/demand/update_demand_list.dart';
 import '../../widgets/CustomDetails.dart';
 
 class NewConsumerBill extends StatefulWidget {
@@ -83,7 +84,7 @@ class NewConsumerBillState extends State<NewConsumerBill> {
 
   buidBillview(BillList billList) {
     var commonProvider = Provider.of<CommonProvider>(context, listen: false);
-    var penalty = CommonProvider.getPenalty(widget.demandList);
+    var penalty = CommonProvider.getPenalty(widget.waterConnection?.demands);
 
     return LayoutBuilder(builder: (context, constraints) {
       var houseHoldProvider =
@@ -209,7 +210,7 @@ class NewConsumerBillState extends State<NewConsumerBill> {
                                               ( CommonProvider.getNetDueAmountWithWithOutPenalty(billList.bill?.first.totalAmount ?? 0, penalty))
                                                   .toString()),
                                           context),
-                                      if(false && CommonProvider.getPenaltyOrAdvanceStatus(widget.waterConnection?.mdmsData, false, true) && houseHoldProvider.isfirstdemand)  CustomDetailsCard(
+                                      if(CommonProvider.getPenaltyOrAdvanceStatus(widget.waterConnection?.mdmsData, false, true) && houseHoldProvider.isfirstdemand)  CustomDetailsCard(
                                           Column(
                                             children: [
                                               getLabelText(
