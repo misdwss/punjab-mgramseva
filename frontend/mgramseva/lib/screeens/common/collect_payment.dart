@@ -245,6 +245,8 @@ class _ConnectionPaymentViewState extends State<ConnectionPaymentView> {
       fetchBill.billDetails?.forEach((element) {
         if(element.amount != 0) res.add(element.amount);
       });
+    print("isFirstDemand");
+    print(!isFirstDemand);
     return LayoutBuilder(
       builder: (_, constraints) => Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -270,7 +272,9 @@ class _ConnectionPaymentViewState extends State<ConnectionPaymentView> {
                         children: [
                             _buildLabelValue(
                                 'WS_${fetchBill.demands?.demandDetails?.first.taxHeadMasterCode}',
-                                '₹ ${CommonProvider.getArrearsAmount(fetchBill.demandList ?? [])}'),
+                                fetchBill.demandList?.first.demandDetails?.first.taxHeadMasterCode == '10201'
+                                    ? '₹ ${CommonProvider.getNormalPenalty(fetchBill.demandList ?? [])}'
+                                : '₹ ${CommonProvider.getArrearsAmount(fetchBill.demandList ?? [])}'),
                           if(fetchBill.demandList?.first.demandDetails?.first.taxHeadMasterCode == '10201' && fetchBill.demandList?.first.demandDetails?.last.taxHeadMasterCode == '10102')
                                    _buildLabelValue('WS_${fetchBill.demands?.demandDetails?.last.taxHeadMasterCode}',
                                     '₹ ${fetchBill.demands?.demandDetails?.last.taxAmount.toString()}')
@@ -294,7 +298,7 @@ class _ConnectionPaymentViewState extends State<ConnectionPaymentView> {
                   _buildWaterCharges(fetchBill, constraints),
                 _buildLabelValue(
                     i18.common.CORE_TOTAL_BILL_AMOUNT,
-                    '₹ ${fetchBill.demands?.demandDetails?.first.taxAmount}'),
+                    '₹ ${!isFirstDemand ? fetchBill.billDetails?.first.billAccountDetails?.last.totalBillAmount : fetchBill.demands?.demandDetails?.first.taxAmount}'),
                 if(CommonProvider.getPenaltyOrAdvanceStatus(fetchBill.mdmsData, true)) _buildLabelValue(
                     i18.common.CORE_ADVANCE_ADJUSTED,
                     '₹ ${fetchBill.billDetails?.first.billAccountDetails?.last.advanceAdjustedAmount}'),
