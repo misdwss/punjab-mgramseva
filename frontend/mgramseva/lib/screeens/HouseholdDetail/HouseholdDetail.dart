@@ -7,6 +7,7 @@ import 'package:mgramseva/model/bill/billing.dart';
 import 'package:mgramseva/model/common/demand.dart';
 import 'package:mgramseva/model/connection/water_connection.dart';
 import 'package:mgramseva/model/demand/demand_list.dart';
+import 'package:mgramseva/model/demand/update_demand_list.dart';
 import 'package:mgramseva/providers/household_details_provider.dart';
 import 'package:mgramseva/routers/Routers.dart';
 import 'package:mgramseva/utils/constants.dart';
@@ -43,7 +44,7 @@ class _HouseholdDetailState extends State<HouseholdDetail> {
   afterViewBuild() {
     Provider.of<HouseHoldProvider>(context, listen: false)
       ..isVisible = false
-      ..fetchDemand(widget.waterconnection, widget.id);
+      ..fetchDemand(widget.waterconnection, widget.waterconnection?.demands, widget.id);
   }
 
   buildDemandView(DemandList data) {
@@ -111,7 +112,7 @@ class _HouseholdDetailState extends State<HouseholdDetail> {
                       return Notifiers.networkErrorPage(
                           context,
                           () => houseHoldProvider
-                              .fetchDemand(widget.waterconnection));
+                              .fetchDemand(widget.waterconnection, widget.waterconnection?.demands));
                     } else {
                       switch (snapshot.connectionState) {
                         case ConnectionState.waiting:

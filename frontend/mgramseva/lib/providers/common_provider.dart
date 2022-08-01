@@ -39,6 +39,8 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:url_launcher/url_launcher.dart';
 import 'package:pdf/widgets.dart' as pw;
 
+import '../model/demand/update_demand_list.dart';
+
 class CommonProvider with ChangeNotifier {
   List<LocalizationLabel> localizedStrings = <LocalizationLabel>[];
   var userLoggedStreamCtrl = StreamController.broadcast();
@@ -572,9 +574,8 @@ class CommonProvider with ChangeNotifier {
                 list.add(filteredDemands[j].demandDetails![k].collectionAmount ?? 0);
               }
             }
-            print(list);
             var collectedAmount = list.reduce((a, b) => a+b);
-            amount = collectedAmount == demandDetail.collectionAmount?.abs()
+            amount = double.parse("$collectedAmount") >= double.parse("${demandDetail.collectionAmount?.abs()}")
                 ? filteredDemands.first.demandDetails?.last.collectionAmount?.toString() ?? '0.0' : '0.0';
           }
         }
@@ -635,22 +636,22 @@ class CommonProvider with ChangeNotifier {
     return penalty;
   }
 
-  static Penalty getPenalty(List<Demands> demandList) {
+  static Penalty getPenalty(List<UpdateDemands>? demandList) {
     Penalty? penalty;
 
-    var filteredDemands = demandList.where((e) =>
+    var filteredDemands = demandList?.where((e) =>
     !(e.isPaymentCompleted ?? false))
         .toList();
 
-    filteredDemands.forEach((billDetails) {
+    filteredDemands?.forEach((billDetails) {
       billDetails.demandDetails?.forEach((billAccountDetails) {
         if(billAccountDetails.taxHeadMasterCode == 'WS_TIME_PENALTY'){
           var amount = billAccountDetails.taxAmount ?? 0;
           DateTime billGenerationDate,expiryDate;
-          var date = DateTime.fromMillisecondsSinceEpoch(billAccountDetails.auditDetails!.createdTime ?? 0);
+          var date = DateTime.fromMillisecondsSinceEpoch(filteredDemands.first.auditDetails!.createdTime ?? 0);
           billGenerationDate = expiryDate = DateTime(date.year, date.month, date.day);
           expiryDate = expiryDate.add(Duration(milliseconds: billDetails.billExpiryTime ?? 0, days: 1));
-          penalty = Penalty(amount, DateFormats.getFilteredDate(billGenerationDate.toString()), expiryDate.isAfter(DateTime.now()));
+          penalty = Penalty(amount, DateFormats.getFilteredDate(expiryDate.toString()), expiryDate.isAfter(DateTime.now()));
         }
       });
     });
@@ -693,17 +694,18 @@ class CommonProvider with ChangeNotifier {
     if(!isFirstDemand(demandList)){
       var arrearsAmount = 0.0;
       demandList.first.demandDetails?.forEach((demand) {
-        if(demand.taxHeadMasterCode == '10102') arrearsAmount = demand.taxAmount ?? 0;
+        if(demand.taxHeadMasterCode == '10102') arrearsAmount += demand.taxAmount ?? 0;
       });
       return arrearsAmount;
     }
+
 
     if (demandList.isNotEmpty) {
       var filteredDemands = demandList.where((e) => (!(e.isPaymentCompleted ?? false) && e.status != 'CANCELLED'))
           .toList();
       for (var demand in filteredDemands) {
         demand.demandDetails!.forEach((e) {
-          if (e.taxHeadMasterCode != 'WS_ADVANCE_CARRYFORWARD' && e.taxHeadMasterCode != 'WS_TIME_ADHOC_PENALTY'){
+          if (e.taxHeadMasterCode != 'WS_ADVANCE_CARRYFORWARD' && e.taxHeadMasterCode != 'WS_TIME_PENALTY'){
             res.add((e.taxAmount ?? 0) - (e.collectionAmount ?? 0));
           }
         });
@@ -711,7 +713,7 @@ class CommonProvider with ChangeNotifier {
     }
 
     var arrearsDeduction = (demandList.first.demandDetails?.first.taxHeadMasterCode != 'WS_ADVANCE_CARRYFORWARD'
-        && demandList.first.demandDetails?.first.taxHeadMasterCode != 'WS_TIME_ADHOC_PENALTY') ?
+        && demandList.first.demandDetails?.first.taxHeadMasterCode != 'WS_TIME_PENALTY') ?
     ((demandList.first.demandDetails?.first.taxAmount ?? 0) - (demandList.first.demandDetails?.first.collectionAmount ?? 0)) : 0;
 
     return res.length == 0 ? 0 : ((res.reduce((previousValue,

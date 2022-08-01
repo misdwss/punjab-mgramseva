@@ -6,6 +6,7 @@ import 'package:mgramseva/model/bill/meter_demand_details.dart';
 import 'package:mgramseva/model/connection/water_connection.dart';
 import 'package:mgramseva/model/demand/demand_list.dart';
 import 'package:mgramseva/model/bill/billing.dart';
+import 'package:mgramseva/model/demand/update_demand_list.dart';
 import 'package:mgramseva/repository/bill_generation_details_repo.dart';
 import 'package:mgramseva/repository/billing_service_repo.dart';
 import 'package:mgramseva/repository/search_connection_repo.dart';
@@ -20,6 +21,7 @@ import 'fetch_bill_provider.dart';
 class HouseHoldProvider with ChangeNotifier {
   late GlobalKey<FormState> formKey;
   WaterConnection? waterConnection;
+  UpdateDemandList? updateDemandList;
   bool isfirstdemand = false;
   var streamController = StreamController.broadcast();
   var isVisible = false;
@@ -50,7 +52,7 @@ class HouseHoldProvider with ChangeNotifier {
     }
   }
 
-  Future<void> fetchDemand(data, [String? id]) async {
+  Future<void> fetchDemand(data,List<UpdateDemands>? demandList, [String? id]) async {
     var commonProvider = Provider.of<CommonProvider>(
         navigatorKey.currentContext!,
         listen: false);
@@ -72,6 +74,35 @@ class HouseHoldProvider with ChangeNotifier {
       .fetchBill(waterConnection, navigatorKey.currentContext!);
 
     waterConnection?.mdmsData = await CommonProvider.getMdmsBillingService();
+
+    if(demandList == null) {
+      var demand = await BillingServiceRepository().fetchUpdateDemand({
+        "tenantId": data.tenantId,
+        "consumerCodes": data.connectionNo.toString(),
+        "isGetPenaltyEstimate": "true"
+      },
+          {
+            "GetBillCriteria": {
+              "tenantId": data.tenantId,
+              "billId": null,
+              "isGetPenaltyEstimate": true,
+              "consumerCodes": [data.connectionNo.toString()]
+            }
+          });
+
+      demandList = demand.demands;
+
+      if (demandList != null && demandList.length > 0) {
+        demandList.sort((a, b) =>
+            b
+                .demandDetails!.first.auditDetails!.createdTime!
+                .compareTo(
+                a.demandDetails!.first.auditDetails!.createdTime!));
+      }
+    }
+    demandList = demandList?.where((element) => element.status != 'CANCELLED').toList();
+    waterConnection?.demands = demandList;
+    updateDemandList?.demands = demandList;
 
     try {
       await BillingServiceRepository().fetchdDemand({
