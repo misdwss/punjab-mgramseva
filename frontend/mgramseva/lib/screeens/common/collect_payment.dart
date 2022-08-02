@@ -296,7 +296,7 @@ class _ConnectionPaymentViewState extends State<ConnectionPaymentView> {
                   _buildWaterCharges(fetchBill, constraints),
                 _buildLabelValue(
                     i18.common.CORE_TOTAL_BILL_AMOUNT,
-                    '₹ ${!isFirstDemand || fetchBill.demands?.demandDetails?.first.taxHeadMasterCode == 'WS_TIME_PENALTY' ? fetchBill.billDetails?.first.billAccountDetails?.last.totalBillAmount : fetchBill.demands?.demandDetails?.first.taxAmount}'),
+                    '₹ ${fetchBill.billDetails?.first.billAccountDetails?.last.totalBillAmount}'),
                 if(CommonProvider.getPenaltyOrAdvanceStatus(fetchBill.mdmsData, true)) _buildLabelValue(
                     i18.common.CORE_ADVANCE_ADJUSTED,
                     '₹ ${fetchBill.billDetails?.first.billAccountDetails?.last.advanceAdjustedAmount}'),
