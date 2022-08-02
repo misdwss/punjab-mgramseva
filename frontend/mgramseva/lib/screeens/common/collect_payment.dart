@@ -298,8 +298,8 @@ class _ConnectionPaymentViewState extends State<ConnectionPaymentView> {
                     ]),
                 // }),
                 if(CommonProvider.getPenaltyOrAdvanceStatus(fetchBill.mdmsData, false, true))
-                  _buildLabelValue(i18.billDetails.CORE_PENALTY_ADJUSTED,
-                      '₹' + (CommonProvider.getPenaltyApplicable(fetchBill.updateDemandList ?? []).penaltyAdjusted).toString()),
+                  _buildLabelValue(i18.billDetails.CORE_PENALTY_APPLICABLE,
+                      '₹' + (CommonProvider.getPenaltyApplicable(fetchBill.updateDemandList ?? []).penaltyApplicable).toString()),
 
                 if (fetchBill.billDetails != null && res.length > 1)
                   _buildWaterCharges(fetchBill, constraints),

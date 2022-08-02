@@ -694,17 +694,17 @@ class CommonProvider with ChangeNotifier {
     return penalty ?? Penalty(0.0, '', false);
   }
 
-  static PenaltyAdjusted getPenaltyApplicable(List<UpdateDemands>? demandList) {
-    PenaltyAdjusted? penaltyAdjusted;
+  static PenaltyApplicable getPenaltyApplicable(List<UpdateDemands>? demandList) {
+    PenaltyApplicable? penaltyApplicable;
 
     var filteredDemands = demandList?.where((e) =>
     !(e.isPaymentCompleted ?? false))
         .toList();
 
     var penaltyAmount = filteredDemands?.first.totalApplicablePenalty ?? 0.0;
-    penaltyAdjusted = PenaltyAdjusted(penaltyAmount.round().toDouble());
+    penaltyApplicable = PenaltyApplicable(penaltyAmount.round().toDouble());
 
-    return penaltyAdjusted ;
+    return penaltyApplicable ;
   }
 
   static  num getAdvanceAmount(List<Demands> demandList) {

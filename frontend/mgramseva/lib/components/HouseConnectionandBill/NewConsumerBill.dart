@@ -85,7 +85,7 @@ class NewConsumerBillState extends State<NewConsumerBill> {
   buidBillview(BillList billList) {
     var commonProvider = Provider.of<CommonProvider>(context, listen: false);
     var penalty = CommonProvider.getPenalty(widget.waterConnection?.demands);
-    var penaltyAdjusted = CommonProvider.getPenaltyApplicable(widget.waterConnection?.demands ?? []);
+    var penaltyApplicable = CommonProvider.getPenaltyApplicable(widget.waterConnection?.demands ?? []);
     var houseHoldProvider =
     Provider.of<HouseHoldProvider>(context, listen: false);
 
@@ -205,9 +205,9 @@ class NewConsumerBillState extends State<NewConsumerBill> {
                                                   ? CommonProvider.getCurrentBill(widget.demandList) + CommonProvider.getArrearsAmountOncePenaltyExpires(widget.demandList)  : CommonProvider.getTotalBillAmount(widget.demandList)).toString()),
                                           context),
                                      if(CommonProvider.getPenaltyOrAdvanceStatus(widget.waterConnection?.mdmsData, false, true)) getLabelText(
-                                         i18.billDetails.CORE_PENALTY_ADJUSTED,
+                                         i18.billDetails.CORE_PENALTY_APPLICABLE,
                                          ('₹' +
-                                             penaltyAdjusted.penaltyAdjusted
+                                             penaltyApplicable.penaltyApplicable
                                                  .toString()),
                                          context),
                                      if(CommonProvider.getPenaltyOrAdvanceStatus(widget.waterConnection?.mdmsData, true) && houseHoldProvider.isfirstdemand) getLabelText(

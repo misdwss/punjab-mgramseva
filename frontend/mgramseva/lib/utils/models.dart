@@ -146,7 +146,7 @@ class Penalty {
   Penalty(this.penalty, this.date, this.isDueDateCrossed);
 }
 
-class PenaltyAdjusted {
-  double penaltyAdjusted;
-  PenaltyAdjusted(this.penaltyAdjusted);
+class PenaltyApplicable {
+  double penaltyApplicable;
+  PenaltyApplicable(this.penaltyApplicable);
 }
