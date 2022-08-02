@@ -85,6 +85,7 @@ class NewConsumerBillState extends State<NewConsumerBill> {
   buidBillview(BillList billList) {
     var commonProvider = Provider.of<CommonProvider>(context, listen: false);
     var penalty = CommonProvider.getPenalty(widget.waterConnection?.demands);
+    var penaltyAdjusted = CommonProvider.getPenaltyAdjusted(widget.demandList ?? []);
 
     return LayoutBuilder(builder: (context, constraints) {
       var houseHoldProvider =
@@ -198,6 +199,12 @@ class NewConsumerBillState extends State<NewConsumerBill> {
                                               (!houseHoldProvider.isfirstdemand ?
                                           (widget.waterConnection?.fetchBill?.bill?.first.totalAmount ?? 0).abs() : CommonProvider.getTotalBillAmount(widget.demandList)).toString()),
                                           context),
+                                     if(CommonProvider.getPenaltyOrAdvanceStatus(widget.waterConnection?.mdmsData, false, true)) getLabelText(
+                                         i18.billDetails.CORE_PENALTY_ADJUSTED,
+                                         ('₹' +
+                                             penaltyAdjusted.penaltyAdjusted
+                                                 .toString()),
+                                         context),
                                      if(CommonProvider.getPenaltyOrAdvanceStatus(widget.waterConnection?.mdmsData, true) && houseHoldProvider.isfirstdemand) getLabelText(
                                           i18.common.CORE_ADVANCE_ADJUSTED,
                                           ('₹' +
