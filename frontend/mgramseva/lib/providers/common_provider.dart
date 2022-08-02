@@ -637,6 +637,22 @@ class CommonProvider with ChangeNotifier {
     return penalty;
   }
 
+  static double getCurrentBill(List<Demands> demandList){
+    var currentBill = 0.0;
+
+    var filteredDemands = demandList.where((e) =>
+    !(e.isPaymentCompleted ?? false))
+        .toList();
+
+    filteredDemands.last.demandDetails?.forEach((billAccountDetails) {
+        if(billAccountDetails.taxHeadMasterCode == '10101' || billAccountDetails.taxHeadMasterCode == 'WS_TIME_PENALTY'){
+          currentBill += billAccountDetails.taxAmount ?? 0;
+        }
+      });
+
+    return currentBill;
+  }
+
   static Penalty getPenalty(List<UpdateDemands>? demandList) {
     Penalty? penalty;
 
@@ -649,7 +665,9 @@ class CommonProvider with ChangeNotifier {
         if(billAccountDetails.taxHeadMasterCode == 'WS_TIME_PENALTY'){
           var amount = billAccountDetails.taxAmount?.round() ?? 0;
           DateTime billGenerationDate,expiryDate;
-          var date = DateTime.fromMillisecondsSinceEpoch(filteredDemands.first.auditDetails!.createdTime ?? 0);
+          var date = billAccountDetails.auditDetails != null ?
+          DateTime.fromMillisecondsSinceEpoch(billAccountDetails.auditDetails!.createdTime ?? 0)
+           : DateTime.fromMillisecondsSinceEpoch(filteredDemands.first.auditDetails!.createdTime ?? 0);
           billGenerationDate = expiryDate = DateTime(date.year, date.month, date.day);
           expiryDate = expiryDate.add(Duration(milliseconds: billDetails.billExpiryTime ?? 0, days: 0));
           penalty = Penalty(amount.toDouble(), DateFormats.getFilteredDate(expiryDate.toString()), expiryDate.isBefore(DateTime.now()));
@@ -676,27 +694,17 @@ class CommonProvider with ChangeNotifier {
     return penalty ?? Penalty(0.0, '', false);
   }
 
-  static PenaltyAdjusted getPenaltyAdjusted(List<Demands>? demandList) {
+  static PenaltyAdjusted getPenaltyApplicable(List<UpdateDemands>? demandList) {
     PenaltyAdjusted? penaltyAdjusted;
 
     var filteredDemands = demandList?.where((e) =>
     !(e.isPaymentCompleted ?? false))
         .toList();
 
-    filteredDemands?.forEach((billDetails) {
-      billDetails.demandDetails?.forEach((billAccountDetails) {
-        if(billAccountDetails.taxHeadMasterCode == 'WS_TIME_PENALTY'){
-          var amount = billAccountDetails.taxAmount?.round() ?? 0;
-          DateTime billGenerationDate,expiryDate;
-          var date = DateTime.fromMillisecondsSinceEpoch(filteredDemands.first.auditDetails!.createdTime ?? 0);
-          billGenerationDate = expiryDate = DateTime(date.year, date.month, date.day);
-          expiryDate = expiryDate.add(Duration(milliseconds: billDetails.billExpiryTime ?? 0, days: 0));
-          penaltyAdjusted = PenaltyAdjusted(amount.toDouble(), DateFormats.getFilteredDate(expiryDate.toString()), expiryDate.isBefore(DateTime.now()));
-        }
-      });
-    });
+    var penaltyAmount = filteredDemands?.first.totalApplicablePenalty ?? 0.0;
+    penaltyAdjusted = PenaltyAdjusted(penaltyAmount.round().toDouble());
 
-    return penaltyAdjusted ?? PenaltyAdjusted(0.0, '', false);
+    return penaltyAdjusted ;
   }
 
   static  num getAdvanceAmount(List<Demands> demandList) {
@@ -744,6 +752,34 @@ class CommonProvider with ChangeNotifier {
         element) =>
     previousValue +
         element) - arrearsDeduction) as double).abs();
+  }
+
+  static double getArrearsAmountOncePenaltyExpires(List<Demands> demandList) {
+    List res = [];
+
+    if(!isFirstDemand(demandList)){
+      var arrearsAmount = 0.0;
+      demandList.first.demandDetails?.forEach((demand) {
+        if(demand.taxHeadMasterCode == '10102') arrearsAmount += demand.taxAmount ?? 0;
+      });
+      return arrearsAmount;
+    }
+
+
+    if (demandList.isNotEmpty ) {
+      var filteredDemands = demandList.where((e) => (!(e.isPaymentCompleted ?? false) && e.status != 'CANCELLED')).first;
+        filteredDemands.demandDetails!.forEach((e) {
+          if (e.taxHeadMasterCode == '10201' || e.taxHeadMasterCode == '10102' || e.taxHeadMasterCode == 'WS_TIME_PENALTY'){
+            res.add((e.taxAmount ?? 0) - (e.collectionAmount ?? 0));
+          }
+        });
+
+    }
+
+    return res.length == 0 ? 0 : ((res.reduce((previousValue,
+        element) =>
+    previousValue +
+        element)) as double).abs();
   }
 
   static Future<LanguageList> getMdmsBillingService() async {

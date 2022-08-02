@@ -61,7 +61,7 @@ class BillingServiceRepository extends BaseService {
         requestInfo: getRequestInfo('_search'),
         method: RequestType.POST);
     if (res != null) {
-      demandList = UpdateDemandList.fromJson({"Demands": res['Demands']});
+      demandList = UpdateDemandList.fromJson({"Demands": res['Demands'], "totalApplicablePenalty" : res ['totalApplicablePenalty']});
       (res);
     }
     return demandList;

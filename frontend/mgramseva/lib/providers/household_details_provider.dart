@@ -91,6 +91,10 @@ class HouseHoldProvider with ChangeNotifier {
           });
 
       demandList = demand.demands;
+      updateDemandList?.totalApplicablePenalty = demand.totalApplicablePenalty;
+      demandList?.first.totalApplicablePenalty = demand.totalApplicablePenalty;
+
+
 
       if (demandList != null && demandList.length > 0) {
         demandList.sort((a, b) =>

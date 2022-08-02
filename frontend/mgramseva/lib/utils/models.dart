@@ -148,7 +148,5 @@ class Penalty {
 
 class PenaltyAdjusted {
   double penaltyAdjusted;
-  String date;
-  bool isDueDateCrossed = false;
-  PenaltyAdjusted(this.penaltyAdjusted, this.date, this.isDueDateCrossed);
+  PenaltyAdjusted(this.penaltyAdjusted);
 }

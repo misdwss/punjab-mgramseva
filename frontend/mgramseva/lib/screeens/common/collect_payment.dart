@@ -281,29 +281,41 @@ class _ConnectionPaymentViewState extends State<ConnectionPaymentView> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       _buildLabelValue(
-                          'WS_${fetchBill.demands?.demandDetails?.first.taxHeadMasterCode}',
-                          '₹ ${fetchBill.demands?.demandDetails?.first.taxAmount}'),
+                          fetchBill.demands?.demandDetails?.first.taxHeadMasterCode == 'WS_TIME_PENALTY'
+                              ?  i18.billDetails.CURRENT_BILL : 'WS_${fetchBill.demands?.demandDetails?.first.taxHeadMasterCode}',
+                          fetchBill.demands?.demandDetails?.first.taxHeadMasterCode == 'WS_TIME_PENALTY'
+                          ? '₹' +  CommonProvider.getCurrentBill(fetchBill.demandList ?? []).toString()
+                          : '₹ ${fetchBill.demands?.demandDetails?.first.taxAmount}'),
                       (fetchBill.billDetails?.first.billAccountDetails?.last.arrearsAmount ?? 0) >
                           0
                           ? _buildLabelValue(i18.billDetails.ARRERS_DUES,
-                          '₹ ${fetchBill.billDetails?.first.billAccountDetails?.last.arrearsAmount.toString()}')
+                          fetchBill.demands?.demandDetails?.first.taxHeadMasterCode == 'WS_TIME_PENALTY'
+                              ?  '₹' + CommonProvider.getArrearsAmountOncePenaltyExpires(fetchBill.demandList ?? []).toString()
+                              :'₹ ${fetchBill.billDetails?.first.billAccountDetails?.last.arrearsAmount.toString()}')
                           : SizedBox(
                         height: 0,
                       )
                     ]),
                 // }),
+                if(CommonProvider.getPenaltyOrAdvanceStatus(fetchBill.mdmsData, false, true))
+                  _buildLabelValue(i18.billDetails.CORE_PENALTY_ADJUSTED,
+                      '₹' + (CommonProvider.getPenaltyApplicable(fetchBill.updateDemandList ?? []).penaltyAdjusted).toString()),
+
                 if (fetchBill.billDetails != null && res.length > 1)
                   _buildWaterCharges(fetchBill, constraints),
                 _buildLabelValue(
                     i18.common.CORE_TOTAL_BILL_AMOUNT,
-                    '₹ ${fetchBill.billDetails?.first.billAccountDetails?.last.totalBillAmount}'),
+
+                    isFirstDemand && fetchBill.demands?.demandDetails?.first.taxHeadMasterCode == 'WS_TIME_PENALTY'
+                    ? '₹' + (CommonProvider.getCurrentBill(fetchBill.demandList ?? []) + CommonProvider.getArrearsAmountOncePenaltyExpires(fetchBill.demandList ?? [])).toString()
+                    : '₹ ${fetchBill.billDetails?.first.billAccountDetails?.last.totalBillAmount}'),
                 if(CommonProvider.getPenaltyOrAdvanceStatus(fetchBill.mdmsData, true)) _buildLabelValue(
                     i18.common.CORE_ADVANCE_ADJUSTED,
                     '₹ ${fetchBill.billDetails?.first.billAccountDetails?.last.advanceAdjustedAmount}'),
                 if(CommonProvider.getPenaltyOrAdvanceStatus(fetchBill.mdmsData, true)) _buildLabelValue(
                     i18.common.CORE_NET_AMOUNT_DUE,
                     '₹ ${CommonProvider.getNetDueAmountWithWithOutPenalty(fetchBill.totalAmount ?? 0, penalty)}'),
-                if(penalty.date.isNotEmpty &&CommonProvider.getPenaltyOrAdvanceStatus(fetchBill.mdmsData, false, true) && isFirstDemand)  CustomDetailsCard(
+                if(CommonProvider.getPenaltyOrAdvanceStatus(fetchBill.mdmsData, false, true) && isFirstDemand)  CustomDetailsCard(
                     Column(
                       children: [
                         NewConsumerBillState.getLabelText(

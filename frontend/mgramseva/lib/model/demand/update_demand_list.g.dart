@@ -10,7 +10,9 @@ UpdateDemandList _$UpdateDemandListFromJson(Map<String, dynamic> json) {
   return UpdateDemandList()
     ..demands = (json['Demands'] as List<dynamic>?)
         ?.map((e) => UpdateDemands.fromJson(e as Map<String, dynamic>))
-        .toList();
+        .toList()
+    ..totalApplicablePenalty =
+    (json['totalApplicablePenalty'] as num?)?.toDouble();
 }
 
 Map<String, dynamic> _$UpdateDemandListToJson(UpdateDemandList instance) =>
