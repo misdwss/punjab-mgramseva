@@ -34,11 +34,9 @@ import org.springframework.util.StringUtils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import lombok.extern.slf4j.Slf4j;
 import net.minidev.json.JSONObject;
 
 @Component
-@Slf4j
 public class WaterServicesUtil {
 
 	@Autowired
@@ -102,8 +100,6 @@ public class WaterServicesUtil {
 		PropertyCriteria propertyCriteria = new PropertyCriteria();
 		HashSet<String> propertyIds = new HashSet<>();
 		propertyIds.add(waterConnectionRequest.getWaterConnection().getPropertyId());
-		log.debug("PropertyIds at the beginning of search" + propertyIds);
-
 		propertyCriteria.setPropertyIds(propertyIds);
 		if (waterConnectionRequest.getRequestInfo().getUserInfo() != null
 				&& "EMPLOYEE".equalsIgnoreCase(waterConnectionRequest.getRequestInfo().getUserInfo().getType())) {
@@ -128,11 +124,7 @@ public class WaterServicesUtil {
 				getPropertyURL(propertyCriteria),
 				RequestInfoWrapper.builder().requestInfo(waterConnectionRequest.getRequestInfo()).build());
 		List<Property> propertyList = getPropertyDetails(result);
-		log.debug("Result response from property service" + result);
-		log.debug("Property list" + propertyList);
 		if (CollectionUtils.isEmpty(propertyList)) {
-			log.debug("Tenantid" + propertyCriteria.getTenantId());
-			log.debug("PropertyIds" + propertyCriteria.getPropertyIds());
 			throw new CustomException("INCORRECT_PROPERTY_ID", "Incorrect Property Id. Water Connection cannot be created.");
 		}
 		return propertyList;
