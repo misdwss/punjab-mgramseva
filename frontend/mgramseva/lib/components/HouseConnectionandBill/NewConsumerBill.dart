@@ -93,7 +93,7 @@ class NewConsumerBillState extends State<NewConsumerBill> {
   buidBillview(BillList billList) {
     var commonProvider = Provider.of<CommonProvider>(context, listen: false);
     var penalty = CommonProvider.getPenalty(widget.waterConnection?.demands);
-    var penaltyApplicable = CommonProvider.getPenaltyApplicable(widget.waterConnection?.demands ?? []);
+    var penaltyApplicable = CommonProvider.getPenaltyApplicable(widget.demandList);
     var houseHoldProvider =
     Provider.of<HouseHoldProvider>(context, listen: false);
 
@@ -218,7 +218,13 @@ class NewConsumerBillState extends State<NewConsumerBill> {
                                               (CommonProvider.getAdvanceAdjustedAmount(widget.demandList))
                                                   .toString()),
                                           context),
-                                      if(CommonProvider.getPenaltyOrAdvanceStatus(widget.waterConnection?.mdmsData, false, true) && houseHoldProvider.isfirstdemand && penalty.isDueDateCrossed) getLabelText(
+                                      // if(CommonProvider.getPenaltyOrAdvanceStatus(widget.waterConnection?.mdmsData, false, true) && houseHoldProvider.isfirstdemand && penalty.isDueDateCrossed) getLabelText(
+                                      //     i18.billDetails.CORE_PENALTY,
+                                      //     ('₹' +
+                                      //         penaltyApplicable.penaltyApplicable
+                                      //             .toString()),
+                                      //     context),
+                                      if(CommonProvider.getPenaltyOrAdvanceStatus(widget.waterConnection?.mdmsData, false, true) && houseHoldProvider.isfirstdemand) getLabelText(
                                           i18.billDetails.CORE_PENALTY,
                                           ('₹' +
                                               penaltyApplicable.penaltyApplicable
@@ -236,7 +242,7 @@ class NewConsumerBillState extends State<NewConsumerBill> {
                                               getLabelText(
                                                   i18.billDetails.CORE_PENALTY,
                                                   ('₹' +
-                                                      penalty.penalty
+                                                      (penalty.isDueDateCrossed ? penaltyApplicable.penaltyApplicable : penalty.penalty)
                                                           .toString()),
                                                   context,
                                                   subLabel: getDueDatePenalty(penalty.date, context)),

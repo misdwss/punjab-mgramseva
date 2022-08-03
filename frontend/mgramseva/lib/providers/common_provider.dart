@@ -645,7 +645,7 @@ class CommonProvider with ChangeNotifier {
         .toList();
 
     filteredDemands.last.demandDetails?.forEach((billAccountDetails) {
-        if(billAccountDetails.taxHeadMasterCode == '10101' || billAccountDetails.taxHeadMasterCode == 'WS_TIME_PENALTY'){
+        if(billAccountDetails.taxHeadMasterCode == '10101'){
           currentBill += billAccountDetails.taxAmount ?? 0;
         }
       });
@@ -665,11 +665,12 @@ class CommonProvider with ChangeNotifier {
         if(billAccountDetails.taxHeadMasterCode == 'WS_TIME_PENALTY'){
           var amount = demandList.first.totalApplicablePenalty ?? 0;
           DateTime billGenerationDate,expiryDate;
+          // DateTime.fromMillisecondsSinceEpoch(1659420829000);
           var date = billAccountDetails.auditDetails != null ?
           DateTime.fromMillisecondsSinceEpoch(billAccountDetails.auditDetails!.createdTime ?? 0)
            : DateTime.fromMillisecondsSinceEpoch(demandList.first.auditDetails!.createdTime ?? 0);
           billGenerationDate = expiryDate = DateTime(date.year, date.month, date.day);
-          expiryDate = expiryDate.add(Duration(milliseconds: billDetails.billExpiryTime ?? 0, days: 0));
+           expiryDate =  expiryDate.add(Duration(milliseconds: billDetails.billExpiryTime ?? 0, days: 0));
           penalty = Penalty(amount.toDouble(), DateFormats.getFilteredDate(expiryDate.toString()), DateTime.now().isAfter(expiryDate));
         }
       });
@@ -677,17 +678,27 @@ class CommonProvider with ChangeNotifier {
     return penalty ?? Penalty(0.0, '', false);
   }
 
-  static PenaltyApplicable getPenaltyApplicable(List<UpdateDemands>? demandList) {
-    PenaltyApplicable? penaltyApplicable;
-
+  static PenaltyApplicable getPenaltyApplicable(List<Demands>? demandList) {
+    var res = [];
     var filteredDemands = demandList?.where((e) =>
     !(e.isPaymentCompleted ?? false))
         .toList();
 
-    var penaltyAmount = (filteredDemands?.first.totalApplicablePenalty ?? 0) ;
-    penaltyApplicable = PenaltyApplicable(penaltyAmount.round().toDouble());
+    for (var demand in filteredDemands!) {
+      demand.demandDetails!.forEach((e) {
+        if (e.taxHeadMasterCode == 'WS_TIME_PENALTY'){
+          res.add((e.taxAmount ?? 0) - (e.collectionAmount ?? 0));
+        }
+      });
+    }
 
-    return penaltyApplicable ;
+    var penaltyAmount = res.length == 0 ? 0 : ((res.reduce((previousValue,
+        element) =>
+    previousValue +
+        element)) as double).abs();
+
+
+    return PenaltyApplicable(penaltyAmount.toDouble());
   }
 
   static  num getAdvanceAmount(List<Demands> demandList) {

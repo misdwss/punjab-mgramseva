@@ -277,7 +277,7 @@ class _ConnectionPaymentViewState extends State<ConnectionPaymentView> {
                           if( !isFirstDemand && fetchBill.demands?.demandDetails?.first.taxHeadMasterCode == 'WS_TIME_PENALTY')
                             _buildLabelValue(
                                 i18.billDetails.WS_10201,
-                                '₹ ${CommonProvider.getPenaltyApplicable(fetchBill.updateDemandList ?? []).penaltyApplicable}'),
+                                '₹ ${CommonProvider.getPenalty(fetchBill.updateDemandList ?? []).penalty}'),
                           if(fetchBill.demandList?.first.demandDetails?.first.taxHeadMasterCode == '10201' && fetchBill.demandList?.first.demandDetails?.last.taxHeadMasterCode == '10102')
                                    _buildLabelValue('WS_${fetchBill.demands?.demandDetails?.last.taxHeadMasterCode}',
                                     '₹ ${fetchBill.demands?.demandDetails?.last.taxAmount.toString()}')
@@ -313,9 +313,9 @@ class _ConnectionPaymentViewState extends State<ConnectionPaymentView> {
                 if(CommonProvider.getPenaltyOrAdvanceStatus(fetchBill.mdmsData, true)) _buildLabelValue(
                     i18.common.CORE_ADVANCE_ADJUSTED,
                     '₹ ${fetchBill.billDetails?.first.billAccountDetails?.last.advanceAdjustedAmount}'),
-                if(CommonProvider.getPenaltyOrAdvanceStatus(fetchBill.mdmsData, false, true) && isFirstDemand && penalty.isDueDateCrossed)
+                if(CommonProvider.getPenaltyOrAdvanceStatus(fetchBill.mdmsData, false, true) && isFirstDemand)
                   _buildLabelValue(i18.billDetails.CORE_PENALTY,
-                      '₹' + (CommonProvider.getPenaltyApplicable(fetchBill.updateDemandList ?? []).penaltyApplicable).toString()),
+                      '₹' + (CommonProvider.getPenaltyApplicable(fetchBill.demandList).penaltyApplicable).toString()),
                 if(CommonProvider.getPenaltyOrAdvanceStatus(fetchBill.mdmsData, true)) _buildLabelValue(
                     i18.common.CORE_NET_AMOUNT_DUE,
                     '₹ ${CommonProvider.getNetDueAmountWithWithOutPenalty(fetchBill.totalAmount ?? 0, penalty)}'),
@@ -325,7 +325,7 @@ class _ConnectionPaymentViewState extends State<ConnectionPaymentView> {
                         NewConsumerBillState.getLabelText(
                             i18.billDetails.CORE_PENALTY,
                             ('₹' +
-                                penalty.penalty
+                               (penalty.isDueDateCrossed ? CommonProvider.getPenaltyApplicable(fetchBill.demandList).penaltyApplicable : penalty.penalty)
                                     .toString()),
                             context,
                             subLabel: NewConsumerBillState.getDueDatePenalty(penalty.date, context)),
