@@ -589,7 +589,7 @@ class CommonProvider with ChangeNotifier {
     if(!isFirstDemand(demandList)){
       var amount = 0.0;
       demandList.first.demandDetails?.forEach((demand) {
-        if(demand.taxHeadMasterCode == '10102' || demand.taxHeadMasterCode == '10201')
+        if(demand.taxHeadMasterCode == '10102' || demand.taxHeadMasterCode == '10201' || demand.taxHeadMasterCode == 'WS_TIME_PENALTY')
           amount += demand.taxAmount ?? 0;
       });
       return amount;

@@ -269,10 +269,15 @@ class _ConnectionPaymentViewState extends State<ConnectionPaymentView> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                             _buildLabelValue(
-                                'WS_${fetchBill.demands?.demandDetails?.first.taxHeadMasterCode}',
+                                fetchBill.demands?.demandDetails?.first.taxHeadMasterCode == 'WS_TIME_PENALTY'
+                                    ?  i18.billDetails.WS_10102 : 'WS_${fetchBill.demands?.demandDetails?.first.taxHeadMasterCode}',
                                 fetchBill.demandList?.first.demandDetails?.first.taxHeadMasterCode == '10201'
                                     ? '₹ ${CommonProvider.getNormalPenalty(fetchBill.demandList ?? [])}'
                                 : '₹ ${CommonProvider.getArrearsAmount(fetchBill.demandList ?? [])}'),
+                          if( !isFirstDemand && fetchBill.demands?.demandDetails?.first.taxHeadMasterCode == 'WS_TIME_PENALTY')
+                            _buildLabelValue(
+                                i18.billDetails.WS_10201,
+                                '₹ ${CommonProvider.getPenaltyApplicable(fetchBill.updateDemandList ?? []).penaltyApplicable}'),
                           if(fetchBill.demandList?.first.demandDetails?.first.taxHeadMasterCode == '10201' && fetchBill.demandList?.first.demandDetails?.last.taxHeadMasterCode == '10102')
                                    _buildLabelValue('WS_${fetchBill.demands?.demandDetails?.last.taxHeadMasterCode}',
                                     '₹ ${fetchBill.demands?.demandDetails?.last.taxAmount.toString()}')

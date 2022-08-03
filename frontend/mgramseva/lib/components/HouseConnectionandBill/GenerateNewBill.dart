@@ -139,10 +139,21 @@ class _GenerateNewBillState extends State<GenerateNewBill> {
                                     .toString(),
                             context),
                         if(CommonProvider.getPenaltyOrAdvanceStatus(widget.waterconnection?.mdmsData, false) && !houseHoldProvider.isfirstdemand &&
-                            widget.demandList.demands?.first.demandDetails?.first.taxHeadMasterCode != 'WS_ADVANCE_CARRYFORWARD')
+                            widget.demandList.demands?.first.demandDetails?.first.taxHeadMasterCode != 'WS_ADVANCE_CARRYFORWARD'
+                        && widget.demandList.demands?.first.demandDetails?.first.taxHeadMasterCode != 'WS_TIME_PENALTY')
                           _getLabeltext(
                               'WS_${widget.demandList.demands?.first.demandDetails?.first.taxHeadMasterCode}',
                               ('₹' +  (widget.demandList.demands?.first.demandDetails?.first.taxAmount).toString()),
+                              context),
+                        if(!houseHoldProvider.isfirstdemand && widget.demandList.demands?.first.demandDetails?.first.taxHeadMasterCode == 'WS_TIME_PENALTY')
+                          _getLabeltext(
+                              i18.billDetails.WS_10201,
+                              ('₹' + (CommonProvider.getPenaltyApplicable(widget.waterconnection?.demands).penaltyApplicable).toString()),
+                              context),
+                        if(!houseHoldProvider.isfirstdemand && widget.demandList.demands?.first.demandDetails?.first.taxHeadMasterCode == 'WS_TIME_PENALTY')
+                          _getLabeltext(
+                              i18.billDetails.WS_10102,
+                              ('₹' + (CommonProvider.getArrearsAmount(widget.demandList.demands ?? [])).toString()),
                               context),
                         if(!houseHoldProvider.isfirstdemand &&  widget.demandList.demands?.first.demandDetails?.first.taxHeadMasterCode == '10201'
                         && CommonProvider.getArrearsAmount(widget.demandList.demands ?? []) > 0)
