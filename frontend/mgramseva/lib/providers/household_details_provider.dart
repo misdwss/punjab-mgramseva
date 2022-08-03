@@ -92,7 +92,9 @@ class HouseHoldProvider with ChangeNotifier {
 
       demandList = demand.demands;
       updateDemandList?.totalApplicablePenalty = demand.totalApplicablePenalty;
-      demandList?.first.totalApplicablePenalty = demand.totalApplicablePenalty;
+      demandList?.forEach((e){
+        e.totalApplicablePenalty = demand.totalApplicablePenalty;
+      });
 
 
 

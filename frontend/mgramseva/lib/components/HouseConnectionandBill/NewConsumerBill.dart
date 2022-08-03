@@ -204,7 +204,7 @@ class NewConsumerBillState extends State<NewConsumerBill> {
                                           (widget.waterConnection?.fetchBill?.bill?.first.totalAmount ?? 0).abs() : widget.demandList.first.demandDetails!.first.taxHeadMasterCode == 'WS_TIME_PENALTY'
                                                   ? CommonProvider.getCurrentBill(widget.demandList) + CommonProvider.getArrearsAmountOncePenaltyExpires(widget.demandList)  : CommonProvider.getTotalBillAmount(widget.demandList)).toString()),
                                           context),
-                                     if(CommonProvider.getPenaltyOrAdvanceStatus(widget.waterConnection?.mdmsData, false, true)) getLabelText(
+                                     if(CommonProvider.getPenaltyOrAdvanceStatus(widget.waterConnection?.mdmsData, false, true) && houseHoldProvider.isfirstdemand) getLabelText(
                                          i18.billDetails.CORE_PENALTY_APPLICABLE,
                                          ('₹' +
                                              penaltyApplicable.penaltyApplicable
