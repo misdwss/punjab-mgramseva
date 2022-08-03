@@ -600,7 +600,7 @@ class CommonProvider with ChangeNotifier {
 
   static num getNetDueAmountWithWithOutPenalty(num totalAmount, Penalty penalty, [bool withPenalty = false]){
     if(withPenalty) return totalAmount >= 0 ? (penalty.isDueDateCrossed ? totalAmount : totalAmount + penalty.penalty) :  penalty.penalty;
-    return totalAmount >= 0 ? (penalty.isDueDateCrossed ? totalAmount - penalty.penalty : totalAmount) : 0.0;
+    return totalAmount >= 0 ? (totalAmount) : 0.0;
   }
 
   static bool isFirstDemand(List<Demands> demandList){
