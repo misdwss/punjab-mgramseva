@@ -297,7 +297,7 @@ class _ConnectionPaymentViewState extends State<ConnectionPaymentView> {
                       )
                     ]),
                 // }),
-                if(CommonProvider.getPenaltyOrAdvanceStatus(fetchBill.mdmsData, false, true) && isFirstDemand)
+                if(CommonProvider.getPenaltyOrAdvanceStatus(fetchBill.mdmsData, false, true) && isFirstDemand && penalty.isDueDateCrossed)
                   _buildLabelValue(i18.billDetails.CORE_PENALTY_APPLICABLE,
                       '₹' + (CommonProvider.getPenaltyApplicable(fetchBill.updateDemandList ?? []).penaltyApplicable).toString()),
 

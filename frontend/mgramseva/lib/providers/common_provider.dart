@@ -660,37 +660,20 @@ class CommonProvider with ChangeNotifier {
     !(e.isPaymentCompleted ?? false))
         .toList();
 
-    filteredDemands?.forEach((billDetails) {
+    demandList?.forEach((billDetails) {
       billDetails.demandDetails?.forEach((billAccountDetails) {
         if(billAccountDetails.taxHeadMasterCode == 'WS_TIME_PENALTY'){
-          var amount = billAccountDetails.taxAmount?.round() ?? 0;
+          var amount = demandList.first.totalApplicablePenalty ?? 0;
           DateTime billGenerationDate,expiryDate;
           var date = billAccountDetails.auditDetails != null ?
           DateTime.fromMillisecondsSinceEpoch(billAccountDetails.auditDetails!.createdTime ?? 0)
-           : DateTime.fromMillisecondsSinceEpoch(filteredDemands.first.auditDetails!.createdTime ?? 0);
+           : DateTime.fromMillisecondsSinceEpoch(demandList.first.auditDetails!.createdTime ?? 0);
           billGenerationDate = expiryDate = DateTime(date.year, date.month, date.day);
           expiryDate = expiryDate.add(Duration(milliseconds: billDetails.billExpiryTime ?? 0, days: 0));
-          penalty = Penalty(amount.toDouble(), DateFormats.getFilteredDate(expiryDate.toString()), expiryDate.isBefore(DateTime.now()));
+          penalty = Penalty(amount.toDouble(), DateFormats.getFilteredDate(expiryDate.toString()), DateTime.now().isAfter(expiryDate));
         }
       });
     });
-    // if(billList is List<Bill>){
-    //   billList.first.billDetails!.forEach((bill) {
-    //     bill.billAccountDetails?.forEach((billAccountDetails) {
-    //       if(billAccountDetails.taxHeadCode == '10102' || billAccountDetails.taxHeadCode == 'WS_TIME_ADHOC_PENALTY'){
-    //         penalty += billAccountDetails.amount ?? 0;
-    //       }
-    //     });
-    //   });
-    // }else if(billList is FetchBill ){
-    //  billList.billDetails?.forEach((bill) {
-    //    bill.billAccountDetails?.forEach((billAccountDetails) {
-    //      if(billAccountDetails.taxHeadCode == '10102' || billAccountDetails.taxHeadCode == 'WS_TIME_ADHOC_PENALTY'){
-    //        penalty += billAccountDetails.amount ?? 0;
-    //      }
-    //    });
-    //  });
-    // }
     return penalty ?? Penalty(0.0, '', false);
   }
 
@@ -701,7 +684,7 @@ class CommonProvider with ChangeNotifier {
     !(e.isPaymentCompleted ?? false))
         .toList();
 
-    var penaltyAmount = filteredDemands?.first.totalApplicablePenalty ?? 0.0;
+    var penaltyAmount = (filteredDemands?.first.totalApplicablePenalty ?? 0) ;
     penaltyApplicable = PenaltyApplicable(penaltyAmount.round().toDouble());
 
     return penaltyApplicable ;
@@ -769,7 +752,7 @@ class CommonProvider with ChangeNotifier {
     if (demandList.isNotEmpty ) {
       var filteredDemands = demandList.where((e) => (!(e.isPaymentCompleted ?? false) && e.status != 'CANCELLED')).first;
         filteredDemands.demandDetails!.forEach((e) {
-          if (e.taxHeadMasterCode == '10201' || e.taxHeadMasterCode == '10102' || e.taxHeadMasterCode == 'WS_TIME_PENALTY'){
+          if (e.taxHeadMasterCode == '10201' || e.taxHeadMasterCode == '10102'){
             res.add((e.taxAmount ?? 0) - (e.collectionAmount ?? 0));
           }
         });
