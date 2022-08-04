@@ -181,8 +181,8 @@ class NewConsumerBillState extends State<NewConsumerBill> {
                                      if(!houseHoldProvider.isfirstdemand && (billList.bill?.first.totalAmount ?? 0) >= 0) getLabelText(
                                           houseHoldProvider.isfirstdemand ==
                                                   true
-                                              ? 'CURRENT_BILL_1'
-                                              : 'ARREARS_DUES_1',
+                                              ? i18.billDetails.CURRENT_BILL
+                                              : i18.billDetails.ARRERS_DUES,
                                           ('₹' +
       (houseHoldProvider.isfirstdemand ?  widget.demandList.first.demandDetails!
                                                   .first.taxAmount : CommonProvider.getArrearsAmount(widget.demandList))
@@ -191,8 +191,8 @@ class NewConsumerBillState extends State<NewConsumerBill> {
                                       if(houseHoldProvider.isfirstdemand) getLabelText(
                                           houseHoldProvider.isfirstdemand ==
                                               true
-                                              ? 'CURRENT_BILL2'
-                                              : 'ARREARS_DUES_2',
+                                              ? i18.billDetails.CURRENT_BILL
+                                              : i18.billDetails.ARRERS_DUES,
                                           ('₹' +
                                               (houseHoldProvider.isfirstdemand ?  widget.demandList.first.demandDetails!.first.taxHeadMasterCode == 'WS_TIME_PENALTY'
                                                   ? CommonProvider.getCurrentBill(widget.demandList)
