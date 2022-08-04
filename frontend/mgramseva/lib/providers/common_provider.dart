@@ -589,7 +589,7 @@ class CommonProvider with ChangeNotifier {
       var amount = 0.0;
       demandList.first.demandDetails?.forEach((demand) {
         if(demand.taxHeadMasterCode == '10102' || demand.taxHeadMasterCode == '10201' || demand.taxHeadMasterCode == 'WS_TIME_PENALTY')
-          amount += demand.taxAmount ?? 0;
+          amount += ((demand.taxAmount ?? 0) - (demand.collectionAmount ?? 0));
       });
       return amount;
     }
@@ -629,7 +629,7 @@ class CommonProvider with ChangeNotifier {
     filteredDemands.forEach((billDetails) {
       billDetails.demandDetails?.forEach((billAccountDetails) {
         if(billAccountDetails.taxHeadMasterCode == '10201'){
-          penalty = billAccountDetails.taxAmount ?? 0;
+          penalty = ((billAccountDetails.taxAmount ?? 0) - (billAccountDetails.collectionAmount ?? 0));
         }
       });
     });
