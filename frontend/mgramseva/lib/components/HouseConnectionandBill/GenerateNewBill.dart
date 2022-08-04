@@ -148,7 +148,7 @@ class _GenerateNewBillState extends State<GenerateNewBill> {
                         if(!houseHoldProvider.isfirstdemand && widget.demandList.demands?.first.demandDetails?.first.taxHeadMasterCode == 'WS_TIME_PENALTY')
                           _getLabeltext(
                               i18.billDetails.WS_10201,
-                              ('₹' + (CommonProvider.getPenalty(widget.waterconnection?.demands).penalty).toString()),
+                              ('₹' + (CommonProvider.getPenaltyApplicable(widget.demandList.demands).penaltyApplicable).toString()),
                               context),
                         if(!houseHoldProvider.isfirstdemand && widget.demandList.demands?.first.demandDetails?.first.taxHeadMasterCode == 'WS_TIME_PENALTY')
                           _getLabeltext(

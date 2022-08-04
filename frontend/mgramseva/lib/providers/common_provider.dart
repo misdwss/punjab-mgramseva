@@ -644,11 +644,13 @@ class CommonProvider with ChangeNotifier {
     !(e.isPaymentCompleted ?? false))
         .toList();
 
-    filteredDemands.last.demandDetails?.forEach((billAccountDetails) {
-        if(billAccountDetails.taxHeadMasterCode == '10101'){
-          currentBill += billAccountDetails.taxAmount ?? 0;
-        }
-      });
+    for (var demand in filteredDemands) {
+    demand.demandDetails?.forEach((billAccountDetails) {
+    if(billAccountDetails.taxHeadMasterCode == '10101'){
+    currentBill += billAccountDetails.taxAmount ?? 0;
+    }
+    });
+  }
 
     return currentBill;
   }
@@ -684,12 +686,24 @@ class CommonProvider with ChangeNotifier {
     !(e.isPaymentCompleted ?? false))
         .toList();
 
-    for (var demand in filteredDemands!) {
-      demand.demandDetails!.forEach((e) {
-        if (e.taxHeadMasterCode == 'WS_TIME_PENALTY'){
-          res.add((e.taxAmount ?? 0) - (e.collectionAmount ?? 0));
-        }
-      });
+    if(demandList?.first.demandDetails?.first.taxHeadMasterCode == 'WS_TIME_PENALTY'){
+      for (var demand in filteredDemands!) {
+        demand.demandDetails!.forEach((e) {
+          if (e.taxHeadMasterCode == 'WS_TIME_PENALTY') {
+            res.add((e.taxAmount ?? 0) - (e.collectionAmount ?? 0));
+          }
+        });
+      }
+    }
+    else {
+      for (var demand in filteredDemands!) {
+        demand.demandDetails!.forEach((e) {
+          if (e.taxHeadMasterCode == 'WS_TIME_PENALTY' ||
+              e.taxHeadMasterCode == '10201') {
+            res.add((e.taxAmount ?? 0) - (e.collectionAmount ?? 0));
+          }
+        });
+      }
     }
 
     var penaltyAmount = res.length == 0 ? 0 : ((res.reduce((previousValue,
@@ -731,7 +745,7 @@ class CommonProvider with ChangeNotifier {
           .toList();
       for (var demand in filteredDemands) {
         demand.demandDetails!.forEach((e) {
-          if (e.taxHeadMasterCode != 'WS_ADVANCE_CARRYFORWARD' && e.taxHeadMasterCode != 'WS_TIME_PENALTY'){
+          if (e.taxHeadMasterCode != 'WS_ADVANCE_CARRYFORWARD'){
             res.add((e.taxAmount ?? 0) - (e.collectionAmount ?? 0));
           }
         });
@@ -761,12 +775,15 @@ class CommonProvider with ChangeNotifier {
 
 
     if (demandList.isNotEmpty ) {
-      var filteredDemands = demandList.where((e) => (!(e.isPaymentCompleted ?? false) && e.status != 'CANCELLED')).first;
-        filteredDemands.demandDetails!.forEach((e) {
-          if (e.taxHeadMasterCode == '10201' || e.taxHeadMasterCode == '10102'){
+      var filteredDemands = demandList.where((e) => (!(e.isPaymentCompleted ?? false) && e.status != 'CANCELLED')).toList();
+      for (var demand in filteredDemands) {
+        demand.demandDetails!.forEach((e) {
+          if (e.taxHeadMasterCode != 'WS_ADVANCE_CARRYFORWARD' &&
+              e.taxHeadMasterCode != 'WS_TIME_PENALTY' && e.taxHeadMasterCode != '10101') {
             res.add((e.taxAmount ?? 0) - (e.collectionAmount ?? 0));
           }
         });
+      }
 
     }
 

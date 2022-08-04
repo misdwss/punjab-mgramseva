@@ -277,7 +277,7 @@ class _ConnectionPaymentViewState extends State<ConnectionPaymentView> {
                           if( !isFirstDemand && fetchBill.demands?.demandDetails?.first.taxHeadMasterCode == 'WS_TIME_PENALTY')
                             _buildLabelValue(
                                 i18.billDetails.WS_10201,
-                                '₹ ${CommonProvider.getPenalty(fetchBill.updateDemandList ?? []).penalty}'),
+                                '₹ ${CommonProvider.getPenaltyApplicable(fetchBill.demandList ?? []).penaltyApplicable}'),
                           if(fetchBill.demandList?.first.demandDetails?.first.taxHeadMasterCode == '10201' && fetchBill.demandList?.first.demandDetails?.last.taxHeadMasterCode == '10102')
                                    _buildLabelValue('WS_${fetchBill.demands?.demandDetails?.last.taxHeadMasterCode}',
                                     '₹ ${fetchBill.demands?.demandDetails?.last.taxAmount.toString()}')
