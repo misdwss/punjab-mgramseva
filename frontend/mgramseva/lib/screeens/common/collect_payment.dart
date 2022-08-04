@@ -280,7 +280,7 @@ class _ConnectionPaymentViewState extends State<ConnectionPaymentView> {
                                 '₹ ${CommonProvider.getPenaltyApplicable(fetchBill.demandList ?? []).penaltyApplicable}'),
                           if(fetchBill.demandList?.first.demandDetails?.first.taxHeadMasterCode == '10201' && fetchBill.demandList?.first.demandDetails?.last.taxHeadMasterCode == '10102')
                                    _buildLabelValue('WS_${fetchBill.demands?.demandDetails?.last.taxHeadMasterCode}',
-                                    '₹ ${fetchBill.demands?.demandDetails?.last.taxAmount.toString()}')
+                                    '₹ ${((fetchBill.demands?.demandDetails?.last.taxAmount ?? 0) - (fetchBill.demands?.demandDetails?.last.collectionAmount ?? 0)  ).toString()}')
                           ])
                     : Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
