@@ -585,7 +585,6 @@ class CommonProvider with ChangeNotifier {
   }
 
   static double getTotalBillAmount(List<Demands> demandList) {
-
     if(!isFirstDemand(demandList)){
       var amount = 0.0;
       demandList.first.demandDetails?.forEach((demand) {
@@ -594,7 +593,7 @@ class CommonProvider with ChangeNotifier {
       });
       return amount;
     }
-    return ((demandList.first.demandDetails?.first.taxAmount ?? 0) + CommonProvider.getArrearsAmount(demandList));
+    return ((demandList.first.demandDetails?.first.taxAmount ?? 0) - (demandList.first.demandDetails?.first.collectionAmount ?? 0) + CommonProvider.getArrearsAmount(demandList));
 
   }
 
@@ -647,7 +646,7 @@ class CommonProvider with ChangeNotifier {
     for (var demand in filteredDemands) {
     demand.demandDetails?.forEach((billAccountDetails) {
     if(billAccountDetails.taxHeadMasterCode == '10101'){
-    currentBill += billAccountDetails.taxAmount ?? 0;
+    currentBill += (billAccountDetails.taxAmount ?? 0) - (billAccountDetails.collectionAmount ?? 0);
     }
     });
   }
@@ -734,7 +733,7 @@ class CommonProvider with ChangeNotifier {
     if(!isFirstDemand(demandList)){
       var arrearsAmount = 0.0;
       demandList.first.demandDetails?.forEach((demand) {
-        if(demand.taxHeadMasterCode == '10102') arrearsAmount += demand.taxAmount ?? 0;
+        if(demand.taxHeadMasterCode == '10102') arrearsAmount += ((demand.taxAmount ?? 0) - (demand.collectionAmount ?? 0));
       });
       return arrearsAmount;
     }
@@ -768,7 +767,7 @@ class CommonProvider with ChangeNotifier {
     if(!isFirstDemand(demandList)){
       var arrearsAmount = 0.0;
       demandList.first.demandDetails?.forEach((demand) {
-        if(demand.taxHeadMasterCode == '10102') arrearsAmount += demand.taxAmount ?? 0;
+        if(demand.taxHeadMasterCode == '10102') arrearsAmount += ((demand.taxAmount ?? 0) - (demand.collectionAmount ?? 0));
       });
       return arrearsAmount;
     }

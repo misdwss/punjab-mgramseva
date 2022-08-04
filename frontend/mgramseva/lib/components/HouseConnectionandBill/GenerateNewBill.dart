@@ -143,7 +143,7 @@ class _GenerateNewBillState extends State<GenerateNewBill> {
                         && widget.demandList.demands?.first.demandDetails?.first.taxHeadMasterCode != 'WS_TIME_PENALTY')
                           _getLabeltext(
                               'WS_${widget.demandList.demands?.first.demandDetails?.first.taxHeadMasterCode}',
-                              ('₹' +  (widget.demandList.demands?.first.demandDetails?.first.taxAmount).toString()),
+                              ('₹' +  ((widget.demandList.demands?.first.demandDetails?.first.taxAmount ?? 0) - (widget.demandList.demands?.first.demandDetails?.first.collectionAmount ?? 0)).toString()),
                               context),
                         if(!houseHoldProvider.isfirstdemand && widget.demandList.demands?.first.demandDetails?.first.taxHeadMasterCode == 'WS_TIME_PENALTY')
                           _getLabeltext(
@@ -159,7 +159,7 @@ class _GenerateNewBillState extends State<GenerateNewBill> {
                         && CommonProvider.getArrearsAmount(widget.demandList.demands ?? []) > 0)
                           _getLabeltext(
                               'WS_${widget.demandList.demands?.first.demandDetails?.last.taxHeadMasterCode}',
-                              ('₹' + (widget.demandList.demands?.first.demandDetails?.last.taxAmount).toString()),
+                              ('₹' + ((widget.demandList.demands?.first.demandDetails?.last.taxAmount ?? 0) - (widget.demandList.demands?.first.demandDetails?.last.collectionAmount ?? 0)).toString()),
                               context),
                         !houseHoldProvider.isfirstdemand && getPendingAmount > 0 ?
                         _getLabeltext(
