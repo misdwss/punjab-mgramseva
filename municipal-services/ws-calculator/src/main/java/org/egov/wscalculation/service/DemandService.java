@@ -788,6 +788,7 @@ public class DemandService {
 			return false;
 		}
 		boolean isCurrentDemand = false;
+		boolean isLatestWaterChargeDemand = false;
 		if (!(taxPeriod.getFromDate() <= System.currentTimeMillis()
 				&& taxPeriod.getToDate() >= System.currentTimeMillis()))
 			isCurrentDemand = true;
@@ -805,7 +806,7 @@ public class DemandService {
 					waterChargeApplicable = waterChargeApplicable.add(detail.getTaxAmount()).subtract(detail.getCollectionAmount());
 				}
 				if (detail.getTaxHeadMasterCode().equalsIgnoreCase(WSCalculationConstant.WS_TIME_PENALTY)) {
-					oldPenalty = oldPenalty.add(detail.getTaxAmount());
+					oldPenalty = oldPenalty.add(detail.getTaxAmount()).subtract(detail.getCollectionAmount());
 					waterChargeApplicable = waterChargeApplicable.add(oldPenalty);
 				}
 //				if (detail.getTaxHeadMasterCode().equalsIgnoreCase(WSCalculationConstant.WS_TIME_INTEREST)) {
@@ -818,10 +819,16 @@ public class DemandService {
 //			boolean isInterestUpdated = false;
 
 			List<DemandDetail> details = demand.getDemandDetails();
-			latestWaterChargeDemandDetail = utils.getLatestDemandDetailByTaxHead(WSCalculationConstant.WS_CHARGE,
+			
+			latestPenaltyDemandDetail = utils.getLatestDemandDetailByTaxHead(WSCalculationConstant.WS_TIME_PENALTY,
 					details);
-			if(latestWaterChargeDemandDetail != null) {
-				currentMonthDemand = currentMonthDemand.add(latestWaterChargeDemandDetail.getLatestDemandDetail().getTaxAmount()).subtract(latestWaterChargeDemandDetail.getLatestDemandDetail().getCollectionAmount());
+			if(latestPenaltyDemandDetail == null) {
+				isLatestWaterChargeDemand = true;
+				latestWaterChargeDemandDetail = utils.getLatestDemandDetailByTaxHead(WSCalculationConstant.WS_CHARGE,
+						details);
+				if(latestWaterChargeDemandDetail != null) {
+					currentMonthDemand = currentMonthDemand.add(latestWaterChargeDemandDetail.getLatestDemandDetail().getTaxAmount()).subtract(latestWaterChargeDemandDetail.getLatestDemandDetail().getCollectionAmount());
+				}
 			}
 			Map<String, BigDecimal> interestPenaltyEstimates = payService.applyPenaltyRebateAndInterest(
 					waterChargeApplicable, taxPeriod.getFinancialYear(), timeBasedExemptionMasterMap, expiryDate,currentMonthDemand,isGetPenaltyEstimate);
@@ -855,13 +862,11 @@ public class DemandService {
 //				}
 //			}
 
-			if (penalty.compareTo(BigDecimal.ZERO) != 0) {
-				latestPenaltyDemandDetail = utils.getLatestDemandDetailByTaxHead(WSCalculationConstant.WS_TIME_PENALTY,
-						details);
-				if (latestPenaltyDemandDetail != null) {
+			if (penalty.compareTo(BigDecimal.ZERO) != 0 && latestPenaltyDemandDetail !=null) {
+				
 					updateTaxAmount(penalty, latestPenaltyDemandDetail,penaltyType);
 					isPenaltyUpdated = true;
-				}
+	
 			}
 
 			if (!isPenaltyUpdated && penalty.compareTo(BigDecimal.ZERO) > 0)
@@ -1106,8 +1111,8 @@ public class DemandService {
 		for(Demand demand: demands) {
 			for(DemandDetail demanddetail: demand.getDemandDetails()) {
 				if(demanddetail.getTaxHeadMasterCode().equalsIgnoreCase(WSCalculationConstant.WS_TIME_PENALTY)) {
-					totalApplicablePenalty = totalApplicablePenalty.add(demanddetail.getTaxAmount());
-				}
+					totalApplicablePenalty = totalApplicablePenalty.add(demanddetail.getTaxAmount()).subtract(demanddetail.getCollectionAmount());
+					}
 			}
 		}
 		DemandPenaltyResponse response = DemandPenaltyResponse.builder().totalApplicablePenalty(totalApplicablePenalty).demands(demands).build();
