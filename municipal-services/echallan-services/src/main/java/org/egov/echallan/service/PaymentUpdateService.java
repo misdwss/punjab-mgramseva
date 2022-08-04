@@ -70,6 +70,7 @@ public class PaymentUpdateService {
 				    AuditDetails auditDetails = commUtils.getAuditDetails(uuid, true);
 					challans.forEach(challan -> {
 						challan.setApplicationStatus(StatusEnum.PAID);
+						challan.setIsBillPaid(true);
 						challan.setAuditDetails(auditDetails);
 						ChallanRequest request = ChallanRequest.builder().requestInfo(requestInfo).challan(challan).build();
 						producer.push(config.getUpdateStatusChallanTopic(), request);

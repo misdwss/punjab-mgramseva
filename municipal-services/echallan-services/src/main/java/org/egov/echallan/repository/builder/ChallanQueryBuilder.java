@@ -122,6 +122,14 @@ public class ChallanQueryBuilder {
 				builder.append(" challan.tenantid=? ");
 				preparedStmtList.add(criteria.getTenantId());
 			}
+//			Adding reference id for collection service create payment criteria.
+
+			if (criteria.getReferenceId() != null) {
+				addClauseIfRequired(preparedStmtList, builder);
+				builder.append(" challan.referenceid=? ");
+				preparedStmtList.add(criteria.getReferenceId());
+			}
+
 			List<String> ids = criteria.getIds();
 			if (!CollectionUtils.isEmpty(ids)) {
 				addClauseIfRequired(preparedStmtList, builder);
