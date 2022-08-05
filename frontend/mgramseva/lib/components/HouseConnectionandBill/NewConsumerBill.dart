@@ -196,14 +196,15 @@ class NewConsumerBillState extends State<NewConsumerBill> {
                                           ('₹' +
                                               (houseHoldProvider.isfirstdemand ?  widget.demandList.first.demandDetails!.first.taxHeadMasterCode == 'WS_TIME_PENALTY'
                                                   ? CommonProvider.getCurrentBill(widget.demandList)
-                                              : ((widget.demandList.first.demandDetails!.first.taxAmount ?? 0) - (widget.demandList.first.demandDetails!.first.collectionAmount ?? 0)) : CommonProvider.getArrearsAmount(widget.demandList))
+                                              : CommonProvider.checkAdvance(widget.demandList) ? (widget.demandList.first.demandDetails!.first.taxAmount ?? 0)
+                                              : ((widget.demandList.first.demandDetails!.first.taxAmount ?? 0)) : CommonProvider.getArrearsAmount(widget.demandList))
                                                   .toString()),
                                           context),
                                       if(houseHoldProvider.isfirstdemand == true)
                                           getLabelText(
                                               i18.billDetails.ARRERS_DUES,
                                               ( widget.demandList.first.demandDetails!.first.taxHeadMasterCode == 'WS_TIME_PENALTY'
-                                                    ?  '₹' + CommonProvider.getArrearsAmountOncePenaltyExpires(widget.demandList).toString() : '₹' + CommonProvider.getArrearsAmount(widget.demandList).toString()),
+                                                    ? '₹' + CommonProvider.getArrearsAmountOncePenaltyExpires(widget.demandList).toString() : '₹' + CommonProvider.getArrearsAmount(widget.demandList).toString()),
                                               context),
                                       getLabelText(
                                           !houseHoldProvider.isfirstdemand ? ((widget.waterConnection?.fetchBill?.bill?.first.totalAmount ?? 0) >= 0 ? i18.generateBillDetails.PENDING_AMOUNT : i18.common.ADVANCE_AVAILABLE) : i18.billDetails.TOTAL_AMOUNT,

@@ -593,7 +593,8 @@ class CommonProvider with ChangeNotifier {
       });
       return amount;
     }
-    return ((demandList.first.demandDetails?.first.taxAmount ?? 0) - (demandList.first.demandDetails?.first.collectionAmount ?? 0) + CommonProvider.getArrearsAmount(demandList));
+    return ((CommonProvider.checkAdvance(demandList) ? (demandList.first.demandDetails?.first.taxAmount ?? 0)
+            : (demandList.first.demandDetails?.first.taxAmount ?? 0) - (demandList.first.demandDetails?.first.collectionAmount ?? 0)) + CommonProvider.getArrearsAmount(demandList));
 
   }
 
@@ -643,6 +644,7 @@ class CommonProvider with ChangeNotifier {
     !(e.isPaymentCompleted ?? false)).first;
 
     filteredDemands.demandDetails?.forEach((billAccountDetails) {
+
     if(billAccountDetails.taxHeadMasterCode == '10101'){
     currentBill += (billAccountDetails.taxAmount ?? 0) - (billAccountDetails.collectionAmount ?? 0);
     }

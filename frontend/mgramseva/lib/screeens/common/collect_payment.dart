@@ -290,6 +290,7 @@ class _ConnectionPaymentViewState extends State<ConnectionPaymentView> {
                               ?  i18.billDetails.CURRENT_BILL : 'WS_${fetchBill.demands?.demandDetails?.first.taxHeadMasterCode}',
                           fetchBill.demands?.demandDetails?.first.taxHeadMasterCode == 'WS_TIME_PENALTY'
                           ? '₹' +  CommonProvider.getCurrentBill(fetchBill.demandList ?? []).toString()
+                          : CommonProvider.checkAdvance(fetchBill.demandList ?? []) ? '₹ ${((fetchBill.demands?.demandDetails?.first.taxAmount ?? 0))}'
                           : '₹ ${((fetchBill.demands?.demandDetails?.first.taxAmount ?? 0) - (fetchBill.demands?.demandDetails?.first.collectionAmount ?? 0))}'),
                       (fetchBill.billDetails?.first.billAccountDetails?.last.arrearsAmount ?? 0) >
                           0
