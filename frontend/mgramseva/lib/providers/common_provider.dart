@@ -556,27 +556,42 @@ class CommonProvider with ChangeNotifier {
     var filteredDemands = demandList.where((e) =>
     !(e.isPaymentCompleted ?? false))
         .toList();
+    if( filteredDemands.first.demandDetails?.first.taxHeadMasterCode == 'WS_TIME_PENALTY'
+      && CommonProvider.getPenaltyApplicable(demandList).penaltyApplicable != 0) {
+      return amount;
+    }
 
-    for (int i = 0; i < filteredDemands.length; i++) {
-      index = demandList[i].demandDetails?.lastIndexWhere((e) => e
-          .taxHeadMasterCode == 'WS_ADVANCE_CARRYFORWARD') ?? -1;
+    else {
+      for (int i = 0; i < filteredDemands.length; i++) {
+        index = demandList[i].demandDetails?.lastIndexWhere((e) =>
+        e.taxHeadMasterCode == 'WS_ADVANCE_CARRYFORWARD') ?? -1;
 
-      if (index != -1) {
-        var demandDetail = demandList[i].demandDetails?[index];
-        if(demandDetail!.collectionAmount!.abs() < demandDetail.taxAmount!.abs()){
-         amount = filteredDemands.first.demandDetails?.last.collectionAmount?.toString() ?? '0.0';
-        }else if(demandDetail.collectionAmount! == demandDetail.taxAmount!){
-          if(filteredDemands.first.demandDetails?.last.collectionAmount != 0){
-            var list = <double>[];
-            for(int j = 0; j <= i ; j++){
-              for(int k = 0; k < (filteredDemands[j].demandDetails?.length ?? 0); k++) {
-                if (k == index && j == i) break;
-                list.add(filteredDemands[j].demandDetails![k].collectionAmount ?? 0);
+        if (index != -1) {
+          var demandDetail = demandList[i].demandDetails?[index];
+          if (demandDetail!.collectionAmount!.abs() <
+              demandDetail.taxAmount!.abs()) {
+            amount = filteredDemands.first.demandDetails?.last.collectionAmount
+                ?.toString() ?? '0.0';
+          } else
+          if (demandDetail.collectionAmount! == demandDetail.taxAmount!) {
+            if (filteredDemands.first.demandDetails?.last.collectionAmount !=
+                0) {
+              var list = <double>[];
+              for (int j = 0; j <= i; j++) {
+                for (int k = 0; k <
+                    (filteredDemands[j].demandDetails?.length ?? 0); k++) {
+                  if (k == index && j == i) break;
+                  list.add(
+                      filteredDemands[j].demandDetails![k].collectionAmount ??
+                          0);
+                }
               }
+              var collectedAmount = list.reduce((a, b) => a + b);
+              amount = double.parse("$collectedAmount") >=
+                  double.parse("${demandDetail.collectionAmount?.abs()}")
+                  ? filteredDemands.first.demandDetails?.last.collectionAmount
+                  ?.toString() ?? '0.0' : '0.0';
             }
-            var collectedAmount = list.reduce((a, b) => a+b);
-            amount = double.parse("$collectedAmount") >= double.parse("${demandDetail.collectionAmount?.abs()}")
-                ? filteredDemands.first.demandDetails?.last.collectionAmount?.toString() ?? '0.0' : '0.0';
           }
         }
       }
