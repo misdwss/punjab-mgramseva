@@ -640,16 +640,14 @@ class CommonProvider with ChangeNotifier {
     var currentBill = 0.0;
 
     var filteredDemands = demandList.where((e) =>
-    !(e.isPaymentCompleted ?? false))
-        .toList();
+    !(e.isPaymentCompleted ?? false)).first;
 
-    for (var demand in filteredDemands) {
-    demand.demandDetails?.forEach((billAccountDetails) {
+    filteredDemands.demandDetails?.forEach((billAccountDetails) {
     if(billAccountDetails.taxHeadMasterCode == '10101'){
     currentBill += (billAccountDetails.taxAmount ?? 0) - (billAccountDetails.collectionAmount ?? 0);
     }
     });
-  }
+
 
     return currentBill;
   }
@@ -763,6 +761,7 @@ class CommonProvider with ChangeNotifier {
 
   static double getArrearsAmountOncePenaltyExpires(List<Demands> demandList) {
     List res = [];
+    var arrearsDeduction = 0.0 ;
 
     if(!isFirstDemand(demandList)){
       var arrearsAmount = 0.0;
@@ -773,12 +772,19 @@ class CommonProvider with ChangeNotifier {
     }
 
 
-    if (demandList.isNotEmpty ) {
+    if (demandList.isNotEmpty  ) {
       var filteredDemands = demandList.where((e) => (!(e.isPaymentCompleted ?? false) && e.status != 'CANCELLED')).toList();
+
+      filteredDemands.first.demandDetails?.forEach((element) {
+        if(element.taxHeadMasterCode == '10101'){
+          arrearsDeduction = ((element.taxAmount ?? 0) - (element.collectionAmount ?? 0)) ;
+        }
+      });
       for (var demand in filteredDemands) {
         demand.demandDetails!.forEach((e) {
+
           if (e.taxHeadMasterCode != 'WS_ADVANCE_CARRYFORWARD' &&
-              e.taxHeadMasterCode != 'WS_TIME_PENALTY' && e.taxHeadMasterCode != '10101') {
+              e.taxHeadMasterCode != 'WS_TIME_PENALTY') {
             res.add((e.taxAmount ?? 0) - (e.collectionAmount ?? 0));
           }
         });
@@ -786,10 +792,12 @@ class CommonProvider with ChangeNotifier {
 
     }
 
+
+
     return res.length == 0 ? 0 : ((res.reduce((previousValue,
         element) =>
     previousValue +
-        element)) as double).abs();
+        element) - arrearsDeduction) as double).abs();
   }
 
   static Future<LanguageList> getMdmsBillingService() async {
