@@ -7,6 +7,9 @@ class UpdateDemandList {
   List<UpdateDemands>? demands;
   UpdateDemandList();
 
+  @JsonKey(name: "totalApplicablePenalty")
+  double? totalApplicablePenalty;
+
   factory UpdateDemandList.fromJson(Map<String, dynamic> json) =>
       _$UpdateDemandListFromJson(json);
 
@@ -43,6 +46,8 @@ class UpdateDemands {
   String? status;
   @JsonKey(name: "isPaymentCompleted")
   bool? isPaymentCompleted = false;
+  @JsonKey(ignore: true)
+  double? totalApplicablePenalty;
   UpdateDemands();
   factory UpdateDemands.fromJson(Map<String, dynamic> json) =>
       _$UpdateDemandsFromJson(json);

@@ -42,6 +42,7 @@ class CollectPaymentProvider with ChangeNotifier {
 
   ScreenshotController screenshotController = ScreenshotController();
   var paymentModeList = <KeyValue>[];
+  UpdateDemandList? updateDemand;
 
   @override
   void dispose() {
@@ -97,6 +98,11 @@ class CollectPaymentProvider with ChangeNotifier {
               }
             });
         updateDemandList = demand.demands;
+        updateDemand?.totalApplicablePenalty = demand.totalApplicablePenalty;
+        updateDemandList?.forEach((e){
+          e.totalApplicablePenalty = demand.totalApplicablePenalty;
+        });
+
 
         if (updateDemandList != null && updateDemandList.length > 0) {
           updateDemandList.sort((a, b) =>
