@@ -145,3 +145,8 @@ class Penalty {
   bool isDueDateCrossed = false;
   Penalty(this.penalty, this.date, this.isDueDateCrossed);
 }
+
+class PenaltyApplicable {
+  double penaltyApplicable;
+  PenaltyApplicable(this.penaltyApplicable);
+}

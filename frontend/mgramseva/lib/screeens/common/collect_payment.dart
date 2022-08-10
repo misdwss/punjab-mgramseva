@@ -269,24 +269,35 @@ class _ConnectionPaymentViewState extends State<ConnectionPaymentView> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                             _buildLabelValue(
-                                'WS_${fetchBill.demands?.demandDetails?.first.taxHeadMasterCode}',
+                                fetchBill.demands?.demandDetails?.first.taxHeadMasterCode == 'WS_TIME_PENALTY'
+                                    ?  i18.billDetails.WS_10102 : 'WS_${fetchBill.demands?.demandDetails?.first.taxHeadMasterCode}',
                                 fetchBill.demandList?.first.demandDetails?.first.taxHeadMasterCode == '10201'
                                     ? '₹ ${CommonProvider.getNormalPenalty(fetchBill.demandList ?? [])}'
                                 : '₹ ${CommonProvider.getArrearsAmount(fetchBill.demandList ?? [])}'),
+                          if( !isFirstDemand && fetchBill.demands?.demandDetails?.first.taxHeadMasterCode == 'WS_TIME_PENALTY')
+                            _buildLabelValue(
+                                i18.billDetails.WS_10201,
+                                '₹ ${CommonProvider.getPenaltyApplicable(fetchBill.demandList ?? []).penaltyApplicable}'),
                           if(fetchBill.demandList?.first.demandDetails?.first.taxHeadMasterCode == '10201' && fetchBill.demandList?.first.demandDetails?.last.taxHeadMasterCode == '10102')
                                    _buildLabelValue('WS_${fetchBill.demands?.demandDetails?.last.taxHeadMasterCode}',
-                                    '₹ ${fetchBill.demands?.demandDetails?.last.taxAmount.toString()}')
+                                    '₹ ${((fetchBill.demands?.demandDetails?.last.taxAmount ?? 0) - (fetchBill.demands?.demandDetails?.last.collectionAmount ?? 0)  ).toString()}')
                           ])
                     : Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       _buildLabelValue(
-                          'WS_${fetchBill.demands?.demandDetails?.first.taxHeadMasterCode}',
-                          '₹ ${fetchBill.demands?.demandDetails?.first.taxAmount}'),
+                          fetchBill.demands?.demandDetails?.first.taxHeadMasterCode == 'WS_TIME_PENALTY'
+                              ?  i18.billDetails.CURRENT_BILL : 'WS_${fetchBill.demands?.demandDetails?.first.taxHeadMasterCode}',
+                          fetchBill.demands?.demandDetails?.first.taxHeadMasterCode == 'WS_TIME_PENALTY'
+                          ? '₹' +  CommonProvider.getCurrentBill(fetchBill.demandList ?? []).toString()
+                          : CommonProvider.checkAdvance(fetchBill.demandList ?? []) ? '₹ ${((fetchBill.demands?.demandDetails?.first.taxAmount ?? 0))}'
+                          : '₹ ${((fetchBill.demands?.demandDetails?.first.taxAmount ?? 0) - (fetchBill.demands?.demandDetails?.first.collectionAmount ?? 0))}'),
                       (fetchBill.billDetails?.first.billAccountDetails?.last.arrearsAmount ?? 0) >
                           0
                           ? _buildLabelValue(i18.billDetails.ARRERS_DUES,
-                          '₹ ${fetchBill.billDetails?.first.billAccountDetails?.last.arrearsAmount.toString()}')
+                          fetchBill.demands?.demandDetails?.first.taxHeadMasterCode == 'WS_TIME_PENALTY'
+                              ?  '₹' + CommonProvider.getArrearsAmountOncePenaltyExpires(fetchBill.demandList ?? []).toString()
+                              :'₹ ${fetchBill.billDetails?.first.billAccountDetails?.last.arrearsAmount.toString()}')
                           : SizedBox(
                         height: 0,
                       )
@@ -296,20 +307,28 @@ class _ConnectionPaymentViewState extends State<ConnectionPaymentView> {
                   _buildWaterCharges(fetchBill, constraints),
                 _buildLabelValue(
                     i18.common.CORE_TOTAL_BILL_AMOUNT,
-                    '₹ ${!isFirstDemand || fetchBill.demands?.demandDetails?.first.taxHeadMasterCode == 'WS_TIME_PENALTY' ? fetchBill.billDetails?.first.billAccountDetails?.last.totalBillAmount : fetchBill.demands?.demandDetails?.first.taxAmount}'),
+
+                    isFirstDemand && fetchBill.demands?.demandDetails?.first.taxHeadMasterCode == 'WS_TIME_PENALTY'
+                    ? '₹' + (CommonProvider.getCurrentBill(fetchBill.demandList ?? []) + CommonProvider.getArrearsAmountOncePenaltyExpires(fetchBill.demandList ?? [])).toString()
+                    : '₹ ${fetchBill.billDetails?.first.billAccountDetails?.last.totalBillAmount}'),
                 if(CommonProvider.getPenaltyOrAdvanceStatus(fetchBill.mdmsData, true)) _buildLabelValue(
                     i18.common.CORE_ADVANCE_ADJUSTED,
-                    '₹ ${fetchBill.billDetails?.first.billAccountDetails?.last.advanceAdjustedAmount}'),
+                    '₹ ' + (fetchBill.billDetails?.first.billAccountDetails?.last.advanceAdjustedAmount != 0.0
+          ? '-${(fetchBill.billDetails?.first.billAccountDetails?.last.advanceAdjustedAmount) }'
+                    : '${(fetchBill.billDetails?.first.billAccountDetails?.last.advanceAdjustedAmount) }')),
+                if(CommonProvider.getPenaltyOrAdvanceStatus(fetchBill.mdmsData, false, true) && isFirstDemand && penalty.isDueDateCrossed)
+                  _buildLabelValue(i18.billDetails.CORE_PENALTY,
+                      '₹' + (CommonProvider.getPenaltyApplicable(fetchBill.demandList).penaltyApplicable).toString()),
                 if(CommonProvider.getPenaltyOrAdvanceStatus(fetchBill.mdmsData, true)) _buildLabelValue(
                     i18.common.CORE_NET_AMOUNT_DUE,
                     '₹ ${CommonProvider.getNetDueAmountWithWithOutPenalty(fetchBill.totalAmount ?? 0, penalty)}'),
-                if(penalty.date.isNotEmpty &&CommonProvider.getPenaltyOrAdvanceStatus(fetchBill.mdmsData, false, true) && isFirstDemand)  CustomDetailsCard(
+                if(CommonProvider.getPenaltyOrAdvanceStatus(fetchBill.mdmsData, false, true) && isFirstDemand)  CustomDetailsCard(
                     Column(
                       children: [
                         NewConsumerBillState.getLabelText(
                             i18.billDetails.CORE_PENALTY,
                             ('₹' +
-                                penalty.penalty
+                               (penalty.isDueDateCrossed ? CommonProvider.getPenaltyApplicable(fetchBill.demandList).penaltyApplicable : penalty.penalty)
                                     .toString()),
                             context,
                             subLabel: NewConsumerBillState.getDueDatePenalty(penalty.date, context)),
