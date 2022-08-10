@@ -95,9 +95,9 @@ public class MgramsevaAdapterDemandConsumer {
 						demandRequest.getDemands().get(0).getDemandDetails().remove(0);
 					}
 					Integer count =  getCountByDemandDetailsId(demandRequest.getDemands().get(0).getDemandDetails().get(0).getId());
-					if(count != null && count > 1) {
-						return;
-					}
+//					if(count != null && count > 1) {
+//						return;
+//					}
 					log.info("demandRequest after: "+new Gson().toJson(demandRequest));
 				}
 			}
