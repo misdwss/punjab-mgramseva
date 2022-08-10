@@ -81,7 +81,7 @@ public class PaymentUpdateService {
 				    AuditDetails auditDetails = commUtils.getAuditDetails(uuid, true);
 
 					challans.forEach(challan -> {
-						ChallanRequest challanRequest = new ChallanRequest();
+						ChallanRequest challanRequest = new ChallanRequest(requestInfo, challan);
 						Object mdmsData = utils.mDMSCall(challanRequest);
 						expenseValidator.validateFields(challanRequest, mdmsData);
 						userService.setAccountUser(challanRequest);
