@@ -26,6 +26,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -71,7 +72,7 @@ public class MgramsevaAdapterDemandConsumer {
 		try {
 			log.debug("Consuming record: " + record);
 			demandRequest = mapper.convertValue(record, DemandRequest.class);
-			log.info("demandRequest: "+demandRequest);
+			log.info("demandRequest before: "+new Gson().toJson(demandRequest));
 			String eventType=null;
 			if(demandRequest != null) {
 				Collections.sort(demandRequest.getDemands(), getCreatedTimeComparatorForDemand());
@@ -97,6 +98,7 @@ public class MgramsevaAdapterDemandConsumer {
 					if(count != null && count > 1) {
 						return;
 					}
+					log.info("demandRequest after: "+new Gson().toJson(demandRequest));
 				}
 			}
 			if(demandRequest.getDemands().get(0).getBusinessService().contains(Constants.EXPENSE))
@@ -105,6 +107,8 @@ public class MgramsevaAdapterDemandConsumer {
 			}else {
 				eventType=EventTypeEnum.DEMAND.toString();
 			}
+			log.info("calling ifix-reference-adapter util");
+
 			util.callIFIXAdapter(demandRequest, eventType, demandRequest.getDemands().get(0).getTenantId(),demandRequest.getRequestInfo());
 		} catch (final Exception e) {
 			log.error("Error while listening to value: " + record + " on topic: " + topic + ": " + e);
