@@ -7,6 +7,7 @@ import java.util.Map;
 
 import org.egov.common.contract.request.RequestInfo;
 import org.egov.echallan.config.ChallanConfiguration;
+import org.egov.echallan.expense.validator.ExpenseValidator;
 import org.egov.echallan.model.AuditDetails;
 import org.egov.echallan.model.Challan;
 import org.egov.echallan.model.Challan.StatusEnum;
@@ -44,6 +45,15 @@ public class PaymentUpdateService {
 	
 	@Autowired
 	 private CommonUtils commUtils;
+
+	@Autowired
+	private CommonUtils utils;
+
+	@Autowired
+	private ExpenseValidator expenseValidator;
+
+	@Autowired
+	private UserService userService;
 	
 	
 	
@@ -64,11 +74,18 @@ public class PaymentUpdateService {
 				criteria.setBusinessService(paymentDetail.getBusinessService());
 				Map<String, String> finalData = new HashMap<String, String>();
 				List<Challan> challans = challanService.search(criteria, requestInfo, finalData);
-				//update challan only if payment is done for challan. 
+				//update challan only if payment is done for challan.
+
 				if(!CollectionUtils.isEmpty(challans) ) {
 					String uuid = requestInfo.getUserInfo().getUuid();
 				    AuditDetails auditDetails = commUtils.getAuditDetails(uuid, true);
+
 					challans.forEach(challan -> {
+						ChallanRequest challanRequest = new ChallanRequest();
+						Object mdmsData = utils.mDMSCall(challanRequest);
+						expenseValidator.validateFields(challanRequest, mdmsData);
+						userService.setAccountUser(challanRequest);
+
 						challan.setApplicationStatus(StatusEnum.PAID);
 						challan.setIsBillPaid(true);
 						challan.setAuditDetails(auditDetails);
