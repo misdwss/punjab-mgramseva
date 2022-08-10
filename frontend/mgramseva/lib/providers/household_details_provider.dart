@@ -2,17 +2,14 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:mgramseva/model/bill/billing.dart';
-import 'package:mgramseva/model/bill/meter_demand_details.dart';
 import 'package:mgramseva/model/connection/water_connection.dart';
 import 'package:mgramseva/model/demand/demand_list.dart';
-import 'package:mgramseva/model/bill/billing.dart';
 import 'package:mgramseva/model/demand/update_demand_list.dart';
 import 'package:mgramseva/repository/bill_generation_details_repo.dart';
 import 'package:mgramseva/repository/billing_service_repo.dart';
 import 'package:mgramseva/repository/search_connection_repo.dart';
 import 'package:mgramseva/utils/error_logging.dart';
 import 'package:mgramseva/utils/global_variables.dart';
-import 'package:mgramseva/utils/loaders.dart';
 import 'package:provider/provider.dart';
 
 import 'common_provider.dart';
