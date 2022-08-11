@@ -197,7 +197,7 @@ class HouseholdRegisterProvider with ChangeNotifier {
                 : null,
             apiKey: 'name',
             callBack: onSort),
-        TableHeader(i18.common.CORE_FATHER_NAME,
+        TableHeader(i18.consumer.FATHER_SPOUSE_NAME,
             isSortingRequired: false,
             isAscendingOrder: sortBy != null && sortBy!.key == 'fatherOrHusbandName'
                 ? sortBy!.isAscending

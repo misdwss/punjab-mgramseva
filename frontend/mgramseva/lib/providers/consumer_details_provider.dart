@@ -399,7 +399,6 @@ class ConsumerProvider with ChangeNotifier {
               (DateFormats.dateToTimeStamp(DateFormats.getFilteredDate(
                   dateTime.toLocal().toString())))));
       languageList = res;
-      waterconnection.mdmsData = await CommonProvider.getMdmsBillingService();
     } catch (e) {
       print(e);
     }
@@ -443,6 +442,7 @@ class ConsumerProvider with ChangeNotifier {
         "boundaryType": "Locality",
         "tenantId": commonProvider.userDetails!.selectedtenant!.code
       });
+      waterconnection.mdmsData = await CommonProvider.getMdmsBillingService();
       boundaryList = [];
       boundaryList.addAll(
           TenantBoundary.fromJson(result['TenantBoundary'][0]).boundary!);
