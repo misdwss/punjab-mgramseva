@@ -399,6 +399,7 @@ class ConsumerProvider with ChangeNotifier {
               (DateFormats.dateToTimeStamp(DateFormats.getFilteredDate(
                   dateTime.toLocal().toString())))));
       languageList = res;
+      waterconnection.mdmsData = await CommonProvider.getMdmsBillingService();
     } catch (e) {
       print(e);
     }
@@ -674,7 +675,7 @@ class ConsumerProvider with ChangeNotifier {
   }
 
   List<KeyValue> getPaymentTypeList() {
-    if(CommonProvider.getPenaltyOrAdvanceStatus(languageList, true)) return Constants.CONSUMER_PAYMENT_TYPE;
+    if(CommonProvider.getPenaltyOrAdvanceStatus(waterconnection.mdmsData, true)) return Constants.CONSUMER_PAYMENT_TYPE;
     return [Constants.CONSUMER_PAYMENT_TYPE.first];
   }
 }
