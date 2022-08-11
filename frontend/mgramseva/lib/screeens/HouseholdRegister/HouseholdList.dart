@@ -6,7 +6,6 @@ import 'package:mgramseva/providers/household_register_provider.dart';
 import 'package:mgramseva/utils/Locilization/application_localizations.dart';
 import 'package:mgramseva/utils/common_widgets.dart';
 import 'package:mgramseva/utils/loaders.dart';
-import 'package:mgramseva/utils/models.dart';
 import 'package:mgramseva/utils/notifyers.dart';
 import 'package:provider/provider.dart';
 import 'package:mgramseva/utils/Constants/I18KeyConstants.dart';
@@ -65,7 +64,7 @@ class _HouseholdListState extends State<HouseholdList> {
             (headerList: householdProvider.collectionHeaderList,
             tableData:  tableData,
             leftColumnWidth: width,
-            rightColumnWidth: width * 2 ,
+            rightColumnWidth: width * 3 ,
             height: 68 + (52.0 * tableData.length),
           );
         }
