@@ -157,7 +157,7 @@ public class ChallanService {
 			validator.validateUpdateRequest(request, searchResult);
 			expenseValidator.validateUpdateRequest(request, searchResult);
 			userService.setAccountUser(request);
-			enrichmentService.enrichUpdateRequest(request);
+			enrichmentService.enrichUpdateRequest(request, searchResult.get(0));
 			calculationService.addCalculation(request);
 			if (request.getChallan().getApplicationStatus() == StatusEnum.PAID && searchResult.get(0).getApplicationStatus() == StatusEnum.ACTIVE)
 				paymentService.createPayment(request);
