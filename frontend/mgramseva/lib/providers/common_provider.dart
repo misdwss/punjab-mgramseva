@@ -649,16 +649,30 @@ class CommonProvider with ChangeNotifier {
 
   static double getCurrentBill(List<Demands> demandList){
     var currentBill = 0.0;
+    var currentBillLeft = 0.0;
 
     var filteredDemands = demandList.where((e) =>
-    !(e.isPaymentCompleted ?? false)).first;
+    !(e.isPaymentCompleted ?? false));
 
-    filteredDemands.demandDetails?.forEach((billAccountDetails) {
-
-    if(billAccountDetails.taxHeadMasterCode == '10101'){
-    currentBill += (billAccountDetails.taxAmount ?? 0) - (billAccountDetails.collectionAmount ?? 0);
-    }
+    filteredDemands.forEach((elem) {
+      elem.demandDetails?.forEach((demand) {
+        if(demand.taxHeadMasterCode == '10101'){
+          currentBillLeft = ((demand.taxAmount ?? 0) - (demand.collectionAmount ?? 0));
+        }
+      });
     });
+
+    if(currentBillLeft == 0) {
+      filteredDemands.first.demandDetails?.forEach((billAccountDetails) {
+        if (billAccountDetails.taxHeadMasterCode == '10101' ) {
+          currentBill +=  ((billAccountDetails.taxAmount ?? 0) -
+              (billAccountDetails.collectionAmount ?? 0));
+        }
+      });
+    }
+    else{
+      currentBill = currentBillLeft;
+    }
 
 
     return currentBill;
@@ -787,11 +801,14 @@ class CommonProvider with ChangeNotifier {
     if (demandList.isNotEmpty  ) {
       var filteredDemands = demandList.where((e) => (!(e.isPaymentCompleted ?? false) && e.status != 'CANCELLED')).toList();
 
-      filteredDemands.first.demandDetails?.forEach((element) {
-        if(element.taxHeadMasterCode == '10101'){
-          arrearsDeduction = ((element.taxAmount ?? 0) - (element.collectionAmount ?? 0)) ;
-        }
+      filteredDemands.forEach((elem) {
+        elem.demandDetails?.forEach((element) {
+          if(element.taxHeadMasterCode == '10101'){
+            arrearsDeduction = ((element.taxAmount ?? 0) - (element.collectionAmount ?? 0)) ;
+          }
+        });
       });
+
       for (var demand in filteredDemands) {
         demand.demandDetails!.forEach((e) {
 
