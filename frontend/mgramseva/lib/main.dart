@@ -125,7 +125,7 @@ class _MyAppState extends State<MyApp> {
 
   @override
   void initState() {
-    WidgetsBinding.instance?.addPostFrameCallback((_) => afterViewBuild());
+    WidgetsBinding.instance.addPostFrameCallback((_) => afterViewBuild());
     super.initState();
   }
 
@@ -198,14 +198,14 @@ class _MyAppState extends State<MyApp> {
         ],
         child: Consumer<LanguageProvider>(
             builder: (_, userProvider, child) =>  GestureDetector(
-              onTap: () {
-              FocusScopeNode currentFocus = FocusScope.of(context);
+                onTap: () {
+                  FocusScopeNode currentFocus = FocusScope.of(context);
 
-              if (!currentFocus.hasPrimaryFocus) {
-              currentFocus.unfocus();
-              }
-              },
-              child:MaterialApp(
+                  if (!currentFocus.hasPrimaryFocus) {
+                    currentFocus.unfocus();
+                  }
+                },
+                child:MaterialApp(
                   title: 'mGramSeva',
                   supportedLocales: [
                     Locale('en', 'IN'),
@@ -222,7 +222,7 @@ class _MyAppState extends State<MyApp> {
                   localeResolutionCallback: (locale, supportedLocales) {
                     for (var supportedLocaleLanguage in supportedLocales) {
                       if (supportedLocaleLanguage.languageCode ==
-                              locale?.languageCode &&
+                          locale?.languageCode &&
                           supportedLocaleLanguage.countryCode ==
                               locale?.countryCode) {
                         return supportedLocaleLanguage;
@@ -231,8 +231,8 @@ class _MyAppState extends State<MyApp> {
                     return supportedLocales.first;
                   },
                   navigatorKey: navigatorKey,
-                navigatorObservers: <NavigatorObserver>[observer],
-                initialRoute: Routes.LANDING_PAGE,
+                  navigatorObservers: <NavigatorObserver>[observer],
+                  initialRoute: Routes.LANDING_PAGE,
                   onGenerateRoute: router.generateRoute,
                   theme: theme,
                   // home: SelectLanguage((val) => setLocale(Locale(val, 'IN'))),
@@ -252,54 +252,57 @@ class _LandingPageState extends State<LandingPage> {
 
   @override
   void initState() {
-    WidgetsBinding.instance?.addPostFrameCallback((_) => afterViewBuild());
+    WidgetsBinding.instance.addPostFrameCallback((_) => afterViewBuild());
     super.initState();
     checkVersion();
   }
 
   void checkVersion() async {
-    final newVersion = NewVersion(
-      androidId: Constants.PACKAGE_NAME,
-      iOSId: Constants.PACKAGE_NAME,
-      iOSAppStoreCountry: 'in'
-    );
-    //newVersion.showAlertIfNecessary(context: context); //Use this if you want the update alert with default settings
-    final status = await newVersion.getVersionStatus();
-    if (status != null && status.canUpdate) {
-      late Uri uri;
+    try {
+      final newVersion = NewVersion(
+          androidId: Constants.PACKAGE_NAME,
+          iOSId: Constants.PACKAGE_NAME,
+          iOSAppStoreCountry: 'in'
+      );
+      //newVersion.showAlertIfNecessary(context: context); //Use this if you want the update alert with default settings
+      final status = await newVersion.getVersionStatus();
+      if (status != null && status.canUpdate) {
+        late Uri uri;
 
-      if (Platform.isAndroid) {
-        uri = Uri.https("play.google.com", "/store/apps/details",
-            {"id": Constants.PACKAGE_NAME});
-      } else {
-        uri = Uri.https("apps.apple.com", "/in/app/mgramseva/id1614373649");
-      }
+        if (Platform.isAndroid) {
+          uri = Uri.https("play.google.com", "/store/apps/details",
+              {"id": Constants.PACKAGE_NAME});
+        } else {
+          uri = Uri.https("apps.apple.com", "/in/app/mgramseva/id1614373649");
+        }
 
-      showDialog(
-          context: context,
-          barrierDismissible: false,
-          builder: (BuildContext context) {
-            return WillPopScope(
-                child: AlertDialog(
-                  title: Text('UPDATE AVAILABLE'),
-                  content: Text(
-                      'Please update the app from ${status.localVersion} to ${status.storeVersion}'),
-                  actions: [
-                    TextButton(
-                        onPressed: () => launchPlayStore(uri.toString()),
-                        child: Text('Update'))
-                  ],
-                ),
-                onWillPop: ()async {
-                   if (Platform.isAndroid) {
-                       SystemNavigator.pop();
+        showDialog(
+            context: context,
+            barrierDismissible: false,
+            builder: (BuildContext context) {
+              return WillPopScope(
+                  child: AlertDialog(
+                    title: Text('UPDATE AVAILABLE'),
+                    content: Text(
+                        'Please update the app from ${status
+                            .localVersion} to ${status.storeVersion}'),
+                    actions: [
+                      TextButton(
+                          onPressed: () => launchPlayStore(uri.toString()),
+                          child: Text('Update'))
+                    ],
+                  ),
+                  onWillPop: () async {
+                    if (Platform.isAndroid) {
+                      SystemNavigator.pop();
                     } else if (Platform.isIOS) {
-                        exit(0);
-                      }
-                  return true;
-                });
-          });
-    }
+                      exit(0);
+                    }
+                    return true;
+                  });
+            });
+      }
+    }catch(e){}
   }
 
   void launchPlayStore(String appLink) async {
@@ -331,27 +334,27 @@ class _LandingPageState extends State<LandingPage> {
   afterViewBuild() async {
     var commonProvider = Provider.of<CommonProvider>(context, listen: false);
     commonProvider.getLoginCredentails();
-  //
-  //   await Future.delayed(Duration(seconds: 2));
-  //   IsolateNameServer.registerPortWithName(
-  //       _port.sendPort, 'downloader_send_port');
-  //   _port.listen((dynamic data) {
-  //     String id = data[0];
-  //     DownloadTaskStatus status = data[1];
-  //     int progress = data[2];
-  //     if(status == DownloadTaskStatus.complete){
-  //       OpenFile.open(Provider.of<CommonProvider>(context, listen: false).downloadUrl);
-  //       // ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-  //       //   content: Text('Yay! Successfully downloaded!'),
-  //       //   action:
-  //       //     SnackBarAction(label: 'Open', onPressed: (){
-  //       //       print(Provider.of<CommonProvider>(context, listen: false).downloadUrl);
-  //       //     })
-  //       // ));
-  //     }
-  //     setState(() {});
-  //   });
-  //   FlutterDownloader.registerCallback(downloadCallback);
+    //
+    //   await Future.delayed(Duration(seconds: 2));
+    //   IsolateNameServer.registerPortWithName(
+    //       _port.sendPort, 'downloader_send_port');
+    //   _port.listen((dynamic data) {
+    //     String id = data[0];
+    //     DownloadTaskStatus status = data[1];
+    //     int progress = data[2];
+    //     if(status == DownloadTaskStatus.complete){
+    //       OpenFile.open(Provider.of<CommonProvider>(context, listen: false).downloadUrl);
+    //       // ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+    //       //   content: Text('Yay! Successfully downloaded!'),
+    //       //   action:
+    //       //     SnackBarAction(label: 'Open', onPressed: (){
+    //       //       print(Provider.of<CommonProvider>(context, listen: false).downloadUrl);
+    //       //     })
+    //       // ));
+    //     }
+    //     setState(() {});
+    //   });
+    //   FlutterDownloader.registerCallback(downloadCallback);
   }
 
   @override
@@ -365,7 +368,7 @@ class _LandingPageState extends State<LandingPage> {
             switch (snapshot.connectionState) {
               case ConnectionState.waiting:
 
-                /// While waiting for the data to load, show a loading spinner.
+              /// While waiting for the data to load, show a loading spinner.
                 return Loaders.circularLoader();
               default:
                 if (snapshot.hasError) {
