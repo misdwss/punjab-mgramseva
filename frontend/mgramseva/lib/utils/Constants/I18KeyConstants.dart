@@ -66,6 +66,7 @@ class Common {
   String get NOTIFICATIONS => 'NOTIFICATIONS';
   String get BACK => 'BACK';
   String get DEAR => 'DEAR';
+  String get CORE_FATHER_NAME => 'CORE_FATHER_NAME';
 
   /// File Picker
   String get TEMPORARY_FILES_REMOVED => 'TEMPORARY_FILES_REMOVED';
