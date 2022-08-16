@@ -77,14 +77,6 @@ class NewConsumerBillState extends State<NewConsumerBill> {
     return localizationText;
   }
 
-  static getDueDateCrossed(dueDate, BuildContext context){
-    late String localizationText;
-    localizationText = 'Due Date: {dueDate}';
-    localizationText = localizationText.replaceFirst(
-        '{dueDate}', dueDate);
-    return localizationText;
-  }
-
   @override
   Widget build(BuildContext context) {
     return buidBillview(widget.waterConnection?.fetchBill ?? BillList());
@@ -221,7 +213,7 @@ class NewConsumerBillState extends State<NewConsumerBill> {
                                                   : (CommonProvider.getAdvanceAdjustedAmount(widget.demandList)).toString())),
                                           context),
 
-                                      if(CommonProvider.getPenaltyOrAdvanceStatus(widget.waterConnection?.mdmsData, false, true) && houseHoldProvider.isfirstdemand ) getLabelText(
+                                      if(CommonProvider.getPenaltyOrAdvanceStatus(widget.waterConnection?.mdmsData, false, true) && houseHoldProvider.isfirstdemand && penalty.isDueDateCrossed) getLabelText(
                                           i18.billDetails.CORE_PENALTY,
                                           ('₹' +
                                               penaltyApplicable.penaltyApplicable

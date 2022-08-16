@@ -316,7 +316,7 @@ class _ConnectionPaymentViewState extends State<ConnectionPaymentView> {
                     '₹ ' + (fetchBill.billDetails?.first.billAccountDetails?.last.advanceAdjustedAmount != 0.0
           ? '-${(fetchBill.billDetails?.first.billAccountDetails?.last.advanceAdjustedAmount) }'
                     : '${(fetchBill.billDetails?.first.billAccountDetails?.last.advanceAdjustedAmount) }')),
-                if(CommonProvider.getPenaltyOrAdvanceStatus(fetchBill.mdmsData, false, true) && isFirstDemand)
+                if(CommonProvider.getPenaltyOrAdvanceStatus(fetchBill.mdmsData, false, true) && isFirstDemand && penalty.isDueDateCrossed)
                   _buildLabelValue(i18.billDetails.CORE_PENALTY,
                       '₹' + (CommonProvider.getPenaltyApplicable(fetchBill.demandList).penaltyApplicable).toString()),
                 if(CommonProvider.getPenaltyOrAdvanceStatus(fetchBill.mdmsData, true)) _buildLabelValue(

@@ -682,24 +682,21 @@ class CommonProvider with ChangeNotifier {
     Penalty? penalty;
 
     var filteredDemands = demandList?.where((e) =>
-    !(e.isPaymentCompleted ?? false))
-        .toList();
+    !(e.isPaymentCompleted ?? false)).first;
 
-    demandList?.forEach((billDetails) {
-      billDetails.demandDetails?.forEach((billAccountDetails) {
+      filteredDemands?.demandDetails?.forEach((billAccountDetails) {
         if(billAccountDetails.taxHeadMasterCode == 'WS_TIME_PENALTY'){
-          var amount = demandList.first.totalApplicablePenalty ?? 0;
+          var amount =  billAccountDetails.taxAmount?? 0;
           DateTime billGenerationDate,expiryDate;
           // DateTime.fromMillisecondsSinceEpoch(1659420829000);
           var date = billAccountDetails.auditDetails != null ?
           DateTime.fromMillisecondsSinceEpoch(billAccountDetails.auditDetails!.createdTime ?? 0)
-           : DateTime.fromMillisecondsSinceEpoch(demandList.first.auditDetails!.createdTime ?? 0);
+           : DateTime.fromMillisecondsSinceEpoch(filteredDemands.demandDetails?.first.auditDetails!.createdTime ?? 0);
           billGenerationDate = expiryDate = DateTime(date.year, date.month, date.day);
-           expiryDate =  expiryDate.add(Duration(milliseconds: billDetails.billExpiryTime ?? 0, days: 0));
+           expiryDate =  expiryDate.add(Duration(milliseconds: filteredDemands.billExpiryTime ?? 0, days: 0));
           penalty = Penalty(amount.toDouble(), DateFormats.getFilteredDate(expiryDate.toString()), DateTime.now().isAfter(expiryDate));
         }
       });
-    });
     return penalty ?? Penalty(0.0, '', false);
   }
 
