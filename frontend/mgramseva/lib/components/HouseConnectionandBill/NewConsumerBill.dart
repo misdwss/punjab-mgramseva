@@ -77,14 +77,6 @@ class NewConsumerBillState extends State<NewConsumerBill> {
     return localizationText;
   }
 
-  static getDueDateCrossed(dueDate, BuildContext context){
-    late String localizationText;
-    localizationText = 'Due Date: {dueDate}';
-    localizationText = localizationText.replaceFirst(
-        '{dueDate}', dueDate);
-    return localizationText;
-  }
-
   @override
   Widget build(BuildContext context) {
     return buidBillview(widget.waterConnection?.fetchBill ?? BillList());

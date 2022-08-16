@@ -649,16 +649,30 @@ class CommonProvider with ChangeNotifier {
 
   static double getCurrentBill(List<Demands> demandList){
     var currentBill = 0.0;
+    var currentBillLeft = 0.0;
 
     var filteredDemands = demandList.where((e) =>
-    !(e.isPaymentCompleted ?? false)).first;
+    !(e.isPaymentCompleted ?? false));
 
-    filteredDemands.demandDetails?.forEach((billAccountDetails) {
-
-    if(billAccountDetails.taxHeadMasterCode == '10101'){
-    currentBill += (billAccountDetails.taxAmount ?? 0) - (billAccountDetails.collectionAmount ?? 0);
-    }
+    filteredDemands.forEach((elem) {
+      elem.demandDetails?.forEach((demand) {
+        if(demand.taxHeadMasterCode == '10101'){
+          currentBillLeft = ((demand.taxAmount ?? 0) - (demand.collectionAmount ?? 0));
+        }
+      });
     });
+
+    if(currentBillLeft == 0) {
+      filteredDemands.first.demandDetails?.forEach((billAccountDetails) {
+        if (billAccountDetails.taxHeadMasterCode == '10101' ) {
+          currentBill +=  ((billAccountDetails.taxAmount ?? 0) -
+              (billAccountDetails.collectionAmount ?? 0));
+        }
+      });
+    }
+    else{
+      currentBill = currentBillLeft;
+    }
 
 
     return currentBill;
@@ -668,24 +682,21 @@ class CommonProvider with ChangeNotifier {
     Penalty? penalty;
 
     var filteredDemands = demandList?.where((e) =>
-    !(e.isPaymentCompleted ?? false))
-        .toList();
+    !(e.isPaymentCompleted ?? false)).first;
 
-    demandList?.forEach((billDetails) {
-      billDetails.demandDetails?.forEach((billAccountDetails) {
+      filteredDemands?.demandDetails?.forEach((billAccountDetails) {
         if(billAccountDetails.taxHeadMasterCode == 'WS_TIME_PENALTY'){
-          var amount = demandList.first.totalApplicablePenalty ?? 0;
+          var amount =  billAccountDetails.taxAmount?? 0;
           DateTime billGenerationDate,expiryDate;
           // DateTime.fromMillisecondsSinceEpoch(1659420829000);
           var date = billAccountDetails.auditDetails != null ?
           DateTime.fromMillisecondsSinceEpoch(billAccountDetails.auditDetails!.createdTime ?? 0)
-           : DateTime.fromMillisecondsSinceEpoch(demandList.first.auditDetails!.createdTime ?? 0);
+           : DateTime.fromMillisecondsSinceEpoch(filteredDemands.demandDetails?.first.auditDetails!.createdTime ?? 0);
           billGenerationDate = expiryDate = DateTime(date.year, date.month, date.day);
-           expiryDate =  expiryDate.add(Duration(milliseconds: billDetails.billExpiryTime ?? 0, days: 0));
+           expiryDate =  expiryDate.add(Duration(milliseconds: filteredDemands.billExpiryTime ?? 0, days: 0));
           penalty = Penalty(amount.toDouble(), DateFormats.getFilteredDate(expiryDate.toString()), DateTime.now().isAfter(expiryDate));
         }
       });
-    });
     return penalty ?? Penalty(0.0, '', false);
   }
 
@@ -787,11 +798,14 @@ class CommonProvider with ChangeNotifier {
     if (demandList.isNotEmpty  ) {
       var filteredDemands = demandList.where((e) => (!(e.isPaymentCompleted ?? false) && e.status != 'CANCELLED')).toList();
 
-      filteredDemands.first.demandDetails?.forEach((element) {
-        if(element.taxHeadMasterCode == '10101'){
-          arrearsDeduction = ((element.taxAmount ?? 0) - (element.collectionAmount ?? 0)) ;
-        }
+      filteredDemands.forEach((elem) {
+        elem.demandDetails?.forEach((element) {
+          if(element.taxHeadMasterCode == '10101'){
+            arrearsDeduction = ((element.taxAmount ?? 0) - (element.collectionAmount ?? 0)) ;
+          }
+        });
       });
+
       for (var demand in filteredDemands) {
         demand.demandDetails!.forEach((e) {
 
