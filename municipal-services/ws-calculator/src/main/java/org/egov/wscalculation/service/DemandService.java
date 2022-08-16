@@ -631,6 +631,9 @@ public class DemandService {
 				int demandListSize = res.getDemands().size();
 				Demand latestDemand = res.getDemands().get(demandListSize -1);
 				
+				if(isGetPenaltyEstimate && latestDemand.getDemandDetails().stream().filter(i->i.getTaxHeadMasterCode().equalsIgnoreCase(WSCalculationConstant.WS_TIME_PENALTY)) != null) {
+					return res.getDemands();
+				}
 				if (latestDemand.getStatus() != null
 						&& WSCalculationConstant.DEMAND_CANCELLED_STATUS.equalsIgnoreCase(latestDemand.getStatus().toString()))
 					throw new CustomException(WSCalculationConstant.EG_WS_INVALID_DEMAND_ERROR,
