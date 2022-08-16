@@ -2,10 +2,12 @@ package org.egov.mgramsevaifixadaptor.consumer;
 
 import java.math.BigDecimal;
 import java.text.Bidi;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.egov.mgramsevaifixadaptor.config.PropertyConfiguration;
 import org.egov.mgramsevaifixadaptor.contract.DemandRequest;
@@ -90,14 +92,26 @@ public class MgramsevaAdapterDemandConsumer {
 						demandRequest.getDemands().get(0).getDemandDetails().get(0).setTaxAmount(totalAmount);
 					}
 				}else {
-					int demandDetailsSize = demandRequest.getDemands().get(0).getDemandDetails().size();
-					for(int i=0; i<demandDetailsSize-1; i++) {
-						demandRequest.getDemands().get(0).getDemandDetails().remove(0);
+					
+					for(Demand demand : demandRequest.getDemands()) {
+						List<DemandDetail> demandDetails = demand.getDemandDetails();
+						for(DemandDetail demandDetail: demandDetails) {
+							
+							Integer count =  getCountByDemandDetailsId(demandDetail.getId());
+							
+							if(count != null && count > 1) {
+								demandDetails.remove(demandDetail);
+							}
+							else {
+								if(demandDetail.getTaxHeadMasterCode().equalsIgnoreCase("WS_ADVANCE_CARRYFORWARD")) {
+									demandDetail.setTaxAmount(demandDetail.getTaxAmount().negate());
+								}
+							}
+							
+							
+						}
 					}
-					Integer count =  getCountByDemandDetailsId(demandRequest.getDemands().get(0).getDemandDetails().get(0).getId());
-//					if(count != null && count > 1) {
-//						return;
-//					}
+					
 					log.info("demandRequest after: "+new Gson().toJson(demandRequest));
 				}
 			}
@@ -130,5 +144,5 @@ public class MgramsevaAdapterDemandConsumer {
 		System.out.println("count: "+count);
 		return count;
 	}
-	
+
 }
