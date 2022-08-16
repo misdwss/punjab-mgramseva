@@ -102,12 +102,6 @@ public class MgramsevaAdapterDemandConsumer {
 							if(count != null && count > 1) {
 								demandDetails.remove(demandDetail);
 							}
-							else {
-								if(demandDetail.getTaxHeadMasterCode().equalsIgnoreCase("WS_ADVANCE_CARRYFORWARD")) {
-									demandDetail.setTaxAmount(demandDetail.getTaxAmount().negate());
-								}
-							}
-							
 							
 						}
 					}
