@@ -631,7 +631,7 @@ public class DemandService {
 				int demandListSize = res.getDemands().size();
 				Demand latestDemand = res.getDemands().get(demandListSize -1);
 				
-				if(isGetPenaltyEstimate && latestDemand.getDemandDetails().stream().filter(i->i.getTaxHeadMasterCode().equalsIgnoreCase(WSCalculationConstant.WS_TIME_PENALTY)) != null) {
+				if(isGetPenaltyEstimate && latestDemand.getDemandDetails().stream().filter(i->i.getTaxHeadMasterCode().equalsIgnoreCase(WSCalculationConstant.WS_TIME_PENALTY)).count() > 0) {
 					return res.getDemands();
 				}
 				if (latestDemand.getStatus() != null
