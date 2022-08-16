@@ -136,6 +136,9 @@ public class DemandService {
 
 	@Autowired
 	private RestTemplate restTemplate;
+	
+	@Autowired
+	private EstimationService estimationService;
 
 	/**
 	 * Creates or updates Demand
@@ -607,6 +610,7 @@ public class DemandService {
 //			throw new CustomException(map);
 //		}
 		List<Demand> demandsToBeUpdated = new LinkedList<>();
+		List<Demand> demandResponse = new LinkedList<>();
 
 		// Loop through the consumerCodes and re-calculate the time base applicable
 		if (!CollectionUtils.isEmpty(res.getDemands())) {
@@ -617,17 +621,76 @@ public class DemandService {
 
 			List<TaxPeriod> taxPeriods = mstrDataService.getTaxPeriodList(requestInfoWrapper.getRequestInfo(), tenantId,
 					WSCalculationConstant.SERVICE_FIELD_VALUE_WS);
-
-			consumerCodeToDemandMap.forEach((id, demand) -> {
-				if (demand.getStatus() != null
-						&& WSCalculationConstant.DEMAND_CANCELLED_STATUS.equalsIgnoreCase(demand.getStatus().toString()))
+			
+			Map<String, Object> penaltyMaster = mstrDataService.getApplicableMaster(estimationService.getAssessmentYear(), timeBasedExemptionMasterMap.get(WSCalculationConstant.WC_PENANLTY_MASTER));
+			
+			if(null != penaltyMaster) {
+				String type = (String) penaltyMaster.get(WSCalculationConstant.TYPE_FIELD_NAME);
+				String subType = (String) penaltyMaster.get(WSCalculationConstant.SUBTYPE_FIELD_NAME);
+				
+				int demandListSize = res.getDemands().size();
+				Demand latestDemand = res.getDemands().get(demandListSize -1);
+				
+				if (latestDemand.getStatus() != null
+						&& WSCalculationConstant.DEMAND_CANCELLED_STATUS.equalsIgnoreCase(latestDemand.getStatus().toString()))
 					throw new CustomException(WSCalculationConstant.EG_WS_INVALID_DEMAND_ERROR,
 							WSCalculationConstant.EG_WS_INVALID_DEMAND_ERROR_MSG);
-				applyTimeBasedApplicables(demand, requestInfoWrapper, timeBasedExemptionMasterMap, taxPeriods, isGetPenaltyEstimate);
-//				addRoundOffTaxHead(tenantId, demand.getDemandDetails());
-				demandsToBeUpdated.add(demand);
-			});
+				if(type.equalsIgnoreCase("Flat") && subType.equalsIgnoreCase(WSCalculationConstant.PENALTY_OUTSTANDING)) {
+					
+					applyTimeBasedApplicables(latestDemand, requestInfoWrapper, timeBasedExemptionMasterMap, taxPeriods, isGetPenaltyEstimate,BigDecimal.ZERO,penaltyMaster,demandListSize);
+					demandsToBeUpdated.add(latestDemand);
 
+				}
+				if((type.equalsIgnoreCase("Flat") && subType.equalsIgnoreCase(WSCalculationConstant.PENALTY_CURRENT_MONTH))
+						|| (type.equalsIgnoreCase("Fixed") && subType.equalsIgnoreCase(WSCalculationConstant.PENALTY_CURRENT_MONTH))) {
+					if(latestDemand.getDemandDetails().stream().filter(i->i.getTaxHeadMasterCode().equalsIgnoreCase(WSCalculationConstant.WS_CHARGE)).count() > 0){
+						applyTimeBasedApplicables(latestDemand, requestInfoWrapper, timeBasedExemptionMasterMap, taxPeriods, isGetPenaltyEstimate,BigDecimal.ZERO,penaltyMaster,demandListSize);
+						demandsToBeUpdated.add(latestDemand);
+					}
+				}
+				
+				
+				if(type.equalsIgnoreCase("Fixed") && subType.equalsIgnoreCase(WSCalculationConstant.PENALTY_OUTSTANDING)) {
+					
+					BigDecimal waterChargeApplicable = BigDecimal.ZERO;
+					BigDecimal oldPenalty = BigDecimal.ZERO;
+					res.getDemands().remove(demandListSize - 1);
+					
+					if(demandListSize > 1) {
+						for(Demand demand : res.getDemands()) {
+							for(DemandDetail demandDetail : demand.getDemandDetails()) {
+								if (WSCalculationConstant.TAX_APPLICABLE.contains(demandDetail.getTaxHeadMasterCode())) {
+									waterChargeApplicable = waterChargeApplicable.add(demandDetail.getTaxAmount()).subtract(demandDetail.getCollectionAmount());
+								}
+								if (demandDetail.getTaxHeadMasterCode().equalsIgnoreCase(WSCalculationConstant.WS_TIME_PENALTY)) {
+									oldPenalty = oldPenalty.add(demandDetail.getTaxAmount()).subtract(demandDetail.getCollectionAmount());
+									waterChargeApplicable = waterChargeApplicable.add(oldPenalty);
+								}
+							}
+						}
+					}
+					
+					applyTimeBasedApplicables(latestDemand, requestInfoWrapper, timeBasedExemptionMasterMap, taxPeriods, isGetPenaltyEstimate,waterChargeApplicable,penaltyMaster,demandListSize);
+					demandsToBeUpdated.add(latestDemand);
+					
+
+				}
+				demandResponse.addAll(res.getDemands());
+			}
+			
+			else {
+				consumerCodeToDemandMap.forEach((id, demand) -> {
+					if (demand.getStatus() != null
+							&& WSCalculationConstant.DEMAND_CANCELLED_STATUS.equalsIgnoreCase(demand.getStatus().toString()))
+						throw new CustomException(WSCalculationConstant.EG_WS_INVALID_DEMAND_ERROR,
+								WSCalculationConstant.EG_WS_INVALID_DEMAND_ERROR_MSG);
+					applyTimeBasedApplicables(demand, requestInfoWrapper, timeBasedExemptionMasterMap, taxPeriods, isGetPenaltyEstimate, BigDecimal.ZERO, penaltyMaster,0);
+//					addRoundOffTaxHead(tenantId, demand.getDemandDetails());
+					demandsToBeUpdated.add(demand);
+				});
+			}
+			
+		
 			// Call demand update in bulk to update the interest or penalty
 			if(!isGetPenaltyEstimate) {
 				DemandRequest request = DemandRequest.builder().demands(demandsToBeUpdated).requestInfo(requestInfo).build();
@@ -635,7 +698,7 @@ public class DemandService {
 				return res.getDemands();
 			}
 		}
-		return demandsToBeUpdated;
+		return demandResponse;
 
 	}
 
@@ -774,7 +837,8 @@ public class DemandService {
 	 */
 
 	private boolean applyTimeBasedApplicables(Demand demand, RequestInfoWrapper requestInfoWrapper,
-			Map<String, JSONArray> timeBasedExemptionMasterMap, List<TaxPeriod> taxPeriods, boolean isGetPenaltyEstimate) {
+			Map<String, JSONArray> timeBasedExemptionMasterMap, List<TaxPeriod> taxPeriods,
+			boolean isGetPenaltyEstimate, BigDecimal previousDemandTaxAmounts,Map<String, Object> penaltyMaster, int demandListSize) {
 
 		String tenantId = demand.getTenantId();
 		String demandId = demand.getId();
@@ -788,7 +852,6 @@ public class DemandService {
 			return false;
 		}
 		boolean isCurrentDemand = false;
-		boolean isLatestWaterChargeDemand = false;
 		if (!(taxPeriod.getFromDate() <= System.currentTimeMillis()
 				&& taxPeriod.getToDate() >= System.currentTimeMillis()))
 			isCurrentDemand = true;
@@ -796,7 +859,6 @@ public class DemandService {
 		if (expiryDate < System.currentTimeMillis() || isGetPenaltyEstimate) {
 			BigDecimal waterChargeApplicable = BigDecimal.ZERO;
 			BigDecimal oldPenalty = BigDecimal.ZERO;
-			BigDecimal currentMonthDemand = BigDecimal.ZERO;
 
 //			BigDecimal oldInterest = BigDecimal.ZERO;
 
@@ -813,39 +875,23 @@ public class DemandService {
 //					oldInterest = oldInterest.add(detail.getTaxAmount());
 //				}
 			}
-			DemandDetailAndCollection latestPenaltyDemandDetail, latestInterestDemandDetail, latestWaterChargeDemandDetail;
+			waterChargeApplicable = waterChargeApplicable.add(previousDemandTaxAmounts);
+			DemandDetailAndCollection latestPenaltyDemandDetail, latestInterestDemandDetail;
 
 			boolean isPenaltyUpdated = false;
 //			boolean isInterestUpdated = false;
 
 			List<DemandDetail> details = demand.getDemandDetails();
 			
-			latestPenaltyDemandDetail = utils.getLatestDemandDetailByTaxHead(WSCalculationConstant.WS_TIME_PENALTY,
-					details);
-			if(latestPenaltyDemandDetail == null) {
-				isLatestWaterChargeDemand = true;
-				latestWaterChargeDemandDetail = utils.getLatestDemandDetailByTaxHead(WSCalculationConstant.WS_CHARGE,
-						details);
-				if(latestWaterChargeDemandDetail != null) {
-					currentMonthDemand = currentMonthDemand.add(latestWaterChargeDemandDetail.getLatestDemandDetail().getTaxAmount()).subtract(latestWaterChargeDemandDetail.getLatestDemandDetail().getCollectionAmount());
-				}
-			}
+			
+
 			Map<String, BigDecimal> interestPenaltyEstimates = payService.applyPenaltyRebateAndInterest(
-					waterChargeApplicable, taxPeriod.getFinancialYear(), timeBasedExemptionMasterMap, expiryDate,currentMonthDemand,isGetPenaltyEstimate);
+					waterChargeApplicable, taxPeriod.getFinancialYear(), penaltyMaster, expiryDate,isGetPenaltyEstimate,demandListSize);
 			if (null == interestPenaltyEstimates)
 				return isCurrentDemand;
 			
-			BigDecimal penalty = null;
-			String penaltyType = null;
-			if(interestPenaltyEstimates.containsKey(WSCalculationConstant.PENALTY_OUTSTANDING)) {
-				penalty  = interestPenaltyEstimates.get(WSCalculationConstant.PENALTY_OUTSTANDING);
-				penaltyType = WSCalculationConstant.PENALTY_OUTSTANDING;
-			}
-			else {
-				penalty  = interestPenaltyEstimates.get(WSCalculationConstant.PENALTY_CURRENT_MONTH);
-				penaltyType = WSCalculationConstant.PENALTY_CURRENT_MONTH;
+			BigDecimal penalty = interestPenaltyEstimates.get(WSCalculationConstant.WS_TIME_PENALTY);
 
-			}
 //			BigDecimal interest = interestPenaltyEstimates.get(WSCalculationConstant.WS_TIME_INTEREST);
 			if (penalty == null)
 				penalty = BigDecimal.ZERO;
@@ -862,11 +908,14 @@ public class DemandService {
 //				}
 //			}
 
-			if (penalty.compareTo(BigDecimal.ZERO) != 0 && latestPenaltyDemandDetail !=null) {
-				
-					updateTaxAmount(penalty, latestPenaltyDemandDetail,penaltyType);
+			if (penalty.compareTo(BigDecimal.ZERO) != 0 ) {
+				latestPenaltyDemandDetail = utils.getLatestDemandDetailByTaxHead(WSCalculationConstant.WS_TIME_PENALTY,
+						details);
+				if(latestPenaltyDemandDetail !=null) {
+					updateTaxAmount(penalty, latestPenaltyDemandDetail);
 					isPenaltyUpdated = true;
-	
+				}
+					
 			}
 
 			if (!isPenaltyUpdated && penalty.compareTo(BigDecimal.ZERO) > 0)
@@ -889,17 +938,10 @@ public class DemandService {
 	 * @param newAmount        The new tax amount for the taxHead
 	 * @param latestDetailInfo The latest demandDetail for the particular taxHead
 	 */
-	private void updateTaxAmount(BigDecimal newAmount, DemandDetailAndCollection latestDetailInfo, String type) {
+	private void updateTaxAmount(BigDecimal newAmount, DemandDetailAndCollection latestDetailInfo) {
 //		BigDecimal diff = newAmount.subtract(latestDetailInfo.getTaxAmountForTaxHead());
 		BigDecimal newTaxAmountForLatestDemandDetail = BigDecimal.ZERO;
-		if(type.equalsIgnoreCase(WSCalculationConstant.PENALTY_OUTSTANDING)) {
-			newTaxAmountForLatestDemandDetail = latestDetailInfo.getLatestDemandDetail().getTaxAmount()
-					.add(newAmount);
-		}
-		else {
-			newTaxAmountForLatestDemandDetail = newAmount;
-		}
-		
+		newTaxAmountForLatestDemandDetail = newAmount;
 		latestDetailInfo.getLatestDemandDetail().setTaxAmount(newTaxAmountForLatestDemandDetail);
 	}
 
