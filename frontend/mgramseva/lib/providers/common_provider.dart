@@ -1,12 +1,10 @@
 import 'dart:async';
-import 'dart:io' as io;
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_share_me/flutter_share_me.dart';
 import 'package:mgramseva/model/bill/bill_payments.dart';
-import 'package:mgramseva/model/bill/billing.dart';
 import 'package:mgramseva/model/demand/demand_list.dart';
 import 'package:mgramseva/model/file/file_store.dart';
 import 'package:mgramseva/model/localization/language.dart';
@@ -28,9 +26,6 @@ import 'package:mgramseva/utils/global_variables.dart';
 import 'package:mgramseva/utils/loaders.dart';
 import 'package:mgramseva/utils/models.dart';
 import 'package:mgramseva/utils/notifyers.dart';
-import 'package:new_version/new_version.dart';
-import 'package:package_info_plus/package_info_plus.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/foundation.dart';
 import 'package:universal_html/html.dart' as html;
@@ -824,7 +819,7 @@ class CommonProvider with ChangeNotifier {
           listen: false);
 
       return await CoreRepository().getMdms(getMdmsPaymentModes(
-          commonProvider.userDetails!.userRequest!.tenantId.toString()));
+          commonProvider.userDetails!.selectedtenant?.code.toString() ?? commonProvider.userDetails!.userRequest!.tenantId.toString()));
     }catch(e){
       return LanguageList();
     }

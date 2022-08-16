@@ -442,6 +442,7 @@ class ConsumerProvider with ChangeNotifier {
         "boundaryType": "Locality",
         "tenantId": commonProvider.userDetails!.selectedtenant!.code
       });
+      waterconnection.mdmsData = await CommonProvider.getMdmsBillingService();
       boundaryList = [];
       boundaryList.addAll(
           TenantBoundary.fromJson(result['TenantBoundary'][0]).boundary!);
@@ -674,7 +675,7 @@ class ConsumerProvider with ChangeNotifier {
   }
 
   List<KeyValue> getPaymentTypeList() {
-    if(CommonProvider.getPenaltyOrAdvanceStatus(languageList, true)) return Constants.CONSUMER_PAYMENT_TYPE;
+    if(CommonProvider.getPenaltyOrAdvanceStatus(waterconnection.mdmsData, true)) return Constants.CONSUMER_PAYMENT_TYPE;
     return [Constants.CONSUMER_PAYMENT_TYPE.first];
   }
 }
