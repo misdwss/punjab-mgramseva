@@ -614,6 +614,8 @@ public class DemandService {
 
 		// Loop through the consumerCodes and re-calculate the time base applicable
 		if (!CollectionUtils.isEmpty(res.getDemands())) {
+			List<Demand> demList = res.getDemands();
+
 			Map<String, Demand> consumerCodeToDemandMap = res.getDemands().stream()
 					.collect(Collectors.toMap(Demand::getId, Function.identity()));
 
@@ -654,13 +656,12 @@ public class DemandService {
 				
 				
 				if(type.equalsIgnoreCase("Fixed") && subType.equalsIgnoreCase(WSCalculationConstant.PENALTY_OUTSTANDING)) {
-					
+					List<Demand> demandList = new ArrayList<>(demList);
 					BigDecimal waterChargeApplicable = BigDecimal.ZERO;
 					BigDecimal oldPenalty = BigDecimal.ZERO;
-					res.getDemands().remove(demandListSize - 1);
-					
+					demandList.remove(demandListSize - 1);
 					if(demandListSize > 1) {
-						for(Demand demand : res.getDemands()) {
+						for(Demand demand : demandList) {
 							for(DemandDetail demandDetail : demand.getDemandDetails()) {
 								if (WSCalculationConstant.TAX_APPLICABLE.contains(demandDetail.getTaxHeadMasterCode())) {
 									waterChargeApplicable = waterChargeApplicable.add(demandDetail.getTaxAmount()).subtract(demandDetail.getCollectionAmount());
@@ -676,7 +677,6 @@ public class DemandService {
 					applyTimeBasedApplicables(latestDemand, requestInfoWrapper, timeBasedExemptionMasterMap, taxPeriods, isGetPenaltyEstimate,waterChargeApplicable,penaltyMaster,demandListSize);
 					demandsToBeUpdated.add(latestDemand);
 					
-
 				}
 				demandResponse.addAll(res.getDemands());
 			}
