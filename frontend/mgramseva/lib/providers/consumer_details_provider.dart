@@ -8,6 +8,7 @@ import 'package:mgramseva/model/connection/water_connections.dart';
 import 'package:mgramseva/model/localization/language.dart';
 import 'package:mgramseva/model/mdms/category_type.dart';
 import 'package:mgramseva/model/mdms/connection_type.dart';
+import 'package:mgramseva/model/mdms/payment_type.dart';
 import 'package:mgramseva/model/mdms/property_type.dart';
 import 'package:mgramseva/model/mdms/sub_category_type.dart';
 import 'package:mgramseva/model/mdms/tax_period.dart';
@@ -52,6 +53,7 @@ class ConsumerProvider with ChangeNotifier {
   late List dates = [];
   late bool isEdit = false;
   LanguageList? languageList;
+  PaymentType? paymentType;
   bool phoneNumberAutoValidation = false;
   GlobalKey<SearchSelectFieldState>? searchPickerKey;
 
@@ -152,6 +154,7 @@ class ConsumerProvider with ChangeNotifier {
   Future<void> setWaterConnection(data) async {
     try {
       await getConnectionTypePropertyTypeTaxPeriod();
+      await getPaymentType();
       isEdit = true;
       waterconnection = data;
       waterconnection.getText();
@@ -404,6 +407,16 @@ class ConsumerProvider with ChangeNotifier {
     }
   }
 
+  Future<void> getPaymentType() async {
+    try {
+      var res = await CommonProvider.getMdmsBillingService();
+      paymentType = res;
+      notifyListeners();
+    } catch (e) {
+      print(e);
+    }
+  }
+
   Future<Property?> getProperty(Map<String, dynamic> query) async {
     try {
       var commonProvider = Provider.of<CommonProvider>(
@@ -442,7 +455,6 @@ class ConsumerProvider with ChangeNotifier {
         "boundaryType": "Locality",
         "tenantId": commonProvider.userDetails!.selectedtenant!.code
       });
-      waterconnection.mdmsData = await CommonProvider.getMdmsBillingService();
       boundaryList = [];
       boundaryList.addAll(
           TenantBoundary.fromJson(result['TenantBoundary'][0]).boundary!);
@@ -675,7 +687,7 @@ class ConsumerProvider with ChangeNotifier {
   }
 
   List<KeyValue> getPaymentTypeList() {
-    if(CommonProvider.getPenaltyOrAdvanceStatus(waterconnection.mdmsData, true)) return Constants.CONSUMER_PAYMENT_TYPE;
+    if(CommonProvider.getPenaltyOrAdvanceStatus(paymentType, true)) return Constants.CONSUMER_PAYMENT_TYPE;
     return [Constants.CONSUMER_PAYMENT_TYPE.first];
   }
 }

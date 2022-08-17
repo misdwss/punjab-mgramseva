@@ -7,6 +7,7 @@ import 'package:mgramseva/model/bill/billing.dart';
 import 'package:mgramseva/model/common/fetch_bill.dart' as billDetails;
 import 'package:mgramseva/model/common/fetch_bill.dart';
 import 'package:mgramseva/model/demand/demand_list.dart';
+import 'package:mgramseva/model/mdms/payment_type.dart';
 import 'package:mgramseva/providers/collect_payment.dart';
 import 'package:mgramseva/utils/Constants/I18KeyConstants.dart';
 import 'package:mgramseva/utils/Locilization/application_localizations.dart';
@@ -37,9 +38,9 @@ class ConnectionPaymentView extends StatefulWidget {
   final Map<String, dynamic> query;
   final List<Bill>? bill;
   final List<Demands>? demandList;
-  final LanguageList? languageList;
+  final PaymentType? paymentType;
   final List<UpdateDemands>? updateDemandList;
-  const ConnectionPaymentView({Key? key, required this.query, this.bill, this.demandList, this.languageList, this.updateDemandList})
+  const ConnectionPaymentView({Key? key, required this.query, this.bill, this.demandList, this.paymentType, this.updateDemandList})
       : super(key: key);
 
   @override
@@ -54,7 +55,7 @@ class _ConnectionPaymentViewState extends State<ConnectionPaymentView> {
   void initState() {
     var consumerPaymentProvider =
         Provider.of<CollectPaymentProvider>(context, listen: false);
-    consumerPaymentProvider.getBillDetails(context, widget.query, widget.bill, widget.demandList, widget.languageList, widget.updateDemandList);
+    consumerPaymentProvider.getBillDetails(context, widget.query, widget.bill, widget.demandList, widget.paymentType, widget.updateDemandList);
     super.initState();
   }
 
@@ -82,7 +83,7 @@ class _ConnectionPaymentViewState extends State<ConnectionPaymentView> {
               return Notifiers.networkErrorPage(
                   context,
                   () => consumerPaymentProvider.getBillDetails(
-                      context, widget.query, widget.bill, widget.demandList, widget.languageList, widget.updateDemandList));
+                      context, widget.query, widget.bill, widget.demandList, widget.paymentType, widget.updateDemandList));
             } else {
               switch (snapshot.connectionState) {
                 case ConnectionState.waiting:
@@ -316,7 +317,7 @@ class _ConnectionPaymentViewState extends State<ConnectionPaymentView> {
                     '₹ ' + (fetchBill.billDetails?.first.billAccountDetails?.last.advanceAdjustedAmount != 0.0
           ? '-${(fetchBill.billDetails?.first.billAccountDetails?.last.advanceAdjustedAmount) }'
                     : '${(fetchBill.billDetails?.first.billAccountDetails?.last.advanceAdjustedAmount) }')),
-                if(CommonProvider.getPenaltyOrAdvanceStatus(fetchBill.mdmsData, false, true) && isFirstDemand && penalty.isDueDateCrossed)
+                if(CommonProvider.getPenaltyOrAdvanceStatus(fetchBill.mdmsData, false, true) && isFirstDemand )
                   _buildLabelValue(i18.billDetails.CORE_PENALTY,
                       '₹' + (CommonProvider.getPenaltyApplicable(fetchBill.demandList).penaltyApplicable).toString()),
                 if(CommonProvider.getPenaltyOrAdvanceStatus(fetchBill.mdmsData, true)) _buildLabelValue(

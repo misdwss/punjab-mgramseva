@@ -8,6 +8,7 @@ import 'package:mgramseva/model/bill/bill_payments.dart';
 import 'package:mgramseva/model/demand/demand_list.dart';
 import 'package:mgramseva/model/file/file_store.dart';
 import 'package:mgramseva/model/localization/language.dart';
+import 'package:mgramseva/model/mdms/payment_type.dart';
 import 'package:mgramseva/model/user/user_details.dart';
 import 'package:mgramseva/model/userProfile/user_profile.dart';
 import 'package:mgramseva/providers/language.dart';
@@ -826,16 +827,16 @@ class CommonProvider with ChangeNotifier {
         element) - arrearsDeduction) as double).abs();
   }
 
-  static Future<LanguageList> getMdmsBillingService() async {
+  static Future<PaymentType> getMdmsBillingService() async {
     try {
       var commonProvider = Provider.of<CommonProvider>(
           navigatorKey.currentContext!,
           listen: false);
 
-      return await CoreRepository().getMdms(getMdmsPaymentModes(
+      return await CoreRepository().getPaymentTypeMDMS(getMdmsPaymentModes(
           commonProvider.userDetails!.selectedtenant?.code.toString() ?? commonProvider.userDetails!.userRequest!.tenantId.toString()));
     }catch(e){
-      return LanguageList();
+      return PaymentType();
     }
   }
 
@@ -852,7 +853,7 @@ class CommonProvider with ChangeNotifier {
     return advance;
   }
 
- static bool getPenaltyOrAdvanceStatus(LanguageList? languageList, [isAdvance = false, bool isTimePenalty = false]) {
+ static bool getPenaltyOrAdvanceStatus(PaymentType? languageList, [isAdvance = false, bool isTimePenalty = false]) {
     if(languageList == null) return false;
     var index = languageList.mdmsRes?.billingService?.taxHeadMasterList?.indexWhere((e) => e.code == (isAdvance ? 'WS_ADVANCE_CARRYFORWARD' : isTimePenalty ? 'WS_TIME_PENALTY' : '10201'));
     if(index != null && index != -1){

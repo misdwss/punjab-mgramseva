@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:typed_data';
 import 'package:mgramseva/model/demand/update_demand_list.dart';
+import 'package:mgramseva/model/mdms/payment_type.dart';
 import 'package:mgramseva/providers/language.dart';
 
 import '../components/HouseConnectionandBill/jsconnnector.dart' as js;
@@ -51,7 +52,7 @@ class CollectPaymentProvider with ChangeNotifier {
   }
 
   Future<void> getBillDetails(
-      BuildContext context, Map<String, dynamic> query, List<Bill>? bill, List<Demands>? demandList, LanguageList? mdmsData, List<UpdateDemands>? updateDemandList ) async {
+      BuildContext context, Map<String, dynamic> query, List<Bill>? bill, List<Demands>? demandList, PaymentType? mdmsData, List<UpdateDemands>? updateDemandList ) async {
     try {
 
 

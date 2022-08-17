@@ -9,6 +9,7 @@ import 'package:mgramseva/utils/constants.dart';
 import 'package:mgramseva/utils/date_formats.dart';
 
 import '../demand/update_demand_list.dart';
+import '../mdms/payment_type.dart';
 
 part 'water_connection.g.dart';
 
@@ -76,7 +77,7 @@ class WaterConnection {
   BillList? fetchBill;
 
   @JsonKey(ignore: true)
-  LanguageList? mdmsData;
+  PaymentType? mdmsData;
 
   @JsonKey(ignore: true)
   List<UpdateDemands>? demands;

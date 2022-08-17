@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -71,6 +73,7 @@ class _ConsumerDetailsState extends State<ConsumerDetails> {
           ..setModel()
           ..setWaterConnection(widget.waterconnection)
           ..fetchBoundary()
+          ..getPaymentType()
           ..getProperty({
             "tenantId": commonProvider.userDetails!.selectedtenant!.code,
             "propertyIds": widget.waterconnection!.propertyId
@@ -91,6 +94,7 @@ class _ConsumerDetailsState extends State<ConsumerDetails> {
           ..getWaterConnection(widget.id)
           ..fetchBoundary()
           ..getConnectionTypePropertyTypeTaxPeriod()
+          ..getPaymentType()
           ..autoValidation = false
           ..formKey = GlobalKey<FormState>()
           ..setwallthrough(ConsumerWalkThrough().consumerWalkThrough.map((e) {
@@ -124,6 +128,7 @@ class _ConsumerDetailsState extends State<ConsumerDetails> {
       ..setModel()
       ..getConnectionTypePropertyTypeTaxPeriod()
       ..fetchBoundary()
+      ..getPaymentType()
       ..getConsumerDetails()
       ..autoValidation = false
       ..formKey = GlobalKey<FormState>()
@@ -606,6 +611,7 @@ class _ConsumerDetailsState extends State<ConsumerDetails> {
 
 
   Widget _buildArrears(ConsumerProvider consumerProvider) {
+    print(jsonEncode(consumerProvider.paymentType));
     return Wrap(children: [
       BuildTextField(i18.consumer.ARREARS,
         consumerProvider.waterconnection.arrearsCtrl,
@@ -615,7 +621,7 @@ class _ConsumerDetailsState extends State<ConsumerDetails> {
               RegExp("[0-9.]"))
         ],
         key: Keys.createConsumer.CONSUMER_ARREARS_KEY,),
-    if(CommonProvider.getPenaltyOrAdvanceStatus(consumerProvider.waterconnection.mdmsData, false))  BuildTextField(i18.common.CORE_PENALTY,
+    if(CommonProvider.getPenaltyOrAdvanceStatus(consumerProvider.paymentType, false))  BuildTextField(i18.common.CORE_PENALTY,
         consumerProvider.waterconnection.penaltyCtrl,
         textInputType: TextInputType.number,
         inputFormatter: [
