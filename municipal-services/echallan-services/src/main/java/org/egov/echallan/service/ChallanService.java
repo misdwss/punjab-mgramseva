@@ -282,6 +282,8 @@ public class ChallanService {
 
 		Calendar currentDate = Calendar.getInstance();
 		int currentYear = currentDate.get(Calendar.YEAR);
+		int actualMonthnum = currentDate.get(Calendar.MONTH);
+
 		currentDate.setTimeInMillis(criteria.getFromDate());
 		int actualYear = currentDate.get(Calendar.YEAR);
 
@@ -295,19 +297,10 @@ public class ChallanService {
 					currentDate.get(Calendar.DAY_OF_MONTH));
 			finYearStarting = currentMonthDate;
 		}else {
-			if (currentMonthNumber < 3) {
-				totalMonthsTillDate = 9 + currentMonthNumber;
-				currentMonthDate = LocalDate.of(currentDate.get(Calendar.YEAR), currentDate.get(Calendar.MONTH) + 1,
-						currentDate.get(Calendar.DAY_OF_MONTH));
-
-				finYearStarting = currentMonthDate;
-			} else {
-				totalMonthsTillDate = currentMonthNumber - 2;
-				currentMonthDate = LocalDate.of(currentDate.get(Calendar.YEAR), currentDate.get(Calendar.MONTH) + 1,
-						currentDate.get(Calendar.DAY_OF_MONTH));
-
-				finYearStarting = currentMonthDate;
-			}
+			totalMonthsTillDate = actualMonthnum - currentMonthNumber;
+			currentMonthDate = LocalDate.of(currentDate.get(Calendar.YEAR), currentDate.get(Calendar.MONTH) + 1,
+					currentDate.get(Calendar.DAY_OF_MONTH));
+			finYearStarting = currentMonthDate;
 		}
 		ArrayList<ChallanCollectionData> data = new ArrayList<ChallanCollectionData>();
 
