@@ -708,23 +708,21 @@ class CommonProvider with ChangeNotifier {
         .toList();
 
     if(demandList?.first.demandDetails?.first.taxHeadMasterCode == 'WS_TIME_PENALTY'){
-      for (var demand in filteredDemands!) {
-        demand.demandDetails!.forEach((e) {
+        filteredDemands?.first.demandDetails!.forEach((e) {
           if (e.taxHeadMasterCode == 'WS_TIME_PENALTY') {
             res.add((e.taxAmount ?? 0) - (e.collectionAmount ?? 0));
           }
         });
       }
-    }
+
     else {
-      for (var demand in filteredDemands!) {
-        demand.demandDetails!.forEach((e) {
+        filteredDemands?.first.demandDetails!.forEach((e) {
           if (e.taxHeadMasterCode == 'WS_TIME_PENALTY' ||
               e.taxHeadMasterCode == '10201') {
             res.add((e.taxAmount ?? 0) - (e.collectionAmount ?? 0));
           }
         });
-      }
+
     }
 
     var penaltyAmount = res.length == 0 ? 0 : ((res.reduce((previousValue,
@@ -786,6 +784,7 @@ class CommonProvider with ChangeNotifier {
   static double getArrearsAmountOncePenaltyExpires(List<Demands> demandList) {
     List res = [];
     var arrearsDeduction = 0.0 ;
+    var penaltyDeduction = 0.0;
 
     if(!isFirstDemand(demandList)){
       var arrearsAmount = 0.0;
@@ -807,11 +806,16 @@ class CommonProvider with ChangeNotifier {
         });
       });
 
+      filteredDemands.first.demandDetails?.forEach((element) {
+          if(element.taxHeadMasterCode == 'WS_TIME_PENALTY'){
+            penaltyDeduction = ((element.taxAmount ?? 0) - (element.collectionAmount ?? 0)) ;
+          }
+        });
+
       for (var demand in filteredDemands) {
         demand.demandDetails!.forEach((e) {
 
-          if (e.taxHeadMasterCode != 'WS_ADVANCE_CARRYFORWARD' &&
-              e.taxHeadMasterCode != 'WS_TIME_PENALTY') {
+          if (e.taxHeadMasterCode != 'WS_ADVANCE_CARRYFORWARD') {
             res.add((e.taxAmount ?? 0) - (e.collectionAmount ?? 0));
           }
         });
@@ -824,7 +828,7 @@ class CommonProvider with ChangeNotifier {
     return res.length == 0 ? 0 : ((res.reduce((previousValue,
         element) =>
     previousValue +
-        element) - arrearsDeduction) as double).abs();
+        element) - arrearsDeduction - penaltyDeduction) as double).abs();
   }
 
   static Future<PaymentType> getMdmsBillingService() async {
