@@ -5,6 +5,7 @@ import 'package:mgramseva/model/demand/update_demand_list.dart';
 import 'package:mgramseva/model/localization/language.dart';
 import 'package:mgramseva/utils/constants.dart';
 
+import '../mdms/payment_type.dart';
 import 'demand.dart';
 
 part 'fetch_bill.g.dart';
@@ -64,7 +65,7 @@ class FetchBill {
   UpdateDemands? updateDemands;
 
   @JsonKey(ignore: true)
-  LanguageList? mdmsData;
+  PaymentType? mdmsData;
 
   FetchBill();
 

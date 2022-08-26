@@ -8,6 +8,7 @@ import 'package:mgramseva/model/bill/bill_payments.dart';
 import 'package:mgramseva/model/demand/demand_list.dart';
 import 'package:mgramseva/model/file/file_store.dart';
 import 'package:mgramseva/model/localization/language.dart';
+import 'package:mgramseva/model/mdms/payment_type.dart';
 import 'package:mgramseva/model/user/user_details.dart';
 import 'package:mgramseva/model/userProfile/user_profile.dart';
 import 'package:mgramseva/providers/language.dart';
@@ -707,23 +708,21 @@ class CommonProvider with ChangeNotifier {
         .toList();
 
     if(demandList?.first.demandDetails?.first.taxHeadMasterCode == 'WS_TIME_PENALTY'){
-      for (var demand in filteredDemands!) {
-        demand.demandDetails!.forEach((e) {
+        filteredDemands?.first.demandDetails!.forEach((e) {
           if (e.taxHeadMasterCode == 'WS_TIME_PENALTY') {
             res.add((e.taxAmount ?? 0) - (e.collectionAmount ?? 0));
           }
         });
       }
-    }
+
     else {
-      for (var demand in filteredDemands!) {
-        demand.demandDetails!.forEach((e) {
+        filteredDemands?.first.demandDetails!.forEach((e) {
           if (e.taxHeadMasterCode == 'WS_TIME_PENALTY' ||
               e.taxHeadMasterCode == '10201') {
             res.add((e.taxAmount ?? 0) - (e.collectionAmount ?? 0));
           }
         });
-      }
+
     }
 
     var penaltyAmount = res.length == 0 ? 0 : ((res.reduce((previousValue,
@@ -785,6 +784,7 @@ class CommonProvider with ChangeNotifier {
   static double getArrearsAmountOncePenaltyExpires(List<Demands> demandList) {
     List res = [];
     var arrearsDeduction = 0.0 ;
+    var penaltyDeduction = 0.0;
 
     if(!isFirstDemand(demandList)){
       var arrearsAmount = 0.0;
@@ -806,11 +806,16 @@ class CommonProvider with ChangeNotifier {
         });
       });
 
+      filteredDemands.first.demandDetails?.forEach((element) {
+          if(element.taxHeadMasterCode == 'WS_TIME_PENALTY'){
+            penaltyDeduction = ((element.taxAmount ?? 0) - (element.collectionAmount ?? 0)) ;
+          }
+        });
+
       for (var demand in filteredDemands) {
         demand.demandDetails!.forEach((e) {
 
-          if (e.taxHeadMasterCode != 'WS_ADVANCE_CARRYFORWARD' &&
-              e.taxHeadMasterCode != 'WS_TIME_PENALTY') {
+          if (e.taxHeadMasterCode != 'WS_ADVANCE_CARRYFORWARD') {
             res.add((e.taxAmount ?? 0) - (e.collectionAmount ?? 0));
           }
         });
@@ -823,19 +828,19 @@ class CommonProvider with ChangeNotifier {
     return res.length == 0 ? 0 : ((res.reduce((previousValue,
         element) =>
     previousValue +
-        element) - arrearsDeduction) as double).abs();
+        element) - arrearsDeduction - penaltyDeduction) as double).abs();
   }
 
-  static Future<LanguageList> getMdmsBillingService() async {
+  static Future<PaymentType> getMdmsBillingService() async {
     try {
       var commonProvider = Provider.of<CommonProvider>(
           navigatorKey.currentContext!,
           listen: false);
 
-      return await CoreRepository().getMdms(getMdmsPaymentModes(
+      return await CoreRepository().getPaymentTypeMDMS(getMdmsPaymentModes(
           commonProvider.userDetails!.selectedtenant?.code.toString() ?? commonProvider.userDetails!.userRequest!.tenantId.toString()));
     }catch(e){
-      return LanguageList();
+      return PaymentType();
     }
   }
 
@@ -852,7 +857,7 @@ class CommonProvider with ChangeNotifier {
     return advance;
   }
 
- static bool getPenaltyOrAdvanceStatus(LanguageList? languageList, [isAdvance = false, bool isTimePenalty = false]) {
+ static bool getPenaltyOrAdvanceStatus(PaymentType? languageList, [isAdvance = false, bool isTimePenalty = false]) {
     if(languageList == null) return false;
     var index = languageList.mdmsRes?.billingService?.taxHeadMasterList?.indexWhere((e) => e.code == (isAdvance ? 'WS_ADVANCE_CARRYFORWARD' : isTimePenalty ? 'WS_TIME_PENALTY' : '10201'));
     if(index != null && index != -1){

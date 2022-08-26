@@ -352,7 +352,7 @@ class HouseholdRegisterProvider with ChangeNotifier {
     var headerList = [
       i18.common.CONNECTION_ID,
       i18.common.NAME,
-      i18.common.CORE_FATHER_NAME,
+      i18.consumer.FATHER_SPOUSE_NAME,
       i18.householdRegister.PENDING_COLLECTIONS
     ];
 

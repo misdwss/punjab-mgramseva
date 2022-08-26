@@ -19,6 +19,7 @@ import 'package:provider/provider.dart';
 import "package:collection/collection.dart";
 
 import '../../model/demand/update_demand_list.dart';
+import '../../utils/models.dart';
 import '../../widgets/CustomDetails.dart';
 
 class NewConsumerBill extends StatefulWidget {
@@ -84,8 +85,8 @@ class NewConsumerBillState extends State<NewConsumerBill> {
 
   buidBillview(BillList billList) {
     var commonProvider = Provider.of<CommonProvider>(context, listen: false);
-    var penalty = CommonProvider.getPenalty(widget.waterConnection?.demands);
-    var penaltyApplicable = CommonProvider.getPenaltyApplicable(widget.demandList);
+    var penalty = billList.bill!.isEmpty ? Penalty(0.0, '0', false) : CommonProvider.getPenalty(widget.waterConnection?.demands);
+    var penaltyApplicable = billList.bill!.isEmpty ? PenaltyApplicable(0.0)  : CommonProvider.getPenaltyApplicable(widget.demandList);
     var houseHoldProvider =
     Provider.of<HouseHoldProvider>(context, listen: false);
 
@@ -189,7 +190,7 @@ class NewConsumerBillState extends State<NewConsumerBill> {
                                               (houseHoldProvider.isfirstdemand ?  widget.demandList.first.demandDetails!.first.taxHeadMasterCode == 'WS_TIME_PENALTY'
                                                   ? CommonProvider.getCurrentBill(widget.demandList)
                                               : CommonProvider.checkAdvance(widget.demandList) ? (widget.demandList.first.demandDetails!.first.taxAmount ?? 0)
-                                              : ((widget.demandList.first.demandDetails!.first.taxAmount ?? 0)) : CommonProvider.getArrearsAmount(widget.demandList))
+                                              : ((widget.demandList.first.demandDetails!.first.taxAmount ?? 0) - (widget.demandList.first.demandDetails!.first.collectionAmount ?? 0)) : CommonProvider.getArrearsAmount(widget.demandList))
                                                   .toString()),
                                           context),
                                       if(houseHoldProvider.isfirstdemand == true)
