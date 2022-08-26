@@ -214,7 +214,7 @@ class NewConsumerBillState extends State<NewConsumerBill> {
                                                   : (CommonProvider.getAdvanceAdjustedAmount(widget.demandList)).toString())),
                                           context),
 
-                                      if(CommonProvider.getPenaltyOrAdvanceStatus(widget.waterConnection?.mdmsData, false, true) && houseHoldProvider.isfirstdemand ) getLabelText(
+                                      if(CommonProvider.getPenaltyOrAdvanceStatus(widget.waterConnection?.mdmsData, false, true) && houseHoldProvider.isfirstdemand && penalty.isDueDateCrossed) getLabelText(
                                           i18.billDetails.CORE_PENALTY,
                                           ('₹' +
                                               penaltyApplicable.penaltyApplicable
