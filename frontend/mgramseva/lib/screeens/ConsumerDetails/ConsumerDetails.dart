@@ -611,7 +611,6 @@ class _ConsumerDetailsState extends State<ConsumerDetails> {
 
 
   Widget _buildArrears(ConsumerProvider consumerProvider) {
-    print(jsonEncode(consumerProvider.paymentType));
     return Wrap(children: [
       BuildTextField(i18.consumer.ARREARS,
         consumerProvider.waterconnection.arrearsCtrl,
