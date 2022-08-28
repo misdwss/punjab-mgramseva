@@ -287,7 +287,7 @@ class RevenueDashboard with ChangeNotifier {
       expenseData[i18.dashboard.EXPENDITURE] ??= {};
       expenseData[i18.dashboard.EXPENDITURE]['${DateFormats.getMonth(
           DateFormats.getFormattedDateToDateTime(
-              DateFormats.timeStampToDate(e.month))!)}'] = int.parse(e.totalExpenditure.toString());
+              DateFormats.timeStampToDate(e.month))!)}'] = int.parse(e.amountPaid.toString());
     });
 
     ///TO GET DATA FROM ELASTIC SEARCH USE BELOW COMMENTED LOGIC.
