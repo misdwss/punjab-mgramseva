@@ -245,8 +245,6 @@ public class ChallanQueryBuilder {
         int offset = config.getDefaultOffset();
         String finalQuery = paginationWrapper.replace("{}",query);
 
-		finalQuery = finalQuery.replace("{orderby}", string);
-
 		if (!"ELECTRICITY_BILL".equalsIgnoreCase(criteria.getExpenseType())) {
 			finalQuery = finalQuery.replace("{orderby}", string);
 		}
