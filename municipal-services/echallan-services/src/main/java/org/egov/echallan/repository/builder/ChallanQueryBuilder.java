@@ -42,6 +42,16 @@ public class ChallanQueryBuilder {
 			+ " FROM eg_echallan challan" + " LEFT OUTER JOIN "
 			+ " eg_challan_address chaladdr ON chaladdr.echallanid = challan.id   INNER JOIN eg_vendor vendor on vendor.id = challan.vendor ";
 
+	private static final String ELECTRICITY_BILL_QUERY = "SELECT DISTINCT ON (CHALLAN.REFERENCEID) REFERENCEID, count(*) OVER() AS full_count, " +
+			"challan.*,chaladdr.*,challan.id as challan_id,challan.tenantid as challan_tenantId,challan.lastModifiedTime as "
+			+ "challan_lastModifiedTime,challan.createdBy as challan_createdBy,challan.lastModifiedBy as challan_lastModifiedBy,challan.createdTime as "
+			+ "challan_createdTime,chaladdr.id as chaladdr_id,"
+			+ "{amount}"
+			+ "challan.accountId as uuid,challan.description as description,challan.typeOfExpense as typeOfExpense, challan.billDate as billDate,  "
+			+ " challan.billIssuedDate as billIssuedDate, challan.paidDate as paidDate, challan.isBillPaid as isBillPaid , challan.vendor as vendor, vendor.name as vendorName "
+			+ " FROM eg_echallan challan" + " LEFT OUTER JOIN "
+			+ " eg_challan_address chaladdr ON chaladdr.echallanid = challan.id   INNER JOIN eg_vendor vendor on vendor.id = challan.vendor ";
+
       private final String paginationWrapper = "{} {orderby} {pagination}";
 
       public static final String FILESTOREID_UPDATE_SQL = "UPDATE eg_echallan SET filestoreid=? WHERE id=?";
@@ -89,7 +99,15 @@ public class ChallanQueryBuilder {
 
 		public String getChallanSearchQuery(SearchCriteria criteria, List<Object> preparedStmtList) {
 
-			StringBuilder builder = new StringBuilder(QUERY);
+			StringBuilder builder = new StringBuilder();
+
+			log.info("########### Expense type: " + criteria.getExpenseType());
+
+			if ("ELECTRICITY_BILL".equalsIgnoreCase(criteria.getExpenseType())) {
+				builder = new StringBuilder(ELECTRICITY_BILL_QUERY);
+			} else {
+				builder = new StringBuilder(QUERY);
+			}
 
 			addBusinessServiceClause(criteria, preparedStmtList, builder);
 
