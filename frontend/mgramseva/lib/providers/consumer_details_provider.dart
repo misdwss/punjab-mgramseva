@@ -8,6 +8,7 @@ import 'package:mgramseva/model/connection/water_connections.dart';
 import 'package:mgramseva/model/localization/language.dart';
 import 'package:mgramseva/model/mdms/category_type.dart';
 import 'package:mgramseva/model/mdms/connection_type.dart';
+import 'package:mgramseva/model/mdms/payment_type.dart';
 import 'package:mgramseva/model/mdms/property_type.dart';
 import 'package:mgramseva/model/mdms/sub_category_type.dart';
 import 'package:mgramseva/model/mdms/tax_period.dart';
@@ -52,6 +53,7 @@ class ConsumerProvider with ChangeNotifier {
   late List dates = [];
   late bool isEdit = false;
   LanguageList? languageList;
+  PaymentType? paymentType;
   bool phoneNumberAutoValidation = false;
   GlobalKey<SearchSelectFieldState>? searchPickerKey;
 
@@ -152,6 +154,7 @@ class ConsumerProvider with ChangeNotifier {
   Future<void> setWaterConnection(data) async {
     try {
       await getConnectionTypePropertyTypeTaxPeriod();
+      await getPaymentType();
       isEdit = true;
       waterconnection = data;
       waterconnection.getText();
@@ -179,7 +182,7 @@ class ConsumerProvider with ChangeNotifier {
         "consumerCode": waterconnection.connectionNo,
         "businessService": "WS",
         "tenantId": waterconnection.tenantId,
-        "status": "ACTIVE"
+        // "status": "ACTIVE"
       });
 
       var paymentDetails = await BillingServiceRepository().fetchdBillPayments({
@@ -219,10 +222,15 @@ class ConsumerProvider with ChangeNotifier {
                 .characters
                 .elementAt(4);
       }
+
+      demand = demand?.where((element) => element.status != 'CANCELLED').toList();
+
       if (demand?.isEmpty == true) {
         isfirstdemand = false;
       } else if (demand?.length == 1 &&
           demand?.first.consumerType == 'waterConnection-arrears') {
+        isfirstdemand = false;
+      }else if(demand?.length == 1 && demand?.first.demandDetails?.length == 1 && demand?.first.demandDetails?.first.taxHeadMasterCode == 'WS_ADVANCE_CARRYFORWARD'){
         isfirstdemand = false;
       } else {
         isfirstdemand = true;
@@ -399,6 +407,16 @@ class ConsumerProvider with ChangeNotifier {
     }
   }
 
+  Future<void> getPaymentType() async {
+    try {
+      var res = await CommonProvider.getMdmsBillingService();
+      paymentType = res;
+      notifyListeners();
+    } catch (e) {
+      print(e);
+    }
+  }
+
   Future<Property?> getProperty(Map<String, dynamic> query) async {
     try {
       var commonProvider = Provider.of<CommonProvider>(
@@ -535,6 +553,11 @@ class ConsumerProvider with ChangeNotifier {
     waterconnection.connectionType = val;
     waterconnection.meterIdCtrl.clear();
     waterconnection.previousReadingDateCtrl.clear();
+    billYear = null;
+    selectedcycle = null;
+    waterconnection.BillingCycleCtrl.clear();
+    waterconnection.meterInstallationDateCtrl.clear();
+    searchPickerKey?.currentState?.Options.clear();
 
     notifyListeners();
   }
@@ -648,5 +671,23 @@ class ConsumerProvider with ChangeNotifier {
       }).toList();
     }
     return <DropdownMenuItem<Object>>[];
+  }
+
+  void onChangeOfAmountType(value){
+    waterconnection.paymentType = value;
+
+    if(!isEdit) {
+      waterconnection.penaltyCtrl.clear();
+      waterconnection.advanceCtrl.clear();
+      waterconnection.arrearsCtrl.clear();
+    }else{
+      
+    }
+    notifyListeners();
+  }
+
+  List<KeyValue> getPaymentTypeList() {
+    if(CommonProvider.getPenaltyOrAdvanceStatus(paymentType, true)) return Constants.CONSUMER_PAYMENT_TYPE;
+    return [Constants.CONSUMER_PAYMENT_TYPE.first];
   }
 }

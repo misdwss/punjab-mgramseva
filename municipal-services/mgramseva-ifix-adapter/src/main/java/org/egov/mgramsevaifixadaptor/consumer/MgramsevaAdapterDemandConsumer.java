@@ -2,10 +2,12 @@ package org.egov.mgramsevaifixadaptor.consumer;
 
 import java.math.BigDecimal;
 import java.text.Bidi;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.egov.mgramsevaifixadaptor.config.PropertyConfiguration;
 import org.egov.mgramsevaifixadaptor.contract.DemandRequest;
@@ -26,6 +28,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -71,7 +74,7 @@ public class MgramsevaAdapterDemandConsumer {
 		try {
 			log.debug("Consuming record: " + record);
 			demandRequest = mapper.convertValue(record, DemandRequest.class);
-			log.info("demandRequest: "+demandRequest);
+			log.info("demandRequest before: "+new Gson().toJson(demandRequest));
 			String eventType=null;
 			if(demandRequest != null) {
 				Collections.sort(demandRequest.getDemands(), getCreatedTimeComparatorForDemand());
@@ -89,14 +92,21 @@ public class MgramsevaAdapterDemandConsumer {
 						demandRequest.getDemands().get(0).getDemandDetails().get(0).setTaxAmount(totalAmount);
 					}
 				}else {
-					int demandDetailsSize = demandRequest.getDemands().get(0).getDemandDetails().size();
-					for(int i=0; i<demandDetailsSize-1; i++) {
-						demandRequest.getDemands().get(0).getDemandDetails().remove(0);
+					
+					for(Demand demand : demandRequest.getDemands()) {
+						List<DemandDetail> demandDetails = demand.getDemandDetails();
+						for(DemandDetail demandDetail: demandDetails) {
+							
+							Integer count =  getCountByDemandDetailsId(demandDetail.getId());
+							
+							if(count != null && count > 1) {
+								demandDetails.remove(demandDetail);
+							}
+							
+						}
 					}
-					Integer count =  getCountByDemandDetailsId(demandRequest.getDemands().get(0).getDemandDetails().get(0).getId());
-					if(count != null && count > 1) {
-						return;
-					}
+					
+					log.info("demandRequest after: "+new Gson().toJson(demandRequest));
 				}
 			}
 			if(demandRequest.getDemands().get(0).getBusinessService().contains(Constants.EXPENSE))
@@ -105,6 +115,8 @@ public class MgramsevaAdapterDemandConsumer {
 			}else {
 				eventType=EventTypeEnum.DEMAND.toString();
 			}
+			log.info("calling ifix-reference-adapter util");
+
 			util.callIFIXAdapter(demandRequest, eventType, demandRequest.getDemands().get(0).getTenantId(),demandRequest.getRequestInfo());
 		} catch (final Exception e) {
 			log.error("Error while listening to value: " + record + " on topic: " + topic + ": " + e);
@@ -126,5 +138,5 @@ public class MgramsevaAdapterDemandConsumer {
 		System.out.println("count: "+count);
 		return count;
 	}
-	
+
 }

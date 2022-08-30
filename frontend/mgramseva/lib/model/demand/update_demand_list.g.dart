@@ -1,25 +1,27 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'demand_list.dart';
+part of 'update_demand_list.dart';
 
 // **************************************************************************
 // JsonSerializableGenerator
 // **************************************************************************
 
-DemandList _$DemandListFromJson(Map<String, dynamic> json) {
-  return DemandList()
+UpdateDemandList _$UpdateDemandListFromJson(Map<String, dynamic> json) {
+  return UpdateDemandList()
     ..demands = (json['Demands'] as List<dynamic>?)
-        ?.map((e) => Demands.fromJson(e as Map<String, dynamic>))
-        .toList();
+        ?.map((e) => UpdateDemands.fromJson(e as Map<String, dynamic>))
+        .toList()
+    ..totalApplicablePenalty =
+    (json['totalApplicablePenalty'] as num?)?.toDouble();
 }
 
-Map<String, dynamic> _$DemandListToJson(DemandList instance) =>
+Map<String, dynamic> _$UpdateDemandListToJson(UpdateDemandList instance) =>
     <String, dynamic>{
       'Demands': instance.demands,
     };
 
-Demands _$DemandsFromJson(Map<String, dynamic> json) {
-  return Demands()
+UpdateDemands _$UpdateDemandsFromJson(Map<String, dynamic> json) {
+  return UpdateDemands()
     ..id = json['id'] as String?
     ..tenantId = json['tenantId'] as String?
     ..consumerCode = json['consumerCode'] as String?
@@ -27,22 +29,24 @@ Demands _$DemandsFromJson(Map<String, dynamic> json) {
     ..businessService = json['businessService'] as String?
     ..payer = json['payer'] == null
         ? null
-        : Payer.fromJson(json['payer'] as Map<String, dynamic>)
+        : UpdatePayer.fromJson(json['payer'] as Map<String, dynamic>)
     ..taxPeriodFrom = json['taxPeriodFrom'] as int?
     ..taxPeriodTo = json['taxPeriodTo'] as int?
     ..demandDetails = (json['demandDetails'] as List<dynamic>?)
-        ?.map((e) => DemandDetails.fromJson(e as Map<String, dynamic>))
+        ?.map((e) => UpdateDemandDetails.fromJson(e as Map<String, dynamic>))
         .toList()
     ..auditDetails = json['auditDetails'] == null
         ? null
-        : AuditDetails.fromJson(json['auditDetails'] as Map<String, dynamic>)
+        : UpdateAuditDetails.fromJson(
+            json['auditDetails'] as Map<String, dynamic>)
     ..billExpiryTime = json['billExpiryTime'] as int?
     ..minimumAmountPayable = (json['minimumAmountPayable'] as num?)?.toDouble()
     ..status = json['status'] as String?
     ..isPaymentCompleted = json['isPaymentCompleted'] as bool?;
 }
 
-Map<String, dynamic> _$DemandsToJson(Demands instance) => <String, dynamic>{
+Map<String, dynamic> _$UpdateDemandsToJson(UpdateDemands instance) =>
+    <String, dynamic>{
       'id': instance.id,
       'tenantId': instance.tenantId,
       'consumerCode': instance.consumerCode,
@@ -58,8 +62,8 @@ Map<String, dynamic> _$DemandsToJson(Demands instance) => <String, dynamic>{
       'status': instance.status,
     };
 
-Payer _$PayerFromJson(Map<String, dynamic> json) {
-  return Payer()
+UpdatePayer _$UpdatePayerFromJson(Map<String, dynamic> json) {
+  return UpdatePayer()
     ..uuid = json['uuid'] as String?
     ..id = json['id'] as int?
     ..userName = json['userName'] as String?
@@ -82,7 +86,8 @@ Payer _$PayerFromJson(Map<String, dynamic> json) {
     ..tenantId = json['tenantId'] as String?;
 }
 
-Map<String, dynamic> _$PayerToJson(Payer instance) => <String, dynamic>{
+Map<String, dynamic> _$UpdatePayerToJson(UpdatePayer instance) =>
+    <String, dynamic>{
       'uuid': instance.uuid,
       'id': instance.id,
       'userName': instance.userName,
@@ -105,8 +110,8 @@ Map<String, dynamic> _$PayerToJson(Payer instance) => <String, dynamic>{
       'tenantId': instance.tenantId,
     };
 
-DemandDetails _$DemandDetailsFromJson(Map<String, dynamic> json) {
-  return DemandDetails()
+UpdateDemandDetails _$UpdateDemandDetailsFromJson(Map<String, dynamic> json) {
+  return UpdateDemandDetails()
     ..id = json['id'] as String?
     ..demandId = json['demandId'] as String?
     ..taxHeadMasterCode = json['taxHeadMasterCode'] as String?
@@ -114,30 +119,32 @@ DemandDetails _$DemandDetailsFromJson(Map<String, dynamic> json) {
     ..collectionAmount = (json['collectionAmount'] as num?)?.toDouble()
     ..auditDetails = json['auditDetails'] == null
         ? null
-        : AuditDetails.fromJson(json['auditDetails'] as Map<String, dynamic>)
+        : UpdateAuditDetails.fromJson(
+            json['auditDetails'] as Map<String, dynamic>)
     ..tenantId = json['tenantId'] as String?;
 }
 
-Map<String, dynamic> _$DemandDetailsToJson(DemandDetails instance) =>
+Map<String, dynamic> _$UpdateDemandDetailsToJson(
+        UpdateDemandDetails instance) =>
     <String, dynamic>{
       'id': instance.id,
       'demandId': instance.demandId,
       'taxHeadMasterCode': instance.taxHeadMasterCode,
       'taxAmount': instance.taxAmount,
       'collectionAmount': instance.collectionAmount,
-      'auditDetails': instance.auditDetails?.toJson(),
+      'auditDetails': instance.auditDetails,
       'tenantId': instance.tenantId,
     };
 
-AuditDetails _$AuditDetailsFromJson(Map<String, dynamic> json) {
-  return AuditDetails()
+UpdateAuditDetails _$UpdateAuditDetailsFromJson(Map<String, dynamic> json) {
+  return UpdateAuditDetails()
     ..createdBy = json['createdBy'] as String?
     ..lastModifiedBy = json['lastModifiedBy'] as String?
     ..createdTime = json['createdTime'] as int?
     ..lastModifiedTime = json['lastModifiedTime'] as int?;
 }
 
-Map<String, dynamic> _$AuditDetailsToJson(AuditDetails instance) =>
+Map<String, dynamic> _$UpdateAuditDetailsToJson(UpdateAuditDetails instance) =>
     <String, dynamic>{
       'createdBy': instance.createdBy,
       'lastModifiedBy': instance.lastModifiedBy,

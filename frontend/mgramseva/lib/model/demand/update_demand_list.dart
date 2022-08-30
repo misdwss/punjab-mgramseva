@@ -1,21 +1,23 @@
 import 'package:json_annotation/json_annotation.dart';
-import 'package:mgramseva/model/bill/meter_demand_details.dart';
-part 'demand_list.g.dart';
+part 'update_demand_list.g.dart';
 
 @JsonSerializable()
-class DemandList {
+class UpdateDemandList {
   @JsonKey(name: "Demands")
-  List<Demands>? demands;
-  DemandList();
+  List<UpdateDemands>? demands;
+  UpdateDemandList();
 
-  factory DemandList.fromJson(Map<String, dynamic> json) =>
-      _$DemandListFromJson(json);
+  @JsonKey(name: "totalApplicablePenalty")
+  double? totalApplicablePenalty;
 
-  Map<String, dynamic> toJson() => _$DemandListToJson(this);
+  factory UpdateDemandList.fromJson(Map<String, dynamic> json) =>
+      _$UpdateDemandListFromJson(json);
+
+  Map<String, dynamic> toJson() => _$UpdateDemandListToJson(this);
 }
 
 @JsonSerializable()
-class Demands {
+class UpdateDemands {
   @JsonKey(name: "id")
   String? id;
   @JsonKey(name: "tenantId")
@@ -27,34 +29,34 @@ class Demands {
   @JsonKey(name: "businessService")
   String? businessService;
   @JsonKey(name: "payer")
-  Payer? payer;
+  UpdatePayer? payer;
   @JsonKey(name: "taxPeriodFrom")
   int? taxPeriodFrom;
   @JsonKey(name: "taxPeriodTo")
   int? taxPeriodTo;
   @JsonKey(name: "demandDetails")
-  List<DemandDetails>? demandDetails;
+  List<UpdateDemandDetails>? demandDetails;
   @JsonKey(name: "auditDetails")
-  AuditDetails? auditDetails;
+  UpdateAuditDetails? auditDetails;
   @JsonKey(name: "billExpiryTime")
   int? billExpiryTime;
   @JsonKey(name: "minimumAmountPayable")
   double? minimumAmountPayable;
   @JsonKey(name: "status")
   String? status;
-  @JsonKey(name: "meterReadings")
-  List<MeterReadings>? meterReadings;
   @JsonKey(name: "isPaymentCompleted")
   bool? isPaymentCompleted = false;
-  Demands();
-  factory Demands.fromJson(Map<String, dynamic> json) =>
-      _$DemandsFromJson(json);
+  @JsonKey(ignore: true)
+  double? totalApplicablePenalty;
+  UpdateDemands();
+  factory UpdateDemands.fromJson(Map<String, dynamic> json) =>
+      _$UpdateDemandsFromJson(json);
 
-  Map<String, dynamic> toJson() => _$DemandsToJson(this);
+  Map<String, dynamic> toJson() => _$UpdateDemandsToJson(this);
 }
 
 @JsonSerializable()
-class Payer {
+class UpdatePayer {
   @JsonKey(name: "uuid")
   String? uuid;
   @JsonKey(name: "id")
@@ -95,15 +97,15 @@ class Payer {
   bool? active;
   @JsonKey(name: "tenantId")
   String? tenantId;
-  Payer();
+  UpdatePayer();
 
-  factory Payer.fromJson(Map<String, dynamic> json) => _$PayerFromJson(json);
+  factory UpdatePayer.fromJson(Map<String, dynamic> json) => _$UpdatePayerFromJson(json);
 
-  Map<String, dynamic> toJson() => _$PayerToJson(this);
+  Map<String, dynamic> toJson() => _$UpdatePayerToJson(this);
 }
 
 @JsonSerializable()
-class DemandDetails {
+class UpdateDemandDetails {
   @JsonKey(name: "id")
   String? id;
   @JsonKey(name: "demandId")
@@ -115,19 +117,19 @@ class DemandDetails {
   @JsonKey(name: "collectionAmount")
   double? collectionAmount;
   @JsonKey(name: "auditDetails")
-  AuditDetails? auditDetails;
+  UpdateAuditDetails? auditDetails;
   @JsonKey(name: "tenantId")
   String? tenantId;
-  DemandDetails();
+  UpdateDemandDetails();
 
-  factory DemandDetails.fromJson(Map<String, dynamic> json) =>
-      _$DemandDetailsFromJson(json);
+  factory UpdateDemandDetails.fromJson(Map<String, dynamic> json) =>
+      _$UpdateDemandDetailsFromJson(json);
 
-  Map<String, dynamic> toJson() => _$DemandDetailsToJson(this);
+  Map<String, dynamic> toJson() => _$UpdateDemandDetailsToJson(this);
 }
 
 @JsonSerializable()
-class AuditDetails {
+class UpdateAuditDetails {
   @JsonKey(name: "createdBy")
   String? createdBy;
   @JsonKey(name: "lastModifiedBy")
@@ -136,9 +138,9 @@ class AuditDetails {
   int? createdTime;
   @JsonKey(name: "lastModifiedTime")
   int? lastModifiedTime;
-  AuditDetails();
-  factory AuditDetails.fromJson(Map<String, dynamic> json) =>
-      _$AuditDetailsFromJson(json);
+  UpdateAuditDetails();
+  factory UpdateAuditDetails.fromJson(Map<String, dynamic> json) =>
+      _$UpdateAuditDetailsFromJson(json);
 
-  Map<String, dynamic> toJson() => _$AuditDetailsToJson(this);
+  Map<String, dynamic> toJson() => _$UpdateAuditDetailsToJson(this);
 }
