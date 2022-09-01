@@ -327,7 +327,7 @@ public class WaterServiceImpl implements WaterService {
 		userService.updateUser(waterConnectionRequest, searchResult);
 		waterConnectionValidator.validateUpdate(waterConnectionRequest, searchResult, WCConstants.MODIFY_CONNECTION);
 		// call calculator service to generate the demand for one time fee
-		if (waterConnectionRequest.getWaterConnection().getPaymentType()
+		if (waterConnectionRequest.getWaterConnection().getPaymentType()!=null && waterConnectionRequest.getWaterConnection().getPaymentType()
 				.equalsIgnoreCase(WCConstants.PAYMENT_TYPE_ARREARS)) {
 			if ((waterConnectionRequest.getWaterConnection().getArrears() != null
 					&& waterConnectionRequest.getWaterConnection().getArrears().intValue() > 0)
@@ -336,7 +336,7 @@ public class WaterServiceImpl implements WaterService {
 				calculationService.calculateFeeAndGenerateDemand(waterConnectionRequest, property,false);
 			}
 
-		} else if (waterConnectionRequest.getWaterConnection().getPaymentType()
+		} else if (waterConnectionRequest.getWaterConnection().getPaymentType()!=null && waterConnectionRequest.getWaterConnection().getPaymentType()
 				.equalsIgnoreCase(WCConstants.PAYMENT_TYPE_ADVANCE)) {
 			if (waterConnectionRequest.getWaterConnection().getAdvance() != null) {
 				calculationService.calculateFeeAndGenerateDemand(waterConnectionRequest, property,true);
