@@ -142,7 +142,7 @@ public class WaterConnectionValidator {
 		if(response != null) {
 			List<Demand> demands = response.getDemands();
 			List<Boolean> data = new ArrayList<Boolean>();
-			if(demands != null) {
+			if(demands != null && !demands.isEmpty()) {
 				for (Demand demand : demands) {
 					if(!demand.isPaymentCompleted()) {
 						data.add(demand.isPaymentCompleted());
