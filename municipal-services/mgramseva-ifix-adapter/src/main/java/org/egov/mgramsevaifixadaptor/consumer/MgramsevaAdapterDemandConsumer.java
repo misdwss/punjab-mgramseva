@@ -78,36 +78,42 @@ public class MgramsevaAdapterDemandConsumer {
 			String eventType=null;
 			if(demandRequest != null) {
 				Collections.sort(demandRequest.getDemands(), getCreatedTimeComparatorForDemand());
-				if(demandRequest.getDemands().get(0).getStatus().toString().equalsIgnoreCase(Constants.CANCELLED)) {
-					BigDecimal totalAmount = new BigDecimal(0.00);
-					if(demandRequest.getDemands().get(0).getDemandDetails() != null) {
-						for(DemandDetail dd : demandRequest.getDemands().get(0).getDemandDetails()) {
-							totalAmount = totalAmount.add(dd.getTaxAmount());
-						}
-						totalAmount = totalAmount.negate();
-						int demandDetailsSize = demandRequest.getDemands().get(0).getDemandDetails().size();
-						for(int i=0; i<demandDetailsSize-1; i++) {
-							demandRequest.getDemands().get(0).getDemandDetails().remove(0);
-						}
-						demandRequest.getDemands().get(0).getDemandDetails().get(0).setTaxAmount(totalAmount);
-					}
-				}else {
 					
 					for(Demand demand : demandRequest.getDemands()) {
 						List<DemandDetail> demandDetails = demand.getDemandDetails();
-						for(DemandDetail demandDetail: demandDetails) {
-							
-							Integer count =  getCountByDemandDetailsId(demandDetail.getId());
-							
-							if(count != null && count > 1) {
-								demandDetails.remove(demandDetail);
+						if(demand.getStatus().toString().equalsIgnoreCase(Constants.CANCELLED) && demand.getIsPaymentCompleted()==false) {
+							BigDecimal totalAmount = new BigDecimal(0.00);
+							if(demandDetails != null) {
+								for(DemandDetail dd : demandDetails) {
+									totalAmount = totalAmount.add(dd.getTaxAmount()).subtract(dd.getCollectionAmount());
+								}
+								totalAmount = totalAmount.negate();
+								int demandDetailsSize = demandRequest.getDemands().get(0).getDemandDetails().size();
+								for(int i=1; i<demandDetailsSize-1; i++) {
+									demandRequest.getDemands().get(0).getDemandDetails().remove(i);
+								}
+								demandRequest.getDemands().get(0).getDemandDetails().get(0).setTaxAmount(totalAmount);
+							}
+						}
+						else {
+							if(demandDetails != null) {
+								for(DemandDetail demandDetail: demandDetails) {
+									
+									Integer count =  getCountByDemandDetailsId(demandDetail.getId());
+									
+									if(count != null && count > 1) {
+										demandDetails.remove(demandDetail);
+									}
+									
+								}
 							}
 							
 						}
+						
 					}
 					
 					log.info("demandRequest after: "+new Gson().toJson(demandRequest));
-				}
+				
 			}
 			if(demandRequest.getDemands().get(0).getBusinessService().contains(Constants.EXPENSE))
 			{
