@@ -78,19 +78,20 @@ public class MgramsevaAdapterDemandConsumer {
 			String eventType=null;
 			if(demandRequest != null) {
 				Collections.sort(demandRequest.getDemands(), getCreatedTimeComparatorForDemand());
-					
 					for(Demand demand : demandRequest.getDemands()) {
 						List<DemandDetail> demandDetails = demand.getDemandDetails();
 						if(demand.getStatus().toString().equalsIgnoreCase(Constants.CANCELLED) && demand.getIsPaymentCompleted()==false) {
-							BigDecimal totalAmount = new BigDecimal(0.00);
 							if(demandDetails != null) {
+								BigDecimal totalAmount = BigDecimal.ZERO;
 								for(DemandDetail dd : demandDetails) {
 									totalAmount = totalAmount.add(dd.getTaxAmount()).subtract(dd.getCollectionAmount());
 								}
 								totalAmount = totalAmount.negate();
 								int demandDetailsSize = demandRequest.getDemands().get(0).getDemandDetails().size();
-								for(int i=1; i<demandDetailsSize-1; i++) {
-									demandRequest.getDemands().get(0).getDemandDetails().remove(i);
+								if(demandDetailsSize > 1) {
+									for(int i=1; i<demandDetailsSize-1; i++) {
+										demandRequest.getDemands().get(0).getDemandDetails().remove(i);
+									}
 								}
 								demandRequest.getDemands().get(0).getDemandDetails().get(0).setTaxAmount(totalAmount);
 							}
