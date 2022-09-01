@@ -142,32 +142,35 @@ public class WaterConnectionValidator {
 		if(response != null) {
 			List<Demand> demands = response.getDemands();
 			List<Boolean> data = new ArrayList<Boolean>();
-			for (Demand demand : demands) {
-				if(!demand.isPaymentCompleted()) {
-					data.add(demand.isPaymentCompleted());
-				}
-			}
-			Boolean isArrear = false;
-			Boolean isAdvance = false;
-			
-			if(request.getWaterConnection().getAdvance()!=null && request.getWaterConnection().getAdvance().toString() == "0") {
-				isAdvance =  true;
-			}
-			if(request.getWaterConnection().getArrears()!=null && request.getWaterConnection().getArrears().toString() == "0") {
-				isArrear =  true;
-			}
-			if ((request.getWaterConnection().getStatus().equals(StatusEnum.INACTIVE) && demands.size() == data.size())
-					|| (searchResult.getArrears() != null && request.getWaterConnection().getArrears() == null
-							|| isArrear)|| (request.getWaterConnection().getStatus().equals(StatusEnum.INACTIVE) && demands.size() == data.size())
-					|| (searchResult.getAdvance() != null && request.getWaterConnection().getAdvance() == null
-					|| isAdvance)) {
+			if(demands != null) {
 				for (Demand demand : demands) {
-					demand.setStatus(org.egov.waterconnection.web.models.Demand.StatusEnum.CANCELLED);
+					if(!demand.isPaymentCompleted()) {
+						data.add(demand.isPaymentCompleted());
+					}
 				}
-				updateDemand(request.getRequestInfo(), demands);
+				Boolean isArrear = false;
+				Boolean isAdvance = false;
+				
+				if(request.getWaterConnection().getAdvance()!=null && request.getWaterConnection().getAdvance().toString() == "0") {
+					isAdvance =  true;
+				}
+				if(request.getWaterConnection().getArrears()!=null && request.getWaterConnection().getArrears().toString() == "0") {
+					isArrear =  true;
+				}
+				if ((request.getWaterConnection().getStatus().equals(StatusEnum.INACTIVE) && demands.size() == data.size())
+						|| (searchResult.getArrears() != null && request.getWaterConnection().getArrears() == null
+								|| isArrear)|| (request.getWaterConnection().getStatus().equals(StatusEnum.INACTIVE) && demands.size() == data.size())
+						|| (searchResult.getAdvance() != null && request.getWaterConnection().getAdvance() == null
+						|| isAdvance)) {
+					for (Demand demand : demands) {
+						demand.setStatus(org.egov.waterconnection.web.models.Demand.StatusEnum.CANCELLED);
+					}
+					updateDemand(request.getRequestInfo(), demands);
 
+				}
 			}
-		}
+			}
+			
 		
 	}
 /**
