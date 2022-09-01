@@ -355,6 +355,12 @@ class ConsumerProvider with ChangeNotifier {
           property.address.geoLocation?.latitude = null;
           property.address.geoLocation?.longitude = null;
           property.source = 'WS';
+          if(waterconnection.status == 'Inactive'){
+            waterconnection.paymentType = null;
+            waterconnection.penalty = null;
+            waterconnection.arrears = null;
+            waterconnection.advance = null;
+          }
           var result1 =
               await ConsumerRepository().updateProperty(property.toJson());
           var result2 = await ConsumerRepository()
