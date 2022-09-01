@@ -90,10 +90,10 @@ public class MgramsevaAdapterDemandConsumer {
 								int demandDetailsSize = demandRequest.getDemands().get(0).getDemandDetails().size();
 								if(demandDetailsSize > 1) {
 									for(int i=1; i<demandDetailsSize-1; i++) {
-										demandRequest.getDemands().get(0).getDemandDetails().remove(i);
+										demand.getDemandDetails().remove(i);
 									}
 								}
-								demandRequest.getDemands().get(0).getDemandDetails().get(0).setTaxAmount(totalAmount);
+								demand.getDemandDetails().get(0).setTaxAmount(totalAmount);
 							}
 						}
 						else {
