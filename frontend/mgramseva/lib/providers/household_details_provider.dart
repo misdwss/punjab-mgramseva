@@ -72,40 +72,44 @@ class HouseHoldProvider with ChangeNotifier {
 
     waterConnection?.mdmsData = await CommonProvider.getMdmsBillingService();
 
-    if(demandList == null) {
-      var demand = await BillingServiceRepository().fetchUpdateDemand({
-        "tenantId": data.tenantId,
-        "consumerCodes": data.connectionNo.toString(),
-        "isGetPenaltyEstimate": "true"
-      },
-          {
-            "GetBillCriteria": {
-              "tenantId": data.tenantId,
-              "billId": null,
-              "isGetPenaltyEstimate": true,
-              "consumerCodes": [data.connectionNo.toString()]
-            }
-          });
+    if(isfirstdemand) {
+      if (demandList == null) {
+        var demand = await BillingServiceRepository().fetchUpdateDemand({
+          "tenantId": data.tenantId,
+          "consumerCodes": data.connectionNo.toString(),
+          "isGetPenaltyEstimate": "true"
+        },
+            {
+              "GetBillCriteria": {
+                "tenantId": data.tenantId,
+                "billId": null,
+                "isGetPenaltyEstimate": true,
+                "consumerCodes": [data.connectionNo.toString()]
+              }
+            });
 
-      demandList = demand.demands;
-      updateDemandList?.totalApplicablePenalty = demand.totalApplicablePenalty;
-      demandList?.forEach((e){
-        e.totalApplicablePenalty = demand.totalApplicablePenalty;
-      });
+        demandList = demand.demands;
+        updateDemandList?.totalApplicablePenalty =
+            demand.totalApplicablePenalty;
+        demandList?.forEach((e) {
+          e.totalApplicablePenalty = demand.totalApplicablePenalty;
+        });
 
 
-
-      if (demandList != null && demandList.length > 0) {
-        demandList.sort((a, b) =>
-            b
-                .demandDetails!.first.auditDetails!.createdTime!
-                .compareTo(
-                a.demandDetails!.first.auditDetails!.createdTime!));
+        if (demandList != null && demandList.length > 0) {
+          demandList.sort((a, b) =>
+              b
+                  .demandDetails!.first.auditDetails!.createdTime!
+                  .compareTo(
+                  a.demandDetails!.first.auditDetails!.createdTime!));
+        }
       }
+      demandList = demandList?.where((element) => element.status != 'CANCELLED')
+          .toList();
+      waterConnection?.demands = demandList;
+      updateDemandList?.demands = demandList;
     }
-    demandList = demandList?.where((element) => element.status != 'CANCELLED').toList();
-    waterConnection?.demands = demandList;
-    updateDemandList?.demands = demandList;
+    else{}
 
     try {
       await BillingServiceRepository().fetchdDemand({
