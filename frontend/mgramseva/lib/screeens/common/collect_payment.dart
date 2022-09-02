@@ -31,6 +31,7 @@ import '../../model/demand/update_demand_list.dart';
 import '../../model/localization/language.dart';
 import '../../providers/common_provider.dart';
 import '../../utils/global_variables.dart';
+import '../../utils/models.dart';
 import '../../widgets/CustomDetails.dart';
 import '../../widgets/customAppbar.dart';
 
@@ -238,7 +239,7 @@ class _ConnectionPaymentViewState extends State<ConnectionPaymentView> {
   }
 
   Widget _buildViewDetails(FetchBill fetchBill) {
-    var penalty = CommonProvider.getPenalty(fetchBill.updateDemandList ?? []);
+    var penalty = widget.query['status'] != Constants.CONNECTION_STATUS.first ? CommonProvider.getPenalty(fetchBill.updateDemandList ?? []) : Penalty(0.0, '0', false);
     var isFirstDemand = CommonProvider.isFirstDemand(fetchBill.demandList ?? []);
     List res = [];
     num len = fetchBill.billDetails?.first.billAccountDetails?.length as num;
