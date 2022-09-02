@@ -12,6 +12,7 @@ import 'package:mgramseva/utils/error_logging.dart';
 import 'package:mgramseva/utils/global_variables.dart';
 import 'package:provider/provider.dart';
 
+import '../utils/constants.dart';
 import 'common_provider.dart';
 import 'fetch_bill_provider.dart';
 
@@ -49,7 +50,7 @@ class HouseHoldProvider with ChangeNotifier {
     }
   }
 
-  Future<void> fetchDemand(data,List<UpdateDemands>? demandList, [String? id]) async {
+  Future<void> fetchDemand(data,List<UpdateDemands>? demandList, [String? id, String? status]) async {
     var commonProvider = Provider.of<CommonProvider>(
         navigatorKey.currentContext!,
         listen: false);
@@ -72,7 +73,7 @@ class HouseHoldProvider with ChangeNotifier {
 
     waterConnection?.mdmsData = await CommonProvider.getMdmsBillingService();
 
-    if(isfirstdemand) {
+    if(status != Constants.CONNECTION_STATUS.first) {
       if (demandList == null) {
         var demand = await BillingServiceRepository().fetchUpdateDemand({
           "tenantId": data.tenantId,
