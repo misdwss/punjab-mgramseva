@@ -80,21 +80,28 @@ public class MgramsevaAdapterDemandConsumer {
 				Collections.sort(demandRequest.getDemands(), getCreatedTimeComparatorForDemand());
 					for(Demand demand : demandRequest.getDemands()) {
 						List<DemandDetail> demandDetails = demand.getDemandDetails();
-						if(demand.getStatus().toString().equalsIgnoreCase(Constants.CANCELLED) && demand.getIsPaymentCompleted()==false) {
-							if(demandDetails != null) {
-								BigDecimal totalAmount = BigDecimal.ZERO;
-								for(DemandDetail dd : demandDetails) {
-									totalAmount = totalAmount.add(dd.getTaxAmount()).subtract(dd.getCollectionAmount());
-								}
-								totalAmount = totalAmount.negate();
-								int demandDetailsSize = demandRequest.getDemands().get(0).getDemandDetails().size();
-								if(demandDetailsSize > 1) {
-									for(int i=1; i<demandDetailsSize-1; i++) {
-										demand.getDemandDetails().remove(i);
+						if(demand.getStatus().toString().equalsIgnoreCase(Constants.CANCELLED)) {
+							
+							if(!demand.getIsPaymentCompleted().booleanValue()) {
+								if(demandDetails != null) {
+									BigDecimal totalAmount = BigDecimal.ZERO;
+									for(DemandDetail dd : demandDetails) {
+										totalAmount = totalAmount.add(dd.getTaxAmount()).subtract(dd.getCollectionAmount());
 									}
+									totalAmount = totalAmount.negate();
+									int demandDetailsSize = demandRequest.getDemands().get(0).getDemandDetails().size();
+									if(demandDetailsSize > 1) {
+										for(int i=1; i<demandDetailsSize-1; i++) {
+											demand.getDemandDetails().remove(i);
+										}
+									}
+									demand.getDemandDetails().get(0).setTaxAmount(totalAmount);
 								}
-								demand.getDemandDetails().get(0).setTaxAmount(totalAmount);
 							}
+							else {
+								demandRequest.getDemands().remove(demand);
+							}
+							
 						}
 						if(demand.getStatus().toString().equalsIgnoreCase(Constants.ACTIVE)){
 							if(demandDetails != null) {
