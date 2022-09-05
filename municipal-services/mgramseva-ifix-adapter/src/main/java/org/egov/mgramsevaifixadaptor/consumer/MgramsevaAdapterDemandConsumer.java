@@ -89,7 +89,7 @@ public class MgramsevaAdapterDemandConsumer {
 										totalAmount = totalAmount.add(dd.getTaxAmount()).subtract(dd.getCollectionAmount());
 									}
 									totalAmount = totalAmount.negate();
-									int demandDetailsSize = demandRequest.getDemands().get(0).getDemandDetails().size();
+									int demandDetailsSize = demand.getDemandDetails().size();
 									if(demandDetailsSize > 1) {
 										for(int i=1; i<demandDetailsSize-1; i++) {
 											demand.getDemandDetails().remove(i);
