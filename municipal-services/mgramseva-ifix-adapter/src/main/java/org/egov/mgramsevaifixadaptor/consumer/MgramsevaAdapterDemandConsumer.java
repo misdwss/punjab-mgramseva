@@ -79,7 +79,10 @@ public class MgramsevaAdapterDemandConsumer {
 			String eventType=null;
 			if(demandRequest != null) {
 				Collections.sort(demandRequest.getDemands(), getCreatedTimeComparatorForDemand());
-					for(Demand demand : demandRequest.getDemands()) {
+			    Gson gson = new Gson();
+				DemandRequest demRequest = gson.fromJson(gson.toJson(demandRequest), DemandRequest.class);
+
+					for(Demand demand : demRequest.getDemands()) {
 						List<DemandDetail> demandDetails = demand.getDemandDetails();
 						if(demand.getStatus().toString().equalsIgnoreCase(Constants.CANCELLED) && demand.getIsPaymentCompleted() == false) {
 							if(demandDetails != null) {
@@ -114,7 +117,7 @@ public class MgramsevaAdapterDemandConsumer {
 							
 						}
 						else {
-							demandDetails.removeAll(demandDetails);
+							demandRequest.getDemands().remove(demand);
 						}
 					}
 					
