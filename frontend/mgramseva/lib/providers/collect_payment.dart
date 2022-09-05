@@ -84,35 +84,38 @@ class CollectPaymentProvider with ChangeNotifier {
         }
       }
 
-      if(updateDemandList == null) {
-        var demand = await BillingServiceRepository().fetchUpdateDemand({
-          "tenantId": query['tenantId'],
-          "consumerCodes": query['consumerCode'],
-          "isGetPenaltyEstimate": "true"
-        },
-            {
-              "GetBillCriteria": {
-                "tenantId": query['tenantId'],
-                "billId": null,
-                "isGetPenaltyEstimate": true,
-                "consumerCodes": [query['consumerCode']]
-              }
-            });
-        updateDemandList = demand.demands;
-        updateDemand?.totalApplicablePenalty = demand.totalApplicablePenalty;
-        updateDemandList?.forEach((e){
-          e.totalApplicablePenalty = demand.totalApplicablePenalty;
-        });
+      if (query['status'] != Constants.CONNECTION_STATUS.first){
+        if (updateDemandList == null) {
+          var demand = await BillingServiceRepository().fetchUpdateDemand({
+            "tenantId": query['tenantId'],
+            "consumerCodes": query['consumerCode'],
+            "isGetPenaltyEstimate": "true"
+          },
+              {
+                "GetBillCriteria": {
+                  "tenantId": query['tenantId'],
+                  "billId": null,
+                  "isGetPenaltyEstimate": true,
+                  "consumerCodes": [query['consumerCode']]
+                }
+              });
+          updateDemandList = demand.demands;
+          updateDemand?.totalApplicablePenalty = demand.totalApplicablePenalty;
+          updateDemandList?.forEach((e) {
+            e.totalApplicablePenalty = demand.totalApplicablePenalty;
+          });
 
 
-        if (updateDemandList != null && updateDemandList.length > 0) {
-          updateDemandList.sort((a, b) =>
-              b
-                  .demandDetails!.first.auditDetails!.createdTime!
-                  .compareTo(
-                  a.demandDetails!.first.auditDetails!.createdTime!));
+          if (updateDemandList != null && updateDemandList.length > 0) {
+            updateDemandList.sort((a, b) =>
+                b
+                    .demandDetails!.first.auditDetails!.createdTime!
+                    .compareTo(
+                    a.demandDetails!.first.auditDetails!.createdTime!));
+          }
         }
-      }
+    }
+      else{}
 
       if (paymentDetails != null) {
         if(mdmsData == null){

@@ -24,10 +24,11 @@ import '../../widgets/CustomDetails.dart';
 
 class NewConsumerBill extends StatefulWidget {
   final String? mode;
+  final String? status;
   final WaterConnection? waterConnection;
   final List<Demands> demandList;
 
-  const NewConsumerBill(this.mode, this.waterConnection, this.demandList);
+  const NewConsumerBill(this.mode, this.status, this.waterConnection, this.demandList);
   @override
   State<StatefulWidget> createState() {
     return NewConsumerBillState();
@@ -410,7 +411,8 @@ class NewConsumerBillState extends State<NewConsumerBill> {
       'businessService': bill.first.businessService,
       'tenantId': commonProvider.userDetails?.selectedtenant?.code,
       'demandList' : widget.demandList,
-      'fetchBill' : bill
+      'fetchBill' : bill,
+      'status': widget.status
     };
     Navigator.pushNamed(context, Routes.HOUSEHOLD_DETAILS_COLLECT_PAYMENT,
         arguments: query);

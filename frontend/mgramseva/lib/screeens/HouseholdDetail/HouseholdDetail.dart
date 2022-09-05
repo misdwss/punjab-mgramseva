@@ -3,11 +3,8 @@ import 'package:mgramseva/components/HouseConnectionandBill/ConsumerBillPayments
 import 'package:mgramseva/components/HouseConnectionandBill/GenerateNewBill.dart';
 import 'package:mgramseva/components/HouseConnectionandBill/HouseConnectionDetailCard.dart';
 import 'package:mgramseva/components/HouseConnectionandBill/NewConsumerBill.dart';
-import 'package:mgramseva/model/bill/billing.dart';
-import 'package:mgramseva/model/common/demand.dart';
 import 'package:mgramseva/model/connection/water_connection.dart';
 import 'package:mgramseva/model/demand/demand_list.dart';
-import 'package:mgramseva/model/demand/update_demand_list.dart';
 import 'package:mgramseva/providers/household_details_provider.dart';
 import 'package:mgramseva/routers/Routers.dart';
 import 'package:mgramseva/utils/constants.dart';
@@ -26,9 +23,10 @@ import 'package:provider/provider.dart';
 class HouseholdDetail extends StatefulWidget {
   final String? id;
   final String? mode;
+  final String? status;
   final WaterConnection? waterconnection;
 
-  HouseholdDetail({Key? key, this.id, this.mode, this.waterconnection});
+  HouseholdDetail({Key? key, this.id, this.mode, this.status, this.waterconnection});
   @override
   State<StatefulWidget> createState() {
     return _HouseholdDetailState();
@@ -44,7 +42,7 @@ class _HouseholdDetailState extends State<HouseholdDetail> {
   afterViewBuild() {
     Provider.of<HouseHoldProvider>(context, listen: false)
       ..isVisible = false
-      ..fetchDemand(widget.waterconnection, widget.waterconnection?.demands, widget.id);
+      ..fetchDemand(widget.waterconnection, widget.waterconnection?.demands, widget.id, widget.status);
   }
 
   buildDemandView(DemandList data) {
@@ -74,7 +72,7 @@ class _HouseholdDetailState extends State<HouseholdDetail> {
                         'Metered' &&
                     houseHoldProvider.isfirstdemand == false)
             ? Text("")
-            : NewConsumerBill(widget.mode, houseHoldProvider.waterConnection, data.demands!),
+            : NewConsumerBill(widget.mode,widget.status, houseHoldProvider.waterConnection, data.demands!),
         ConsumerBillPayments(houseHoldProvider.waterConnection)
       ],
     );
