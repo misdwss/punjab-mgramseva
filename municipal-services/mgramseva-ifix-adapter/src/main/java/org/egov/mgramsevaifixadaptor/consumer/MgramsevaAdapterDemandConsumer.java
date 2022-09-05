@@ -82,7 +82,10 @@ public class MgramsevaAdapterDemandConsumer {
 						List<DemandDetail> demandDetails = demand.getDemandDetails();
 						if(demand.getStatus().toString().equalsIgnoreCase(Constants.CANCELLED)) {
 							
-							if(!demand.getIsPaymentCompleted().booleanValue()) {
+							if(demand.getIsPaymentCompleted().booleanValue()) {
+								demandRequest.getDemands().remove(demand);
+							}
+							else {
 								if(demandDetails != null) {
 									BigDecimal totalAmount = BigDecimal.ZERO;
 									for(DemandDetail dd : demandDetails) {
@@ -97,9 +100,6 @@ public class MgramsevaAdapterDemandConsumer {
 									}
 									demand.getDemandDetails().get(0).setTaxAmount(totalAmount);
 								}
-							}
-							else {
-								demandRequest.getDemands().remove(demand);
 							}
 							
 						}
