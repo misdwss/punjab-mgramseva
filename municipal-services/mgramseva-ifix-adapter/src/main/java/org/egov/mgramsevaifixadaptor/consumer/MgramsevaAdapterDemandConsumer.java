@@ -79,10 +79,8 @@ public class MgramsevaAdapterDemandConsumer {
 			String eventType=null;
 			if(demandRequest != null) {
 				Collections.sort(demandRequest.getDemands(), getCreatedTimeComparatorForDemand());
-			    Gson gson = new Gson();
-				DemandRequest demRequest = gson.fromJson(gson.toJson(demandRequest), DemandRequest.class);
-
-					for(Demand demand : demRequest.getDemands()) {
+				List<Demand> demandListToRemove = new ArrayList<>();
+					for(Demand demand : demandRequest.getDemands()) {
 						List<DemandDetail> demandDetails = demand.getDemandDetails();
 						if(demand.getStatus().toString().equalsIgnoreCase(Constants.CANCELLED) && demand.getIsPaymentCompleted() == false) {
 							if(demandDetails != null) {
@@ -117,10 +115,10 @@ public class MgramsevaAdapterDemandConsumer {
 							
 						}
 						else {
-							demandRequest.getDemands().remove(demand);
+							demandListToRemove.add(demand);
 						}
 					}
-					
+					demandRequest.getDemands().removeAll(demandListToRemove);
 					log.info("demandRequest after: "+new Gson().toJson(demandRequest));
 				
 			}
