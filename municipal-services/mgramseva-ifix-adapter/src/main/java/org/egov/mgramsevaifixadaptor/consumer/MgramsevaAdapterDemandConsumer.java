@@ -86,12 +86,16 @@ public class MgramsevaAdapterDemandConsumer {
 								demandRequest.getDemands().remove(demand);
 							}
 							else {
+								log.info("calling else");
+
 								if(demandDetails != null) {
 									BigDecimal totalAmount = BigDecimal.ZERO;
 									for(DemandDetail dd : demandDetails) {
 										totalAmount = totalAmount.add(dd.getTaxAmount()).subtract(dd.getCollectionAmount());
 									}
 									totalAmount = totalAmount.negate();
+									log.info("total amount: "+totalAmount);
+
 									int demandDetailsSize = demand.getDemandDetails().size();
 									if(demandDetailsSize > 1) {
 										for(int i=1; i<demandDetailsSize-1; i++) {
