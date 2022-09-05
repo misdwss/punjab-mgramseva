@@ -96,7 +96,7 @@ public class MgramsevaAdapterDemandConsumer {
 								demand.getDemandDetails().get(0).setTaxAmount(totalAmount);
 							}
 						}
-						else {
+						if(demand.getStatus().toString().equalsIgnoreCase(Constants.ACTIVE)){
 							if(demandDetails != null) {
 								for(DemandDetail demandDetail: demandDetails) {
 									
