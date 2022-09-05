@@ -80,34 +80,25 @@ public class MgramsevaAdapterDemandConsumer {
 				Collections.sort(demandRequest.getDemands(), getCreatedTimeComparatorForDemand());
 					for(Demand demand : demandRequest.getDemands()) {
 						List<DemandDetail> demandDetails = demand.getDemandDetails();
-						if(demand.getStatus().toString().equalsIgnoreCase(Constants.CANCELLED)) {
-							
-							if(demand.getIsPaymentCompleted().booleanValue()) {
-								demandRequest.getDemands().remove(demand);
-							}
-							else {
-								log.info("calling else");
-
-								if(demandDetails != null) {
-									BigDecimal totalAmount = BigDecimal.ZERO;
-									for(DemandDetail dd : demandDetails) {
-										totalAmount = totalAmount.add(dd.getTaxAmount()).subtract(dd.getCollectionAmount());
-									}
-									totalAmount = totalAmount.negate();
-									log.info("total amount: "+totalAmount);
-
-									int demandDetailsSize = demand.getDemandDetails().size();
-									if(demandDetailsSize > 1) {
-										for(int i=1; i<demandDetailsSize-1; i++) {
-											demand.getDemandDetails().remove(i);
-										}
-									}
-									demand.getDemandDetails().get(0).setTaxAmount(totalAmount);
+						if(demand.getStatus().toString().equalsIgnoreCase(Constants.CANCELLED) && demand.getIsPaymentCompleted() == false) {
+							if(demandDetails != null) {
+								BigDecimal totalAmount = BigDecimal.ZERO;
+								for(DemandDetail dd : demandDetails) {
+									totalAmount = totalAmount.add(dd.getTaxAmount()).subtract(dd.getCollectionAmount());
 								}
+								totalAmount = totalAmount.negate();
+								log.info("totalAmount: "+totalAmount);
+
+								int demandDetailsSize = demandRequest.getDemands().get(0).getDemandDetails().size();
+								if(demandDetailsSize > 1) {
+									for(int i=1; i<demandDetailsSize-1; i++) {
+										demand.getDemandDetails().remove(i);
+									}
+								}
+								demand.getDemandDetails().get(0).setTaxAmount(totalAmount);
 							}
-							
 						}
-						if(demand.getStatus().toString().equalsIgnoreCase(Constants.ACTIVE)){
+						else if(demand.getStatus().toString().equalsIgnoreCase(Constants.ACTIVE)){
 							if(demandDetails != null) {
 								for(DemandDetail demandDetail: demandDetails) {
 									
@@ -121,7 +112,9 @@ public class MgramsevaAdapterDemandConsumer {
 							}
 							
 						}
-						
+						else {
+							demandRequest.getDemands().remove(demand);
+						}
 					}
 					
 					log.info("demandRequest after: "+new Gson().toJson(demandRequest));
