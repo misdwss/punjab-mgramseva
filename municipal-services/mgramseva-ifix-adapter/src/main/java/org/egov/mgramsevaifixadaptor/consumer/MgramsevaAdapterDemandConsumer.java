@@ -70,6 +70,7 @@ public class MgramsevaAdapterDemandConsumer {
 	public void listenUpdate(final HashMap<String, Object> record, @Header(KafkaHeaders.RECEIVED_TOPIC) String topic) throws Exception {
 		ObjectMapper mapper = new ObjectMapper();
 		DemandRequest demandRequest=null;
+
 		log.info("update demand topic");
 		try {
 			log.debug("Consuming record: " + record);
@@ -78,7 +79,9 @@ public class MgramsevaAdapterDemandConsumer {
 			String eventType=null;
 			if(demandRequest != null) {
 				Collections.sort(demandRequest.getDemands(), getCreatedTimeComparatorForDemand());
-					for(Demand demand : demandRequest.getDemands()) {
+				DemandRequest demRequest = new DemandRequest();
+				demRequest = demandRequest;
+					for(Demand demand : demRequest.getDemands()) {
 						List<DemandDetail> demandDetails = demand.getDemandDetails();
 						if(demand.getStatus().toString().equalsIgnoreCase(Constants.CANCELLED) && demand.getIsPaymentCompleted() == false) {
 							if(demandDetails != null) {
@@ -89,7 +92,7 @@ public class MgramsevaAdapterDemandConsumer {
 								totalAmount = totalAmount.negate();
 								log.info("totalAmount: "+totalAmount);
 
-								int demandDetailsSize = demandRequest.getDemands().get(0).getDemandDetails().size();
+								int demandDetailsSize = demandDetails.size();
 								if(demandDetailsSize > 1) {
 									for(int i=1; i<demandDetailsSize-1; i++) {
 										demand.getDemandDetails().remove(i);
