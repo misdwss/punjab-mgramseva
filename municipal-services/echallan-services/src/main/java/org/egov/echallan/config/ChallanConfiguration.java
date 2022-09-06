@@ -259,6 +259,12 @@ public class ChallanConfiguration {
 
 	@Value("${egov.today.collection.link}")
 	private String todayCollectionLink;
-	
-	
+
+    @Value("${mgramseva.host}")
+    private String mgramsevaHost;
+
+    @Value("${mgramseva.billing.service.search.bill.endpoint}")
+    private String mgramsevaBillingServiceSearchBillEndpoint;
+
+
 }
