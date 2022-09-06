@@ -93,7 +93,7 @@ public class MgramsevaAdapterDemandConsumer {
 
 								int demandDetailsSize = demandDetails.size();
 								if(demandDetailsSize > 1) {
-									for(int i=1; i<demandDetailsSize-1; i++) {
+									for(int i=1; i<demandDetailsSize; i++) {
 										demand.getDemandDetails().remove(i);
 									}
 								}
