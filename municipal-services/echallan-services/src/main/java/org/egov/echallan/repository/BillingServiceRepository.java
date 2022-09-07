@@ -28,8 +28,8 @@ public class BillingServiceRepository {
                                                 RequestInfo requestInfo) {
         BillResponseDTO billResponseDTO = null;
 
-        String url = applicationConfiguration.getMgramsevaHost()
-                + applicationConfiguration.getMgramsevaBillingServiceSearchBillEndpoint();
+        String url = applicationConfiguration.getBillingServiceHost()
+                + applicationConfiguration.getBillingServiceSearchBillEndpoint();
 
         String urlTemplate = UriComponentsBuilder.fromHttpUrl(url)
                 .queryParam(MGRAMSEVA_TENANT_ID, tenantId)
