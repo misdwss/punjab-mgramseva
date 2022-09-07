@@ -8,12 +8,7 @@ import java.time.Month;
 import java.time.YearMonth;
 import java.time.ZoneId;
 import java.time.temporal.TemporalAdjusters;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import javax.validation.Valid;
 
@@ -26,6 +21,8 @@ import org.egov.echallan.model.Challan.StatusEnum;
 import org.egov.echallan.model.ChallanRequest;
 import org.egov.echallan.model.LastMonthSummary;
 import org.egov.echallan.model.SearchCriteria;
+import org.egov.echallan.model.biiling.service.BillResponseDTO;
+import org.egov.echallan.repository.BillingServiceRepository;
 import org.egov.echallan.repository.ChallanRepository;
 import org.egov.echallan.util.CommonUtils;
 import org.egov.echallan.validator.ChallanValidator;
@@ -35,6 +32,7 @@ import org.egov.echallan.web.models.user.UserDetailResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
 
 @Service
@@ -42,6 +40,9 @@ public class ChallanService {
 
     @Autowired
     private EnrichmentService enrichmentService;
+
+    @Autowired
+	private BillingServiceRepository billingServiceRepository;
 
     private UserService userService;
     
@@ -114,7 +115,7 @@ public class ChallanService {
 	            return Collections.emptyList();
 	        }
 	        enrichmentService.enrichSearchCriteriaWithOwnerids(criteria,userDetailResponse);
-	        challans = repository.getChallans(criteria, finalData);
+	        challans = repository.getChallans(criteria, finalData, requestInfo);
 	        if(CollectionUtils.isEmpty(challans)){
 	            return Collections.emptyList();
 	        }
@@ -125,7 +126,7 @@ public class ChallanService {
 	    }
 	 
 	 public List<Challan> getChallansWithOwnerInfo(SearchCriteria criteria,RequestInfo requestInfo, Map<String, String> finalData){
-		 List<Challan> challans = repository.getChallans(criteria, finalData);
+		 List<Challan> challans = repository.getChallans(criteria, finalData, requestInfo);
 	        if(challans.isEmpty())
 	            return Collections.emptyList();
 	        challans = enrichmentService.enrichChallanSearch(challans,criteria,requestInfo);
@@ -142,7 +143,7 @@ public class ChallanService {
 	        // When the business service it self is changed 
 //	        criteria.setBusinessService(request.getChallan().getBusinessService());
 
-	        List<Challan> challans = repository.getChallans(criteria, finalData);
+	        List<Challan> challans = repository.getChallans(criteria, finalData, request.getRequestInfo());
 	        if(challans.isEmpty())
 	            return Collections.emptyList();
 	        challans = enrichmentService.enrichChallanSearch(challans,criteria,request.getRequestInfo());
