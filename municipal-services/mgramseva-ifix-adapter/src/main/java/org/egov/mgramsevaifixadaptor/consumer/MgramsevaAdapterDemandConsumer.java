@@ -88,7 +88,10 @@ public class MgramsevaAdapterDemandConsumer {
 								for(DemandDetail dd : demandDetails) {
 									totalAmount = totalAmount.add(dd.getTaxAmount()).subtract(dd.getCollectionAmount());
 								}
-								if(totalAmount.compareTo(BigDecimal.ZERO) > 0){
+								if(totalAmount.compareTo(BigDecimal.ZERO) == 0){
+									demandListToRemove.add(demand);
+								}
+								else {
 									totalAmount = totalAmount.negate();
 									log.info("totalAmount: "+totalAmount);
 
@@ -99,9 +102,6 @@ public class MgramsevaAdapterDemandConsumer {
 										}
 									}
 									demand.getDemandDetails().get(0).setTaxAmount(totalAmount);
-								}
-								else {
-									demandListToRemove.add(demand);
 								}
 							
 							}
