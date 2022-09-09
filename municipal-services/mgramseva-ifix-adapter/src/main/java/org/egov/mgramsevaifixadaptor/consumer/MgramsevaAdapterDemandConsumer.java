@@ -125,6 +125,9 @@ public class MgramsevaAdapterDemandConsumer {
 						}
 					}
 					demandRequest.getDemands().removeAll(demandListToRemove);
+					if(demandRequest.getDemands().isEmpty()) {
+						return;
+					}
 					log.info("demandRequest after: "+new Gson().toJson(demandRequest));
 				
 			}
