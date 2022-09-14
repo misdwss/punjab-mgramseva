@@ -1,6 +1,11 @@
 # Change log
 All notable changes to this module will be documented in this file.
 
+## 1.6.0 - 2022-09-13
+
+- Addition of advance and penalty on consumer create
+- Changes in update consumer
+
 ## 1.5.2 - 2022-02-02
 
 - Fixes to revenueDashboard Service
