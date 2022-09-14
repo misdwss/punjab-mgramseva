@@ -1,7 +1,7 @@
 # Change log
 All notable changes to this module will be documented in this file.
 
-## 1.5.0 - 2022-09-13
+## 1.5.0-beta - 2022-09-13
 
 - Penalty application after due date based on the penalty configured
 - Advance payment allowed in collect payment screen
