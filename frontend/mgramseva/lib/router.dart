@@ -260,15 +260,18 @@ class router {
       case Routes.HOUSEHOLD_DETAILS:
         String? id;
         String? mode;
+        String? status;
         if (settings.arguments != null) {
           id = ((settings.arguments as Map)['waterconnections']
                   as WaterConnection)
               .connectionNo;
           mode = (settings.arguments as Map)['mode'];
+          status = (settings.arguments as Map)['status'];
         } else {
           if (queryValidator(Routes.HOUSEHOLD_DETAILS, query)) {
             id = query['applicationNo'];
             mode = query['mode'];
+            status = query['status'];
           } else {
             return pageNotAvailable;
           }
@@ -277,13 +280,14 @@ class router {
             builder: (_) => HouseholdDetail(
                 id: id,
                 mode: mode,
+                status: status,
                 waterconnection: settings.arguments != null
                     ? (settings.arguments as Map)['waterconnections']
                         as WaterConnection
                     : null),
             settings: RouteSettings(
                 name:
-                    '${Routes.HOUSEHOLD_DETAILS}?applicationNo=$id&mode=$mode'));
+                    '${Routes.HOUSEHOLD_DETAILS}?applicationNo=$id&mode=$mode&status=$status'));
 
       case Routes.DASHBOARD:
         int? tabIndex;
