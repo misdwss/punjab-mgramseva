@@ -164,8 +164,8 @@ public class WaterServiceImpl implements WaterService {
 		enrichmentService.postStatusEnrichment(waterConnectionRequest);
 		waterDao.saveWaterConnection(waterConnectionRequest);
 		
-		if (waterConnectionRequest.getWaterConnection().getPaymentType()!=null && waterConnectionRequest.getWaterConnection().getPaymentType()
-				.equalsIgnoreCase(WCConstants.PAYMENT_TYPE_ARREARS)) {
+		if (null != waterConnectionRequest.getWaterConnection() && null != waterConnectionRequest.getWaterConnection().getPaymentType()
+			&& WCConstants.PAYMENT_TYPE_ARREARS.equalsIgnoreCase(waterConnectionRequest.getWaterConnection().getPaymentType())) {
 			if ((waterConnectionRequest.getWaterConnection().getArrears() != null
 					&& waterConnectionRequest.getWaterConnection().getArrears().intValue() > 0)
 					|| (waterConnectionRequest.getWaterConnection().getPenalty() != null
@@ -173,8 +173,8 @@ public class WaterServiceImpl implements WaterService {
 				calculationService.calculateFeeAndGenerateDemand(waterConnectionRequest, property, false);
 			}
 
-		} else if (waterConnectionRequest.getWaterConnection().getPaymentType()!=null && waterConnectionRequest.getWaterConnection().getPaymentType()
-				.equalsIgnoreCase(WCConstants.PAYMENT_TYPE_ADVANCE)) {
+		} else if (null != waterConnectionRequest.getWaterConnection() && null != waterConnectionRequest.getWaterConnection().getPaymentType()
+				&& WCConstants.PAYMENT_TYPE_ADVANCE.equalsIgnoreCase(waterConnectionRequest.getWaterConnection().getPaymentType())) {
 			if (waterConnectionRequest.getWaterConnection().getAdvance() != null) {
 				calculationService.calculateFeeAndGenerateDemand(waterConnectionRequest, property, true);
 			}
@@ -253,16 +253,17 @@ public class WaterServiceImpl implements WaterService {
 		// Call workflow
 //		wfIntegrator.callWorkFlow(waterConnectionRequest, property);
 		// call calculator service to generate the demand for one time fee
-		if (waterConnectionRequest.getWaterConnection().getPaymentType()!=null && waterConnectionRequest.getWaterConnection().getPaymentType()
-				.equalsIgnoreCase(WCConstants.PAYMENT_TYPE_ARREARS)) {
+		if (null != waterConnectionRequest.getWaterConnection() &&
+				null != waterConnectionRequest.getWaterConnection().getPaymentType() && 
+						WCConstants.PAYMENT_TYPE_ARREARS.equalsIgnoreCase(waterConnectionRequest.getWaterConnection().getPaymentType())) {
 			if ((waterConnectionRequest.getWaterConnection().getArrears() != null
 					&& waterConnectionRequest.getWaterConnection().getArrears().intValue() > 0)
 					|| (waterConnectionRequest.getWaterConnection().getPenalty() != null
 							&& waterConnectionRequest.getWaterConnection().getPenalty().intValue() > 0)) {
 				calculationService.calculateFeeAndGenerateDemand(waterConnectionRequest, property, false);
 			}
-		} else if (waterConnectionRequest.getWaterConnection().getPaymentType()!=null && waterConnectionRequest.getWaterConnection().getPaymentType()
-				.equalsIgnoreCase(WCConstants.PAYMENT_TYPE_ADVANCE)) {
+		} else if (null != waterConnectionRequest.getWaterConnection() && null != waterConnectionRequest.getWaterConnection().getPaymentType() && WCConstants.PAYMENT_TYPE_ADVANCE.
+				equalsIgnoreCase(waterConnectionRequest.getWaterConnection().getPaymentType())) {
 			if (waterConnectionRequest.getWaterConnection().getAdvance() != null) {
 				calculationService.calculateFeeAndGenerateDemand(waterConnectionRequest, property, true);
 			}

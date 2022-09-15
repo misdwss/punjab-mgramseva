@@ -153,19 +153,19 @@ public class PayService {
 	private BigDecimal calculateApplicablePenaltyAmount(BigDecimal waterCharge, String type, String subType, BigDecimal rate,
 			BigDecimal flatAmt, BigDecimal amount, int demandListSize) {
 		BigDecimal applicablePenalty = BigDecimal.ZERO;
-		if(type.equalsIgnoreCase("FIXED") && rate != null) {
-			if(subType.equalsIgnoreCase(WSCalculationConstant.PENALTY_CURRENT_MONTH)
-					|| subType.equalsIgnoreCase(WSCalculationConstant.PENALTY_OUTSTANDING)) {
+		if(WSCalculationConstant.FIXED.equalsIgnoreCase(type) && rate != null) {
+			if(WSCalculationConstant.PENALTY_CURRENT_MONTH.equalsIgnoreCase(subType)
+					|| WSCalculationConstant.PENALTY_OUTSTANDING.equalsIgnoreCase(subType)) {
 				applicablePenalty = waterCharge.multiply(rate.divide(WSCalculationConstant.HUNDRED));
 
 			}
 
 		}
-		if(type.equalsIgnoreCase("FLAT") && amount != null) {
-			if(subType.equalsIgnoreCase(WSCalculationConstant.PENALTY_CURRENT_MONTH)) {
+		if(WSCalculationConstant.FLAT.equalsIgnoreCase(type) && amount != null) {
+			if(WSCalculationConstant.PENALTY_CURRENT_MONTH.equalsIgnoreCase(subType)) {
 				applicablePenalty = amount;
 			}
-			if(subType.equalsIgnoreCase(WSCalculationConstant.PENALTY_OUTSTANDING)) {
+			if(WSCalculationConstant.PENALTY_OUTSTANDING.equalsIgnoreCase(subType)) {
 				applicablePenalty = amount.multiply(new BigDecimal(demandListSize));
 
 			}

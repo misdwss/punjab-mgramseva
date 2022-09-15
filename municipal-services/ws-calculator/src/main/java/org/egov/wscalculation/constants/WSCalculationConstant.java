@@ -84,6 +84,10 @@ public class WSCalculationConstant {
 
 	public static final String PENALTY_CURRENT_MONTH = "currentMonth";
 
+	public static final String FIXED = "FIXED";
+
+	public static final String FLAT = "FLAT";
+
 
 	public static final String WS_WATER_CESS = "WS_WATER_CESS";
 
