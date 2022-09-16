@@ -66,7 +66,7 @@ public class DemandService {
                 for(Demand demand : demands) {
                     if(demand.getAdditionalDetails() != null) {
                         JsonNode additionalDetails = mapper.convertValue(demand.getAdditionalDetails(), JsonNode.class);
-                        if(additionalDetails.get(CHALLAN_NO_ADDITIONAL_FIELD_NAME) != null) {
+                        if(additionalDetails != null && additionalDetails.get(CHALLAN_NO_ADDITIONAL_FIELD_NAME) != null) {
                             String applicationNumberFromDemand =
                                     additionalDetails.get(CHALLAN_NO_ADDITIONAL_FIELD_NAME).asText();
                             applicationNumbersFromDemands.add(applicationNumberFromDemand);
@@ -77,10 +77,12 @@ public class DemandService {
 
             for(Calculation calculation : calculations)
             {
-                if(!applicationNumbersFromDemands.contains(calculation.getChallan().getChallanNo()))
-                    createCalculations.add(calculation);
-                else
-                    updateCalculations.add(calculation);
+                if (calculation.getChallan() != null) {
+                    if (!applicationNumbersFromDemands.contains(calculation.getChallan().getChallanNo()))
+                        createCalculations.add(calculation);
+                    else
+                        updateCalculations.add(calculation);
+                }
             }
         }
 
@@ -91,7 +93,7 @@ public class DemandService {
             updateDemand(requestInfo,updateCalculations,businessService);
             //Calling fetchbill service after demand creation/updation to handle duplicate bill generation issue
         for (Calculation calculation : calculations) {
-            if(calculation.getChallan().getApplicationStatus()!=null && !calculation.getChallan().getApplicationStatus().equals(StatusEnum.CANCELLED.toString())) {
+            if(calculation.getChallan() != null && calculation.getChallan().getApplicationStatus()!=null && !calculation.getChallan().getApplicationStatus().equals(StatusEnum.CANCELLED.toString())) {
                 String tenantId = calculation.getTenantId();
                 String consumerCode = calculation.getChallan().getReferenceId();
                 GenerateBillCriteria billCriteria = GenerateBillCriteria.builder().
@@ -175,22 +177,26 @@ public class DemandService {
      */
     private List<Demand> updateDemand(RequestInfo requestInfo,List<Calculation> calculations,String businessService){
         List<Demand> demands = new LinkedList<>();
-        for(Calculation calculation : calculations) {
+        if (calculations != null && !calculations.isEmpty()) {
 
-            List<Demand> searchResult = searchDemand(calculation.getTenantId(),
-                    Collections.singletonList(calculation.getChallan().getReferenceId()),
-                    requestInfo, businessService);
+            for (Calculation calculation : calculations) {
+                if (calculation.getChallan() != null) {
+                    List<Demand> searchResult = searchDemand(calculation.getTenantId(),
+                            Collections.singletonList(calculation.getChallan().getReferenceId()),
+                            requestInfo, businessService);
 
-            if(CollectionUtils.isEmpty(searchResult))
-                throw new CustomException("INVALID UPDATE","No demand exists for applicationNumber: "+calculation.getChallan().getChallanNo());
-            
-            Demand demand = searchResult.get(0);
-            if(calculation.getChallan().getApplicationStatus()!=null && calculation.getChallan().getApplicationStatus().equals(StatusEnum.CANCELLED.toString()))
-            	demand.setStatus(StatusEnum.CANCELLED);
-            List<DemandDetail> demandDetails = demand.getDemandDetails();
-            List<DemandDetail> updatedDemandDetails = getUpdatedDemandDetails(calculation,demandDetails);
-            demand.setDemandDetails(updatedDemandDetails);
-            demands.add(demand);
+                    if (CollectionUtils.isEmpty(searchResult))
+                        throw new CustomException("INVALID UPDATE", "No demand exists for applicationNumber: " + calculation.getChallan().getChallanNo());
+
+                    Demand demand = searchResult.get(0);
+                    if (calculation.getChallan().getApplicationStatus() != null && calculation.getChallan().getApplicationStatus().equals(StatusEnum.CANCELLED.toString()))
+                        demand.setStatus(StatusEnum.CANCELLED);
+                    List<DemandDetail> demandDetails = demand.getDemandDetails();
+                    List<DemandDetail> updatedDemandDetails = getUpdatedDemandDetails(calculation, demandDetails);
+                    demand.setDemandDetails(updatedDemandDetails);
+                    demands.add(demand);
+                }
+            }
         }
          return demandRepository.updateDemand(requestInfo,demands);
     }
