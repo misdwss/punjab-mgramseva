@@ -113,8 +113,8 @@ public class MgramsevaAdapterDemandConsumer {
 
 								DemandDetail demanddetail = demandDetails.get(demandDetails.size()-1);
 								demList.add(demanddetail);
-								for(DemandDetail demandDetail: demandDetails) {
-									demandDetails.remove(demandDetail);
+								for(int i=0; i<demandDetails.size(); i++) {
+									demand.getDemandDetails().remove(i);
 									
 								}
 								demand.setDemandDetails(demList);;
