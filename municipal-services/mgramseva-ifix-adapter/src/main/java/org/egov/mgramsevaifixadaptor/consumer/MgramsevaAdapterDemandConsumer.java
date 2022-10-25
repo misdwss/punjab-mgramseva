@@ -108,16 +108,26 @@ public class MgramsevaAdapterDemandConsumer {
 						}
 						else if(Constants.ACTIVE.equalsIgnoreCase(demand.getStatus().toString()) && demandDetails != null && !demandDetails.isEmpty()){
 							if(demand.getConsumerType().toString().equalsIgnoreCase("waterConnection-arrears")) {
-								log.info("demandsize: "+demandDetails.size());
-								List<DemandDetail> demList = new ArrayList<>();
-
-								DemandDetail demanddetail = demandDetails.get(demandDetails.size()-1);
-								demList.add(demanddetail);
-								for(int i=0; i<demandDetails.size(); i++) {
-									demand.getDemandDetails().remove(i);
+								
+								for(DemandDetail demandDetail: demandDetails) {
+									
+									Integer count =  getCountByDemandDetailsId(demandDetail.getId());
+									
+									if(count != null && count <= 1) {
+										demandDetails.remove(demandDetail);
+									}
 									
 								}
-								demand.setDemandDetails(demList);;
+								
+//								List<DemandDetail> demList = new ArrayList<>();
+//
+//								DemandDetail demanddetail = demandDetails.get(demandDetails.size()-1);
+//								demList.add(demanddetail);
+//								for(int i=0; i<demandDetails.size(); i++) {
+//									demand.getDemandDetails().remove(i);
+//									
+//								}
+//								demand.setDemandDetails(demList);
 							}
 							else{
 								for(DemandDetail demandDetail: demandDetails) {
