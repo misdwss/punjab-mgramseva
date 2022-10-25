@@ -109,12 +109,12 @@ public class MgramsevaAdapterDemandConsumer {
 						else if(Constants.ACTIVE.equalsIgnoreCase(demand.getStatus().toString()) && demandDetails != null && !demandDetails.isEmpty()){
 							if(demand.getConsumerType().toString().equalsIgnoreCase("waterConnection-arrears")) {
 								
-								for(DemandDetail demandDetail: demandDetails) {
+								for(int i=0; i<demandDetails.size(); i++) {
 									
-									Integer count =  getCountByDemandDetailsId(demandDetail.getId());
+									Integer count =  getCountByDemandDetailsId(demandDetails.get(i).getId());
 									
 									if(count != null && count > 1) {
-										demandDetails.remove(demandDetail);
+										demandDetails.remove(demandDetails.get(i));
 									}
 									
 								}
