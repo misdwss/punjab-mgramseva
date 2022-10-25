@@ -80,7 +80,10 @@ public class MgramsevaAdapterDemandConsumer {
 			if(demandRequest != null) {
 				Collections.sort(demandRequest.getDemands(), getCreatedTimeComparatorForDemand());
 				List<Demand> demandListToRemove = new ArrayList<>();
+
 					for(Demand demand : demandRequest.getDemands()) {
+						List<Demand> demandDetailListToRemove = new ArrayList<>();
+
 						List<DemandDetail> demandDetails = demand.getDemandDetails();
 						if(demand.getStatus().toString().equalsIgnoreCase(Constants.CANCELLED) && demand.getIsPaymentCompleted() == false) {
 							if(demandDetails != null) {
@@ -114,11 +117,12 @@ public class MgramsevaAdapterDemandConsumer {
 									Integer count =  getCountByDemandDetailsId(demandDetails.get(i).getId());
 									
 									if(count != null && count > 1) {
-										demandDetails.remove(demandDetails.get(i));
+										demandDetailListToRemove.remove(demandDetails.get(i));
 									}
 									
 								}
-								
+								demand.getDemandDetails().removeAll(demandDetailListToRemove);
+
 //								List<DemandDetail> demList = new ArrayList<>();
 //
 //								DemandDetail demanddetail = demandDetails.get(demandDetails.size()-1);
