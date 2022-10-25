@@ -113,7 +113,7 @@ public class MgramsevaAdapterDemandConsumer {
 									
 									Integer count =  getCountByDemandDetailsId(demandDetail.getId());
 									
-									if(count != null && count <= 1) {
+									if(count != null && count > 1) {
 										demandDetails.remove(demandDetail);
 									}
 									
