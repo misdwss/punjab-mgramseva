@@ -84,6 +84,7 @@ public class MgramsevaAdapterDemandConsumer {
 					for(Demand demand : demandRequest.getDemands()) {
 
 						List<DemandDetail> demandDetails = demand.getDemandDetails();
+
 						if(demand.getStatus().toString().equalsIgnoreCase(Constants.CANCELLED) && demand.getIsPaymentCompleted() == false) {
 							if(demandDetails != null) {
 								BigDecimal totalAmount = BigDecimal.ZERO;
@@ -110,22 +111,20 @@ public class MgramsevaAdapterDemandConsumer {
 						}
 						else if(Constants.ACTIVE.equalsIgnoreCase(demand.getStatus().toString()) && demandDetails != null && !demandDetails.isEmpty()){
 							if(demand.getConsumerType().toString().equalsIgnoreCase("waterConnection-arrears")) {
-								List<DemandDetail> demandDetailListToRemove = new ArrayList<>();
+								int demandDetailsSize = demandDetails.size();
 
-								for(int i=0; i<demandDetails.size(); i++) {
+								for(int i=0; i<demandDetailsSize; i++) {
 									
 									Integer count =  getCountByDemandDetailsId(demandDetails.get(i).getId());
 									log.info("num count: "+count);
 
 									if(count != null && count > 1) {
-										demandDetailListToRemove.remove(demandDetails.get(i));
-										log.info("removed: "+demandDetails.get(i).getId());
+										demand.getDemandDetails().remove(demandDetails.get(i));
 
 									}
 									
 								}
-								demandDetails.removeAll(demandDetailListToRemove);
-								log.info("remaining size: "+demandDetails.size());
+								log.info("size after removing: "+demandDetails.size());
 
 //								List<DemandDetail> demList = new ArrayList<>();
 //
@@ -153,6 +152,8 @@ public class MgramsevaAdapterDemandConsumer {
 						else {
 							demandListToRemove.add(demand);
 						}
+						demandDetails.removeAll(demandDetailListToRemove);
+
 					}
 					demandRequest.getDemands().removeAll(demandListToRemove);
 					if(demandRequest.getDemands().isEmpty()) {
