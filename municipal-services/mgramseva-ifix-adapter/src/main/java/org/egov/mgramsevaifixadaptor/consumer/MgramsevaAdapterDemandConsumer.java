@@ -152,7 +152,6 @@ public class MgramsevaAdapterDemandConsumer {
 						else {
 							demandListToRemove.add(demand);
 						}
-						demandDetails.removeAll(demandDetailListToRemove);
 
 					}
 					demandRequest.getDemands().removeAll(demandListToRemove);
