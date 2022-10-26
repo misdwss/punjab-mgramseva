@@ -2,7 +2,7 @@
 
 All notable changes to this module will be documented in this file.
 
-## 1.1.0 - 2022-09-13
+## 1.1.0-beta - 2022-09-13
 
 - Penalty and advance event push changes
 - Bug fixes for update demand event
