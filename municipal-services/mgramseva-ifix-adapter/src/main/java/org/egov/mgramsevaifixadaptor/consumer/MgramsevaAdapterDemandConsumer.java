@@ -115,9 +115,12 @@ public class MgramsevaAdapterDemandConsumer {
 								for(int i=0; i<demandDetails.size(); i++) {
 									
 									Integer count =  getCountByDemandDetailsId(demandDetails.get(i).getId());
-									
+									log.info("num count: "+count);
+
 									if(count != null && count > 1) {
 										demandDetailListToRemove.remove(demandDetails.get(i));
+										log.info("removed: "+demandDetails.get(i).getId());
+
 									}
 									
 								}
