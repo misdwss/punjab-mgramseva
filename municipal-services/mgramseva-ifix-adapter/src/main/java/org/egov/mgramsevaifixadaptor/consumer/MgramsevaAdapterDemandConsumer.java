@@ -82,7 +82,7 @@ public class MgramsevaAdapterDemandConsumer {
 				List<Demand> demandListToRemove = new ArrayList<>();
 
 					for(Demand demand : demandRequest.getDemands()) {
-						List<Demand> demandDetailListToRemove = new ArrayList<>();
+						List<DemandDetail> demandDetailListToRemove = new ArrayList<>();
 
 						List<DemandDetail> demandDetails = demand.getDemandDetails();
 						if(demand.getStatus().toString().equalsIgnoreCase(Constants.CANCELLED) && demand.getIsPaymentCompleted() == false) {
