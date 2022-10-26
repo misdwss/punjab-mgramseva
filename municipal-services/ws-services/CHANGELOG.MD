@@ -1,7 +1,7 @@
 # Change log
 All notable changes to this module will be documented in this file.
 
-## 1.6.0 - 2022-09-13
+## 1.6.0-beta - 2022-09-13
 
 - Addition of advance and penalty on consumer create
 - Changes in update consumer
