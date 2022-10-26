@@ -8,6 +8,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.egov.mgramsevaifixadaptor.config.PropertyConfiguration;
 import org.egov.mgramsevaifixadaptor.contract.DemandRequest;
@@ -111,6 +112,10 @@ public class MgramsevaAdapterDemandConsumer {
 						}
 						else if(Constants.ACTIVE.equalsIgnoreCase(demand.getStatus().toString()) && demandDetails != null && !demandDetails.isEmpty()){
 							if(demand.getConsumerType().toString().equalsIgnoreCase("waterConnection-arrears")) {
+								List<DemandDetail> demDetailResponse = demand.getDemandDetails();
+
+								CopyOnWriteArrayList<DemandDetail> demDetailList = new CopyOnWriteArrayList<>(demDetailResponse);
+								
 								int demandDetailsSize = demandDetails.size();
 
 								for(int i=0; i<demandDetailsSize; i++) {
@@ -119,13 +124,14 @@ public class MgramsevaAdapterDemandConsumer {
 									log.info("num count: "+count);
 
 									if(count != null && count > 1) {
-										demand.getDemandDetails().remove(demandDetails.get(i));
+										demDetailList.remove(demandDetails.get(i));
 
 									}
 									
 								}
-								log.info("size after removing: "+demandDetails.size());
-
+								log.info("size after removing: "+demDetailList.size());
+								demand.getDemandDetails().removeAll(demandDetails);
+								demand.setDemandDetails(demDetailList);
 //								List<DemandDetail> demList = new ArrayList<>();
 //
 //								DemandDetail demanddetail = demandDetails.get(demandDetails.size()-1);
