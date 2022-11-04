@@ -93,7 +93,7 @@ class LanguageSelectMobileView extends StatelessWidget {
                         padding: EdgeInsets.all(15),
                         child: Consumer<LanguageProvider>(
                           builder: (_, languageProvider, child) => Button(
-                            i18.common.CONTINUE,
+                            i18.common.ALERT,
                                 () => Navigator.pushNamed(context, Routes.LOGIN),
                             key: Keys.language.LANGUAGE_PAGE_CONTINUE_BTN,),
                         ))
