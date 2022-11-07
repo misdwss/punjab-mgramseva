@@ -27,7 +27,7 @@ class BillingServiceRepository extends BaseService {
         APIConstants.API_KEY,
         APIConstants.API_MESSAGE_ID,
         commonProvider.userDetails?.accessToken,
-        {'userInfo': commonProvider.userDetails?.userRequest?.toJson()}
+        commonProvider.userDetails?.userRequest?.toJson()
     );
   }
 
