@@ -53,7 +53,7 @@ public class User   {
 
         @NotNull
         @Size(max=100)
-        @Pattern(regexp = "^[a-zA-Z0-9 \\-'`\\.]*$", message = "Invalid name. Only alphabets and special characters -, ',`, .")
+//        @Pattern(regexp = "^[a-zA-Z0-9 \\-'`\\.]*$", message = "Invalid name. Only alphabets and special characters -, ',`, .")
         @JsonProperty("name")
         private String name;
 
@@ -164,7 +164,6 @@ public class User   {
         @Size(max=256)
         @JsonProperty("tenantId")
         private String tenantId;
-
 
         public User addRolesItem(Role rolesItem) {
             if (this.roles == null) {
