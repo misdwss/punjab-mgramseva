@@ -338,7 +338,9 @@ public class MDMSValidator {
 
 	public void validateUserName(WaterConnectionRequest waterConnectionRequest) {
 		
-		String input = waterConnectionRequest.getWaterConnection().getConnectionHolders().get(0).getName();
+		String input1 = waterConnectionRequest.getWaterConnection().getConnectionHolders().get(0).getName();
+		String input2 = waterConnectionRequest.getWaterConnection().getConnectionHolders().get(0).getFatherOrHusbandName();
+
 //		String regex1 = "^[a-zA-Z0-9 \\-'`\\.]*$";
 //	    String regex2 = "^[\\u0900-\\u097F+A-Za-z]";
 	    Pattern pattern = null;
@@ -365,8 +367,10 @@ public class MDMSValidator {
 			}
 		}
 		
-		Matcher matcher = pattern.matcher(input);
-	    if(!matcher.find()) {
+		Matcher matcher1 = pattern.matcher(input1);
+		Matcher matcher2 = pattern.matcher(input2);
+
+	    if(!matcher1.find() || !matcher2.find()) {
 			throw new CustomException("INVALID_NAME", "Invalid name. Only alphabets and special characters -, ',`, .\"");
 	    }	
 	 }
