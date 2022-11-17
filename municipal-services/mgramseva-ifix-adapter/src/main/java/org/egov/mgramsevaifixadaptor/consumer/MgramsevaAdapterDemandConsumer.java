@@ -121,7 +121,6 @@ public class MgramsevaAdapterDemandConsumer {
 								for(int i=0; i<demandDetailsSize; i++) {
 									
 									Integer count =  getCountByDemandDetailsId(demandDetails.get(i).getId());
-									log.info("num count: "+count);
 
 									if(count != null && count > 1) {
 										demDetailList.remove(demandDetails.get(i));
@@ -129,18 +128,9 @@ public class MgramsevaAdapterDemandConsumer {
 									}
 									
 								}
-								log.info("size after removing: "+demDetailList.size());
 								demand.getDemandDetails().removeAll(demandDetails);
 								demand.setDemandDetails(demDetailList);
-//								List<DemandDetail> demList = new ArrayList<>();
-//
-//								DemandDetail demanddetail = demandDetails.get(demandDetails.size()-1);
-//								demList.add(demanddetail);
-//								for(int i=0; i<demandDetails.size(); i++) {
-//									demand.getDemandDetails().remove(i);
-//									
-//								}
-//								demand.setDemandDetails(demList);
+
 							}
 							else{
 								for(DemandDetail demandDetail: demandDetails) {

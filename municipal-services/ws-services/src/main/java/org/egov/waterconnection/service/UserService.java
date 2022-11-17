@@ -11,8 +11,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.egov.common.contract.request.RequestInfo;
@@ -498,27 +496,6 @@ public class UserService {
 		userSearchRequest.setRoleCodes(roleCodes);
 		StringBuilder uri = new StringBuilder(userHost).append(userSearchEndpoint);
 		return userCall(userSearchRequest, uri);
-	}
-//	public void validateUserName(WaterConnectionRequest waterConnectionRequest) {
-//		String input = waterConnectionRequest.getWaterConnection().getConnectionHolders().get(0).getName();
-//		String regex1 = "^[a-zA-Z0-9 \\-'`\\.]*$";
-//	    String regex2 = "^[\\u0900-\\u097F+A-Za-z]";
-//	    Pattern pattern = null;
-//	    String locale = null;
-//	    if(waterConnectionRequest.getRequestInfo().getMsgId().contains("|"))
-//	    	locale = waterConnectionRequest.getRequestInfo().getMsgId().split("[\\|]")[1];
-//	    if(locale.equalsIgnoreCase("en_IN")) {
-//	    	pattern = Pattern.compile(regex1);
-//	    }
-//	    else if(locale.equalsIgnoreCase("hi_IN")) {
-//	    	pattern = Pattern.compile(regex2);
-//	    }
-//	    
-//	    Matcher matcher = pattern.matcher(input);
-//	    if(!matcher.find()) {
-//			throw new CustomException("INVALID_NAME", "Invalid name. Only alphabets and special characters -, ',`, .\"");
-//	    }
-//	}
-	        
+	}      
 	
 }
