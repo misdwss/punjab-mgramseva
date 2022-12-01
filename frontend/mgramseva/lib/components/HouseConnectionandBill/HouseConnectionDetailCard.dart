@@ -1,11 +1,10 @@
-simport 'package:flutter/cupertino.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mgramseva/model/connection/water_connection.dart';
 import 'package:mgramseva/providers/common_provider.dart';
 import 'package:mgramseva/providers/household_details_provider.dart';
 import 'package:mgramseva/utils/Constants/I18KeyConstants.dart';
 import 'package:mgramseva/utils/Locilization/application_localizations.dart';
-import 'package:mgramseva/utils/global_variables.dart';
 import 'package:provider/provider.dart';
 
 class HouseConnectionDetailCard extends StatelessWidget {
@@ -37,8 +36,7 @@ class HouseConnectionDetailCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var commonProvider = Provider.of<CommonProvider>(context,
-        listen: false);
+    var commonProvider = Provider.of<CommonProvider>(context, listen: false);
     return Card(
         child: Padding(
             padding: EdgeInsets.all(8.0),
@@ -73,9 +71,14 @@ class HouseConnectionDetailCard extends StatelessWidget {
                     waterconnection!.connectionHolders!.first.name, context),
                 _getLabeltext(
                     i18.consumer.FATHER_SPOUSE_NAME,
-                    waterconnection?.connectionHolders?.first.fatherOrHusbandName != null &&
-                        waterconnection!.connectionHolders!.first.fatherOrHusbandName!.isNotEmpty ? waterconnection!
-                        .connectionHolders!.first.fatherOrHusbandName : "NA",
+                    waterconnection?.connectionHolders?.first
+                                    .fatherOrHusbandName !=
+                                null &&
+                            waterconnection!.connectionHolders!.first
+                                .fatherOrHusbandName!.isNotEmpty
+                        ? waterconnection!
+                            .connectionHolders!.first.fatherOrHusbandName
+                        : "NA",
                     context),
                 _getLabeltext(
                     i18.searchWaterConnection.RESULTS_PHONE_NUM,
@@ -103,10 +106,12 @@ class HouseConnectionDetailCard extends StatelessWidget {
                               : ""
                           : "") +
                       (waterconnection!.additionalDetails!.locality!.isNotEmpty
-                          ? ApplicationLocalizations.of(context)
-                          .translate(waterconnection!.additionalDetails!.locality.toString())
-                          : "") + ApplicationLocalizations.of(context)
-                      .translate(commonProvider.userDetails!.selectedtenant!.code!),
+                          ? ApplicationLocalizations.of(context).translate(
+                              waterconnection!.additionalDetails!.locality
+                                  .toString())
+                          : "") +
+                      ApplicationLocalizations.of(context).translate(
+                          commonProvider.userDetails!.selectedtenant!.code!),
                   context,
                 ),
                 _getLabeltext(i18.searchWaterConnection.PROPERTY_TYPE,
@@ -123,33 +128,40 @@ class HouseConnectionDetailCard extends StatelessWidget {
                 _getLabeltext(
                   i18.common.STATUS,
                   waterconnection!.status == "Active"
-                      ? ApplicationLocalizations.of(context).translate(i18.searchWaterConnection.STATUS_ACTIVE)
-                      : ApplicationLocalizations.of(context).translate(i18.searchWaterConnection.STATUS_INACTIVE),
+                      ? ApplicationLocalizations.of(context)
+                          .translate(i18.searchWaterConnection.STATUS_ACTIVE)
+                      : ApplicationLocalizations.of(context)
+                          .translate(i18.searchWaterConnection.STATUS_INACTIVE),
                   context,
                 ),
                 Consumer<HouseHoldProvider>(
-                    builder: (_, provider, child) =>
-                        Wrap(
+                    builder: (_, provider, child) => Wrap(
                           children: [
                             Visibility(
                               visible: provider.isVisible,
                               child: Wrap(
                                 children: [
                                   _getLabeltext(
-                                      i18.consumer.CONSUMER_CATEGORY, waterconnection?.additionalDetails?.category ?? i18.common.NA,
-                                      context,
-                                      ),
+                                    i18.consumer.CONSUMER_CATEGORY,
+                                    waterconnection
+                                            ?.additionalDetails?.category ??
+                                        i18.common.NA,
+                                    context,
+                                  ),
                                   _getLabeltext(
-                                      i18.consumer.CONSUMER_SUBCATEGORY,  waterconnection?.additionalDetails?.subCategory ?? i18.common.NA,
-                                      context,
-                                      )
+                                    i18.consumer.CONSUMER_SUBCATEGORY,
+                                    waterconnection
+                                            ?.additionalDetails?.subCategory ??
+                                        i18.common.NA,
+                                    context,
+                                  )
                                 ],
                               ),
                             ),
                             InkWell(
                                 child: Padding(
                                   padding: const EdgeInsets.only(
-                                       bottom: 10, right: 25),
+                                      bottom: 10, right: 25),
                                   child: new Row(
                                     children: [
                                       new Text(
@@ -160,11 +172,9 @@ class HouseConnectionDetailCard extends StatelessWidget {
                                     ],
                                   ),
                                 ),
-                                onTap: provider.onTapOfShow
-                            )
+                                onTap: provider.onTapOfShow)
                           ],
-                        )
-                )
+                        ))
               ],
             )));
   }
