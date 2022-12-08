@@ -83,28 +83,6 @@ class _HouseholdSearchState extends State<HouseholdSearch>
                                   .onChangeOfTab(context, index))))),
             ),
           ),
-          // TextButton.icon(
-          //   onPressed: () {
-          //     Provider.of<HouseholdRegisterProvider>(context, listen: false)
-          //       ..createExcelOrPdfForAllConnections(context, true,
-          //           isExcelDownload: true);
-          //   },
-          //   // showDownloadList(Constants.DOWNLOAD_OPTIONS, context),
-          //   icon: Icon(Icons.download_sharp),
-          //   label: Text(
-          //     '${ApplicationLocalizations.of(context).translate(i18.common.DOWNLOAD)} '
-          //     '(${householdRegisterProvider.getDownloadList()} '
-          //     '${ApplicationLocalizations.of(context).translate(i18.householdRegister.RECORDS)})',
-          //     style: TextStyle(
-          //       fontSize: 16,
-          //       fontWeight: FontWeight.w400,
-          //     ),
-          //     textAlign: TextAlign.left,
-          //   ),
-          // ),
-          // SizedBox(
-          //   height: 10,
-          // ),
           Consumer<HouseholdRegisterProvider>(
               builder: (_, householdRegisterProvider, child) =>
                   HouseholdList()),
