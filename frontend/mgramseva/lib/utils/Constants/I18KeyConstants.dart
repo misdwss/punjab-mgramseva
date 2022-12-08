@@ -657,6 +657,6 @@ class HouseholdRegistry {
   String get PDF_SUB_TEXT_BELOW_LIST => 'PDF_SUB_TEXT_BELOW_LIST';
   String get WHATSAPP_TEXT_HOUSEHOLD => 'WHATSAPP_TEXT_HOUSEHOLD';
   String get NO_OF_RECORDS => 'NO_OF_RECORDS';
-  String get DOWNLOAD_PDF => 'Download PDF';
-  String get DOWNLOAD_EXCEL => 'Download Excel';
+  String get PDF => 'PDF';
+  String get EXCEL => 'EXCEL';
 }

@@ -146,11 +146,11 @@ showDownloadList(List<String> result, BuildContext context) {
                   left: MediaQuery.of(context).size.width > 720
                       ? MediaQuery.of(context).size.width -
                           MediaQuery.of(context).size.width / 3
-                      : 80,
-                  top: 100),
+                      : 200,
+                  top: 105),
               width: MediaQuery.of(context).size.width > 720
                   ? MediaQuery.of(context).size.width / 6
-                  : MediaQuery.of(context).size.width / 2,
+                  : MediaQuery.of(context).size.width / 4,
               height: result.length * 50 < 300 ? result.length * 50 : 300,
               color: Colors.white,
               child: ListView(
@@ -159,7 +159,7 @@ showDownloadList(List<String> result, BuildContext context) {
                 children: List.generate(result.length, (index) {
                   return GestureDetector(
                       onTap: () {
-                        result[index] == i18.householdRegister.DOWNLOAD_PDF
+                        result[index] == i18.householdRegister.PDF
                             ? Provider.of<HouseholdRegisterProvider>(context,
                                     listen: false)
                                 .createExcelOrPdfForAllConnections(

@@ -149,7 +149,7 @@ class Constants {
   ];
 
   static List<String> DOWNLOAD_OPTIONS = [
-    i18.householdRegister.DOWNLOAD_PDF,
-    i18.householdRegister.DOWNLOAD_EXCEL
+    i18.householdRegister.PDF,
+    i18.householdRegister.EXCEL
   ];
 }
