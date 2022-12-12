@@ -1,8 +1,7 @@
 import 'package:mgramseva/utils/ExcelDownload/save_file_mobile.dart'
     if (dart.library.html) 'package:mgramseva/utils/ExcelDownload/save_file_web.dart';
+import 'package:mgramseva/utils/common_methods.dart';
 import 'package:syncfusion_flutter_xlsio/xlsio.dart';
-
-import '../../providers/common_provider.dart';
 
 Future<void> generateExcel(
     List<String> headers, List<List<String>> tableData) async {
@@ -22,16 +21,15 @@ Future<void> generateExcel(
 
   for (int i = 0; i < headers.length; i++) {
     sheet
-        .getRangeByName(
-            '${CommonProvider.getAlphabetsWithKeyValue()[i].label}1')
-        .setText(headers[CommonProvider.getAlphabetsWithKeyValue()[i].key]);
+        .getRangeByName('${CommonMethods.getAlphabetsWithKeyValue()[i].label}1')
+        .setText(headers[CommonMethods.getAlphabetsWithKeyValue()[i].key]);
   }
 
   for (int i = 2; i < tableData.length + 2; i++) {
     for (int j = 0; j < headers.length; j++) {
       sheet
           .getRangeByName(
-              '${CommonProvider.getAlphabetsWithKeyValue()[j].label}$i')
+              '${CommonMethods.getAlphabetsWithKeyValue()[j].label}$i')
           .setText(tableData[i - 2][j]);
     }
   }
