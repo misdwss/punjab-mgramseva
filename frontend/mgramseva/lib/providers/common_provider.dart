@@ -256,16 +256,6 @@ class CommonProvider with ChangeNotifier {
     }
   }
 
-  Future<void> getAppVersionDetails() async {
-    try {
-      var localizationList =
-          await CoreRepository().getMdms(initRequestBody({"tenantId": "pb"}));
-      appVersion = localizationList.mdmsRes!.commonMasters!.appVersion!.first;
-    } catch (e) {
-      print(e.toString());
-    }
-  }
-
   UserDetails? getWebLoginStatus() {
     var languageProvider = Provider.of<LanguageProvider>(
         navigatorKey.currentContext!,
