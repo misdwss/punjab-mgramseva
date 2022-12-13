@@ -381,7 +381,7 @@ class HouseholdRegisterProvider with ChangeNotifier {
                     '${ApplicationLocalizations.of(navigatorKey.currentContext!).translate(e)}')
                 .toList(),
             tableData)
-        : HouseholdPdfCreator(
+        : await HouseholdPdfCreator(
                 context,
                 headerList
                     .map<String>((e) =>
@@ -390,6 +390,7 @@ class HouseholdRegisterProvider with ChangeNotifier {
                 tableData,
                 isDownload)
             .pdfPreview();
+    Navigator.pop(context);
   }
 
   bool removeOverLay(_overlayEntry) {
