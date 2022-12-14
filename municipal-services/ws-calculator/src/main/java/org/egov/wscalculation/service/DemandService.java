@@ -285,7 +285,8 @@ public class DemandService {
 				String actionLink = config.getNotificationUrl()
 						+ config.getBillPaymentSMSLink().replace("$mobileNumber", owner.getMobileNumber())
 								.replace("$consumerCode", waterConnectionRequest.getWaterConnection().getConnectionNo())
-								.replace("$tenantId", property.getTenantId());
+								.replace("$tenantId", property.getTenantId())
+								.replace("$businessService", demands.get(0).getBusinessService());
 
 
 				String messageString = localizationMessage.get(WSCalculationConstant.MSG_KEY);
