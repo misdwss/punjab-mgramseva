@@ -220,6 +220,9 @@ public class WSCalculationConfiguration {
 	@Value("${egov.sms.bill.download.link}")
 	private String billDownloadSMSLink;
 	
+	@Value("${egov.sms.bill.payment.link}")
+	private String billPaymentSMSLink;
+	
 	//Bulk Demand configuration Topics
 
 

@@ -283,34 +283,24 @@ public class DemandService {
 						WSCalculationConstant.mGram_Consumer_NewBill, tenantId);
 
 				String actionLink = config.getNotificationUrl()
-						+ config.getBillDownloadSMSLink().replace("$mobile", owner.getMobileNumber())
+						+ config.getBillPaymentSMSLink().replace("$mobileNumber", owner.getMobileNumber())
 								.replace("$consumerCode", waterConnectionRequest.getWaterConnection().getConnectionNo())
 								.replace("$tenantId", property.getTenantId());
 
-				if (waterConnectionRequest.getWaterConnection().getConnectionType()
-						.equalsIgnoreCase(WSCalculationConstant.meteredConnectionType)) {
-					actionLink = actionLink.replace("$key", "ws-bill");
-				} else {
-					actionLink = actionLink.replace("$key", "ws-bill-nm");
-				}
 
 				String messageString = localizationMessage.get(WSCalculationConstant.MSG_KEY);
 
 				System.out.println("Localization message::" + messageString);
 				if (!StringUtils.isEmpty(messageString) && isForConnectionNO) {
 					log.info("Demand Object" + demands.toString());
+//
+					BigDecimal totalAmount = fetchTotalBillAmount(demands, requestInfo);
+//					log.info("Bill Number :: " + billNumber.toString());
 
-					List<String> billNumber = fetchBill(demands, requestInfo);
-					log.info("Bill Number :: " + billNumber.toString());
-
-					if (billNumber.size() > 0) {
-						actionLink = actionLink.replace("$billNumber", billNumber.get(0));
-					}
 					messageString = messageString.replace("{ownername}", owner.getName());
 					messageString = messageString.replace("{Period}", billCycle);
 					messageString = messageString.replace("{consumerno}", consumerCode);
-					messageString = messageString.replace("{billamount}", demandDetails.stream()
-							.map(DemandDetail::getTaxAmount).reduce(BigDecimal.ZERO, BigDecimal::add).toString());
+					messageString = messageString.replace("{billamount}", totalAmount.toString());
 					messageString = messageString.replace("{BILL_LINK}", getShortenedUrl(actionLink));
 
 					System.out.println("Demand genaration Message1::" + messageString);
@@ -318,6 +308,7 @@ public class DemandService {
 					SMSRequest sms = SMSRequest.builder().mobileNumber(owner.getMobileNumber()).message(messageString)
 							.category(Category.TRANSACTION).build();
 					producer.push(config.getSmsNotifTopic(), sms);
+					
 
 				}
 			}
@@ -1084,6 +1075,30 @@ public class DemandService {
 			}
 		}
 		return billNumber;
+	}
+	
+	public BigDecimal fetchTotalBillAmount(List<Demand> demandResponse, RequestInfo requestInfo) {
+		boolean notificationSent = false;
+		BigDecimal totalAmount = BigDecimal.ZERO;
+		for (Demand demand : demandResponse) {
+			try {
+				Object result = serviceRequestRepository.fetchResult(
+						calculatorUtils.getFetchBillURL(demand.getTenantId(), demand.getConsumerCode()),
+						RequestInfoWrapper.builder().requestInfo(requestInfo).build());
+				totalAmount = JsonPath.read(result, "$.Bill.*.totalAmount");
+				log.info("Bill Response :: " + result);
+
+				HashMap<String, Object> billResponse = new HashMap<>();
+
+				billResponse.put("requestInfo", requestInfo);
+				billResponse.put("billResponse", result);
+				wsCalculationProducer.push(configs.getPayTriggers(), billResponse);
+				notificationSent = true;
+			} catch (Exception ex) {
+				log.error("Fetch Bill Error", ex);
+			}
+		}
+		return totalAmount;
 	}
 
 	/**
