@@ -1085,7 +1085,7 @@ public class DemandService {
 				Object result = serviceRequestRepository.fetchResult(
 						calculatorUtils.getFetchBillURL(demand.getTenantId(), demand.getConsumerCode()),
 						RequestInfoWrapper.builder().requestInfo(requestInfo).build());
-				totalAmount = JsonPath.read(result, "$.Bill.*.totalAmount");
+				totalAmount = JsonPath.read(result, "$.Bill[0].totalAmount");
 				log.info("Bill Response :: " + result);
 
 				HashMap<String, Object> billResponse = new HashMap<>();
