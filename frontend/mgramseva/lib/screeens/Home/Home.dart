@@ -156,20 +156,19 @@ class _HomeState extends State<Home> {
                   }, {
                     "tenantId": userProvider.userDetails?.selectedtenant?.code!,
                     "eventType": "SYSTEMGENERATED",
-                    "roles": commonProvider.userDetails?.userRequest?.roles!
-                        .map((e) => e.code.toString())
-                        .join(',')
-                        .toString(),
+                    "roles":
+                        commonProvider.uniqueRolesList()?.join(',').toString(),
                     "limit": "50"
                   });
-              }
-              catch (e, s) {
-                ErrorHandler().allExceptionsHandler(navigatorKey.currentContext!, e);
+              } catch (e, s) {
+                ErrorHandler()
+                    .allExceptionsHandler(navigatorKey.currentContext!, e);
               }
             }
             return userProvider.userDetails?.selectedtenant?.code != null
-                ?
-                  NotificationsList(close: true,)
+                ? NotificationsList(
+                    close: true,
+                  )
                 : Text("");
           })),
     );
