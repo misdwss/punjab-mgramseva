@@ -152,13 +152,13 @@ class _HomeState extends State<Home> {
                     "tenantId": userProvider.userDetails?.selectedtenant?.code!,
                     "eventType": "SYSTEMGENERATED",
                     "recepients": commonProvider.userDetails?.userRequest?.uuid,
-                    "limit": "50"
+                    "limit": Constants.HOME_NOTIFICATIONS_LIMIT
                   }, {
                     "tenantId": userProvider.userDetails?.selectedtenant?.code!,
                     "eventType": "SYSTEMGENERATED",
                     "roles":
                         commonProvider.uniqueRolesList()?.join(',').toString(),
-                    "limit": "50"
+                    "limit": Constants.HOME_NOTIFICATIONS_LIMIT
                   });
               } catch (e, s) {
                 ErrorHandler()
