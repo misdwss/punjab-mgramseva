@@ -163,7 +163,7 @@ public class WaterConnectionValidator {
 				}
 				if ((request.getWaterConnection().getStatus().equals(StatusEnum.INACTIVE) && demandList.size() > 0)
 						|| (searchResult.getArrears() != null && request.getWaterConnection().getArrears() == null
-								|| isArrear)|| (request.getWaterConnection().getStatus().equals(StatusEnum.INACTIVE) && demandList.size() > 0)
+								|| (isArrear && demList.size() > 0))|| (request.getWaterConnection().getStatus().equals(StatusEnum.INACTIVE) && demandList.size() > 0)
 						|| (searchResult.getAdvance() != null && request.getWaterConnection().getAdvance() == null
 						|| isAdvance)) {
 					for (Demand demand : demandList) {
