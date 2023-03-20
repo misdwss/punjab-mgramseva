@@ -142,13 +142,20 @@ public class WaterConnectionValidator {
 		DemandResponse response =  validateUpdateForDemand(request,searchResult);
 		if(response != null) {
 			List<Demand> demands = response.getDemands();
-			List<Boolean> data = new ArrayList<Boolean>();
-			if(demands != null && !demands.isEmpty()) {
-				for (Demand demand : demands) {
-					if(!demand.isPaymentCompleted()) {
-						data.add(demand.isPaymentCompleted());
+			CopyOnWriteArrayList<Demand> demList = null;
+			CopyOnWriteArrayList<Demand> allDemands = null;
+			if( demands != null && !demands.isEmpty()) {
+				demList = new CopyOnWriteArrayList<>(demands);
+				allDemands = new CopyOnWriteArrayList<>(demands);
+			}
+			 
+			if(allDemands != null && !allDemands.isEmpty()) {
+				for (Demand demand : allDemands) {
+					if(demand.isPaymentCompleted()) {
+						demList.remove(demand);
 					}
 				}
+			}
 				Boolean isArrear = false;
 				Boolean isAdvance = false;
 				
@@ -169,7 +176,6 @@ public class WaterConnectionValidator {
 					updateDemand(request.getRequestInfo(), demList);
 					
 				}
-			}
 			}
 			
 		
