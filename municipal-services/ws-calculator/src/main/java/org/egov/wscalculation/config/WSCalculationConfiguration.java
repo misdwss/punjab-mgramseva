@@ -231,6 +231,9 @@ public class WSCalculationConfiguration {
 
 	@Value("${egov.bilk.demand.failed.link}")
 	private String bulkDemandFailedLink;
+
+	@Value("${egov.pspcl.owner.number}")
+	private String pspclOwnerNumber;
 	
 
 	
