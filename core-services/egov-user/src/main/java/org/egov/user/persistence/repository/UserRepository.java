@@ -604,5 +604,6 @@ public class UserRepository {
         users = jdbcTemplate.query(queryStr, preparedStatementValues.toArray(), userResultSetExtractor);
         enrichRoles(users);
         return users;
+
     }
 }
