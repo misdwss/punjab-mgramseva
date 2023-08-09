@@ -606,6 +606,9 @@ public class UserRepository {
         log.info("QUERY TO SEARCH "+queryStr);
 
         users = jdbcTemplate.query(queryStr, preparedStatementValues.toArray(), userResultSetExtractor);
+        log.info("Prepared Statement valus:" + preparedStatementValues);
+        log.info("tenatid:" + preparedStatementValues.get(0));
+        log.info("offset:"+preparedStatementValues.get(preparedStatementValues.size()-1));
         log.info("users:" + users.size());
         enrichRoles(users);
         return users;

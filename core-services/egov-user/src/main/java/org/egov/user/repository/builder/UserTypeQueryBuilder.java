@@ -96,7 +96,7 @@ public class UserTypeQueryBuilder {
     public String getQuery(final UserSearchCriteria userSearchCriteria, final List preparedStatementValues) {
         final StringBuilder selectQuery = new StringBuilder(SELECT_USER_QUERY);
 
-        addWhereClause(selectQuery, preparedStatementValues, userSearchCriteria);
+        addWhereClauseUserRoles(selectQuery, preparedStatementValues, userSearchCriteria);
 
 
         addOrderByClause(selectQuery, userSearchCriteria);
