@@ -602,7 +602,7 @@ public class UserRepository {
                 return users;
             }
         }
-        String queryStr = userTypeQueryBuilder.getQuery(userSearch, preparedStatementValues);
+        String queryStr = userTypeQueryBuilder.getQueryBytenants(userSearch, preparedStatementValues);
         log.info("QUERY TO SEARCH "+queryStr);
 
         users = jdbcTemplate.query(queryStr, preparedStatementValues.toArray(), userResultSetExtractor);
