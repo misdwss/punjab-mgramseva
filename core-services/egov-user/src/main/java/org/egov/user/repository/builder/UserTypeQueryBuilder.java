@@ -96,12 +96,20 @@ public class UserTypeQueryBuilder {
     public String getQuery(final UserSearchCriteria userSearchCriteria, final List preparedStatementValues) {
         final StringBuilder selectQuery = new StringBuilder(SELECT_USER_QUERY);
 
-        addWhereClauseUserRoles(selectQuery, preparedStatementValues, userSearchCriteria);
+        addWhereClause(selectQuery, preparedStatementValues, userSearchCriteria);
 
 
         addOrderByClause(selectQuery, userSearchCriteria);
         return addPagingClause(selectQuery, preparedStatementValues, userSearchCriteria);
     }
+
+    public String getQueryBytenants(final UserSearchCriteria userSearchCriteria, final List preparedStatementValues) {
+        final StringBuilder selectQuery = new StringBuilder(SELECT_USER_QUERY);
+        addWhereClauseUserRoles(selectQuery, preparedStatementValues, userSearchCriteria);
+        addOrderByClause(selectQuery, userSearchCriteria);
+        return addPagingClause(selectQuery, preparedStatementValues, userSearchCriteria);
+    }
+
 
     @SuppressWarnings("rawtypes")
     public String getQueryUserRoleSearch(final UserSearchCriteria userSearchCriteria, final List preparedStatementValues) {
