@@ -242,7 +242,7 @@ public class UserTypeQueryBuilder {
 
         selectQuery.append(" WHERE");
         boolean isAppendAndClause = false;
-
+       log.info("UserSearchCriteria:" +userSearchCriteria);
         if (userSearchCriteria.getTenantId() != null) {
             isAppendAndClause = addAndClauseIfRequired(false, selectQuery);
             selectQuery.append(" ur.role_tenantid like ? ");
