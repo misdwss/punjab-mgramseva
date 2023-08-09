@@ -655,6 +655,7 @@ public class UserService {
         log.info("INSIDE USER SEARCH BY TENANT");
         //searchCriteria.validate(isInterServiceCall);
         if(ObjectUtils.isEmpty(searchCriteria.getTenantId())) {
+            log.info("RETURNING NULL");
             return null;
         }
 

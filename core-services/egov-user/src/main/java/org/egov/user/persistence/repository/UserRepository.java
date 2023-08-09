@@ -579,29 +579,34 @@ public class UserRepository {
         boolean RoleSearchHappend = false;
         List<Long> userIds = new ArrayList<>();
         if (!isEmpty(userSearch.getRoleCodes()) && userSearch.getTenantId() != null) {
+            log.info("INSIDE ROLE SEARCH");
             userIds = findUsersWithRole(userSearch);
             RoleSearchHappend = true;
         }
         List<User> users = new ArrayList<>();
         if (RoleSearchHappend) {
+            log.info("RoleSearchHappend");
             if (!CollectionUtils.isEmpty(userIds)) {
                 if (CollectionUtils.isEmpty(userSearch.getId()))
                     userSearch.setId(userIds);
                 else {
                     userSearch.setId(userSearch.getId().stream().filter(userIds::contains).collect(Collectors.toList()));
                     if (CollectionUtils.isEmpty(userSearch.getId()))
+                        log.info("userSearch.getId() is empty");
                         return users;
                 }
                 userSearch.setTenantId(null);
                 userSearch.setRoleCodes(null);
             } else {
+                log.info("INSIDE NO USER FOUND");
                 return users;
             }
         }
         String queryStr = userTypeQueryBuilder.getQuery(userSearch, preparedStatementValues);
-        log.debug(queryStr);
+        log.info("QUERY TO SEARCH "+queryStr);
 
         users = jdbcTemplate.query(queryStr, preparedStatementValues.toArray(), userResultSetExtractor);
+        log.info("users:" + users.size());
         enrichRoles(users);
         return users;
 
