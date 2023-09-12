@@ -1,9 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:intl/intl.dart';
-import 'package:mgramseva/utils/Constants/I18KeyConstants.dart';
+import 'package:mgramseva/utils/constants/i18_key_constants.dart';
 import 'package:mgramseva/utils/constants.dart';
 
-import 'Locilization/application_localizations.dart';
+import 'localization/application_localizations.dart';
 import 'global_variables.dart';
 import 'models.dart';
 
@@ -112,6 +112,14 @@ class DateFormats {
   static String getMonth(DateTime date) {
     try {
       return '${DateFormat.MMM().format(date)}';
+    } catch (e) {
+      return '';
+    }
+  }
+
+  static String getMonthAndYearFromDateTime(DateTime date) {
+    try {
+      return '${DateFormat.MMM().format(date)}-${DateFormat.y().format(date)}';
     } catch (e) {
       return '';
     }

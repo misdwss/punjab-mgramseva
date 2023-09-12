@@ -14,10 +14,10 @@ import 'package:mgramseva/repository/bill_generation_details_repo.dart';
 import 'package:mgramseva/repository/billing_service_repo.dart';
 import 'package:mgramseva/repository/core_repo.dart';
 import 'package:mgramseva/repository/search_connection_repo.dart';
-import 'package:mgramseva/routers/Routers.dart';
-import 'package:mgramseva/services/MDMS.dart';
-import 'package:mgramseva/utils/Constants/I18KeyConstants.dart';
-import 'package:mgramseva/utils/Locilization/application_localizations.dart';
+import 'package:mgramseva/routers/routers.dart';
+import 'package:mgramseva/services/mdms.dart';
+import 'package:mgramseva/utils/constants/i18_key_constants.dart';
+import 'package:mgramseva/utils/localization/application_localizations.dart';
 import 'package:mgramseva/utils/common_methods.dart';
 import 'package:mgramseva/utils/constants.dart';
 import 'package:mgramseva/utils/date_formats.dart';
@@ -25,9 +25,9 @@ import 'package:mgramseva/utils/error_logging.dart';
 import 'package:mgramseva/utils/global_variables.dart';
 import 'package:mgramseva/utils/loaders.dart';
 import 'package:mgramseva/utils/models.dart';
-import 'package:mgramseva/utils/notifyers.dart';
-import 'package:mgramseva/widgets/CommonSuccessPage.dart';
-import 'package:mgramseva/widgets/ErrorMessagePAge.dart';
+import 'package:mgramseva/utils/notifiers.dart';
+import 'package:mgramseva/widgets/common_success_page.dart';
+import 'package:mgramseva/widgets/error_page.dart';
 import 'package:provider/provider.dart';
 
 import 'common_provider.dart';
@@ -82,7 +82,7 @@ class BillGenerationProvider with ChangeNotifier {
           billGenerateDetails.meterNumberCtrl.text = waterconnection.meterId!;
           if (waterconnection.connectionType == 'Metered') {
             waterconnection = res.waterConnection!.first;
-            var meterRes = await BillGenerateRepository().searchmetetedDemand({
+            var meterRes = await BillGenerateRepository().searchMeteredDemand({
               "tenantId": commonProvider.userDetails!.selectedtenant!.code,
               ...{'connectionNos': id.split('_').join('/')},
             });
@@ -102,7 +102,7 @@ class BillGenerationProvider with ChangeNotifier {
           var commonProvider = Provider.of<CommonProvider>(
               navigatorKey.currentContext!,
               listen: false);
-          var meterRes = await BillGenerateRepository().searchmetetedDemand({
+          var meterRes = await BillGenerateRepository().searchMeteredDemand({
             "tenantId": commonProvider.userDetails!.selectedtenant!.code,
             ...{'connectionNos': id.split('_').join('/')},
           });
@@ -203,7 +203,8 @@ class BillGenerationProvider with ChangeNotifier {
     Map<String, dynamic> query = {
       'consumerCode': bill.consumerCode,
       'businessService': bill.businessService,
-      'tenantId': commonProvider.userDetails?.selectedtenant?.code
+      'tenantId': commonProvider.userDetails?.selectedtenant?.code,
+      'connectionType':waterconnection.connectionType
     };
     Navigator.pushNamed(context, Routes.HOUSEHOLD_DETAILS_COLLECT_PAYMENT,
         arguments: query);
@@ -218,6 +219,7 @@ class BillGenerationProvider with ChangeNotifier {
           getServiceTypeConnectionTypePropertyTypeMDMS(
               commonProvider.userDetails!.userRequest!.tenantId.toString()));
       languageList = res;
+      notifyListeners();
       streamController.add(billGenerateDetails);
     } catch (e, s) {
       ErrorHandler().allExceptionsHandler(navigatorKey.currentContext!, e, s);
@@ -276,7 +278,7 @@ class BillGenerationProvider with ChangeNotifier {
             };
             var billResponse1 =
                 await BillGenerateRepository().calculateMeterConnection(res1);
-            var fetchResponse = await BillingServiceRepository().fetchBill({
+            await BillingServiceRepository().fetchBill({
               "tenantId": commonProvider.userDetails!.selectedtenant!.code,
               "consumerCode": waterconnection.connectionNo.toString(),
               "businessService": "WS"
@@ -308,7 +310,7 @@ class BillGenerationProvider with ChangeNotifier {
                           '${billList.bill!.first.billNumber.toString()}'),
                   callBack: () =>
                       onClickOfCollectPayment(billList.bill!.first, context),
-                  callBackdownload: () => commonProvider
+                  callBackDownload: () => commonProvider
                       .getFileFromPDFBillService({
                     "Bill": [billList.bill!.first]
                   }, {
@@ -319,7 +321,7 @@ class BillGenerationProvider with ChangeNotifier {
                         commonProvider.userDetails!.selectedtenant!.code,
                   }, billList.bill!.first.mobileNumber, billList.bill!.first,
                           "Download"),
-                  callBackwatsapp: () => commonProvider
+                  callBackWhatsApp: () => commonProvider
                       .getFileFromPDFBillService({
                     "Bill": [billList.bill!.first],
                   }, {
@@ -437,6 +439,7 @@ class BillGenerationProvider with ChangeNotifier {
   List<DropdownMenuItem<Object>> getFinancialYearList() {
     if (languageList?.mdmsRes?.billingService?.taxPeriodList != null) {
       CommonMethods.getFilteredFinancialYearList(languageList?.mdmsRes?.billingService?.taxPeriodList ?? <TaxPeriod>[]);
+      languageList?.mdmsRes?.billingService?.taxPeriodList!.sort((a,b)=>a.fromDate!.compareTo(b.fromDate!));
       return (languageList?.mdmsRes?.billingService?.taxPeriodList ??
               <TaxPeriod>[])
           .map((value) {
@@ -444,7 +447,7 @@ class BillGenerationProvider with ChangeNotifier {
           value: value,
           child: new Text((value.financialYear!)),
         );
-      }).toList();
+      }).toList().reversed.toList();
     }
     return <DropdownMenuItem<Object>>[];
   }
@@ -466,26 +469,20 @@ class BillGenerationProvider with ChangeNotifier {
   List<DropdownMenuItem<Object>> getBillingCycle() {
     dates = [];
     if (billGenerateDetails.billYear != null && selectedBillYear != null) {
-      late DatePeriod ytd;
-      if(DateTime.now().month >= 4) {
-        ytd = DatePeriod(DateTime(DateTime.now().year, 4) , DateTime(DateTime.now().year + 1, 4, 0, 23,59, 59, 999), DateType.YTD);
-      }else{
-        ytd = DatePeriod(DateTime( DateTime.now().year - 1, 4), DateTime.now(), DateType.YTD);
-      }
-
-      var date1 = DateFormats.getFormattedDateToDateTime(
+      DatePeriod ytd;
+      var fromDate = DateFormats.getFormattedDateToDateTime(
           DateFormats.timeStampToDate(selectedBillYear.fromDate)) as DateTime;
 
-      var isCurrentYtdSelected = date1.year == ytd.startDate.year;
+      var toDate = DateFormats.getFormattedDateToDateTime(
+          DateFormats.timeStampToDate(selectedBillYear.toDate)) as DateTime;
+
+      ytd = DatePeriod(fromDate,toDate,DateType.YTD);
 
       /// Get months based on selected billing year
-      var months = CommonMethods.getPastMonthUntilFinancialYear(date1.year);
-
-      /// if its current ytd year means removing current month
-      if(isCurrentYtdSelected) months.removeAt(0);
+      var months = CommonMethods.getPastMonthUntilFinancialYTD(ytd);
 
       /// if selected year is future year means all the months will be removed
-      if(date1.year >= ytd.endDate.year) months.clear();
+      if(fromDate.year > ytd.endDate.year) months.clear();
 
       for (var i = 0; i < months.length; i++) {
         var prevMonth = months[i].startDate;

@@ -259,6 +259,7 @@ public class DemandGenerationConsumer {
 			String toDate = lastDate.format(formatters);
 			String billingCycle = fromDate + " - " + toDate;
 			boolean isManual = false;
+			log.info("CALL FROM TOPIC egov.wscal.bulk.demand.schedular.topic" );
 			generateDemandAndSendnotification(requestInfo, tenantId, billingCycle, master, isSendMessage, isManual);
 		}
 	}
@@ -330,7 +331,9 @@ public class DemandGenerationConsumer {
 			 * + connectionNo ); continue; }
 			 */
 			try {
-				generateDemandInBatch(calculationReq, masterMap, billingCycle, isSendMessage);
+					if(tenantId != "pb.testing") {
+						generateDemandInBatch(calculationReq, masterMap, billingCycle, isSendMessage);
+					}
 
 			} catch (Exception e) {
 				System.out.println("Got the exception while genating the demands:" + connectionNo);
@@ -458,12 +461,15 @@ public class DemandGenerationConsumer {
 
 			String msgLink = config.getNotificationUrl() + config.getGpUserDemandLink();
 
-			for (OwnerInfo userInfo : userDetailResponse.getUser())
+			for (OwnerInfo userInfo : userDetailResponse.getUser()) {
+				log.info("USER NUMBER:" + userInfo.getMobileNumber() + " USER ROLE:" + userInfo.getRoles());
 				if (userInfo.getName() != null) {
 					mobileNumberIdMap.put(userInfo.getMobileNumber(), userInfo.getName());
 				} else {
 					mobileNumberIdMap.put(userInfo.getMobileNumber(), userInfo.getUserName());
 				}
+			}
+			log.info("MOBILENUMBER MAPPINNG USERROLE:" +mobileNumberIdMap);
 			mobileNumberIdMap.entrySet().stream().forEach(map -> {
 				String msg = demandMessage.get(WSCalculationConstant.MSG_KEY);
 				msg = msg.replace("{ownername}", map.getValue());
@@ -475,11 +481,14 @@ public class DemandGenerationConsumer {
 				msg = msg.replace("{LINK}", msgLink);
 
 				System.out.println("Demand GP USER SMS1::" + msg);
+				if(!map.getKey().equals(config.getPspclVendorNumber())) {
+					SMSRequest smsRequest = SMSRequest.builder().mobileNumber(map.getKey()).message(msg)
+							.category(Category.TRANSACTION).build();
+					if(config.isSmsForDemandEnable()) {
+						producer.push(config.getSmsNotifTopic(), smsRequest);
+					}
+				}
 
-				SMSRequest smsRequest = SMSRequest.builder().mobileNumber(map.getKey()).message(msg)
-						.category(Category.TRANSACTION).build();
-
-				producer.push(config.getSmsNotifTopic(), smsRequest);
 			});
 		}
 	}
@@ -531,7 +540,7 @@ public class DemandGenerationConsumer {
 		String billingPeriod = bulkDemand.getBillingPeriod();
 		if (StringUtils.isEmpty(billingPeriod))
 			throw new CustomException("BILLING_PERIOD_PARSING_ISSUE", "Billing Period can not be empty!!");
-
+		log.info("CALL FROM TOPIC egov.generate.bulk.demand.manually.topic" );
 		generateDemandAndSendnotification(bulkDemand.getRequestInfo(), bulkDemand.getTenantId(), billingPeriod, billingMasterData,
 				isSendMessage, isManual);
 		

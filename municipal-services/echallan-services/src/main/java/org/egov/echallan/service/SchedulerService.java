@@ -258,7 +258,9 @@ public class SchedulerService {
 								SMSRequest smsRequest = SMSRequest.builder().mobileNumber(map.getKey()).message(message)
 										.templateId(messageMap.get(NotificationUtil.TEMPLATE_KEY))
 										.users(new String[] { map.getValue() }).build();
-								producer.push(config.getSmsNotifTopic(), smsRequest);
+								if(config.isSmsForExpenditureEnabled()) {
+									producer.push(config.getSmsNotifTopic(), smsRequest);
+								}
 							}
 						});
 					}
@@ -356,7 +358,9 @@ public class SchedulerService {
 		additionalDetailsMap.put("localizationCode", MARK_PAID_BILL_EVENT);
 		List<Event> events = new ArrayList<>();
 		List<String> activeExpenseCount = repository.getActiveExpenses(tenantId);
-		if (null != activeExpenseCount && activeExpenseCount.size() > 0) {
+		if (null != activeExpenseCount && activeExpenseCount.size() > 0 && activeExpenseCount.get(0)!=null
+				 && Integer.parseInt(activeExpenseCount.get(0)) > 0) {
+			log.info("Active expense bill Count"+activeExpenseCount.get(0));
 			HashMap<String, String> messageMap = util.getLocalizationMessage(requestInfo, MARK_PAID_BILL_EVENT, tenantId);
 			events.add(Event.builder().tenantId(tenantId)
 					.description(formatMarkExpenseMessage(tenantId, messageMap.get(NotificationUtil.MSG_KEY), additionalDetailsMap))
@@ -450,7 +454,9 @@ public class SchedulerService {
 								SMSRequest smsRequest = SMSRequest.builder().mobileNumber(map.getKey()).message(message)
 										.templateId(messageMap.get(NotificationUtil.TEMPLATE_KEY))
 										.users(new String[] { map.getValue() }).build();
-								producer.push(config.getSmsNotifTopic(), smsRequest);
+								if(config.isSmsForMarkBillEnabled()) {
+									producer.push(config.getSmsNotifTopic(), smsRequest);
+								}
 							}
 						});
 					}
@@ -579,7 +585,9 @@ public class SchedulerService {
 								SMSRequest smsRequest = SMSRequest.builder().mobileNumber(map.getKey()).message(message)
 										.templateId(messageMap.get(NotificationUtil.TEMPLATE_KEY))
 										.users(new String[] { uuidUsername }).build();
-								producer.push(config.getSmsNotifTopic(), smsRequest);
+								if(config.isSmsForMonthlySummaryEnabled()) {
+									producer.push(config.getSmsNotifTopic(), smsRequest);
+								}
 							}
 						});
 					}

@@ -22,10 +22,14 @@ import org.egov.waterconnection.constants.WCConstants;
 import org.egov.waterconnection.producer.WaterConnectionProducer;
 import org.egov.waterconnection.repository.builder.WsQueryBuilder;
 import org.egov.waterconnection.repository.rowmapper.BillingCycleRowMapper;
+import org.egov.waterconnection.repository.rowmapper.CollectionRowMapper;
 import org.egov.waterconnection.repository.rowmapper.FeedbackRowMapper;
 import org.egov.waterconnection.repository.rowmapper.OpenWaterRowMapper;
+import org.egov.waterconnection.repository.rowmapper.ReportRowMapper;
 import org.egov.waterconnection.repository.rowmapper.WaterRowMapper;
+import org.egov.waterconnection.web.models.BillReportData;
 import org.egov.waterconnection.web.models.BillingCycle;
+import org.egov.waterconnection.web.models.CollectionReportData;
 import org.egov.waterconnection.web.models.Feedback;
 import org.egov.waterconnection.web.models.FeedbackSearchCriteria;
 import org.egov.waterconnection.web.models.SearchCriteria;
@@ -59,6 +63,12 @@ public class WaterDaoImpl implements WaterDao {
 
 	@Autowired
 	private OpenWaterRowMapper openWaterRowMapper;
+	
+	@Autowired
+	private ReportRowMapper reportRowMapper;
+	
+	@Autowired
+	private CollectionRowMapper collectionReportRowMapper;
 	
 	@Autowired
 	private WSConfiguration wsConfiguration;
@@ -100,7 +110,7 @@ public class WaterDaoImpl implements WaterDao {
 			StringBuilder collectionDataCountQuery = new StringBuilder(wsQueryBuilder.COLLECTION_DATA_COUNT);
 			criteria.setIsCollectionDataCount(Boolean.TRUE);
 			collectionDataCountQuery = wsQueryBuilder.applyFilters(collectionDataCountQuery, preparedStmntforCollectionDataCount, criteria);
-			collectionDataCountQuery.append(" ORDER BY wc.appCreatedDate  DESC");
+//			collectionDataCountQuery.append(" ORDER BY wc.appCreatedDate  DESC");
 		    countData = jdbcTemplate.queryForList(collectionDataCountQuery.toString(), preparedStmntforCollectionDataCount.toArray());
 		    if(criteria.getIsBillPaid() != null)
 		    	flag = criteria.getIsBillPaid();
@@ -173,7 +183,18 @@ public class WaterDaoImpl implements WaterDao {
 	 * @param waterConnectionRequest
 	 */
 	public void enrichFileStoreIds(WaterConnectionRequest waterConnectionRequest) {
-		waterConnectionProducer.push(wsConfiguration.getFileStoreIdsTopic(), waterConnectionRequest);
+		try {
+			log.info("ACTION "+waterConnectionRequest.getWaterConnection().getProcessInstance().getAction());
+			log.info("ApplicationStatus "+waterConnectionRequest.getWaterConnection().getApplicationStatus());
+			if (waterConnectionRequest.getWaterConnection().getApplicationStatus()
+					.equalsIgnoreCase(WCConstants.PENDING_APPROVAL_FOR_CONNECTION_CODE)
+					|| waterConnectionRequest.getWaterConnection().getProcessInstance().getAction()
+					.equalsIgnoreCase(WCConstants.ACTION_PAY)) {
+				waterConnectionProducer.push(wsConfiguration.getFileStoreIdsTopic(), waterConnectionRequest);
+			}
+		} catch (Exception ex) {
+			log.debug(ex.toString());
+		}
 	}
 	
 	/**
@@ -245,28 +266,28 @@ public class WaterDaoImpl implements WaterDao {
 		return collectionDataCountMap;
 	}
 
-	public Integer getTotalDemandAmount(@Valid SearchCriteria criteria) {
+	public BigDecimal getTotalDemandAmount(@Valid SearchCriteria criteria) {
 		StringBuilder query = new StringBuilder(wsQueryBuilder.NEWDEMAND);
 		query.append(" and dmd.taxperiodto between " + criteria.getFromDate() + " and " + criteria.getToDate())
 				.append(" and dmd.tenantId = '").append(criteria.getTenantId()).append("'");
-		return jdbcTemplate.queryForObject(query.toString(), Integer.class);
+		return jdbcTemplate.queryForObject(query.toString(), BigDecimal.class);
 	}
 
-	public Integer getActualCollectionAmount(@Valid SearchCriteria criteria) {
+	public BigDecimal getActualCollectionAmount(@Valid SearchCriteria criteria) {
 		StringBuilder query = new StringBuilder(wsQueryBuilder.ACTUALCOLLECTION);
 		query.append(" and py.transactionDate  >= ").append(criteria.getFromDate()).append(" and py.transactionDate <= ")
 				.append(criteria.getToDate()).append(" and py.tenantId = '").append(criteria.getTenantId()).append("'");
 		log.info("Actual Collection Final Query: " + query);
-		return jdbcTemplate.queryForObject(query.toString(), Integer.class);
+		return jdbcTemplate.queryForObject(query.toString(), BigDecimal.class);
 
 	}
 
-	public Integer getPendingCollectionAmount(@Valid SearchCriteria criteria) {
+	public BigDecimal getPendingCollectionAmount(@Valid SearchCriteria criteria) {
 		StringBuilder query = new StringBuilder(wsQueryBuilder.PENDINGCOLLECTION);
 		query.append(" and dmd.taxperiodto between " + criteria.getFromDate() + " and " + criteria.getToDate())
 				.append(" and dmd.tenantId = '").append(criteria.getTenantId()).append("'");
 		log.info("Active Pending Collection Query : " + query);
-		return jdbcTemplate.queryForObject(query.toString(), Integer.class);
+		return jdbcTemplate.queryForObject(query.toString(), BigDecimal.class);
 
 	}
 
@@ -458,14 +479,128 @@ public class WaterDaoImpl implements WaterDao {
 
 	}
 	
-	public Integer getArrearsAmount(@Valid SearchCriteria criteria) {
+	public BigDecimal getArrearsAmount(@Valid SearchCriteria criteria) {
 		StringBuilder query = new StringBuilder(wsQueryBuilder.PENDINGCOLLECTION);
 		long prevMonthEndDate =  criteria.getFromDate()-1;
 		query.append(" and dmd.taxperiodto <= " + prevMonthEndDate)
 				.append(" and dmd.tenantId = '").append(criteria.getTenantId()).append("'");
 		log.info("Arrears Amount Final Query : " + query);
-		return jdbcTemplate.queryForObject(query.toString(), Integer.class);
+		return jdbcTemplate.queryForObject(query.toString(), BigDecimal.class);
 
+	}
+
+	public BigDecimal getTotalAdvanceAdjustedAmount(@Valid SearchCriteria criteria) {
+		StringBuilder query = new StringBuilder(wsQueryBuilder.ADVANCEADJUSTED);
+		query.append(" and dmd.taxperiodto between " + criteria.getFromDate() + " and " + criteria.getToDate())
+		.append(" and dmd.tenantId = '").append(criteria.getTenantId()).append("'");
+		log.info("Active Advance Adjusted Query : " + query);
+		return jdbcTemplate.queryForObject(query.toString(), BigDecimal.class);
+	}
+
+	public BigDecimal getTotalPendingPenaltyAmount(@Valid SearchCriteria criteria) {
+		StringBuilder query = new StringBuilder(wsQueryBuilder.PENDINGPENALTY);
+		query.append(" and dmd.taxperiodto between " + criteria.getFromDate() + " and " + criteria.getToDate())
+		.append(" and dmd.tenantId = '").append(criteria.getTenantId()).append("'");
+		log.info("Pending Penalty Query : " + query);
+		return jdbcTemplate.queryForObject(query.toString(), BigDecimal.class);
+	}
+
+	public BigDecimal getAdvanceCollectionAmount(@Valid SearchCriteria criteria) {
+		StringBuilder query = new StringBuilder(wsQueryBuilder.ADVANCECOLLECTION);
+		query.append(" and dmd.taxperiodto between " + criteria.getFromDate() + " and " + criteria.getToDate())
+		.append(" and dmd.tenantId = '").append(criteria.getTenantId()).append("'");
+		log.info("Advance Collection Query : " + query);
+		return jdbcTemplate.queryForObject(query.toString(), BigDecimal.class);
+	}
+
+
+	public BigDecimal getPenaltyCollectionAmount(@Valid SearchCriteria criteria) {
+		StringBuilder query = new StringBuilder(wsQueryBuilder.PENALTYCOLLECTION);
+		query.append(" and py.transactionDate  >= ").append(criteria.getFromDate()).append(" and py.transactionDate <= ")
+				.append(criteria.getToDate()).append(" and py.tenantId = '").append(criteria.getTenantId()).append("'");
+		log.info("Penalty Collection Final Query: " + query);
+		return jdbcTemplate.queryForObject(query.toString(), BigDecimal.class);
+	}
+
+	public List<BillReportData> getBillReportData(@Valid Long demandStartDate,@Valid Long demandEndDate, @Valid String tenantId, @Valid Integer offset, @Valid Integer limit, @Valid String sortOrder) {
+		StringBuilder query = new StringBuilder(wsQueryBuilder.BILL_REPORT_QUERY);
+		List<Object> preparedStatement = new ArrayList<>();
+        preparedStatement.add(demandStartDate);
+		preparedStatement.add(demandEndDate);
+		preparedStatement.add(tenantId);
+
+        if(sortOrder.equals(SearchCriteria.SortOrder.DESC.name()))
+           query.append(" DESC ");
+		else
+			query.append(" ASC ");
+
+		Integer newlimit=wsConfiguration.getDefaultLimit();
+		Integer newoffset= wsConfiguration.getDefaultOffset();
+		if(limit==null && offset==null)
+			newlimit=wsConfiguration.getMaxLimit();
+		if(limit!=null && limit<=wsConfiguration.getMaxLimit())
+			newlimit=limit;
+		if(limit!=null && limit>=wsConfiguration.getMaxLimit())
+			newlimit=wsConfiguration.getMaxLimit();
+
+		if(offset!=null)
+			newoffset=offset;
+
+		if(newlimit > 0) {
+				query.append(" offset ?  limit ? ;");
+			preparedStatement.add(newoffset);
+			preparedStatement.add(newlimit);
+		}
+		List<BillReportData> billReportList = new ArrayList<>();
+		try {
+
+			billReportList = jdbcTemplate.query(query.toString(), preparedStatement.toArray(), reportRowMapper);
+		}
+		catch(Exception e){
+			Map<String,String> ex = new  HashMap<String,String>(){{
+				put("DataIntegrityViolationException","e");
+			}};
+			throw new CustomException(ex);
+		}
+		return billReportList;
+			
+	}
+
+	public List<CollectionReportData> getCollectionReportData(Long payStartDateTime, Long payEndDateTime,
+			String tenantId,@Valid Integer offset, @Valid Integer limit, @Valid String sortOrder) {
+		StringBuilder query = new StringBuilder(wsQueryBuilder.COLLECTION_REPORT_QUERY);
+
+		List<Object> preparedStatement = new ArrayList<>();
+                     preparedStatement.add(payStartDateTime);
+					 preparedStatement.add(payEndDateTime);
+					 preparedStatement.add(tenantId);
+
+		if(sortOrder.equals(SearchCriteria.SortOrder.DESC.name()))
+			query.append(" DESC ");
+		else
+			query.append(" ASC ");
+
+		Integer newlimit=wsConfiguration.getDefaultLimit();
+		Integer newoffset= wsConfiguration.getDefaultOffset();
+		if(limit==null && offset==null)
+			newlimit=wsConfiguration.getMaxLimit();
+		if(limit!=null && limit<=wsConfiguration.getMaxLimit())
+			newlimit=limit;
+		if(limit!=null && limit>=wsConfiguration.getMaxLimit())
+			newlimit=wsConfiguration.getMaxLimit();
+
+		if(offset!=null)
+			newoffset=offset;
+
+		if (newlimit>0){
+			query.append(" offset ?  limit ? ;");
+			preparedStatement.add(newoffset);
+			preparedStatement.add(newlimit);
+		}
+
+		List<CollectionReportData> collectionReportList = new ArrayList<>();
+		collectionReportList = jdbcTemplate.query(query.toString(), preparedStatement.toArray(), collectionReportRowMapper);
+		return collectionReportList;
 	}
 	
 

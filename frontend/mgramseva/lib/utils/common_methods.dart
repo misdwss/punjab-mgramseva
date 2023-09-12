@@ -1,7 +1,6 @@
 import 'dart:io';
 import 'dart:math';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -52,6 +51,103 @@ class CommonMethods {
         .reversed
         .toList();
   }
+/*
+  * @author Rahul Dev Garg
+  * rahul.dev@egovernments.org
+  *
+  * */
+
+  static List<DatePeriod> getPastMonthUntilFinancialYTD(DatePeriod ytd,{bool showCurrentMonth = false}) {
+    var monthList = <DateTime>[];
+    final currentTime = DateTime.now();
+    if(currentTime.year < ytd.startDate.year){
+      return <DatePeriod>[];
+    }
+    if (currentTime.year == ytd.startDate.year) {
+      //when current year is same as start year of financial year
+      for (int i = ytd.startDate.month; i <= (showCurrentMonth?currentTime.month:currentTime.month-1); i++) {
+        monthList.add(DateTime(currentTime.year, i));
+      }
+    } else if(currentTime.year == ytd.endDate.year){
+      //when current year is same as end year of financial year
+      for (int i = ytd.startDate.month; i <= 12; i++) {
+        monthList.add(DateTime(ytd.startDate.year, i));
+      }
+      for (int i = 1;
+      i <= (currentTime.month <= ytd.endDate.month ? showCurrentMonth?currentTime.month:currentTime.month-1: ytd.endDate.month);
+      /*
+          * if current month is less than or equal to end month of financial year
+          * we are using months less than current month and if it is more than
+          * end month of financial year we are using till end month of financial
+          * year
+          */
+      i++) {
+        monthList.add(DateTime(ytd.endDate.year, i));
+      }
+    }else{
+      for (int i = ytd.startDate.month; i <= 12; i++) {
+        monthList.add(DateTime(ytd.startDate.year, i));
+      }
+      for (int i = 1;
+      i <= ytd.endDate.month;
+      i++) {
+        monthList.add(DateTime(ytd.endDate.year , i));
+      }
+    }
+    var list = monthList
+        .map((e) => DatePeriod(DateTime(e.year, e.month, 1),
+        DateTime(e.year, e.month + 1, 0, 23, 59, 59, 999), DateType.MONTH))
+        .toList()
+        .reversed
+        .toList();
+    return list;
+  }
+
+  static List<DatePeriod> getPastMonthIncludingCurrentMonthUntilFinancialYTD(DatePeriod ytd) {
+    var monthList = <DateTime>[];
+    final currentTime = DateTime.now();
+    if(currentTime.year < ytd.startDate.year){
+      return <DatePeriod>[];
+    }
+    if (currentTime.year == ytd.startDate.year) {
+      //when current year is same as start year of financial year
+      for (int i = ytd.startDate.month; i <= currentTime.month; i++) {
+        monthList.add(DateTime(currentTime.year, i));
+      }
+    } else if(currentTime.year == ytd.endDate.year){
+      //when current year is same as end year of financial year
+      for (int i = ytd.startDate.month; i <= 12; i++) {
+        monthList.add(DateTime(ytd.startDate.year, i));
+      }
+      for (int i = 1;
+      i <= (currentTime.month <= ytd.endDate.month ? currentTime.month: ytd.endDate.month);
+      /*
+          * if current month is less than or equal to end month of financial year
+          * we are using months less than current month and if it is more than
+          * end month of financial year we are using till end month of financial
+          * year
+          */
+      i++) {
+        monthList.add(DateTime(ytd.endDate.year, i));
+      }
+    }else{
+      for (int i = ytd.startDate.month; i <= 12; i++) {
+        monthList.add(DateTime(ytd.startDate.year, i));
+      }
+      for (int i = 1;
+      i <= ytd.endDate.month;
+      i++) {
+        monthList.add(DateTime(ytd.endDate.year , i));
+      }
+    }
+    var list = monthList
+        .map((e) => DatePeriod(DateTime(e.year, e.month, 1),
+        DateTime(e.year, e.month + 1, 0, 23, 59, 59, 999), DateType.MONTH))
+        .toList()
+        .reversed
+        .toList();
+    return list;
+  }
 
   static List<YearWithMonths> getFinancialYearList([int count = 5]) {
     var yearWithMonths = <YearWithMonths>[];
@@ -61,13 +157,12 @@ class CommonMethods {
           DateTime(DateTime.now().year, 4),
           DateTime(DateTime.now().year + 1, 4, 0, 23, 59, 59, 999),
           DateType.YTD);
-      var monthList = getPastMonthUntilFinancialYear(DateTime.now().year);
+      var monthList = getPastMonthUntilFinancialYTD(year);
       yearWithMonths.add(YearWithMonths(monthList, year));
     } else {
       var year = DatePeriod(
           DateTime(DateTime.now().year - 1, 4), DateTime.now(), DateType.YTD);
-      var monthList = getPastMonthUntilFinancialYear(year.startDate.year,
-          dateType: DateType.YTD);
+      var monthList = getPastMonthUntilFinancialYTD(year);
       yearWithMonths.add(YearWithMonths(monthList, year));
     }
 
@@ -78,7 +173,36 @@ class CommonMethods {
           : DateTime(currentDate.year - i);
       year = DatePeriod(DateTime(year.year - 1, 4),
           DateTime(year.year, 4, 0, 23, 59, 59, 999), DateType.YEAR);
-      var monthList = getPastMonthUntilFinancialYear(year.startDate.year);
+      var monthList = getPastMonthUntilFinancialYTD(year);
+      yearWithMonths.add(YearWithMonths(monthList, year));
+    }
+    return yearWithMonths;
+  }
+  static List<YearWithMonths> getFinancialYearListWithCurrentMonthForCurrentYear([int count = 5]) {
+    var yearWithMonths = <YearWithMonths>[];
+
+    if (DateTime.now().month >= 4) {
+      var year = DatePeriod(
+          DateTime(DateTime.now().year, 4),
+          DateTime(DateTime.now().year + 1, 4, 0, 23, 59, 59, 999),
+          DateType.YTD);
+      var monthList = getPastMonthIncludingCurrentMonthUntilFinancialYTD(year);
+      yearWithMonths.add(YearWithMonths(monthList, year));
+    } else {
+      var year = DatePeriod(
+          DateTime(DateTime.now().year - 1, 4), DateTime.now(), DateType.YTD);
+      var monthList = getPastMonthIncludingCurrentMonthUntilFinancialYTD(year);
+      yearWithMonths.add(YearWithMonths(monthList, year));
+    }
+
+    for (int i = 0; i < count - 1; i++) {
+      var currentDate = DateTime.now();
+      dynamic year = currentDate.month < 4
+          ? DateTime(currentDate.year - (i + 1))
+          : DateTime(currentDate.year - i);
+      year = DatePeriod(DateTime(year.year - 1, 4),
+          DateTime(year.year, 4, 0, 23, 59, 59, 999), DateType.YEAR);
+      var monthList = getPastMonthIncludingCurrentMonthUntilFinancialYTD(year);
       yearWithMonths.add(YearWithMonths(monthList, year));
     }
     return yearWithMonths;
@@ -106,7 +230,7 @@ class CommonMethods {
         .toList();
   }
 
-  String truncateWithEllipsis(int cutoff, String myString) {
+  static String truncateWithEllipsis(int cutoff, String myString) {
     return (myString.length <= cutoff)
         ? myString
         : '${myString.substring(0, cutoff)}...';
@@ -162,7 +286,8 @@ class CommonMethods {
   void checkVersion(BuildContext context, String? latestAppVersion) async {
     try {
       if (latestAppVersion != null && !kIsWeb) {
-        if (packageInfo?.version != latestAppVersion) {
+        if (int.parse(packageInfo!.version.split('.').join("").toString()) <
+            int.parse(latestAppVersion.split('.').join("").toString())) {
           late Uri uri;
 
           if (Platform.isAndroid) {

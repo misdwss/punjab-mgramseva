@@ -231,7 +231,20 @@ public class WSCalculationConfiguration {
 
 	@Value("${egov.bilk.demand.failed.link}")
 	private String bulkDemandFailedLink;
-	
 
+	@Value("${egov.sms.bill.payment.link}")
+	private String billPaymentSMSLink;
+
+	@Value("${egov.pspcl.vendor.number}")
+	private String pspclVendorNumber;
+
+	@Value("${sms.demand.enabled}")
+	private  boolean isSmsForDemandEnable;
+
+	@Value("${sms.payment.link.enabled}")
+	private  boolean isSmsForPaymentLinkEnable;
+
+	@Value("${sms.bill.download.enabled}")
+	private boolean isSmsForBillDownloadEnabled;
 	
 }

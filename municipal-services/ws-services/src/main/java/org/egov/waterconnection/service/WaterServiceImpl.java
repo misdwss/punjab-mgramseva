@@ -2,14 +2,12 @@ package org.egov.waterconnection.service;
 
 import static org.egov.waterconnection.constants.WCConstants.APPROVE_CONNECTION;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.Month;
-import java.time.Period;
-import java.time.YearMonth;
-import java.time.ZoneId;
+import java.time.*;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -21,9 +19,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TimeZone;
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import javax.validation.Valid;
@@ -34,7 +30,6 @@ import org.egov.waterconnection.config.WSConfiguration;
 import org.egov.waterconnection.constants.WCConstants;
 import org.egov.waterconnection.producer.WaterConnectionProducer;
 import org.egov.waterconnection.repository.ElasticSearchRepository;
-import org.egov.waterconnection.repository.WaterDao;
 import org.egov.waterconnection.repository.WaterDaoImpl;
 import org.egov.waterconnection.repository.WaterRepository;
 import org.egov.waterconnection.util.WaterServicesUtil;
@@ -42,26 +37,13 @@ import org.egov.waterconnection.validator.ActionValidator;
 import org.egov.waterconnection.validator.MDMSValidator;
 import org.egov.waterconnection.validator.ValidateProperty;
 import org.egov.waterconnection.validator.WaterConnectionValidator;
-import org.egov.waterconnection.web.models.AuditDetails;
-import org.egov.waterconnection.web.models.BillingCycle;
-import org.egov.waterconnection.web.models.CheckList;
+import org.egov.waterconnection.web.models.*;
 import org.egov.waterconnection.web.models.Connection.StatusEnum;
-import org.egov.waterconnection.web.models.Feedback;
-import org.egov.waterconnection.web.models.FeedbackRequest;
-import org.egov.waterconnection.web.models.FeedbackSearchCriteria;
-import org.egov.waterconnection.web.models.LastMonthSummary;
-import org.egov.waterconnection.web.models.Property;
-import org.egov.waterconnection.web.models.RevenueCollectionData;
-import org.egov.waterconnection.web.models.RevenueDashboard;
-import org.egov.waterconnection.web.models.SearchCriteria;
-import org.egov.waterconnection.web.models.WaterConnection;
-import org.egov.waterconnection.web.models.WaterConnectionRequest;
-import org.egov.waterconnection.web.models.WaterConnectionResponse;
-import org.egov.waterconnection.web.models.enums.Status;
 import org.egov.waterconnection.web.models.workflow.BusinessService;
 import org.egov.waterconnection.workflow.WorkflowIntegrator;
 import org.egov.waterconnection.workflow.WorkflowService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
@@ -76,8 +58,14 @@ import com.jayway.jsonpath.JsonPath;
 @Component
 public class WaterServiceImpl implements WaterService {
 
+
+	/*@Autowired
+	@Lazy
+	private WaterDao waterDao;*/
+
 	@Autowired
-	private WaterDao waterDao;
+	@Lazy
+	private WaterDaoImpl waterDaoImpl;
 
 	@Autowired
 	private WaterConnectionValidator waterConnectionValidator;
@@ -109,8 +97,6 @@ public class WaterServiceImpl implements WaterService {
 	@Autowired
 	private CalculationService calculationService;
 
-	@Autowired
-	private WaterDaoImpl waterDaoImpl;
 
 	@Autowired
 	private UserService userService;
@@ -123,12 +109,12 @@ public class WaterServiceImpl implements WaterService {
 
 	@Autowired
 	private WaterRepository repository;
-	
+
 	@Autowired
 	private ElasticSearchRepository elasticSearchRepository;
 
 	/**
-	 * 
+	 *
 	 * @param waterConnectionRequest WaterConnectionRequest contains water
 	 *                               connection to be created
 	 * @return List of WaterConnection after create
@@ -149,6 +135,11 @@ public class WaterServiceImpl implements WaterService {
 		}
 		mDMSValidator.validateMISFields(waterConnectionRequest);
 		waterConnectionValidator.validateWaterConnection(waterConnectionRequest, reqType);
+		List<WaterConnection> waterConnection = getWaterConnectionForOldConnectionNo(waterConnectionRequest);
+		if(waterConnection != null && waterConnection.size() > 0) {
+			throw new CustomException("DUPLICATE_OLD_CONNECTION_NUMBER",
+					"Duplicate Old connection number");
+		}
 		Property property = validateProperty.getOrValidateProperty(waterConnectionRequest);
 		validateProperty.validatePropertyFields(property, waterConnectionRequest.getRequestInfo());
 		mDMSValidator.validateMasterForCreateRequest(waterConnectionRequest);
@@ -162,14 +153,14 @@ public class WaterServiceImpl implements WaterService {
 		System.out.println("calling save user   ");
 
 		enrichmentService.postStatusEnrichment(waterConnectionRequest);
-		waterDao.saveWaterConnection(waterConnectionRequest);
-		
+		waterDaoImpl.saveWaterConnection(waterConnectionRequest);
+
 		if (null != waterConnectionRequest.getWaterConnection() && null != waterConnectionRequest.getWaterConnection().getPaymentType()
-			&& WCConstants.PAYMENT_TYPE_ARREARS.equalsIgnoreCase(waterConnectionRequest.getWaterConnection().getPaymentType())) {
+				&& WCConstants.PAYMENT_TYPE_ARREARS.equalsIgnoreCase(waterConnectionRequest.getWaterConnection().getPaymentType())) {
 			if ((waterConnectionRequest.getWaterConnection().getArrears() != null
 					&& waterConnectionRequest.getWaterConnection().getArrears().intValue() > 0)
 					|| (waterConnectionRequest.getWaterConnection().getPenalty() != null
-							&& waterConnectionRequest.getWaterConnection().getPenalty().intValue() > 0)) {
+					&& waterConnectionRequest.getWaterConnection().getPenalty().intValue() > 0)) {
 				calculationService.calculateFeeAndGenerateDemand(waterConnectionRequest, property, false);
 			}
 
@@ -179,14 +170,14 @@ public class WaterServiceImpl implements WaterService {
 				calculationService.calculateFeeAndGenerateDemand(waterConnectionRequest, property, true);
 			}
 		}
-		
-		
+
+
 
 		return Arrays.asList(waterConnectionRequest.getWaterConnection());
 	}
 
 	/**
-	 * 
+	 *
 	 * @param criteria    WaterConnectionSearchCriteria contains search criteria on
 	 *                    water connection
 	 * @param requestInfo
@@ -210,18 +201,18 @@ public class WaterServiceImpl implements WaterService {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param criteria    WaterConnectionSearchCriteria contains search criteria on
 	 *                    water connection
 	 * @param requestInfo
 	 * @return List of matching water connection
 	 */
 	public WaterConnectionResponse getWaterConnectionsList(SearchCriteria criteria, RequestInfo requestInfo) {
-		return waterDao.getWaterConnectionList(criteria, requestInfo);
+		return waterDaoImpl.getWaterConnectionList(criteria, requestInfo);
 	}
 
 	/**
-	 * 
+	 *
 	 * @param waterConnectionRequest WaterConnectionRequest contains water
 	 *                               connection to be updated
 	 * @return List of WaterConnection after update
@@ -235,6 +226,12 @@ public class WaterServiceImpl implements WaterService {
 		}
 		mDMSValidator.validateMISFields(waterConnectionRequest);
 		waterConnectionValidator.validateWaterConnection(waterConnectionRequest, WCConstants.UPDATE_APPLICATION);
+		List<WaterConnection> waterConnection = getWaterConnectionForOldConnectionNo(waterConnectionRequest);
+		if(waterConnection != null && waterConnection.size() > 0) {
+			throw new CustomException("DUPLICATE_OLD_CONNECTION_NUMBER",
+					"Duplicate Old connection number");
+		}
+
 		mDMSValidator.validateMasterData(waterConnectionRequest, WCConstants.UPDATE_APPLICATION);
 		Property property = validateProperty.getOrValidateProperty(waterConnectionRequest);
 		validateProperty.validatePropertyFields(property, waterConnectionRequest.getRequestInfo());
@@ -254,12 +251,12 @@ public class WaterServiceImpl implements WaterService {
 //		wfIntegrator.callWorkFlow(waterConnectionRequest, property);
 		// call calculator service to generate the demand for one time fee
 		if (null != waterConnectionRequest.getWaterConnection() &&
-				null != waterConnectionRequest.getWaterConnection().getPaymentType() && 
-						WCConstants.PAYMENT_TYPE_ARREARS.equalsIgnoreCase(waterConnectionRequest.getWaterConnection().getPaymentType())) {
+				null != waterConnectionRequest.getWaterConnection().getPaymentType() &&
+				WCConstants.PAYMENT_TYPE_ARREARS.equalsIgnoreCase(waterConnectionRequest.getWaterConnection().getPaymentType())) {
 			if ((waterConnectionRequest.getWaterConnection().getArrears() != null
 					&& waterConnectionRequest.getWaterConnection().getArrears().intValue() > 0)
 					|| (waterConnectionRequest.getWaterConnection().getPenalty() != null
-							&& waterConnectionRequest.getWaterConnection().getPenalty().intValue() > 0)) {
+					&& waterConnectionRequest.getWaterConnection().getPenalty().intValue() > 0)) {
 				calculationService.calculateFeeAndGenerateDemand(waterConnectionRequest, property, false);
 			}
 		} else if (null != waterConnectionRequest.getWaterConnection() && null != waterConnectionRequest.getWaterConnection().getPaymentType() && WCConstants.PAYMENT_TYPE_ADVANCE.
@@ -268,22 +265,22 @@ public class WaterServiceImpl implements WaterService {
 				calculationService.calculateFeeAndGenerateDemand(waterConnectionRequest, property, true);
 			}
 		}
-		
+
 		// check for edit and send edit notification
 		waterDaoImpl.pushForEditNotification(waterConnectionRequest);
 		// Enrich file store Id After payment
-		enrichmentService.enrichFileStoreIds(waterConnectionRequest);
+		waterDaoImpl.enrichFileStoreIds(waterConnectionRequest);
 		userService.createUser(waterConnectionRequest);
 		enrichmentService.postStatusEnrichment(waterConnectionRequest);
 		boolean isStateUpdatable = waterServiceUtil.getStatusForUpdate(businessService, previousApplicationStatus);
-		waterDao.updateWaterConnection(waterConnectionRequest, isStateUpdatable);
-		enrichmentService.postForMeterReading(waterConnectionRequest, WCConstants.UPDATE_APPLICATION);
+		waterDaoImpl.updateWaterConnection(waterConnectionRequest, isStateUpdatable);
+		postForMeterReading(waterConnectionRequest, WCConstants.UPDATE_APPLICATION);
 		return Arrays.asList(waterConnectionRequest.getWaterConnection());
 	}
 
 	/**
 	 * Search Water connection to be update
-	 * 
+	 *
 	 * @param id
 	 * @param requestInfo
 	 * @return water connection
@@ -310,8 +307,21 @@ public class WaterServiceImpl implements WaterService {
 		return waterConnection.getWaterConnection();
 	}
 
+	private List<WaterConnection> getWaterConnectionForOldConnectionNo(WaterConnectionRequest waterConnectionRequest) {
+		SearchCriteria criteria = SearchCriteria.builder().tenantId(waterConnectionRequest.getWaterConnection().getTenantId())
+				.oldConnectionNumber(waterConnectionRequest.getWaterConnection().getOldConnectionNo()).build();
+		WaterConnectionResponse waterConnection = search(criteria, waterConnectionRequest.getRequestInfo());
+		return waterConnection.getWaterConnection();
+	}
+
 	private List<WaterConnection> updateWaterConnectionForModifyFlow(WaterConnectionRequest waterConnectionRequest) {
 		waterConnectionValidator.validateWaterConnection(waterConnectionRequest, WCConstants.MODIFY_CONNECTION);
+		List<WaterConnection> waterConnection = getWaterConnectionForOldConnectionNo(waterConnectionRequest);
+		if(waterConnection != null && waterConnection.size() > 0 && !waterConnectionRequest.getWaterConnection().getConnectionNo()
+				.equalsIgnoreCase(waterConnection.get(0).getConnectionNo())) {
+			throw new CustomException("DUPLICATE_OLD_CONNECTION_NUMBER",
+					"Duplicate Old connection number");
+		}
 		mDMSValidator.validateMasterData(waterConnectionRequest, WCConstants.MODIFY_CONNECTION);
 		BusinessService businessService = workflowService.getBusinessService(
 				waterConnectionRequest.getWaterConnection().getTenantId(), waterConnectionRequest.getRequestInfo(),
@@ -333,7 +343,7 @@ public class WaterServiceImpl implements WaterService {
 			if ((waterConnectionRequest.getWaterConnection().getArrears() != null
 					&& waterConnectionRequest.getWaterConnection().getArrears().intValue() > 0)
 					|| (waterConnectionRequest.getWaterConnection().getPenalty() != null
-							&& waterConnectionRequest.getWaterConnection().getPenalty().intValue() > 0)) {
+					&& waterConnectionRequest.getWaterConnection().getPenalty().intValue() > 0)) {
 				calculationService.calculateFeeAndGenerateDemand(waterConnectionRequest, property,false);
 			}
 
@@ -343,11 +353,11 @@ public class WaterServiceImpl implements WaterService {
 				calculationService.calculateFeeAndGenerateDemand(waterConnectionRequest, property,true);
 			}
 		}
-		
+
 //		wfIntegrator.callWorkFlow(waterConnectionRequest, property);
 		boolean isStateUpdatable = waterServiceUtil.getStatusForUpdate(businessService, previousApplicationStatus);
-		waterDao.updateWaterConnection(waterConnectionRequest, isStateUpdatable);
-		
+		waterDaoImpl.updateWaterConnection(waterConnectionRequest, isStateUpdatable);
+
 		if(waterConnectionRequest.getWaterConnection().getStatus().equals(StatusEnum.INACTIVE)) {
 			waterConnectionRequest.getWaterConnection().setApplicationStatus("INACTIVE");
 		}
@@ -355,7 +365,7 @@ public class WaterServiceImpl implements WaterService {
 		markOldApplication(waterConnectionRequest);
 		// check for edit and send edit notification
 		waterDaoImpl.pushForEditNotification(waterConnectionRequest);
-		enrichmentService.postForMeterReading(waterConnectionRequest, WCConstants.MODIFY_CONNECTION);
+		postForMeterReading(waterConnectionRequest, WCConstants.MODIFY_CONNECTION);
 		return Arrays.asList(waterConnectionRequest.getWaterConnection());
 	}
 
@@ -372,7 +382,7 @@ public class WaterServiceImpl implements WaterService {
 					WaterConnectionRequest previousWaterConnectionRequest = WaterConnectionRequest.builder()
 							.requestInfo(waterConnectionRequest.getRequestInfo()).waterConnection(waterConnection)
 							.build();
-					waterDao.updateWaterConnection(previousWaterConnectionRequest, Boolean.TRUE);
+					waterDaoImpl.updateWaterConnection(previousWaterConnectionRequest, Boolean.TRUE);
 				}
 			}
 		}
@@ -519,17 +529,17 @@ public class WaterServiceImpl implements WaterService {
 	public RevenueDashboard getRevenueDashboardData(@Valid SearchCriteria criteria, RequestInfo requestInfo) {
 		RevenueDashboard dashboardData = new RevenueDashboard();
 		String tenantId = criteria.getTenantId();
-		Integer demand = waterDaoImpl.getTotalDemandAmount(criteria);
+		BigDecimal demand = waterDaoImpl.getTotalDemandAmount(criteria);
 		if (null != demand) {
-			dashboardData.setDemand(demand.toString());
+			dashboardData.setDemand(demand.setScale(0, RoundingMode.HALF_UP).toString());
 		}
-		Integer paidAmount = waterDaoImpl.getActualCollectionAmount(criteria);
+		BigDecimal paidAmount = waterDaoImpl.getActualCollectionAmount(criteria);
 		if (null != paidAmount) {
-			dashboardData.setActualCollection(paidAmount.toString());
+			dashboardData.setActualCollection(paidAmount.setScale(0, RoundingMode.HALF_UP).toString());
 		}
-		Integer unpaidAmount = waterDaoImpl.getPendingCollectionAmount(criteria);
+		BigDecimal unpaidAmount = waterDaoImpl.getPendingCollectionAmount(criteria);
 		if (null != unpaidAmount) {
-			dashboardData.setPendingCollection(unpaidAmount.toString());
+			dashboardData.setPendingCollection(unpaidAmount.setScale(0, RoundingMode.HALF_UP).toString());
 		}
 		Integer residentialCollection = waterDaoImpl.getResidentialCollectionAmount(criteria);
 		if (null != residentialCollection) {
@@ -555,6 +565,22 @@ public class WaterServiceImpl implements WaterService {
 		if (null != totalApplicationsPaid) {
 			dashboardData.setTotalApplicationsCount(totalApplicationsPaid);
 		}
+		BigDecimal advanceAdjusted = waterDaoImpl.getTotalAdvanceAdjustedAmount(criteria);
+		if (null != advanceAdjusted) {
+			dashboardData.setAdvanceAdjusted(advanceAdjusted.setScale(0, RoundingMode.HALF_UP).toString());
+		}
+		BigDecimal pendingPenalty = waterDaoImpl.getTotalPendingPenaltyAmount(criteria);
+		if (null != pendingPenalty) {
+			dashboardData.setPendingPenalty(pendingPenalty.setScale(0, RoundingMode.HALF_UP).toString());
+		}
+		BigDecimal advanceCollection = waterDaoImpl.getAdvanceCollectionAmount(criteria);
+		if (null != advanceCollection) {
+			dashboardData.setAdvanceCollection(advanceCollection.setScale(0, RoundingMode.HALF_UP).toString());
+		}
+		BigDecimal penaltyCollection = waterDaoImpl.getPenaltyCollectionAmount(criteria);
+		if (null != penaltyCollection) {
+			dashboardData.setPenaltyCollection(penaltyCollection.setScale(0, RoundingMode.HALF_UP).toString());
+		}
 
 		return dashboardData;
 
@@ -563,7 +589,14 @@ public class WaterServiceImpl implements WaterService {
 	@Override
 	public WaterConnectionResponse getWCListFuzzySearch(SearchCriteria criteria, RequestInfo requestInfo) {
 
-		List<String> idsfromDB = waterDao.getWCListFuzzySearch(criteria);
+		if(criteria!=null && criteria.getTextSearch()!=null){
+			criteria.setTextSearch(criteria.getTextSearch().trim());
+		}
+		if(criteria!=null && criteria.getName()!=null){
+			criteria.setName(criteria.getName().trim());
+		}
+
+		List<String> idsfromDB = waterDaoImpl.getWCListFuzzySearch(criteria);
 
 		if (CollectionUtils.isEmpty(idsfromDB))
 			WaterConnectionResponse.builder().waterConnection(new LinkedList<>());
@@ -616,35 +649,35 @@ public class WaterServiceImpl implements WaterService {
 				&& org.apache.commons.lang3.StringUtils.isBlank(criteria.getMobileNumber()))
 			throw new CustomException("EG_WC_SEARCH_ERROR", " No criteria given for the water connection search");
 	}
-	
-	
+
+
 	private List<Map<String, Object>> wsDataResponse(Object esResponse) {
 
-	        List<Map<String, Object>> data;
-	        try {
-	            data = JsonPath.read(esResponse, WCConstants.ES_DATA_PATH);
-	        } catch (Exception e) {
-	            throw new CustomException("PARSING_ERROR", "Failed to extract data from es response");
-	        }
+		List<Map<String, Object>> data;
+		try {
+			data = JsonPath.read(esResponse, WCConstants.ES_DATA_PATH);
+		} catch (Exception e) {
+			throw new CustomException("PARSING_ERROR", "Failed to extract data from es response");
+		}
 
-	        return data;
-	    }
-	
+		return data;
+	}
+
 	public WaterConnectionResponse planeSearch(SearchCriteria criteria, RequestInfo requestInfo) {
 		WaterConnectionResponse waterConnection = getWaterConnectionsListForPlaneSearch(criteria, requestInfo);
 		waterConnectionValidator.validatePropertyForConnection(waterConnection.getWaterConnection());
 		enrichmentService.enrichConnectionHolderDeatils(waterConnection.getWaterConnection(), criteria, requestInfo);
 		return waterConnection;
 	}
-	
+
 	public WaterConnectionResponse getWaterConnectionsListForPlaneSearch(SearchCriteria criteria,
-			RequestInfo requestInfo) {
-		return waterDao.getWaterConnectionListForPlaneSearch(criteria, requestInfo);
+																		 RequestInfo requestInfo) {
+		return waterDaoImpl.getWaterConnectionListForPlaneSearch(criteria, requestInfo);
 	}
 
 	@Override
 	public List<RevenueCollectionData> getRevenueCollectionData(@Valid SearchCriteria criteria,
-			RequestInfo requestInfo) {
+																RequestInfo requestInfo) {
 
 		long endDate = criteria.getToDate();
 		DateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
@@ -654,7 +687,7 @@ public class WaterServiceImpl implements WaterService {
 		Calendar currentDate = Calendar.getInstance();
 		int currentYear = currentDate.get(Calendar.YEAR);
 		int actualMonthnum = currentDate.get(Calendar.MONTH);
-		
+
 		currentDate.setTimeInMillis(criteria.getFromDate());
 		int actualYear = currentDate.get(Calendar.YEAR);
 
@@ -662,17 +695,17 @@ public class WaterServiceImpl implements WaterService {
 
 		int totalMonthsTillDate;
 		LocalDate finYearStarting;
-		
+
 		if (currentYear != actualYear && actualYear < currentYear) {
 			totalMonthsTillDate = 11;
 			currentMonthDate = LocalDate.of(currentDate.get(Calendar.YEAR), currentDate.get(Calendar.MONTH) + 1,
 					currentDate.get(Calendar.DAY_OF_MONTH));
 			finYearStarting = currentMonthDate;
 		} else {
-				totalMonthsTillDate = actualMonthnum - currentMonthNumber;
-				currentMonthDate = LocalDate.of(currentDate.get(Calendar.YEAR), currentDate.get(Calendar.MONTH) + 1,
-						currentDate.get(Calendar.DAY_OF_MONTH));
-				finYearStarting = currentMonthDate;
+			totalMonthsTillDate = actualMonthnum - currentMonthNumber;
+			currentMonthDate = LocalDate.of(currentDate.get(Calendar.YEAR), currentDate.get(Calendar.MONTH) + 1,
+					currentDate.get(Calendar.DAY_OF_MONTH));
+			finYearStarting = currentMonthDate;
 
 		}
 		ArrayList<RevenueCollectionData> data = new ArrayList<RevenueCollectionData>();
@@ -688,24 +721,41 @@ public class WaterServiceImpl implements WaterService {
 			criteria.setToDate((Long) monthEndDateTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli());
 
 			String tenantId = criteria.getTenantId();
-			Integer demand = waterDaoImpl.getTotalDemandAmount(criteria);
+			BigDecimal demand = waterDaoImpl.getTotalDemandAmount(criteria);
 			RevenueCollectionData collectionData = new RevenueCollectionData();
 
 			if (null != demand) {
-				collectionData.setDemand(demand.toString());
+				collectionData.setDemand(demand.setScale(0, RoundingMode.HALF_UP).toString());
 			}
-			Integer paidAmount = waterDaoImpl.getActualCollectionAmount(criteria);
+			BigDecimal paidAmount = waterDaoImpl.getActualCollectionAmount(criteria);
 			if (null != paidAmount) {
-				collectionData.setActualCollection(paidAmount.toString());
+				collectionData.setActualCollection(paidAmount.setScale(0, RoundingMode.HALF_UP).toString());
 			}
-			Integer unpaidAmount = waterDaoImpl.getPendingCollectionAmount(criteria);
+			BigDecimal unpaidAmount = waterDaoImpl.getPendingCollectionAmount(criteria);
 			if (null != unpaidAmount) {
-				collectionData.setPendingCollection(unpaidAmount.toString());
+				collectionData.setPendingCollection(unpaidAmount.setScale(0, RoundingMode.HALF_UP).toString());
 			}
-			Integer arrears = waterDaoImpl.getArrearsAmount(criteria);
+			BigDecimal arrears = waterDaoImpl.getArrearsAmount(criteria);
 			if (null != arrears) {
-				collectionData.setArrears(arrears.toString());
+				collectionData.setArrears(arrears.setScale(0, RoundingMode.HALF_UP).toString());
 			}
+			BigDecimal advanceAdjusted = waterDaoImpl.getTotalAdvanceAdjustedAmount(criteria);
+			if (null != advanceAdjusted) {
+				collectionData.setAdvanceAdjusted(advanceAdjusted.setScale(0, RoundingMode.HALF_UP).toString());
+			}
+			BigDecimal pendingPenalty = waterDaoImpl.getTotalPendingPenaltyAmount(criteria);
+			if (null != pendingPenalty) {
+				collectionData.setPendingPenalty(pendingPenalty.setScale(0, RoundingMode.HALF_UP).toString());
+			}
+			BigDecimal advanceCollection = waterDaoImpl.getAdvanceCollectionAmount(criteria);
+			if (null != advanceCollection) {
+				collectionData.setAdvanceCollection(advanceCollection.setScale(0, RoundingMode.HALF_UP).toString());
+			}
+			BigDecimal penaltyCollection = waterDaoImpl.getPenaltyCollectionAmount(criteria);
+			if (null != penaltyCollection) {
+				collectionData.setPenaltyCollection(penaltyCollection.setScale(0, RoundingMode.HALF_UP).toString());
+			}
+
 			collectionData.setMonth(criteria.getFromDate());
 			data.add(i, collectionData);
 			System.out.println("Month:: " + criteria.getFromDate());
@@ -714,6 +764,62 @@ public class WaterServiceImpl implements WaterService {
 		}
 		System.out.println("datadatadatadata" + data);
 		return data;
+	}
 
+	/**
+	 * Create meter reading for meter connection
+	 *
+	 * @param waterConnectionrequest
+	 */
+	public void postForMeterReading(WaterConnectionRequest waterConnectionrequest, int reqType) {
+		if (!StringUtils.isEmpty(waterConnectionrequest.getWaterConnection().getConnectionType())
+				&& WCConstants.METERED_CONNECTION
+				.equalsIgnoreCase(waterConnectionrequest.getWaterConnection().getConnectionType())) {
+			if (reqType == WCConstants.UPDATE_APPLICATION && WCConstants.ACTIVATE_CONNECTION
+					.equalsIgnoreCase(waterConnectionrequest.getWaterConnection().getProcessInstance().getAction())) {
+				waterDaoImpl.postForMeterReading(waterConnectionrequest);
+			} else if (WCConstants.MODIFY_CONNECTION == reqType && WCConstants.APPROVE_CONNECTION.
+					equals(waterConnectionrequest.getWaterConnection().getProcessInstance().getAction())) {
+				SearchCriteria criteria = SearchCriteria.builder()
+						.tenantId(waterConnectionrequest.getWaterConnection().getTenantId())
+						.connectionNumber(waterConnectionrequest.getWaterConnection().getConnectionNo()).build();
+				List<WaterConnection> connections;
+				WaterConnectionResponse waterConnection = search(criteria, waterConnectionrequest.getRequestInfo());
+				connections = waterConnection.getWaterConnection();
+				if (!CollectionUtils.isEmpty(connections)) {
+					WaterConnection connection = connections.get(connections.size() - 1);
+					if (!connection.getConnectionType().equals(WCConstants.METERED_CONNECTION)) {
+						waterDaoImpl.postForMeterReading(waterConnectionrequest);
+					}
+				}
+			}
+		}
+	}
+
+	@Override
+	public List<BillReportData> billReport(@Valid String demandStartDate, @Valid String demandEndDate, String tenantId, @Valid Integer offset, @Valid Integer limit, @Valid String sortOrder, RequestInfo requestInfo) {
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+		LocalDate demStartDate = LocalDate.parse(demandStartDate, formatter);
+		LocalDate demEndDate = LocalDate.parse(demandEndDate, formatter);
+
+		Long demStartDateTime = LocalDateTime.of(demStartDate.getYear(), demStartDate.getMonth(), demStartDate.getDayOfMonth(), 0, 0, 0)
+				.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
+		Long demEndDateTime = LocalDateTime.of(demEndDate, LocalTime.MAX).atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
+		List<BillReportData> billReportData = waterDaoImpl.getBillReportData(demStartDateTime,demEndDateTime,tenantId,offset,limit,sortOrder);
+		return billReportData;
+	}
+
+	@Override
+	public List<CollectionReportData> collectionReport(String paymentStartDate, String paymentEndDate, String tenantId,@Valid Integer offset, @Valid Integer limit, @Valid String sortOrder,
+													   RequestInfo requestInfo) {
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+		LocalDate payStartDate = LocalDate.parse(paymentStartDate, formatter);
+		LocalDate payEndDate = LocalDate.parse(paymentEndDate, formatter);
+
+		Long payStartDateTime = LocalDateTime.of(payStartDate.getYear(), payStartDate.getMonth(), payStartDate.getDayOfMonth(), 0, 0, 0)
+				.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
+		Long payEndDateTime = LocalDateTime.of(payEndDate,LocalTime.MAX).atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
+		List<CollectionReportData> collectionReportData = waterDaoImpl.getCollectionReportData(payStartDateTime,payEndDateTime,tenantId,offset,limit,sortOrder);
+		return collectionReportData;
 	}
 }
