@@ -1,22 +1,22 @@
 package org.egov.web.notification.sms.models;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 
-import static org.apache.commons.lang3.StringUtils.isNotEmpty;
-
-@Getter
 @AllArgsConstructor
-@EqualsAndHashCode
+@NoArgsConstructor
+@Builder
 @ToString
-@Setter
-public class Sms {
-
+public class SmsSaveRequest {
+    private Long id;
     private String mobileNumber;
     private String message;
     private Category category;
-    private Long expiryTime;
+    private Long createdtime;
     private String templateId;
     private String tenantId;
     public boolean isValid() {
