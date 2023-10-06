@@ -1,15 +1,13 @@
 package org.egov.web.notification.sms.service;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.jayway.jsonpath.*;
 import lombok.extern.slf4j.*;
 import org.apache.http.conn.ssl.*;
 import org.apache.http.impl.client.*;
+import org.egov.web.notification.sms.repository.builder.SmsNotificationRepository;
 import org.egov.web.notification.sms.config.*;
 import org.egov.web.notification.sms.models.*;
-import org.springframework.asm.*;
+import org.egov.web.notification.sms.producer.Producer;
 import org.springframework.beans.factory.annotation.*;
-import org.springframework.core.*;
 import org.springframework.core.env.*;
 import org.springframework.http.*;
 import org.springframework.http.client.*;
@@ -17,7 +15,6 @@ import org.springframework.http.converter.*;
 import org.springframework.http.converter.json.*;
 import org.springframework.util.*;
 import org.springframework.web.client.*;
-import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.annotation.*;
 import javax.net.ssl.*;
@@ -40,6 +37,13 @@ abstract public class BaseSMSService implements SMSService, SMSBodyBuilder {
 
     @Autowired
     protected Environment env;
+
+    @Autowired
+    private Producer producer;
+
+    @Autowired
+    private SmsNotificationRepository smsNotificationRepository;
+
 
     @PostConstruct
     public void init() {
@@ -75,6 +79,13 @@ abstract public class BaseSMSService implements SMSService, SMSBodyBuilder {
             return;
         }
         log.info("calling submitToExternalSmsService() method");
+        if(smsProperties.isSaveSmsEnable()) {
+            Long id = smsNotificationRepository.getNextSequence();
+            SmsSaveRequest smsSaveRequest = SmsSaveRequest.builder().id(id).mobileNumber(sms.getMobileNumber()).message(sms.getMessage())
+                    .category(sms.getCategory()).templateId(sms.getTemplateId()).tenantId(sms.getTenantId()).createdtime(System.currentTimeMillis()).build();
+            log.info("SMS request to save sms topic" + smsSaveRequest);
+            producer.push(smsProperties.getSaveSmsTopic(), smsSaveRequest);
+        }
         submitToExternalSmsService(sms);
     }
 
