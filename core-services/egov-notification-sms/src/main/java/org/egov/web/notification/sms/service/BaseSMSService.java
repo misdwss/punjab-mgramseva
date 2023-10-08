@@ -83,8 +83,9 @@ abstract public class BaseSMSService implements SMSService, SMSBodyBuilder {
             Long id = smsNotificationRepository.getNextSequence();
             SmsSaveRequest smsSaveRequest = SmsSaveRequest.builder().id(id).mobileNumber(sms.getMobileNumber()).message(sms.getMessage())
                     .category(sms.getCategory()).templateId(sms.getTemplateId()).tenantId(sms.getTenantId()).createdtime(System.currentTimeMillis()).build();
-            log.info("SMS request to save sms topic" + smsSaveRequest);
-            producer.push(smsProperties.getSaveSmsTopic(), smsSaveRequest);
+            SmsSaveRequestPersister smsSaveRequestPersister =SmsSaveRequestPersister.builder().smsSaveRequest(smsSaveRequest).build();
+            log.info("SMS request to save sms topic" + smsSaveRequestPersister);
+            producer.push(smsProperties.getSaveSmsTopic(), smsSaveRequestPersister);
         }
         submitToExternalSmsService(sms);
     }
