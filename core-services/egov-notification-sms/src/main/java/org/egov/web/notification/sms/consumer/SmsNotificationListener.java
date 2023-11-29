@@ -65,8 +65,11 @@ public class SmsNotificationListener {
     public void process(HashMap<String, Object> consumerRecord) {
         RequestContext.setId(UUID.randomUUID().toString());
         SMSRequest request = null;
+
         try {
             request = objectMapper.convertValue(consumerRecord, SMSRequest.class);
+            log.info("SMS request :"+request.getTenantId());
+            log.info("SMS Disabled for tenant :" +smsProperties.getSmsDisabledTenantList());
             if(!ObjectUtils.isEmpty(request.getTenantId()) && !smsProperties.getSmsDisabledTenantList().contains(request.getTenantId())) {
                 if (request.getExpiryTime() != null && request.getCategory() == Category.OTP) {
                     Long expiryTime = request.getExpiryTime();
