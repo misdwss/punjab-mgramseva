@@ -73,7 +73,7 @@ public class SmsNotificationListener {
             log.info("sms request message" + request.getMessage());
             log.info("sms request tenantid" + request.getTenantId());
 
-            if(request.getCategory().equals("OTP")) {
+            if(request.getCategory() == Category.OTP) {
                 if (request.getExpiryTime() != null && request.getCategory() == Category.OTP) {
 
                     Long expiryTime = request.getExpiryTime();
