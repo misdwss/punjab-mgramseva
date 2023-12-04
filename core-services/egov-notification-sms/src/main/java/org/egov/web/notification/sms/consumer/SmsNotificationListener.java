@@ -85,8 +85,7 @@ public class SmsNotificationListener {
                 } else {
                     smsService.sendSMS(request.toDomain());
                 }
-            }
-            else if (!ObjectUtils.isEmpty(request.getTenantId()) && !smsProperties.getSmsDisabledTenantList().contains(request.getTenantId())) {
+            } else if (!ObjectUtils.isEmpty(request.getTenantId()) && !smsProperties.getSmsDisabledTenantList().contains(request.getTenantId())) {
                 if (request.getExpiryTime() != null && request.getCategory() == Category.OTP) {
                     Long expiryTime = request.getExpiryTime();
                     Long currentTime = System.currentTimeMillis();
