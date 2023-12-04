@@ -67,6 +67,10 @@ public class SmsNotificationListener {
         SMSRequest request = null;
         try {
             request = objectMapper.convertValue(consumerRecord, SMSRequest.class);
+            log.info("SMS request" +request);
+            log.info("SMS request " + request.getTemplateId());
+            log.info("SMS request " + request.getCategory());
+            log.info("sms request " + request.getMessage());
             if(!ObjectUtils.isEmpty(request.getTenantId()) && !smsProperties.getSmsDisabledTenantList().contains(request.getTenantId())) {
                 if (request.getExpiryTime() != null && request.getCategory() == Category.OTP) {
                     Long expiryTime = request.getExpiryTime();
