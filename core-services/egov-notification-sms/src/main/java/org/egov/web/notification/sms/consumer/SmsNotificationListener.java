@@ -73,8 +73,11 @@ public class SmsNotificationListener {
             log.info("sms request " + request.getMessage());
             if(request.getCategory().equals("OTP")) {
                 if (request.getExpiryTime() != null && request.getCategory() == Category.OTP) {
+
                     Long expiryTime = request.getExpiryTime();
+                    log.info("inside:" +expiryTime );
                     Long currentTime = System.currentTimeMillis();
+                    log.info("inside current time:" +currentTime );
                     if (expiryTime < currentTime) {
                         log.info("OTP Expired");
                         if (!StringUtils.isEmpty(expiredSmsTopic))
@@ -86,7 +89,9 @@ public class SmsNotificationListener {
                     smsService.sendSMS(request.toDomain());
                 }
             } else if (!ObjectUtils.isEmpty(request.getTenantId()) && !smsProperties.getSmsDisabledTenantList().contains(request.getTenantId())) {
+                log.info("iside else if first");
                 if (request.getExpiryTime() != null && request.getCategory() == Category.OTP) {
+                    log.info("iside else if");
                     Long expiryTime = request.getExpiryTime();
                     Long currentTime = System.currentTimeMillis();
                     if (expiryTime < currentTime) {
