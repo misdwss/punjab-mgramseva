@@ -67,19 +67,10 @@ public class SmsNotificationListener {
         SMSRequest request = null;
         try {
             request = objectMapper.convertValue(consumerRecord, SMSRequest.class);
-            log.info("SMS request" +request);
-            log.info("SMS request temp id " + request.getTemplateId());
-            log.info("SMS request  category" + request.getCategory());
-            log.info("sms request message" + request.getMessage());
-            log.info("sms request tenantid" + request.getTenantId());
-
             if(request.getCategory() == Category.OTP) {
                 if (request.getExpiryTime() != null && request.getCategory() == Category.OTP) {
-
                     Long expiryTime = request.getExpiryTime();
-                    log.info("inside:" +expiryTime );
                     Long currentTime = System.currentTimeMillis();
-                    log.info("inside current time:" +currentTime );
                     if (expiryTime < currentTime) {
                         log.info("OTP Expired");
                         if (!StringUtils.isEmpty(expiredSmsTopic))
