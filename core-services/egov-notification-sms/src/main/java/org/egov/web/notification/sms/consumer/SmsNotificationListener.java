@@ -68,9 +68,11 @@ public class SmsNotificationListener {
         try {
             request = objectMapper.convertValue(consumerRecord, SMSRequest.class);
             log.info("SMS request" +request);
-            log.info("SMS request " + request.getTemplateId());
-            log.info("SMS request " + request.getCategory());
-            log.info("sms request " + request.getMessage());
+            log.info("SMS request temp id " + request.getTemplateId());
+            log.info("SMS request  category" + request.getCategory());
+            log.info("sms request message" + request.getMessage());
+            log.info("sms request tenantid" + request.getTenantId());
+
             if(request.getCategory().equals("OTP")) {
                 if (request.getExpiryTime() != null && request.getCategory() == Category.OTP) {
 
