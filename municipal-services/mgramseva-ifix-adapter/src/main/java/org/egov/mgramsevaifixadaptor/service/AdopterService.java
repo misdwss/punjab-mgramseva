@@ -130,6 +130,14 @@ public class AdopterService {
 
 			uri = uri.replace("{4}", criteria.getOffset());
 		}
+		if (uri.contains("{5}")) {
+
+			uri = uri.replace("{5}", criteria.getFromDate());
+		}
+		if (uri.contains("{6}")) {
+
+			uri = uri.replace("{6}", criteria.getToDate());
+		}
 		Object result = serviceRequestRepository.fetchResult(uri,
 				RequestInfoWrapper.builder().requestInfo(requestInfo).build());
 		PaymentResponse response;
@@ -166,6 +174,18 @@ public class AdopterService {
 			url.append("&");
 			url.append("offset=");
 			url.append("{4}");
+		}
+		if (criteria.getFromDate() != null) {
+
+			url.append("&");
+			url.append("fromDate=");
+			url.append("{5}");
+		}
+		if (criteria.getToDate() != null) {
+
+			url.append("&");
+			url.append("toDate=");
+			url.append("{6}");
 		}
 		return url.toString();
 	}

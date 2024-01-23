@@ -34,4 +34,10 @@ public class SearchCriteria {
 
 	@JsonProperty("offset")
 	private String offset;
+
+	@JsonProperty("fromDate")
+	private String fromDate;
+
+	@JsonProperty("toDate")
+	private String toDate;
 }
