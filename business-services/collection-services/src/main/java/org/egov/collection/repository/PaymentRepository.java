@@ -244,10 +244,14 @@ public class PaymentRepository {
     public List<String> fetchPaymentIds(PaymentSearchCriteria paymentSearchCriteria) {
 
         Map<String, Object> preparedStatementValues = new HashMap<>();
+        preparedStatementValues.put("fromDate", paymentSearchCriteria.getFromDate());
+        preparedStatementValues.put("toDate", paymentSearchCriteria.getToDate());
         preparedStatementValues.put("offset", paymentSearchCriteria.getOffset());
         preparedStatementValues.put("limit", paymentSearchCriteria.getLimit());
 
-        return namedParameterJdbcTemplate.query("SELECT id from egcl_payment ORDER BY createdtime offset " + ":offset " + "limit :limit", preparedStatementValues, new SingleColumnRowMapper<>(String.class));
+        return namedParameterJdbcTemplate.query("SELECT id FROM egcl_payment " +
+                "WHERE transactionDate BETWEEN :fromDate AND :toDate " +
+                "ORDER BY createdtime offset " + ":offset " + "limit :limit", preparedStatementValues, new SingleColumnRowMapper<>(String.class));
 
     }
 

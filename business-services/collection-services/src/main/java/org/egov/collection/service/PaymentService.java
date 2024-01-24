@@ -202,6 +202,16 @@ public class PaymentService {
             searchCriteria.setLimit(applicationProperties.getReceiptsSearchDefaultLimit());
         }
 
+        if (paymentSearchCriteria.getFromDate() != null) {
+            // Filter payments with transactionDate greater than or equal to fromDate
+            searchCriteria.setFromDate(paymentSearchCriteria.getFromDate());
+        }
+
+        if (paymentSearchCriteria.getToDate() != null) {
+            // Filter payments with transactionDate less than or equal to toDate
+            searchCriteria.setToDate(paymentSearchCriteria.getToDate());
+        }
+
         List<String> ids = paymentRepository.fetchPaymentIds(searchCriteria);
         if (ids.isEmpty())
             return Collections.emptyList();
