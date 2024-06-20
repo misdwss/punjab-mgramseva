@@ -154,6 +154,7 @@ public class WaterServiceImpl implements WaterService {
 		mDMSValidator.validateMasterForCreateRequest(waterConnectionRequest);
 		enrichmentService.enrichWaterConnection(waterConnectionRequest, reqType);
 		System.out.println("creating user");
+		mDMSValidator.validateUserName(waterConnectionRequest);
 		userService.createUser(waterConnectionRequest);
 		System.out.println("created user   " + config.getIsExternalWorkFlowEnabled());
 		// call work-flow

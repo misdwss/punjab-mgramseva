@@ -496,6 +496,6 @@ public class UserService {
 		userSearchRequest.setRoleCodes(roleCodes);
 		StringBuilder uri = new StringBuilder(userHost).append(userSearchEndpoint);
 		return userCall(userSearchRequest, uri);
-	}
+	}      
 	
 }
