@@ -574,4 +574,26 @@ public class UserRepository {
         return tenantId.split("\\.")[0];
     }
 
+    public List<User> findUserByTenant(UserSearchCriteria userSearch) {
+        final List<Object> preparedStatementValues = new ArrayList<>();
+        boolean RoleSearchHappend = false;
+        List<Long> userIds = new ArrayList<>();
+        if (!isEmpty(userSearch.getRoleCodes()) && userSearch.getTenantId() != null) {
+            log.info("INSIDE ROLE SEARCH");
+            userIds = findUsersWithRole(userSearch);
+            RoleSearchHappend = true;
+        }
+        List<User> users = new ArrayList<>();
+        String queryStr = userTypeQueryBuilder.getQueryBytenants(userSearch, preparedStatementValues);
+        log.info("QUERY TO SEARCH "+queryStr);
+
+        users = jdbcTemplate.query(queryStr, preparedStatementValues.toArray(), userResultSetExtractor);
+        log.info("Prepared Statement valus:" + preparedStatementValues);
+        log.info("tenatid:" + preparedStatementValues.get(0));
+        log.info("offset:"+preparedStatementValues.get(preparedStatementValues.size()-1));
+        log.info("users:" + users.size());
+        enrichRoles(users);
+        return users;
+
+    }
 }
