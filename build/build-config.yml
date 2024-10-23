@@ -80,7 +80,14 @@ config:
         image-name: "egov-hrms"
         dockerfile: "build/maven/Dockerfile"
       - work-dir: "business-services/egov-hrms/src/main/resources/db"
-        image-name: "egov-hrms-db"
+        image-name: "egov-hrms-db"   
+  - name: "builds/mGramSeva/business-services/collection-services"
+    build:
+      - work-dir: "business-services/collection-services"
+        image-name: "collection-services"
+        dockerfile: "build/maven/Dockerfile"
+      - work-dir: "business-services/collection-services/src/main/resources/db"
+        image-name: "collection-services-db"   
   - name: "builds/mGramSeva/frontend/frontend-mgramseva"
     build:
       - work-dir: "frontend/mgramseva"

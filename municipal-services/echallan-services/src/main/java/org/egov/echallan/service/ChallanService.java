@@ -165,6 +165,19 @@ public class ChallanService {
 				paymentService.updatePayment(request);
 			return request.getChallan();
 		}
+	public Challan updateCreateNoPayment(ChallanRequest request, Map<String, String> finalData) {
+		Object mdmsData = utils.mDMSCall(request);
+		expenseValidator.validateFields(request, mdmsData);
+		validator.validateFields(request, mdmsData);
+		List<Challan> searchResult = searchChallans(request, finalData);
+		validator.validateUpdateRequest(request, searchResult);
+		expenseValidator.validateUpdateRequest(request, searchResult);
+		userService.setAccountUser(request);
+		enrichmentService.enrichUpdateRequest(request, searchResult.get(0));
+		calculationService.addCalculation(request);
+		repository.update(request);
+		return request.getChallan();
+	}
 
 	public Challan updateCreateNoPayment(ChallanRequest request, Map<String, String> finalData) {
 		Object mdmsData = utils.mDMSCall(request);
