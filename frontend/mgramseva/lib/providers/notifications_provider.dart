@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:mgramseva/model/Events/events_List.dart';
+import 'package:mgramseva/model/events/events_List.dart';
 
 import 'package:mgramseva/repository/core_repo.dart';
 import 'package:mgramseva/utils/error_logging.dart';
@@ -22,7 +22,7 @@ class NotificationProvider with ChangeNotifier {
       List<Events> res = []
         ..addAll(notifications2!.events!)
         ..addAll(notifications1!.events!);
-      if (res != null && res.length > 0) {
+      if (res.length > 0) {
         final jsonList = res.map((item) => jsonEncode(item)).toList();
         final uniqueJsonList = jsonList.toSet().toList();
         var result = EventsList.fromJson({

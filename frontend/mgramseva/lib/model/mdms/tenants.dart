@@ -58,6 +58,11 @@ class Tenants {
   factory Tenants.fromJson(Map<String, dynamic> json) =>
       _$TenantsFromJson(json);
 
+  @override
+  String toString() {
+    return '$code';
+  }
+
   Map<String, dynamic> toJson() => _$TenantsToJson(this);
 }
 
@@ -89,9 +94,9 @@ class City {
   @JsonKey(name: "ulbGrade")
   String? ulbGrade;
   @JsonKey(name: "longitude")
-  double? longitude;
+  dynamic? longitude;
   @JsonKey(name: "latitude")
-  double? latitude;
+  dynamic? latitude;
   @JsonKey(name: "code")
   String? code;
   @JsonKey(name: "ddrName")

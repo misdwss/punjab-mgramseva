@@ -1,29 +1,29 @@
 import 'package:flutter/cupertino.dart';
 import 'package:intl/intl.dart';
-import 'package:mgramseva/utils/Constants/I18KeyConstants.dart';
+import 'package:mgramseva/utils/constants/i18_key_constants.dart';
 import 'package:mgramseva/utils/constants.dart';
 
-import 'Locilization/application_localizations.dart';
+import 'localization/application_localizations.dart';
 import 'global_variables.dart';
 import 'models.dart';
 
 class DateFormats {
   static getFilteredDate(String date, {String? dateFormat}) {
-    if (date == null || date.trim().isEmpty) return '';
+    if (date.trim().isEmpty) return '';
     try {
       var dateTime = DateTime.parse(date).toLocal();
       return DateFormat(dateFormat ?? "dd-MM-yyyy").format(dateTime);
-    } on Exception catch (e) {
+    } on Exception {
       return '';
     }
   }
 
   static DateTime? getDateFromString(String date) {
-    if (date == null || date.trim().isEmpty) return null;
+    if (date.trim().isEmpty) return null;
     try {
       var dateTime = DateTime.parse(date).toLocal();
       return dateTime;
-    } on Exception catch (e) {
+    } on Exception {
       return null;
     }
   }
@@ -38,17 +38,28 @@ class DateFormats {
       }
       var inputDate = inputFormat.parse(date);
       return inputDate;
-    } on Exception catch (e) {
+    } on Exception {
       return null;
     }
   }
 
+  static String leadgerTimeStampToDate(int? timeInMillis, {String? format}) {
+  if (timeInMillis == null || timeInMillis == 0) return '-';
+  try {
+    var date = DateTime.fromMillisecondsSinceEpoch(timeInMillis);
+    return DateFormat('dd-MMM-yyyy').format(date);
+
+  } catch (e) {
+    return '';
+  }
+}
+
   static String getTime(String date) {
-    if (date == null || date.trim().isEmpty) return '';
+    if (date.trim().isEmpty) return '';
     try {
       var dateTime = getDateFromString(date);
       return DateFormat.Hms().format(dateTime!);
-    } on Exception catch (e, stackTrace) {
+    } on Exception {
       return '';
     }
   }
@@ -57,7 +68,7 @@ class DateFormats {
     try {
       var dateTime = getDateFromString(date);
       return DateFormat.jm().format(dateTime!);
-    } on Exception catch (e, stackTrace) {
+    } on Exception {
       return '';
     }
   }
@@ -112,6 +123,14 @@ class DateFormats {
   static String getMonth(DateTime date) {
     try {
       return '${DateFormat.MMM().format(date)}';
+    } catch (e) {
+      return '';
+    }
+  }
+
+  static String getMonthAndYearFromDateTime(DateTime date) {
+    try {
+      return '${ApplicationLocalizations.of(navigatorKey.currentContext!).translate(Constants.MONTHS[date.month-1])}-${DateFormat.y().format(date)}';
     } catch (e) {
       return '';
     }

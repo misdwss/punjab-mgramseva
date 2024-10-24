@@ -1,6 +1,6 @@
 import 'package:mgramseva/model/connection/water_connections.dart';
 import 'package:mgramseva/providers/common_provider.dart';
-import 'package:mgramseva/services/RequestInfo.dart';
+import 'package:mgramseva/services/request_info.dart';
 import 'package:mgramseva/services/base_service.dart';
 import 'package:mgramseva/services/urls.dart';
 import 'package:mgramseva/utils/global_variables.dart';
@@ -14,7 +14,6 @@ class SearchConnectionRepository extends BaseService {
         navigatorKey.currentContext!,
         listen: false);
 
-    var body = {commonProvider.userDetails?.userRequest?.toJson()};
     final requestInfo = RequestInfo(
       APIConstants.API_MODULE_NAME,
       APIConstants.API_VERSION,
@@ -67,4 +66,36 @@ class SearchConnectionRepository extends BaseService {
     }
     return waterConnections;
   }
+
+  Future<WaterConnections> getNonDemandGeneratedWC(Map<String, dynamic> query) async {
+    var commonProvider = Provider.of<CommonProvider>(
+        navigatorKey.currentContext!,
+        listen: false);
+
+    final requestInfo = RequestInfo(
+      APIConstants.API_MODULE_NAME,
+      APIConstants.API_VERSION,
+      APIConstants.API_TS,
+      "_search",
+      APIConstants.API_DID,
+      APIConstants.API_KEY,
+      APIConstants.API_MESSAGE_ID,
+      commonProvider.userDetails!.accessToken,
+      commonProvider.userDetails?.userRequest?.toJson(),
+    );
+    var res = await makeRequest(
+        url: Url.WATER_CONNECTION_DEMAND_NOT_GENERATED,
+        queryParameters: query,
+        method: RequestType.POST,
+        body: {},
+        requestInfo: requestInfo);
+
+    if (res != null) {
+      waterConnections = WaterConnections.fromJson(res);
+    }
+    return waterConnections;
+  }
+
+
+
 }

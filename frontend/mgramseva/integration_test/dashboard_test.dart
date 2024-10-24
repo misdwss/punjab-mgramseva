@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mgramseva/main.dart' as app;
-import 'package:mgramseva/utils/Locilization/application_localizations.dart';
-import 'package:mgramseva/utils/TestingKeys/testing_keys.dart';
+import 'package:mgramseva/utils/localization/application_localizations.dart';
+import 'package:mgramseva/utils/testing_keys/testing_keys.dart';
 import 'package:mgramseva/utils/constants.dart';
 import 'package:mgramseva/utils/date_formats.dart';
 import 'package:mgramseva/utils/global_variables.dart';
-import 'package:mgramseva/utils/Constants/I18KeyConstants.dart';
+import 'package:mgramseva/utils/constants/i18_key_constants.dart';
 import 'package:mgramseva/utils/models.dart';
-import 'package:mgramseva/widgets/tab_button.dart';
 
 import 'Test Inputs/test_inputs.dart';
 
@@ -33,7 +32,7 @@ void main() {
     await tester.pumpAndSettle(Duration(milliseconds: 3000));
 
     // final tabSelection = find.byKey(Keys.dashboard.DASHBOARD_SEARCH);
-    final dashboard_search = find.byKey(Keys.dashboard.DASHBOARD_SEARCH);
+    final dashboardSearch = find.byKey(Keys.dashboard.DASHBOARD_SEARCH);
     final datePicker = find.byKey(Keys.dashboard.DASHBOARD_DATE_PICKER);
     final expenditureTab = find.widgetWithText(GestureDetector, ApplicationLocalizations.of(navigatorKey.currentContext!).translate(i18.dashboard.EXPENDITURE)).first;
     final tab = find.byKey(Keys.dashboard.SECOND_TAB);
@@ -87,8 +86,8 @@ void main() {
     await tester.pumpAndSettle(Duration(milliseconds: 5000));
 
     /// Searching items
-    await tester.ensureVisible(dashboard_search);
-    await tester.enterText(dashboard_search, dashboardTestData['dashboardSearch']);
+    await tester.ensureVisible(dashboardSearch);
+    await tester.enterText(dashboardSearch, dashboardTestData['dashboardSearch']);
     await tester.pumpAndSettle(Duration(milliseconds: 5000));
 
     // await tester.ensureVisible(share);

@@ -227,7 +227,7 @@ public class SchedulerService {
 					if (config.getIsSMSEnabled()) {
 
 						UserDetailResponse userDetailResponse = userService.getUserByRoleCodes(requestInfo, tenantId,
-								Arrays.asList("EXPENSE_PROCESSING"));
+								Arrays.asList("EXPENSE_PROCESSING","SECRETARY"));
 						Map<String, String> mobileNumberIdMap = new LinkedHashMap<>();
 
 						HashMap<String, String> messageMap = util.getLocalizationMessage(requestInfo,
@@ -256,9 +256,12 @@ public class SchedulerService {
 								System.out.println("New Expenditure SMS :: " + message);
 
 								SMSRequest smsRequest = SMSRequest.builder().mobileNumber(map.getKey()).message(message)
+										.tenantid(tenantId)
 										.templateId(messageMap.get(NotificationUtil.TEMPLATE_KEY))
 										.users(new String[] { map.getValue() }).build();
-								producer.push(config.getSmsNotifTopic(), smsRequest);
+								if(config.isSmsForExpenditureEnabled()) {
+									producer.push(config.getSmsNotifTopic(), smsRequest);
+								}
 							}
 						});
 					}
@@ -356,7 +359,9 @@ public class SchedulerService {
 		additionalDetailsMap.put("localizationCode", MARK_PAID_BILL_EVENT);
 		List<Event> events = new ArrayList<>();
 		List<String> activeExpenseCount = repository.getActiveExpenses(tenantId);
-		if (null != activeExpenseCount && activeExpenseCount.size() > 0) {
+		if (null != activeExpenseCount && activeExpenseCount.size() > 0 && activeExpenseCount.get(0)!=null
+				 && Integer.parseInt(activeExpenseCount.get(0)) > 0) {
+			log.info("Active expense bill Count"+activeExpenseCount.get(0));
 			HashMap<String, String> messageMap = util.getLocalizationMessage(requestInfo, MARK_PAID_BILL_EVENT, tenantId);
 			events.add(Event.builder().tenantId(tenantId)
 					.description(formatMarkExpenseMessage(tenantId, messageMap.get(NotificationUtil.MSG_KEY), additionalDetailsMap))
@@ -416,7 +421,7 @@ public class SchedulerService {
 					if (config.getIsSMSEnabled()) {
 
 						UserDetailResponse userDetailResponse = userService.getUserByRoleCodes(requestInfo, tenantId,
-								Arrays.asList("EXPENSE_PROCESSING"));
+								Arrays.asList("EXPENSE_PROCESSING","SECRETARY"));
 						Map<String, String> mobileNumberIdMap = new LinkedHashMap<>();
 
 						for (UserInfo userInfo : userDetailResponse.getUser())
@@ -448,9 +453,12 @@ public class SchedulerService {
 								// value.
 								System.out.println("Mark expense bills SMS::" + message);
 								SMSRequest smsRequest = SMSRequest.builder().mobileNumber(map.getKey()).message(message)
+										.tenantid(tenantId)
 										.templateId(messageMap.get(NotificationUtil.TEMPLATE_KEY))
 										.users(new String[] { map.getValue() }).build();
-								producer.push(config.getSmsNotifTopic(), smsRequest);
+								if(config.isSmsForMarkBillEnabled()) {
+									producer.push(config.getSmsNotifTopic(), smsRequest);
+								}
 							}
 						});
 					}
@@ -551,7 +559,7 @@ public class SchedulerService {
 						HashMap<String, String> gpwscMap = util.getLocalizationMessage(requestInfo, tenantId, tenantId);
 
 						UserDetailResponse userDetailResponse = userService.getUserByRoleCodes(requestInfo, tenantId,
-								Arrays.asList("EXPENSE_PROCESSING"));
+								Arrays.asList("EXPENSE_PROCESSING","SECRETARY"));
 
 						String revenueLink = config.getUiAppHost() + config.getMonthRevenueDashboardLink();
 
@@ -577,9 +585,12 @@ public class SchedulerService {
 								message = message.replace("{user}", uuidUsername);
 								System.out.println("SMS Notification::" + message);
 								SMSRequest smsRequest = SMSRequest.builder().mobileNumber(map.getKey()).message(message)
+										.tenantid(tenantId)
 										.templateId(messageMap.get(NotificationUtil.TEMPLATE_KEY))
 										.users(new String[] { uuidUsername }).build();
-								producer.push(config.getSmsNotifTopic(), smsRequest);
+								if(config.isSmsForMonthlySummaryEnabled()) {
+									producer.push(config.getSmsNotifTopic(), smsRequest);
+								}
 							}
 						});
 					}
@@ -592,7 +603,7 @@ public class SchedulerService {
 	private Recepient getRecepient(RequestInfo requestInfo, String tenantId) {
 		Recepient recepient = null;
 		UserDetailResponse userDetailResponse = userService.getUserByRoleCodes(requestInfo, tenantId,
-				Arrays.asList("GP_ADMIN"));
+				Arrays.asList("GP_ADMIN","SARPANCH"));
 		if (userDetailResponse.getUser().isEmpty())
 			log.error("Recepient is absent");
 		else {

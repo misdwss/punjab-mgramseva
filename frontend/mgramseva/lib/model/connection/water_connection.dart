@@ -133,22 +133,29 @@ class WaterConnection {
     oldConnectionNo = OldConnectionCtrl.text;
     meterId = meterIdCtrl.text != "" ? meterIdCtrl.text : null;
 
-    if(paymentType == Constants.CONSUMER_PAYMENT_TYPE.first.key){
+    if (paymentType == Constants.CONSUMER_PAYMENT_TYPE.first.key) {
       advanceCtrl.clear();
-    }else{
+    } else {
       penaltyCtrl.clear();
       arrearsCtrl.clear();
     }
 
-    arrears = arrearsCtrl.text.trim() != "" && double.parse(arrearsCtrl.text) > 0
-        ? double.parse(arrearsCtrl.text).toDouble()
-        : paymentType == Constants.CONSUMER_PAYMENT_TYPE.first.key ? 0.0 : null;
-    advance = advanceCtrl.text.trim() != "" && double.parse(advanceCtrl.text) > 0
-        ? -double.parse(advanceCtrl.text).toDouble()
-        : null;
-    penalty = penaltyCtrl.text.trim() != "" && double.parse(penaltyCtrl.text) > 0
-        ? double.parse(penaltyCtrl.text).toDouble()
-        : paymentType == Constants.CONSUMER_PAYMENT_TYPE.first.key ? 0.0 : null;
+    arrears =
+        arrearsCtrl.text.trim() != "" && double.parse(arrearsCtrl.text) > 0
+            ? double.parse(arrearsCtrl.text).toDouble()
+            : paymentType == Constants.CONSUMER_PAYMENT_TYPE.first.key
+                ? 0.0
+                : null;
+    advance =
+        advanceCtrl.text.trim() != "" && double.parse(advanceCtrl.text) > 0
+            ? -double.parse(advanceCtrl.text).toDouble()
+            : null;
+    penalty =
+        penaltyCtrl.text.trim() != "" && double.parse(penaltyCtrl.text) > 0
+            ? double.parse(penaltyCtrl.text).toDouble()
+            : paymentType == Constants.CONSUMER_PAYMENT_TYPE.first.key
+                ? 0.0
+                : null;
     previousReadingDate = previousReadingDateCtrl.text != ""
         ? DateFormats.dateToTimeStamp(
             previousReadingDateCtrl.text,
@@ -166,8 +173,8 @@ class WaterConnection {
     if (connectionType != 'Metered') {
       previousReadingDate = BillingCycleCtrl.text.trim() != ""
           ? DateFormats.dateToTimeStamp(
-        BillingCycleCtrl.text.trim(),
-      )
+              BillingCycleCtrl.text.trim(),
+            )
           : null;
     }
   }
@@ -176,7 +183,8 @@ class WaterConnection {
     OldConnectionCtrl.text = oldConnectionNo ?? "";
     meterIdCtrl.text = meterId ?? "";
     arrearsCtrl.text = (arrears == null ? '' : getFilteredAmount(arrears!));
-    advanceCtrl.text = (advance == null ? '' : getFilteredAmount(advance!.abs()));
+    advanceCtrl.text =
+        (advance == null ? '' : getFilteredAmount(advance!.abs()));
     penaltyCtrl.text = (penalty == null ? '' : getFilteredAmount(penalty!));
     categoryCtrl.text = additionalDetails?.category ?? "";
     subCategoryCtrl.text = additionalDetails?.subCategory ?? "";
@@ -198,10 +206,12 @@ class WaterConnection {
     }
   }
 
- String getFilteredAmount(double amount) {
-     if(kIsWeb) return amount.toString();
-     var decimalAmount = (amount.toString().split('.'))[1];
-     return int.parse(decimalAmount) > 0 ? amount.toString() : amount.toString().split('.').first;
+  String getFilteredAmount(double amount) {
+    if (kIsWeb) return amount.toString();
+    var decimalAmount = (amount.toString().split('.'))[1];
+    return int.parse(decimalAmount) > 0
+        ? amount.toString()
+        : amount.toString().split('.').first;
   }
 
   WaterConnection();
@@ -209,6 +219,66 @@ class WaterConnection {
   factory WaterConnection.fromJson(Map<String, dynamic> json) =>
       _$WaterConnectionFromJson(json);
   Map<String, dynamic> toJson() => _$WaterConnectionToJson(this);
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+
+    return other is WaterConnection &&
+        other.id == id &&
+        other.connectionNo == connectionNo &&
+        other.propertyId == propertyId &&
+        other.applicationNo == applicationNo &&
+        other.tenantId == tenantId &&
+        other.action == action &&
+        other.status == status &&
+        other.meterInstallationDate == meterInstallationDate &&
+        other.documents == documents &&
+        other.proposedTaps == proposedTaps &&
+        other.noOfTaps == noOfTaps &&
+        other.arrears == arrears &&
+        other.connectionType == connectionType &&
+        other.oldConnectionNo == oldConnectionNo &&
+        other.meterId == meterId &&
+        other.propertyType == propertyType &&
+        other.previousReadingDate == previousReadingDate &&
+        other.previousReading == previousReading &&
+        other.proposedPipeSize == proposedPipeSize &&
+        other.connectionHolders == connectionHolders &&
+        other.additionalDetails == additionalDetails &&
+        other.processInstance == processInstance &&
+        other.paymentType == paymentType &&
+        other.penalty == penalty &&
+        other.advance == advance;
+  }
+
+  @override
+  int get hashCode {
+    return id.hashCode ^
+        connectionNo.hashCode ^
+        propertyId.hashCode ^
+        applicationNo.hashCode ^
+        tenantId.hashCode ^
+        action.hashCode ^
+        status.hashCode ^
+        meterInstallationDate.hashCode ^
+        documents.hashCode ^
+        proposedTaps.hashCode ^
+        noOfTaps.hashCode ^
+        arrears.hashCode ^
+        connectionType.hashCode ^
+        oldConnectionNo.hashCode ^
+        meterId.hashCode ^
+        propertyType.hashCode ^
+        previousReadingDate.hashCode ^
+        previousReading.hashCode ^
+        proposedPipeSize.hashCode ^
+        connectionHolders.hashCode ^
+        additionalDetails.hashCode ^
+        processInstance.hashCode ^
+        paymentType.hashCode ^
+        penalty.hashCode ^
+        advance.hashCode;
+  }
 }
 
 @JsonSerializable()
@@ -245,6 +315,9 @@ class AdditionalDetails {
   @JsonKey(name: "street")
   String? street;
 
+  @JsonKey(name: "lastDemandGeneratedDate")
+  String? lastDemandGeneratedDate;
+
   @JsonKey(name: "doorNo")
   String? doorNo;
 
@@ -254,6 +327,14 @@ class AdditionalDetails {
   @JsonKey(name: "collectionPendingAmount")
   String? collectionPendingAmount;
 
+  @JsonKey(name: "totalamount")
+  String? totalAmount;
+
+  @JsonKey(name: "remarks")
+  String? remarks;
+
+  @JsonKey(name: "appCreatedDate")
+  num? appCreatedDate;
 
   @JsonKey(ignore: true)
   var initialMeterReadingCtrl = TextEditingController();

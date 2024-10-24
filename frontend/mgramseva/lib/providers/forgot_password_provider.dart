@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:mgramseva/providers/language.dart';
 import 'package:mgramseva/repository/forgot_password_repo.dart';
-import 'package:mgramseva/routers/Routers.dart';
+import 'package:mgramseva/routers/routers.dart';
 import 'package:mgramseva/utils/error_logging.dart';
 import 'package:mgramseva/utils/loaders.dart';
 import 'package:provider/provider.dart';
 
 class ForgotPasswordProvider with ChangeNotifier {
-  otpforresetpassword(BuildContext context, String mobileNumber) async {
+  otpForResetPassword(BuildContext context, String mobileNumber) async {
     /// Unfocus the text field
     FocusScope.of(context).unfocus();
 
@@ -30,17 +30,15 @@ class ForgotPasswordProvider with ChangeNotifier {
           await ForgotPasswordRepository().forgotPassword(body, context);
       Navigator.pop(context);
 
-      if (otpResponse != null) {
-        Navigator.of(context)
-            .pushNamed(Routes.RESET_PASSWORD, arguments: {"id": mobileNumber});
-      }
-    } catch (e, s) {
+      Navigator.of(context)
+          .pushNamed(Routes.RESET_PASSWORD, arguments: {"id": mobileNumber});
+        } catch (e, s) {
       Navigator.pop(context);
       ErrorHandler().allExceptionsHandler(context, e, s);
     }
   }
 
-  void callNotifyer() {
+  void callNotifier() {
     notifyListeners();
   }
 }

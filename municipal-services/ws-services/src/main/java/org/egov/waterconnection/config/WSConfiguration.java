@@ -277,6 +277,12 @@ public class WSConfiguration {
     @Value("${egov.es.search.endpoint}")
     private String esSearchEndpoint;
 
+	@Value("${egov.indexer.es.username}")
+	private String esUsername;
+
+	@Value("${egov.indexer.es.password}")
+	private String esPassword;
+
     @Value("${egov.ws.search.name.fuziness}")
     private String nameFuziness;
     
@@ -285,5 +291,29 @@ public class WSConfiguration {
 
     @Value("${egov.ws.fuzzy.searh.is.wildcard}")
     private Boolean isSearchWildcardBased;
+    
+    @Value("${egov.ws.search.tenantId.fuziness}")
+    private String tenantFuziness;
+
+	@Value("${sms.pending.collection.enabled}")
+	private boolean isSMSForPendingCollectionEnabled;
+
+	@Value("${sms.todays.collection.enabled}")
+	private boolean isSMSForTodaysCollectionEnabled;
+
+	@Value("${sms.edit.water.connection.notification.enabled}")
+	private boolean isSMSForEditWaterConnectionEnabled;
+
+	@Value("${sms.payment.notification.enabled}")
+	private boolean isSMSforPaymentNotificationEnabled;
+
+	@Value("${sms.workflow.enabled}")
+	private boolean isSMSForWorkflowEnabled;
+
+	@Value("${sms.feedback.notification.enabled}")
+	private boolean isSMSForFeedbackNotificationEnabled;
+
+	@Value("${report.in.chronological.order}")
+	private boolean isReportRequiredInChronnologicalOrder;
     
 }

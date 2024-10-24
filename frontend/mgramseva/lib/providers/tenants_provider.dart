@@ -2,8 +2,8 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:mgramseva/model/mdms/tenants.dart';
-import 'package:mgramseva/repository/tendants_repo.dart';
-import 'package:mgramseva/services/MDMS.dart';
+import 'package:mgramseva/repository/tenants_repo.dart';
+import 'package:mgramseva/services/mdms.dart';
 import 'package:mgramseva/utils/error_logging.dart';
 import 'package:mgramseva/utils/global_variables.dart';
 import 'package:provider/provider.dart';
@@ -25,11 +25,9 @@ class TenantsProvider with ChangeNotifier {
           navigatorKey.currentContext!,
           listen: false);
       var userResponse = await TenantRepo().fetchTenants(getTenantsMDMS(commonProvider.userDetails!.userRequest!.tenantId.toString()));
-      if (userResponse != null) {
-        tenants = userResponse;
-        streamController.add(userResponse);
-      }
-    } catch (e, s) {
+      tenants = userResponse;
+      streamController.add(userResponse);
+        } catch (e, s) {
       ErrorHandler().allExceptionsHandler(navigatorKey.currentContext!, e, s);
       streamController.addError('error');
     }
@@ -39,7 +37,4 @@ class TenantsProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  getTenant() {
-    return tenants!.tenantsList!.length;
-  }
 }

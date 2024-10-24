@@ -1,7 +1,6 @@
-import 'dart:math';
 
 import 'package:mgramseva/providers/common_provider.dart';
-import 'package:mgramseva/routers/Routers.dart';
+import 'package:mgramseva/routers/routers.dart';
 import 'package:mgramseva/utils/constants.dart';
 import 'package:mgramseva/utils/global_variables.dart';
 import 'package:mgramseva/utils/models.dart';
@@ -49,7 +48,7 @@ class RoleActionsFiltering {
     }
   }
 
-  bool isEligibleRoletoRoute(String routerLink) {
+  bool isEligibleRoleToRoute(String routerLink) {
     var commonProvider = Provider.of<CommonProvider>(
         navigatorKey.currentContext!,
         listen: false);
@@ -88,59 +87,60 @@ class RoleActionsFiltering {
 
   List<String> getRolesBasedOnModule(String route) {
     switch (route) {
-
       // GP Admin
       case Routes.HOUSEHOLD:
-        return ['COLLECTION_OPERATOR', 'SUPERUSER'];
+        return ['COLLECTION_OPERATOR', 'SUPERUSER', 'DIV_ADMIN','SARPANCH','SECRETARY' ,'REVENUE_COLLECTOR'];
 
       case Routes.CONSUMER_UPDATE:
-        return ['GP_ADMIN', 'SUPERUSER'];
+        return ['GP_ADMIN', 'SUPERUSER', 'COLLECTION_OPERATOR', 'DIV_ADMIN','SARPANCH','SECRETARY' ,'REVENUE_COLLECTOR'];
 
       case Routes.CONSUMER_SEARCH_UPDATE:
-        return ['GP_ADMIN', 'SUPERUSER'];
+        return ['GP_ADMIN', 'SUPERUSER', 'COLLECTION_OPERATOR', 'DIV_ADMIN','SARPANCH','SECRETARY' ,'REVENUE_COLLECTOR'];
 
       case Routes.CONSUMER_CREATE:
-        return ['GP_ADMIN', 'SUPERUSER'];
+        return ['GP_ADMIN', 'SUPERUSER', 'COLLECTION_OPERATOR', 'DIV_ADMIN','SARPANCH','SECRETARY', 'REVENUE_COLLECTOR'];
 
       case Routes.HOUSEHOLD_DETAILS:
-        return ['BULK_DEMAND_PROCESSING', 'COLLECTION_OPERATOR', 'SUPERUSER'];
+        return ['BULK_DEMAND_PROCESSING', 'COLLECTION_OPERATOR', 'SUPERUSER', 'DIV_ADMIN','SARPANCH','SECRETARY','REVENUE_COLLECTOR'];
 
       case Routes.SEARCH_CONSUMER_RESULT:
         return [
           'GP_ADMIN',
           'BULK_DEMAND_PROCESSING',
           'COLLECTION_OPERATOR',
-          'SUPERUSER'
+          'SUPERUSER',
+          'DIV_ADMIN',
+          'SARPANCH',
+          'SECRETARY'
+          'REVENUE_COLLECTOR'
         ];
 
       case Routes.HOUSEHOLD_REGISTER:
-        return ['COLLECTION_OPERATOR', 'SUPERUSER'];
+        return ['COLLECTION_OPERATOR', 'SUPERUSER', 'DIV_ADMIN','SARPANCH','SECRETARY','REVENUE_COLLECTOR'];
 
       // Expense Processing
       case Routes.EXPENSE_SEARCH:
-        return ['EXPENSE_PROCESSING', 'SUPERUSER'];
+        return ['EXPENSE_PROCESSING', 'SUPERUSER', 'DIV_ADMIN','SARPANCH','SECRETARY'];
       case Routes.EXPENSES_ADD:
-        return ['EXPENSE_PROCESSING', 'SUPERUSER'];
+        return ['EXPENSE_PROCESSING', 'SUPERUSER', 'DIV_ADMIN','SARPANCH','SECRETARY'];
       case Routes.EXPENSE_UPDATE:
-        return ['EXPENSE_PROCESSING', 'SUPERUSER'];
-
-      case Routes.HOUSEHOLD_DETAILS:
-        return ['BULK_DEMAND_PROCESSING', 'SUPERUSER'];
-
+        return ['EXPENSE_PROCESSING', 'SUPERUSER', 'DIV_ADMIN','SARPANCH','SECRETARY'];
       case Routes.HOUSEHOLDRECEIPTS:
-        return ['BULK_DEMAND_PROCESSING', 'COLLECTION_OPERATOR', 'SUPERUSER'];
+        return ['BULK_DEMAND_PROCESSING', 'COLLECTION_OPERATOR', 'SUPERUSER', 'DIV_ADMIN','SARPANCH','SECRETARY','REVENUE_COLLECTOR'];
 
       case Routes.MANUAL_BILL_GENERATE:
-        return ['BULK_DEMAND_PROCESSING', 'SUPERUSER'];
+        return ['BULK_DEMAND_PROCESSING', 'SUPERUSER', 'DIV_ADMIN','SARPANCH','SECRETARY'];
 
       // Collection Operator
       case Routes.CONSUMER_SEARCH:
-        return ['COLLECTION_OPERATOR', 'SUPERUSER'];
+        return ['COLLECTION_OPERATOR', 'SUPERUSER', 'DIV_ADMIN','REVENUE_COLLECTOR','SARPANCH','SECRETARY','REVENUE_COLLECTOR'];
       case Routes.BILL_GENERATE:
-        return ['COLLECTION_OPERATOR', 'SUPERUSER'];
+        return ['COLLECTION_OPERATOR', 'SUPERUSER', 'DIV_ADMIN','SARPANCH','SECRETARY','REVENUE_COLLECTOR'];
 
       case Routes.DASHBOARD:
-        return ['SUPERUSER', 'DASHBOARD_VIEWER'];
+        return ['SUPERUSER', 'DASHBOARD_VIEWER', 'GP_ADMIN', 'DIV_ADMIN','SARPANCH','SECRETARY','REVENUE_COLLECTOR'];
+      case Routes.REPORTS:
+        return ['SUPERUSER', 'DASHBOARD_VIEWER', 'GP_ADMIN', 'DIV_ADMIN','SARPANCH''SECRETARY','REVENUE_COLLECTOR'];
       default:
         return [];
     }

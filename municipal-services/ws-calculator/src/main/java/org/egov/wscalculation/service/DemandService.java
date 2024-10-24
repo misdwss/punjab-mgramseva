@@ -1,27 +1,22 @@
 package org.egov.wscalculation.service;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.math.RoundingMode;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import java.sql.Timestamp;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.Month;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.time.format.TextStyle;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -30,13 +25,18 @@ import java.util.stream.Collectors;
 
 import javax.validation.Valid;
 
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.egov.common.contract.request.RequestInfo;
 import org.egov.common.contract.request.User;
+import org.egov.mdms.model.MasterDetail;
+import org.egov.mdms.model.MdmsCriteria;
+import org.egov.mdms.model.ModuleDetail;
 import org.egov.tracer.model.CustomException;
 import org.egov.wscalculation.config.WSCalculationConfiguration;
 import org.egov.wscalculation.constants.WSCalculationConstant;
 import org.egov.wscalculation.producer.WSCalculationProducer;
+import org.egov.wscalculation.repository.DemandAuditSeqBuilder;
 import org.egov.wscalculation.repository.DemandRepository;
 import org.egov.wscalculation.repository.ServiceRequestRepository;
 import org.egov.wscalculation.repository.WSCalculationDao;
@@ -45,26 +45,8 @@ import org.egov.wscalculation.util.NotificationUtil;
 import org.egov.wscalculation.util.WSCalculationUtil;
 import org.egov.wscalculation.validator.WSCalculationValidator;
 import org.egov.wscalculation.validator.WSCalculationWorkflowValidator;
-import org.egov.wscalculation.web.models.BulkDemand;
-import org.egov.wscalculation.web.models.Calculation;
-import org.egov.wscalculation.web.models.Category;
-import org.egov.wscalculation.web.models.Demand;
+import org.egov.wscalculation.web.models.*;
 import org.egov.wscalculation.web.models.Demand.StatusEnum;
-import org.egov.wscalculation.web.models.DemandDetail;
-import org.egov.wscalculation.web.models.DemandDetailAndCollection;
-import org.egov.wscalculation.web.models.DemandPenaltyResponse;
-import org.egov.wscalculation.web.models.DemandRequest;
-import org.egov.wscalculation.web.models.DemandResponse;
-import org.egov.wscalculation.web.models.GetBillCriteria;
-import org.egov.wscalculation.web.models.OwnerInfo;
-import org.egov.wscalculation.web.models.Property;
-import org.egov.wscalculation.web.models.Recipient;
-import org.egov.wscalculation.web.models.RequestInfoWrapper;
-import org.egov.wscalculation.web.models.SMSRequest;
-import org.egov.wscalculation.web.models.TaxHeadEstimate;
-import org.egov.wscalculation.web.models.TaxPeriod;
-import org.egov.wscalculation.web.models.WaterConnection;
-import org.egov.wscalculation.web.models.WaterConnectionRequest;
 import org.egov.wscalculation.web.models.users.UserDetailResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -76,6 +58,8 @@ import com.jayway.jsonpath.JsonPath;
 
 import lombok.extern.slf4j.Slf4j;
 import net.minidev.json.JSONArray;
+import org.springframework.http.ResponseEntity;
+import org.apache.http.HttpStatus;
 
 @Service
 @Slf4j
@@ -140,6 +124,9 @@ public class DemandService {
 	
 	@Autowired
 	private EstimationService estimationService;
+
+	@Autowired
+	private DemandAuditSeqBuilder demandAuditSeqBuilder;
 
 	/**
 	 * Creates or updates Demand
@@ -219,7 +206,10 @@ public class DemandService {
 
 		String billCycle = "";
 		String consumerCode = null;
+
+		List<Demand> finalDemandRes = new ArrayList<>();
 		for (Calculation calculation : calculations) {
+			List<Demand> demandRes = null;
 			WaterConnection connection = calculation.getWaterConnection();
 			if (connection == null) {
 				throw new CustomException("INVALID_WATER_CONNECTION",
@@ -259,10 +249,10 @@ public class DemandService {
 			if (firstDate.isEqual(lastDate) && lastDateTime.contains("-04-01")) {
 				toDate = toDate + 60000;
 			}
-			
+
 			billCycle = firstDate.format(dateTimeFormatter) + " - " + lastDate.format(dateTimeFormatter);
 			addRoundOffTaxHead(calculation.getTenantId(), demandDetails);
-			
+
 			if(isAdvance) {
 				demands.add(Demand.builder().consumerCode(consumerCode).demandDetails(demandDetails).payer(owner)
 						.minimumAmountPayable(minimumPayableAmount).tenantId(tenantId).taxPeriodFrom(fromDate)
@@ -276,58 +266,204 @@ public class DemandService {
 						.businessService(businessService).status(StatusEnum.valueOf("ACTIVE")).billExpiryTime(expiryDate)
 						.build());
 			}
-		
+
+			if(config.isSaveDemandAuditEnabled()){
+				demands.stream().forEach(demand -> {
+					Long id = demandAuditSeqBuilder.getNextSequence();
+					WsDemandChangeAuditRequest wsDemandChangeAuditRequest = WsDemandChangeAuditRequest.builder().id(id).
+							consumercode(demand.getConsumerCode()).
+							tenant_id(demand.getTenantId()).
+							status(demand.getStatus().toString()).
+							action("CREATE DEMAND BULK").
+							data(demand).
+							createdby(requestInfo.getUserInfo().getUuid()).
+							createdtime(System.currentTimeMillis()).build();
+					WsDemandChangeAuditRequestWrapper wsDemandChangeAuditRequestWrapper = WsDemandChangeAuditRequestWrapper.builder().wsDemandChangeAuditRequest(wsDemandChangeAuditRequest).build();
+					producer.push(config.getSaveDemandAudit(), wsDemandChangeAuditRequestWrapper);
+				});
+			}
+			demandRes = demandRepository.saveDemand(requestInfo, demands);
+			finalDemandRes.addAll(demandRes);
+
+
+
 			if (!isWSUpdateSMS) {
-
-				HashMap<String, String> localizationMessage = util.getLocalizationMessage(requestInfo,
-						WSCalculationConstant.mGram_Consumer_NewBill, tenantId);
-
-				String actionLink = config.getNotificationUrl()
-						+ config.getBillDownloadSMSLink().replace("$mobile", owner.getMobileNumber())
-								.replace("$consumerCode", waterConnectionRequest.getWaterConnection().getConnectionNo())
-								.replace("$tenantId", property.getTenantId());
-
-				if (waterConnectionRequest.getWaterConnection().getConnectionType()
-						.equalsIgnoreCase(WSCalculationConstant.meteredConnectionType)) {
-					actionLink = actionLink.replace("$key", "ws-bill");
-				} else {
-					actionLink = actionLink.replace("$key", "ws-bill-nm");
-				}
-
-				String messageString = localizationMessage.get(WSCalculationConstant.MSG_KEY);
-
-				System.out.println("Localization message::" + messageString);
-				if (!StringUtils.isEmpty(messageString) && isForConnectionNO) {
-					log.info("Demand Object" + demands.toString());
-
-					List<String> billNumber = fetchBill(demands, requestInfo);
-					log.info("Bill Number :: " + billNumber.toString());
-
-					if (billNumber.size() > 0) {
-						actionLink = actionLink.replace("$billNumber", billNumber.get(0));
+				List<BillV2> bills = fetchBill(demands, waterConnectionRequest.getRequestInfo());
+				if (!CollectionUtils.isEmpty(bills)) {
+					String billNumber = bills.get(0).getBillNumber();
+					Long billDate = bills.get(0).getBillDate();
+					billDate = billDate + 1296000000l;
+					LocalDate billDateLocal = Instant.ofEpochMilli(billDate).atZone(ZoneId.systemDefault()).toLocalDate();
+					String paymentDueDate = billDateLocal.format(dateTimeFormatter);
+					BigDecimal totalAmount=bills.get(0).getTotalAmount();
+					if (ObjectUtils.isEmpty(totalAmount) && totalAmount.signum() > 0) {
+						if (isOnlinePaymentAllowed(requestInfo, tenantId)) {
+								sendPaymentSMSNotification(requestInfo, tenantId, owner, waterConnectionRequest, property, demandDetails, consumerCode, demands, isForConnectionNO, businessService, billCycle, billNumber, paymentDueDate,totalAmount);
+								//sendPaymentAndBillSMSNotification(requestInfo,tenantId,owner,waterConnectionRequest,property,demandDetails,consumerCode,demands,isForConnectionNO,businessService,billCycle,billNumbers,paymentDueDate,totalAmount);
+						}
+						sendDownloadBillSMSNotification(requestInfo, tenantId, owner, waterConnectionRequest, property, demandDetails, consumerCode, demands, isForConnectionNO, businessService, billCycle, billNumber, paymentDueDate, totalAmount);
 					}
-					messageString = messageString.replace("{ownername}", owner.getName());
-					messageString = messageString.replace("{Period}", billCycle);
-					messageString = messageString.replace("{consumerno}", consumerCode);
-					messageString = messageString.replace("{billamount}", demandDetails.stream()
-							.map(DemandDetail::getTaxAmount).reduce(BigDecimal.ZERO, BigDecimal::add).toString());
-					messageString = messageString.replace("{BILL_LINK}", getShortenedUrl(actionLink));
-
-					System.out.println("Demand genaration Message1::" + messageString);
-
-					SMSRequest sms = SMSRequest.builder().mobileNumber(owner.getMobileNumber()).message(messageString)
-							.category(Category.TRANSACTION).build();
-					producer.push(config.getSmsNotifTopic(), sms);
-
 				}
 			}
 		}
-		log.info("Demand Object" + demands.toString());
-		List<Demand> demandRes = demandRepository.saveDemand(requestInfo, demands);
 
-		return demandRes;
+
+		return finalDemandRes;
 	}
 
+	private void sendPaymentSMSNotification(RequestInfo requestInfo, String tenantId, User owner, WaterConnectionRequest waterConnectionRequest,
+											Property property, List<DemandDetail> demandDetails, String consumerCode, List<Demand> demands, Boolean isForConnectionNO,
+											String businessService, String billCycle, String billNumber, String paymentDueDate,BigDecimal totalAmount ) {
+		HashMap<String, String> localizationMessage = util.getLocalizationMessage(requestInfo,
+				WSCalculationConstant.mGram_Consumer_Payment, tenantId);
+		String connectionType = null;
+        if(ObjectUtils.isEmpty(waterConnectionRequest.getWaterConnection().getMeterId()) || waterConnectionRequest.getWaterConnection().getMeterId() ==  null)
+			connectionType = "non-metered";
+		else
+			connectionType = "metered";
+		String actionLinkPayment = config.getNotificationUrl()
+				+ config.getBillPaymentSMSLink().replace("$mobileNumber", owner.getMobileNumber())
+				.replace("$consumerCode", waterConnectionRequest.getWaterConnection().getConnectionNo())
+				.replace("$tenantId", property.getTenantId())
+				.replace("$businessService", businessService)
+				.replace("$connectionType", connectionType);
+
+
+		String messageString = localizationMessage.get(WSCalculationConstant.MSG_KEY);
+
+		if (!StringUtils.isEmpty(messageString) && isForConnectionNO) {
+			messageString = messageString.replace("{ownername}", owner.getName());
+			messageString = messageString.replace("{billamount}",totalAmount.toString());
+			messageString = messageString.replace("{Date}", paymentDueDate);
+			messageString = messageString.replace("{connectionno}", consumerCode);
+			messageString = messageString.replace("{PAY_LINK}", getShortenedUrl(actionLinkPayment));
+
+
+			SMSRequest sms = SMSRequest.builder().mobileNumber(owner.getMobileNumber()).message(messageString).tenantid(tenantId)
+					.category(Category.TRANSACTION).build();
+			if(config.isSmsForPaymentLinkEnable()) {
+				producer.push(config.getSmsNotifTopic(), sms);
+			}
+		}
+	}
+	private void sendDownloadBillSMSNotification(RequestInfo requestInfo, String tenantId, User owner, WaterConnectionRequest waterConnectionRequest, Property property, List<DemandDetail> demandDetails, String consumerCode, List<Demand> demands, Boolean isForConnectionNO, String businessService, String billCycle,String billNumber, String paymentDueDate,BigDecimal totalamount) {
+		HashMap<String, String> localizationMessage = util.getLocalizationMessage(requestInfo,
+				WSCalculationConstant.mGram_Consumer_NewBill, tenantId);
+		String actionLink = config.getNotificationUrl()
+				+ config.getBillDownloadSMSLink().replace("$mobile", owner.getMobileNumber())
+				.replace("$consumerCode", waterConnectionRequest.getWaterConnection().getConnectionNo())
+				.replace("$tenantId", property.getTenantId());
+
+		if (waterConnectionRequest.getWaterConnection().getConnectionType()
+				.equalsIgnoreCase(WSCalculationConstant.meteredConnectionType)) {
+			actionLink = actionLink.replace("$key", "ws-bill");
+		} else {
+			actionLink = actionLink.replace("$key", "ws-bill-nm");
+		}
+		String messageString = localizationMessage.get(WSCalculationConstant.MSG_KEY);
+
+		//System.out.println("Localization message get bill::" + messageString);
+		//System.out.println("isForConnectionNO:" + isForConnectionNO);
+		if (!StringUtils.isEmpty(messageString) && isForConnectionNO) {
+			if (totalamount!=null  && totalamount.signum()>0) {
+				actionLink = actionLink.replace("$billNumber", billNumber);
+				messageString = messageString.replace("{ownername}", owner.getName());
+				messageString = messageString.replace("{Period}", billCycle);
+				messageString = messageString.replace("{consumerno}", consumerCode);
+				BigDecimal demandAmount= demandDetails.stream()
+						.map(DemandDetail::getTaxAmount).reduce(BigDecimal.ZERO, BigDecimal::add);
+				BigDecimal arrears=totalamount.subtract(demandAmount);
+				if(arrears.compareTo(BigDecimal.ZERO)>0)
+				{
+					messageString = messageString.replace("{billamount}", totalamount.toString());
+				}
+				else
+				{
+					messageString = messageString.replace("{billamount}", totalamount.toString());
+				}
+				messageString = messageString.replace("{BILL_LINK}", getShortenedUrl(actionLink));
+
+//				System.out.println("Demand genaration Message get bill::" + messageString);
+
+				SMSRequest sms = SMSRequest.builder().mobileNumber(owner.getMobileNumber()).message(messageString).tenantid(tenantId)
+						.category(Category.TRANSACTION).build();
+				if(config.isSmsForBillDownloadEnabled()) {
+					producer.push(config.getSmsNotifTopic(), sms);
+				}
+			}
+
+		}
+	}
+
+	private void sendPaymentAndBillSMSNotification(RequestInfo requestInfo, String tenantId, User owner, WaterConnectionRequest waterConnectionRequest, Property property, List<DemandDetail> demandDetails, String consumerCode, List<Demand> demands, Boolean isForConnectionNO, String businessService, String billCycle,List<String> billNumbers, String paymentDueDate) {
+		HashMap<String, String> localizationMessage = util.getLocalizationMessage(requestInfo,
+				WSCalculationConstant.mGram_Consumer_Bill_Payment_combine, tenantId);
+
+		String actionLinkPayment = config.getNotificationUrl()
+				+ config.getBillPaymentSMSLink().replace("$mobileNumber", owner.getMobileNumber())
+				.replace("$consumerCode", waterConnectionRequest.getWaterConnection().getConnectionNo())
+				.replace("$tenantId", property.getTenantId())
+				.replace("$businessService", businessService);
+		String actionBillLink = config.getNotificationUrl()
+				+ config.getBillDownloadSMSLink().replace("$mobile", owner.getMobileNumber())
+				.replace("$consumerCode", waterConnectionRequest.getWaterConnection().getConnectionNo())
+				.replace("$tenantId", property.getTenantId());
+
+		if (waterConnectionRequest.getWaterConnection().getConnectionType()
+				.equalsIgnoreCase(WSCalculationConstant.meteredConnectionType)) {
+			actionBillLink = actionBillLink.replace("$key", "ws-bill");
+		} else {
+			actionBillLink = actionBillLink.replace("$key", "ws-bill-nm");
+		}
+        BigDecimal totalAmount =  fetchTotalBillAmount(demands, requestInfo);
+		String messageString = localizationMessage.get(WSCalculationConstant.MSG_KEY);
+
+		if (!StringUtils.isEmpty(messageString) && isForConnectionNO) {
+			if (billNumbers.size() > 0) {
+				actionBillLink = actionBillLink.replace("$billNumber", billNumbers.get(0));
+			}
+			messageString = messageString.replace("{ownername}", owner.getName());
+			//messageString = messageString.replace("{billmaount}", fetchTotalBillAmount(demands,waterConnectionRequest.getRequestInfo()).toString());
+			messageString = messageString.replace("{billmaount}",totalAmount.toString() );
+			messageString = messageString.replace("{consumerno}", consumerCode);
+			messageString = messageString.replace("{PAY_LINK}", getShortenedUrl(actionLinkPayment));
+			messageString = messageString.replace("{BILL_LINK}", getShortenedUrl(actionBillLink));
+
+			System.out.println("Denmand and Payment genaration Message::" + messageString);
+
+			SMSRequest sms = SMSRequest.builder().mobileNumber(owner.getMobileNumber()).message(messageString)
+					.category(Category.TRANSACTION).tenantid(tenantId).build();
+			if(config.isSmsForBillDownloadEnabled() && config.isSmsForPaymentLinkEnable()) {
+				producer.push(config.getSmsNotifTopic(), sms);
+			}
+		}
+	}
+
+	public BigDecimal fetchTotalBillAmount(List<Demand> demandResponse, RequestInfo requestInfo) {
+		boolean notificationSent = false;
+		BigDecimal totalAmount = BigDecimal.ZERO;
+		for (Demand demand : demandResponse) {
+			try {
+				Object result = serviceRequestRepository.fetchResult(
+						calculatorUtils.getFetchBillURL(demand.getTenantId(), demand.getConsumerCode()),
+						RequestInfoWrapper.builder().requestInfo(requestInfo).build());
+				List<Map<String, Object>> jsonOutput = JsonPath.read(result, "$.Bill");
+                log.info(mapper.writeValueAsString(jsonOutput));
+				totalAmount=new BigDecimal(jsonOutput.get(0).get("totalAmount").toString());
+				//totalAmount = new BigDecimal(JsonPath.read(result, "$.Bill[0].totalAmount").toString());
+
+				HashMap<String, Object> billResponse = new HashMap<>();
+
+				billResponse.put("requestInfo", requestInfo);
+				billResponse.put("billResponse", result);
+				wsCalculationProducer.push(configs.getPayTriggers(), billResponse);
+				notificationSent = true;
+			} catch (Exception ex) {
+				log.error("Fetch Bill Error", ex);
+			}
+		}
+		return totalAmount;
+	}
 	private String getShortenedUrl(String url) {
 		String res = null;
 		HashMap<String, String> body = new HashMap<>();
@@ -351,8 +487,8 @@ public class DemandService {
 
 	private void sendSMSNotification(RequestInfo requestInfo, List<SMSRequest> smsRequests, String billCycle,
 			String consumerCode, List<DemandDetail> demandDetails) {
-		UserDetailResponse userDetailResponse = userService.getUserByRoleCodes(requestInfo, Arrays.asList("GP_ADMIN"),
-				"pb");
+		UserDetailResponse userDetailResponse = userService.getUserByRoleCodes(requestInfo, Arrays.asList("GP_ADMIN","SARPANCH"),
+				requestInfo.getUserInfo().getTenantId().substring(0,2));
 		for (OwnerInfo ownerInfo : userDetailResponse.getUser()) {
 			String localizationMessage = util.getLocalizationMessages(ownerInfo.getTenantId(), requestInfo);
 			String messageString = util.getMessageTemplate(WSCalculationConstant.mGram_Consumer_NewBill,
@@ -598,7 +734,7 @@ public class DemandService {
 		Map<String, JSONArray> timeBasedExemptionMasterMap = new HashMap<>();
 		mstrDataService.setWaterConnectionMasterValues(requestInfo, getBillCriteria.getTenantId(), billingSlabMaster,
 				timeBasedExemptionMasterMap);
-
+		
 		if (CollectionUtils.isEmpty(getBillCriteria.getConsumerCodes()))
 			getBillCriteria.setConsumerCodes(Collections.singletonList(getBillCriteria.getConnectionNumber()));
 
@@ -637,8 +773,14 @@ public class DemandService {
 			List<TaxPeriod> taxPeriods = mstrDataService.getTaxPeriodList(requestInfoWrapper.getRequestInfo(), tenantId,
 					WSCalculationConstant.SERVICE_FIELD_VALUE_WS);
 			
-			Map<String, Object> penaltyMaster = mstrDataService.getApplicableMaster(estimationService.getAssessmentYear(), timeBasedExemptionMasterMap.get(WSCalculationConstant.WC_PENANLTY_MASTER));
+			if(timeBasedExemptionMasterMap.get(WSCalculationConstant.WC_PENANLTY_MASTER) == null) {
+				mstrDataService.setWaterConnectionMasterValues(requestInfo, getBillCriteria.getTenantId().substring(0,2), billingSlabMaster,
+						timeBasedExemptionMasterMap);
+			}
 			
+			Map<String, Object> penaltyMaster = mstrDataService.getApplicableMaster(estimationService.getAssessmentYear(), timeBasedExemptionMasterMap.get(WSCalculationConstant.WC_PENANLTY_MASTER));
+	
+	
 			if(null != penaltyMaster) {
 				String type = (String) penaltyMaster.get(WSCalculationConstant.TYPE_FIELD_NAME);
 				String subType = (String) penaltyMaster.get(WSCalculationConstant.SUBTYPE_FIELD_NAME);
@@ -678,7 +820,8 @@ public class DemandService {
 				}
 				
 				
-				if(type.equalsIgnoreCase("Fixed") && subType.equalsIgnoreCase(WSCalculationConstant.PENALTY_OUTSTANDING)) {
+				if(type.equalsIgnoreCase("Fixed") && (subType.equalsIgnoreCase(WSCalculationConstant.PENALTY_OUTSTANDING)
+						|| subType.equalsIgnoreCase(WSCalculationConstant.OUTSTANDING))) {
 					List<Demand> demandList = new ArrayList<>(demList);
 					BigDecimal waterChargeApplicable = BigDecimal.ZERO;
 					BigDecimal oldPenalty = BigDecimal.ZERO;
@@ -689,10 +832,13 @@ public class DemandService {
 								if (WSCalculationConstant.TAX_APPLICABLE.contains(demandDetail.getTaxHeadMasterCode())) {
 									waterChargeApplicable = waterChargeApplicable.add(demandDetail.getTaxAmount()).subtract(demandDetail.getCollectionAmount());
 								}
-								if (demandDetail.getTaxHeadMasterCode().equalsIgnoreCase(WSCalculationConstant.WS_TIME_PENALTY)) {
-									oldPenalty = oldPenalty.add(demandDetail.getTaxAmount()).subtract(demandDetail.getCollectionAmount());
-									waterChargeApplicable = waterChargeApplicable.add(oldPenalty);
+								if(subType.equalsIgnoreCase(WSCalculationConstant.PENALTY_OUTSTANDING)) {
+									if (demandDetail.getTaxHeadMasterCode().equalsIgnoreCase(WSCalculationConstant.WS_TIME_PENALTY)) {
+										oldPenalty = oldPenalty.add(demandDetail.getTaxAmount()).subtract(demandDetail.getCollectionAmount());
+										waterChargeApplicable = waterChargeApplicable.add(oldPenalty);
+									}
 								}
+								
 							}
 						}
 					}
@@ -725,9 +871,27 @@ public class DemandService {
 		
 			// Call demand update in bulk to update the interest or penalty
 			if(!isGetPenaltyEstimate) {
-				DemandRequest request = DemandRequest.builder().demands(demandsToBeUpdated).requestInfo(requestInfo).build();
-				repository.fetchResult(utils.getUpdateDemandUrl(), request);
-				return res.getDemands();
+				if(demandsToBeUpdated.size() > 0) {
+					if(config.isSaveDemandAuditEnabled()){
+						demandsToBeUpdated.stream().forEach(demand -> {
+							Long id = demandAuditSeqBuilder.getNextSequence();
+							WsDemandChangeAuditRequest wsDemandChangeAuditRequest = WsDemandChangeAuditRequest.builder().id(id).
+									consumercode(demand.getConsumerCode()).
+									tenant_id(demand.getTenantId()).
+									status(demand.getStatus().toString()).
+									action("UPDATE DEMAND GET PENALTY/UPDATE API").
+									data(demand).
+									createdby(demand.getAuditDetails().getCreatedBy()).
+									createdtime(demand.getAuditDetails().getLastModifiedTime()).build();
+							WsDemandChangeAuditRequestWrapper wsDemandChangeAuditRequestWrapper = WsDemandChangeAuditRequestWrapper.builder().wsDemandChangeAuditRequest(wsDemandChangeAuditRequest).build();
+							producer.push(config.getSaveDemandAudit(), wsDemandChangeAuditRequestWrapper);
+						});
+					}
+					DemandRequest request = DemandRequest.builder().demands(demandsToBeUpdated).requestInfo(requestInfo).build();
+					repository.fetchResult(utils.getUpdateDemandUrl(), request);
+					return res.getDemands();
+				}
+				
 			}
 		}
 		return demandResponse;
@@ -744,7 +908,8 @@ public class DemandService {
 	private List<Demand> updateDemandForCalculation(RequestInfo requestInfo, List<Calculation> calculations,
 			Long fromDate, Long toDate, boolean isForConnectionNo) {
 		List<Demand> demands = new LinkedList<>();
-		
+
+		List<Demand> finalDemandRes = new ArrayList<>();
 		DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("d/MM/uuuu");
 		LocalDate firstDate = Instant.ofEpochMilli(fromDate).atZone(ZoneId.systemDefault()).toLocalDate();
 		LocalDate lastDate = Instant.ofEpochMilli(toDate).atZone(ZoneId.systemDefault()).toLocalDate();
@@ -755,6 +920,7 @@ public class DemandService {
 		Long fromDateSearch = fromDate; // isForConnectionNo ? fromDate : null;
 		Long toDateSearch = toDate; // isForConnectionNo ? toDate : null;
 		for (Calculation calculation : calculations) {
+			List<Demand> demandRes = null;
 			Set<String> consumerCodes = Collections.singleton(calculation.getWaterConnection().getConnectionNo());
 			List<Demand> searchResult = searchDemand(calculation.getTenantId(), consumerCodes, fromDateSearch,
 					toDateSearch, requestInfo, "ACTIVE");
@@ -763,15 +929,15 @@ public class DemandService {
 						"No demand exists for Number: " + consumerCodes.toString());
 			Demand demand = searchResult.get(0);
 			demand.setDemandDetails(getUpdatedDemandDetails(calculation, demand.getDemandDetails()));
-
+			String businessService = configs.getBusinessService();
 			WaterConnectionRequest waterConnectionRequest = WaterConnectionRequest.builder()
 					.waterConnection(calculation.getWaterConnection()).requestInfo(requestInfo).build();
-			Property property = wsCalculationUtil.getProperty(waterConnectionRequest);
+			/*Property property = wsCalculationUtil.getProperty(waterConnectionRequest);
 			String tenantId = calculation.getTenantId();
 			User owner = property.getOwners().get(0).toCommonUser();
 			if (!CollectionUtils.isEmpty(waterConnectionRequest.getWaterConnection().getConnectionHolders())) {
 				owner = waterConnectionRequest.getWaterConnection().getConnectionHolders().get(0).toCommonUser();
-			}
+			}*/
 
 			List<DemandDetail> demandDetails = new LinkedList<>();
 			calculation.getTaxHeadEstimates().forEach(taxHeadEstimate -> {
@@ -780,9 +946,40 @@ public class DemandService {
 						.tenantId(calculation.getTenantId()).build());
 			});
 			demands.add(demand);
+			//TODO: write logic to enter in new table
+			if(config.isSaveDemandAuditEnabled()){
+				demands.stream().forEach(dem -> {
+					Long id = demandAuditSeqBuilder.getNextSequence();
+					WsDemandChangeAuditRequest wsDemandChangeAuditRequest = WsDemandChangeAuditRequest.builder().id(id).
+							consumercode(dem.getConsumerCode()).
+							tenant_id(dem.getTenantId()).
+							status(dem.getStatus().toString()).
+							action("UPDATE DEMAND BULK").
+							data(dem).
+							createdby(dem.getAuditDetails().getCreatedBy()).
+							createdtime(dem.getAuditDetails().getLastModifiedTime()).build();
+					WsDemandChangeAuditRequestWrapper wsDemandChangeAuditRequestWrapper = WsDemandChangeAuditRequestWrapper.builder().wsDemandChangeAuditRequest(wsDemandChangeAuditRequest).build();
+					producer.push(config.getSaveDemandAudit(), wsDemandChangeAuditRequestWrapper);
+				});
+			}
+			demandRes = demandRepository.updateDemand(requestInfo, demands);
+			finalDemandRes.addAll(demandRes);
+			List<BillV2> bills = fetchBill(demands, waterConnectionRequest.getRequestInfo());
+//			Long billDate = fetchBillDate(demands,waterConnectionRequest.getRequestInfo());
+//			billDate =billDate + 1296000000l;
+//			LocalDate billDateLocal = Instant.ofEpochMilli(billDate).atZone(ZoneId.systemDefault()).toLocalDate();
+//			String paymentDueDate = billDateLocal.format(dateTimeFormatter);
+			/*if(isOnlinePaymentAllowed(requestInfo,tenantId)) {
+				if(fetchTotalBillAmount(demands,requestInfo).signum()> 0) {
+					sendPaymentSMSNotification(requestInfo,tenantId,owner,waterConnectionRequest,property,demandDetails,calculation.getConnectionNo(),demands,true,businessService,billCycle,billNumbers,paymentDueDate);
+					//sendPaymentAndBillSMSNotification(requestInfo,tenantId,owner,waterConnectionRequest,property,demandDetails,consumerCode,demands,true,businessService,billCycle,billNumbers,paymentDueDate);
+				}
+			}*/
+			//sendDownloadBillSMSNotification(requestInfo,tenantId,owner,waterConnectionRequest,property,demandDetails,calculation.getConnectionNo(),demands,true,businessService,billCycle,billNumbers,paymentDueDate);
+
 //			Commenting to avoid sending message as new bill while updating
 			
-			HashMap<String, String> localizationMessage = util.getLocalizationMessage(requestInfo,
+			/*HashMap<String, String> localizationMessage = util.getLocalizationMessage(requestInfo,
 					WSCalculationConstant.mGram_Consumer_NewBill, calculation.getTenantId());
 
 			String actionLink = config.getNotificationUrl()
@@ -823,10 +1020,10 @@ public class DemandService {
 						.category(Category.TRANSACTION).build();
 				producer.push(config.getSmsNotifTopic(), sms);
 
-			}
+			}*/
 			 
 
-			if (isForConnectionNo) {
+			/*if (isForConnectionNo) {
 				WaterConnection connection = calculation.getWaterConnection();
 				if (connection == null) {
 					List<WaterConnection> waterConnectionList = calculatorUtils.getWaterConnection(requestInfo,
@@ -848,12 +1045,13 @@ public class DemandService {
 //						demand.setPayer(owner);
 //				}
 
-			}
+			}*/
 
 		}
 
 		log.info("Updated Demand Details " + demands.toString());
-		return demandRepository.updateDemand(requestInfo, demands);
+		//return demandRepository.updateDemand(requestInfo, demands);
+		return finalDemandRes;
 	}
 
 	/**
@@ -1001,7 +1199,11 @@ public class DemandService {
 
 		LocalDate fromDate = LocalDate.parse(bulkDemand.getBillingPeriod().split("-")[0].trim(), formatter);
 		LocalDate toDate = LocalDate.parse(bulkDemand.getBillingPeriod().split("-")[1].trim(), formatter);
-		
+		if(fromDate.isAfter(LocalDate.now().minusMonths(1))) {
+			throw new CustomException("INVALID_BILLING_CYCLE",
+					"Cannot generate demands for future months");
+		}
+			
 		Long dayStartTime = LocalDateTime.of(fromDate.getYear(), fromDate.getMonth(), fromDate.getDayOfMonth(), 0, 0, 0)
 				.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
 		Long dayEndTime = LocalDateTime.of(toDate.getYear(), toDate.getMonth(), toDate.getDayOfMonth(), 23, 59, 59, 999000000)
@@ -1027,6 +1229,16 @@ public class DemandService {
 //		generateBulkDemandForULB(billingMasterData, bulkDemand);
 	}
 
+	public boolean isDuplicateBulkDemandCall(String tenantId, String billingPeriod, Timestamp fromTime) {
+		return waterCalculatorDao.isDuplicateBulkDemandCall(tenantId, billingPeriod, fromTime);
+	}
+
+	public void insertBulkDemandCall(String tenantId, String billingPeriod, String status,AuditDetails auditDetails) {
+		waterCalculatorDao.insertBulkDemandCall(tenantId, billingPeriod, status,auditDetails);
+	}
+
+
+
 	private String formatDemandMessage(RequestInfo requestInfo, String tenantId, String string) {
 		// TODO Auto-generated method stub
 		return null;
@@ -1034,7 +1246,7 @@ public class DemandService {
 
 	private Recipient getRecepient(RequestInfo requestInfo, String tenantId) {
 		Recipient recepient = null;
-		UserDetailResponse userDetailResponse = userService.getUserByRoleCodes(requestInfo, Arrays.asList("GP_ADMIN"),
+		UserDetailResponse userDetailResponse = userService.getUserByRoleCodes(requestInfo, Arrays.asList("GP_ADMIN","SARPANCH"),
 				tenantId);
 		if (userDetailResponse.getUser().isEmpty())
 			log.error("Recepient is absent");
@@ -1072,28 +1284,51 @@ public class DemandService {
 		return true;
 	}
 
-	public List<String> fetchBill(List<Demand> demandResponse, RequestInfo requestInfo) {
-		boolean notificationSent = false;
-		List<String> billNumber = new ArrayList<>();
+	public List<BillV2> fetchBill(List<Demand> demandResponse, RequestInfo requestInfo) {
+		boolean notificationSent = false; new ArrayList<>();
+		List<BillV2> bills =null;
 		for (Demand demand : demandResponse) {
 			try {
 				Object result = serviceRequestRepository.fetchResult(
 						calculatorUtils.getFetchBillURL(demand.getTenantId(), demand.getConsumerCode()),
 						RequestInfoWrapper.builder().requestInfo(requestInfo).build());
-				billNumber = JsonPath.read(result, "$.Bill.*.billNumber");
-				log.info("Bill Response :: " + result);
-
+				//billNumber = JsonPath.read(result, "$.Bill.*.billNumber");
 				HashMap<String, Object> billResponse = new HashMap<>();
 
 				billResponse.put("requestInfo", requestInfo);
 				billResponse.put("billResponse", result);
+				try {
+					bills =  mapper.convertValue(result, BillResponseV2.class).getBill();
+				} catch (IllegalArgumentException e) {
+					throw new CustomException("PARSING_ERROR", "Failed to parse response from Demand Search");
+				}
 				wsCalculationProducer.push(configs.getPayTriggers(), billResponse);
 				notificationSent = true;
 			} catch (Exception ex) {
 				log.error("Fetch Bill Error", ex);
 			}
 		}
-		return billNumber;
+		return bills;
+	}
+
+	public Long fetchBillDate(List<Demand> demandResponse, RequestInfo requestInfo) {
+		List<Long> billDate = null;
+		for (Demand demand : demandResponse) {
+			try {
+				Object result = serviceRequestRepository.fetchResult(
+						calculatorUtils.getFetchBillURL(demand.getTenantId(), demand.getConsumerCode()),
+						RequestInfoWrapper.builder().requestInfo(requestInfo).build());
+				billDate = JsonPath.read(result, "$.Bill.*.billDate");
+
+
+			} catch (Exception ex) {
+				log.error("Fetch Bill Error", ex);
+			}
+		}
+		if(!CollectionUtils.isEmpty(billDate))
+			return billDate.get(0);
+		else
+			return null;
 	}
 
 	/**
@@ -1173,7 +1408,21 @@ public class DemandService {
 			demands.add(demand);
 		}
 
-		log.info("Updated Demand Details " + demands.toString());
+		if(config.isSaveDemandAuditEnabled()){
+			demands.stream().forEach(demand -> {
+				Long id = demandAuditSeqBuilder.getNextSequence();
+				WsDemandChangeAuditRequest wsDemandChangeAuditRequest = WsDemandChangeAuditRequest.builder().id(id).
+						consumercode(demand.getConsumerCode()).
+						tenant_id(demand.getTenantId()).
+						status(demand.getStatus().toString()).
+						action("UPDATE DEMAND APPLYADHOCTAX").
+						data(demand).
+						createdby(demand.getAuditDetails().getCreatedBy()).
+						createdtime(demand.getAuditDetails().getLastModifiedTime()).build();
+				WsDemandChangeAuditRequestWrapper wsDemandChangeAuditRequestWrapper = WsDemandChangeAuditRequestWrapper.builder().wsDemandChangeAuditRequest(wsDemandChangeAuditRequest).build();
+				producer.push(config.getSaveDemandAudit(), wsDemandChangeAuditRequestWrapper);
+			});
+		}
 		demandRepository.updateDemand(requestInfo, demands);
 		return calculations;
 	}
@@ -1189,8 +1438,149 @@ public class DemandService {
 					}
 			}
 		}
-		DemandPenaltyResponse response = DemandPenaltyResponse.builder().totalApplicablePenalty(totalApplicablePenalty).demands(demands).build();
+		demands.stream().filter(i->i.getStatus().equals(Demand.StatusEnum.ACTIVE));
+		DemandPenaltyResponse response = DemandPenaltyResponse.builder().totalApplicablePenalty(totalApplicablePenalty).
+				demands(demands).build();
 		return response;
+	}
+	public boolean isOnlinePaymentAllowed(RequestInfo requestInfo, String tenantId)
+	{
+		List<MasterDetail> masterDetails = new ArrayList<>();
+		MasterDetail masterDetail =new MasterDetail("BusinessService",WSCalculationConstant.FILTER_PAYMENT_METHOD_SEARCH);
+		masterDetails.add(masterDetail);
+		ModuleDetail moduleDetail = ModuleDetail.builder().moduleName("BillingService").masterDetails(masterDetails).build();
+		List<ModuleDetail> moduleDetails = new ArrayList<>();
+		moduleDetails.add(moduleDetail);
+        MdmsCriteria mdmsCriteria = MdmsCriteria.builder().tenantId(tenantId)
+				.moduleDetails(moduleDetails)
+				.build();
+		Map<String, Object> paymentMasterData = calculatorUtils.getAllowedPaymentForTenantId(tenantId,mdmsCriteria,requestInfo);
+		List<String> paymentModesNotAllowed = (List<String>) paymentMasterData.get(WSCalculationConstant.Payment_Modes_Not_Allowed);
+		if(paymentModesNotAllowed.contains("ONLINE"))
+			return false;
+		else
+			return true;
+	}
+	public List<Demand> searchDemandBydemandId(String tenantId, Set<String> demandids,
+											   RequestInfo requestInfo) {
+		Object result = serviceRequestRepository.fetchResult(
+				getDemandSearchURLByDemandId(tenantId, demandids),
+				RequestInfoWrapper.builder().requestInfo(requestInfo).build());
+		try {
+			return mapper.convertValue(result, DemandResponse.class).getDemands();
+		} catch (IllegalArgumentException e) {
+			throw new CustomException("PARSING_ERROR", "Failed to parse response from Demand Search");
+		}
+
+	}
+
+	public StringBuilder getDemandSearchURLByDemandId(String tenantId, Set<String> demandIds) {
+		StringBuilder url = new StringBuilder(configs.getBillingServiceHost());
+		url.append(configs.getDemandSearchEndPoint());
+		url.append("?");
+		url.append("tenantId=");
+		url.append(tenantId);
+		url.append("&");
+		url.append("demandId=");
+		url.append(StringUtils.join(demandIds, ','));
+		log.info("Search demand url:"+url);
+		return url;
+	}
+
+	public  List<String> getDemandToAddPenalty(String tenantid,BigInteger penaltyThresholdDate,Integer penaltyApplicableAfterDays){
+		return  demandRepository.getDemandsToAddPenalty(tenantid,penaltyThresholdDate,penaltyApplicableAfterDays);
+	}
+
+	public ResponseEntity<HttpStatus> addPenalty(@Valid RequestInfo requestInfo, AddPenaltyCriteria addPenaltyCriteria) {
+		if(config.isPenaltyEnabled()) {
+			if (requestInfo.getUserInfo().equals(null)) {
+
+			}
+			List<MasterDetail> masterDetails = new ArrayList<>();
+			MasterDetail masterDetail = new MasterDetail("Penalty", "[?(@)]");
+			masterDetails.add(masterDetail);
+			ModuleDetail moduleDetail = ModuleDetail.builder().moduleName("ws-services-calculation").masterDetails(masterDetails).build();
+			List<ModuleDetail> moduleDetails = new ArrayList<>();
+			moduleDetails.add(moduleDetail);
+			MdmsCriteria mdmsCriteria = MdmsCriteria.builder().tenantId(addPenaltyCriteria.getTenantId())
+					.moduleDetails(moduleDetails)
+					.build();
+			Map<String, Object> paymentMasterData = calculatorUtils.getPenaltyMasterForTenantId(addPenaltyCriteria.getTenantId(), mdmsCriteria, requestInfo);
+
+			Integer rate= (Integer) paymentMasterData.get("rate");
+			String penaltyType = String.valueOf(paymentMasterData.get("type"));
+			String penaltySubType = (String) paymentMasterData.get("subType");
+			String startingDay = (String) paymentMasterData.get("startingDay");
+			Integer applicableAfterDays = (Integer) paymentMasterData.get("applicableAfterDays");
+			List<String> demandIds = getDemandToAddPenalty(addPenaltyCriteria.getTenantId(), new BigInteger(config.getPenaltyStartThresholdTime()),applicableAfterDays);
+			if (rate > 0) {
+				demandIds.stream().forEach(demandId -> {
+					Set<String> demandids = new HashSet<>();
+					demandids.add(demandId);
+					List<Demand> demands = searchDemandBydemandId(addPenaltyCriteria.getTenantId(), demandids, requestInfo);
+					if (!CollectionUtils.isEmpty(demands)) {
+						Demand demand = demands.get(0);
+						Boolean isPenaltyExistForDemand = demand.getDemandDetails().stream().anyMatch(demandDetail -> {
+							return demandDetail.getTaxHeadMasterCode().equalsIgnoreCase(WSCalculationConstant.WS_TIME_PENALTY);
+						});
+						if (!isPenaltyExistForDemand) {
+							if (!CollectionUtils.isEmpty(demand.getDemandDetails()) && demand.getDemandDetails().size() == 1) {
+								demand.setDemandDetails(addTimePenalty(rate, penaltyType, penaltySubType, demand));
+								demands.clear();
+								demands.add(demand);
+								DemandRequest demandRequest = DemandRequest.builder().requestInfo(requestInfo).demands(demands).build();
+								producer.push(config.getUpdateAddPenaltytopic(), demandRequest);
+							}
+						}
+					}
+				});
+			} else {
+				return new ResponseEntity<>(org.springframework.http.HttpStatus.METHOD_NOT_ALLOWED);
+			}
+		}
+		return new ResponseEntity<>(org.springframework.http.HttpStatus.ACCEPTED);
+	}
+
+	public List<DemandDetail> addTimePenalty(Integer rate, String type, String SubType,Demand demand) {
+		// TODO:  if type is fixed annd subtype is curretmonnth than only add penalty
+		//TODO : check for metered connection also what is taxheadcode
+
+		BigDecimal taxPercentage = BigDecimal.valueOf(Double.valueOf(rate));
+		List<DemandDetail> demandDetailList=  demand.getDemandDetails();
+		DemandDetail waterChargeDemandDetails = null;
+		if(!CollectionUtils.isEmpty(demandDetailList)) {
+			if(demandDetailList.get(0).getTaxHeadMasterCode().equalsIgnoreCase(WSCalculationConstant.WS_CHARGE)){
+				//mapper.convertValue(demandDetailList.stream().filter(demandDetail -> demandDetail.getTaxHeadMasterCode().equalsIgnoreCase(WSCalculationConstant.WS_CHARGE)), DemandDetail.class) ;
+				waterChargeDemandDetails=demandDetailList.get(0);
+				BigDecimal netPayableAmountWithouttax= waterChargeDemandDetails.getTaxAmount().subtract(waterChargeDemandDetails.getCollectionAmount());
+				if(netPayableAmountWithouttax.signum()> 0) {
+					BigDecimal tax = netPayableAmountWithouttax.multiply(taxPercentage.divide(WSCalculationConstant.HUNDRED));
+					//round off to next higest number
+					tax = roundOffTax(tax);
+					if(tax.compareTo(BigDecimal.ZERO) > 0) {
+						DemandDetail timeDemandDetail = DemandDetail.builder().demandId(demand.getId())
+								.taxHeadMasterCode(WSCalculationConstant.WS_TIME_PENALTY)
+								.taxAmount(tax)
+								.collectionAmount(BigDecimal.ZERO)
+								.tenantId(demand.getTenantId()).build();
+
+						demandDetailList.add(timeDemandDetail);
+					}
+				}
+			}
+		}
+		return demandDetailList;
+
+	}
+
+	public BigDecimal roundOffTax (BigDecimal tax) {
+
+		// Round the value up to the next highest integer
+		return tax.setScale(0, RoundingMode.HALF_UP);
+	}
+
+	public void updateDemandAddPenalty(RequestInfo requestInfo , List<Demand> demands) {
+		demandRepository.updateDemand(requestInfo,demands);
 	}
 
 }

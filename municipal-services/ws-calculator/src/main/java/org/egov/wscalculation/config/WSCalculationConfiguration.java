@@ -231,7 +231,49 @@ public class WSCalculationConfiguration {
 
 	@Value("${egov.bilk.demand.failed.link}")
 	private String bulkDemandFailedLink;
-	
 
-	
+	@Value("${egov.sms.bill.payment.link}")
+	private String billPaymentSMSLink;
+
+	@Value("${egov.pspcl.vendor.number}")
+	private String pspclVendorNumber;
+
+	@Value("${sms.demand.enabled}")
+	private  boolean isSmsForDemandEnable;
+
+	@Value("${sms.payment.link.enabled}")
+	private  boolean isSmsForPaymentLinkEnable;
+
+	@Value("${sms.bill.download.enabled}")
+	private boolean isSmsForBillDownloadEnabled;
+
+	@Value("${sms.exclude.tenant}")
+	private String smsExcludeTenant;
+
+	@Value("${is.save.demand.audit.enabled}")
+	private boolean isSaveDemandAuditEnabled;
+
+	@Value("${egov.save.demand.audit.from.wscal}")
+	private String saveDemandAudit;
+
+	@Value("${penalty.applicable.in.days}")
+	private Integer penaltyApplicableDays;
+
+	@Value("${penalty.start.threshold.time}")
+	private String penaltyStartThresholdTime;
+
+	@Value("${is.penalty.feature.enable}")
+	private boolean isPenaltyEnabled;
+
+	@Value("${egov.update.demand.add.penalty}")
+	private String updateAddPenaltytopic;
+
+	@Value("${ws.generate.demand.bulk}")
+	private String wsGenerateDemandBulktopic;
+
+	@Value("${kafka.topic.roll.out.dashboard}")
+	private String rollOutDashBoardTopic;
+
+	@Value("${bulk.demand.duplicateCheck.duration.hours}")
+	private Integer duplicateBulkDemandDurationHours;
 }
