@@ -151,7 +151,6 @@ public class ChallanController {
 					.build();
 			return new ResponseEntity<>(response, HttpStatus.OK);
 		}
-
 	@PostMapping("/_updateCreateNoPayment")
 	public ResponseEntity<ChallanResponse> updateCreateoPayment(@Valid @RequestBody ChallanRequest challanRequest) {
 		Map<String, String> finalData = new HashMap<String, String>();
