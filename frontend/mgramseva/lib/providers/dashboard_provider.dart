@@ -4,18 +4,18 @@ import 'package:flutter/material.dart';
 import 'package:mgramseva/model/common/metric.dart';
 import 'package:mgramseva/model/connection/water_connection.dart';
 import 'package:mgramseva/model/connection/water_connections.dart';
-import 'package:mgramseva/model/expensesDetails/expenses_details.dart';
+import 'package:mgramseva/model/expenses_details/expenses_details.dart';
 import 'package:mgramseva/model/mdms/property_type.dart';
 import 'package:mgramseva/providers/common_provider.dart';
 import 'package:mgramseva/repository/core_repo.dart';
 import 'package:mgramseva/repository/dashboard.dart';
 import 'package:mgramseva/repository/expenses_repo.dart';
 import 'package:mgramseva/repository/search_connection_repo.dart';
-import 'package:mgramseva/routers/Routers.dart';
-import 'package:mgramseva/screeens/dashboard/dashboard_pdf.dart';
-import 'package:mgramseva/services/MDMS.dart';
-import 'package:mgramseva/utils/Constants/I18KeyConstants.dart';
-import 'package:mgramseva/utils/Locilization/application_localizations.dart';
+import 'package:mgramseva/routers/routers.dart';
+import 'package:mgramseva/screeens/dashboard/dashboard_pdf_creator.dart';
+import 'package:mgramseva/services/mdms.dart';
+import 'package:mgramseva/utils/constants/i18_key_constants.dart';
+import 'package:mgramseva/utils/localization/application_localizations.dart';
 import 'package:mgramseva/utils/date_formats.dart';
 import 'package:mgramseva/utils/error_logging.dart';
 import 'package:mgramseva/utils/global_variables.dart';
@@ -23,7 +23,7 @@ import 'package:mgramseva/utils/loaders.dart';
 import 'package:mgramseva/utils/models.dart';
 import 'package:provider/provider.dart';
 
-import 'revenuedashboard_provider.dart';
+import 'revenue_dashboard_provider.dart';
 
 class DashBoardProvider with ChangeNotifier {
   var streamController = StreamController.broadcast();
@@ -97,6 +97,7 @@ class DashBoardProvider with ChangeNotifier {
 
       fetchExpenseDashBoardDetails(context, limit, offset, true);
     } else {
+      sortBy = SortBy('connectionNumber', false);
       waterConnectionsDetails?.waterConnection = <WaterConnection>[];
       waterConnectionsDetails?.totalCount = null;
 
@@ -176,7 +177,6 @@ class DashBoardProvider with ChangeNotifier {
     if (selectedTab != 'all') {
       query['isBillPaid'] = ((selectedTab == 'pending') ? 'false' : 'true');
     }
-    ;
 
     query
         .removeWhere((key, value) => (value is String && value.trim().isEmpty));
@@ -265,6 +265,8 @@ class DashBoardProvider with ChangeNotifier {
       'tenantId': commonProvider.userDetails?.selectedtenant?.code,
       'offset': '${offset - 1}',
       'limit': '$limit',
+      'fromDate': '${selectedMonth.startDate.millisecondsSinceEpoch}',
+      'toDate': '${selectedMonth.endDate.millisecondsSinceEpoch}',
       'iscollectionAmount': 'true',
       'isPropertyCount': 'true',
     };
@@ -272,7 +274,6 @@ class DashBoardProvider with ChangeNotifier {
     if (selectedTab != 'all') {
       query['propertyType'] = selectedTab;
     }
-    ;
 
     if (sortBy != null) {
       query.addAll({
@@ -306,41 +307,39 @@ class DashBoardProvider with ChangeNotifier {
 
       isLoaderEnabled = false;
       if (selectedDashboardType != DashBoardType.collections) return;
-      if (response != null) {
-        if (waterConnectionsDetails == null) {
-          waterConnectionsDetails = response;
+      if (waterConnectionsDetails == null) {
+        waterConnectionsDetails = response;
 
-          if (selectedTab == 'all') {
-            collectionCountHolder['all'] = response.totalCount ?? 0;
-            propertyTaxList.forEach((key) {
-              collectionCountHolder[key.code!] =
-                  int.parse(response.tabData?[key.code!] ?? '0');
-            });
-          } else if (searchResponse != null) {
-            collectionCountHolder['all'] = searchResponse.totalCount ?? 0;
-            propertyTaxList.forEach((key) {
-              collectionCountHolder[key.code!] =
-                  int.parse(searchResponse.tabData?[key.code!] ?? '0');
-            });
-          }
-
-          notifyListeners();
-        } else {
-          waterConnectionsDetails?.totalCount = response.totalCount;
-          waterConnectionsDetails?.waterConnection
-              ?.addAll(response.waterConnection ?? <WaterConnection>[]);
+        if (selectedTab == 'all') {
+          collectionCountHolder['all'] = response.totalCount ?? 0;
+          propertyTaxList.forEach((key) {
+            collectionCountHolder[key.code!] =
+                int.parse(response.tabData?[key.code!] ?? '0');
+          });
+        } else if (searchResponse != null) {
+          collectionCountHolder['all'] = searchResponse.totalCount ?? 0;
+          propertyTaxList.forEach((key) {
+            collectionCountHolder[key.code!] =
+                int.parse(searchResponse.tabData?[key.code!] ?? '0');
+          });
         }
+
         notifyListeners();
-        streamController.add(waterConnectionsDetails!.waterConnection!.isEmpty
-            ? <WaterConnection>[]
-            : waterConnectionsDetails?.waterConnection?.sublist(
-                offSet - 1,
-                ((offset + limit - 1) >
-                        (waterConnectionsDetails?.totalCount ?? 0))
-                    ? (waterConnectionsDetails!.totalCount!)
-                    : (offset + limit) - 1));
+      } else {
+        waterConnectionsDetails?.totalCount = response.totalCount;
+        waterConnectionsDetails?.waterConnection
+            ?.addAll(response.waterConnection ?? <WaterConnection>[]);
       }
-    } catch (e, s) {
+      notifyListeners();
+      streamController.add(waterConnectionsDetails!.waterConnection!.isEmpty
+          ? <WaterConnection>[]
+          : waterConnectionsDetails?.waterConnection?.sublist(
+              offSet - 1,
+              ((offset + limit - 1) >
+                      (waterConnectionsDetails?.totalCount ?? 0))
+                  ? (waterConnectionsDetails!.totalCount!)
+                  : (offset + limit) - 1));
+        } catch (e, s) {
       isLoaderEnabled = false;
       notifyListeners();
       streamController.addError('error');
@@ -419,7 +418,7 @@ class DashBoardProvider with ChangeNotifier {
                 sortBy != null && sortBy!.key == 'connectionNumber'
                     ? sortBy!.isAscending
                     : null,
-            apiKey: 'connectionNumber ',
+            apiKey: 'connectionNumber',
             callBack: onExpenseSort),
         TableHeader(i18.common.NAME,
             isSortingRequired: true,
@@ -473,7 +472,7 @@ class DashBoardProvider with ChangeNotifier {
       TableData('${expense.challanNo} \n${expense.vendorName}',
           callBack: onClickOfChallanNo, apiKey: expense.challanNo),
       TableData('${expense.expenseType}'),
-      TableData('₹ ${expense.totalAmount ?? '-'}'),
+      TableData('${expense.totalAmount ?? '-'}'),
       TableData('${DateFormats.timeStampToDate(expense.billDate)}'),
       TableData(
           '${expense.paidDate != null && expense.paidDate != 0 ? DateFormats.timeStampToDate(expense.paidDate) : (ApplicationLocalizations.of(navigatorKey.currentContext!).translate(i18.dashboard.PENDING))}',
@@ -545,7 +544,6 @@ class DashBoardProvider with ChangeNotifier {
   }
 
   void onChangeOfDate(DatePeriod? date, BuildContext context) {
-    var previousDateType = selectedMonth.dateType;
     selectedMonth =
         date ?? DatePeriod(DateTime.now(), DateTime.now(), DateType.MONTH);
     notifyListeners();
@@ -719,7 +717,7 @@ class DashBoardProvider with ChangeNotifier {
                   '${expense.challanNo} \n${expense.vendorName}',
                   '${ApplicationLocalizations.of(context).translate(expense.expenseType ?? '')}',
                   expense.totalAmount != null
-                      ? '₹ ${expense.totalAmount}'
+                      ? '${expense.totalAmount}'
                       : '-',
                   '${DateFormats.timeStampToDate(expense.billDate)}',
                   '${expense.paidDate != null && expense.paidDate != 0 ? DateFormats.timeStampToDate(expense.paidDate) : (ApplicationLocalizations.of(navigatorKey.currentContext!).translate(i18.dashboard.PENDING))}',
@@ -757,7 +755,6 @@ class DashBoardProvider with ChangeNotifier {
     if (selectedTab != 'all') {
       query['propertyType'] = selectedTab;
     }
-    ;
 
     if (sortBy != null) {
       query.addAll({

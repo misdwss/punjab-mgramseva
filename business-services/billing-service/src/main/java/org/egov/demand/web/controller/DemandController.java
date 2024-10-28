@@ -46,11 +46,14 @@ import javax.validation.Valid;
 
 import org.egov.common.contract.request.RequestInfo;
 import org.egov.demand.config.ApplicationProperties;
+import org.egov.demand.model.AggregatedDemandDetailResponse;
 import org.egov.demand.model.Demand;
 import org.egov.demand.model.DemandCriteria;
+import org.egov.demand.model.DemandHistory;
 import org.egov.demand.producer.Producer;
 import org.egov.demand.service.DemandService;
 import org.egov.demand.util.migration.DemandMigration;
+import org.egov.demand.web.contract.DemandHistoryResponse;
 import org.egov.demand.web.contract.DemandRequest;
 import org.egov.demand.web.contract.DemandResponse;
 import org.egov.demand.web.contract.RequestInfoWrapper;
@@ -59,14 +62,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -144,7 +140,7 @@ public class DemandController {
 	public ResponseEntity<?> migrate(@RequestBody @Valid RequestInfoWrapper wrapper,
 			@RequestParam(required=false) Integer batchStart, @RequestParam(required=true) Integer batchSizeInput) {
 
-		Map<String, String> resultMap = migrationService.migrateToV1(batchStart, batchSizeInput);
+		Map<String, String> resultMap = migrationService.migrateToV1(batchStart, batchSizeInput, wrapper.getRequestInfo().getUserInfo().getTenantId().substring(0,2));
 		return new ResponseEntity<>(resultMap, HttpStatus.OK);
 	}
     
@@ -154,10 +150,32 @@ public class DemandController {
 
 		RequestInfo requestInfo = requestInfoWrapper.getRequestInfo();
 
-		List<Demand> demands = demandService.getDemandHistory(demandCriteria, requestInfo);
+		DemandHistory demands = demandService.getDemandHistory(demandCriteria, requestInfo);
+		DemandHistoryResponse response = DemandHistoryResponse.builder().demands(demands.getDemandList())
+				.advanceAdjustedAmount(demands.getAdvanceAdjustedAmount()).waterCharge(demands.getWaterCharge()).
+				responseInfo(responseFactory.getResponseInfo(requestInfo, HttpStatus.OK)).build();
+		return new ResponseEntity<>(response, HttpStatus.OK);
+	}
+	@PostMapping("_getAggregateDemandDetails")
+	public ResponseEntity<?> getAggregatedDemandDetails(@RequestBody RequestInfoWrapper requestInfoWrapper,
+														@ModelAttribute @Valid DemandCriteria demandCriteria) {
+
+		RequestInfo requestInfo = requestInfoWrapper.getRequestInfo();
+
+		AggregatedDemandDetailResponse demands  = demandService.getAllDemands(demandCriteria, requestInfo);
+		return new ResponseEntity<>(demands, HttpStatus.OK);
+	}
+
+	@PostMapping("/_plainsearch")
+	public ResponseEntity<?> plainsearch(@RequestBody RequestInfoWrapper requestInfoWrapper,
+														@ModelAttribute @Valid DemandCriteria demandCriteria) {
+
+		RequestInfo requestInfo = requestInfoWrapper.getRequestInfo();
+		List<Demand> demands = demandService.demandPlainSearch(demandCriteria, requestInfo);
 		DemandResponse response = DemandResponse.builder().demands(demands)
 				.responseInfo(responseFactory.getResponseInfo(requestInfo, HttpStatus.OK)).build();
 		return new ResponseEntity<>(response, HttpStatus.OK);
+
 	}
-    
+
 }

@@ -1,6 +1,10 @@
 package org.egov.waterconnection.validator;
 
 import java.math.BigDecimal;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -16,6 +20,7 @@ import org.egov.waterconnection.repository.ServiceRequestRepository;
 import org.egov.waterconnection.service.MeterInfoValidator;
 import org.egov.waterconnection.service.PropertyValidator;
 import org.egov.waterconnection.service.WaterFieldValidator;
+import org.egov.waterconnection.util.WaterServicesUtil;
 import org.egov.waterconnection.web.models.Demand;
 import org.egov.waterconnection.web.models.DemandDetail;
 import org.egov.waterconnection.web.models.DemandRequest;
@@ -25,6 +30,7 @@ import org.egov.waterconnection.web.models.ValidatorResult;
 import org.egov.waterconnection.web.models.WaterConnection;
 import org.egov.waterconnection.web.models.WaterConnectionRequest;
 import org.egov.waterconnection.web.models.Connection.StatusEnum;
+import org.egov.waterconnection.web.models.collection.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
@@ -58,6 +64,11 @@ public class WaterConnectionValidator {
 	@Autowired
 	private ObjectMapper mapper;
 
+	@Autowired
+	private WaterServicesUtil waterServiceUtil;
+
+	String businessService = "WS.ONE_TIME_FEE";
+
 	/**Used strategy pattern for avoiding multiple if else condition
 	 * 
 	 * @param waterConnectionRequest
@@ -81,12 +92,19 @@ public class WaterConnectionValidator {
 		if(previousMetereReading == null || previousMetereReading <=0) {
 			errorMap.put("PREVIOUS_METER_READIN_INVALID","Previous Meter reading date cannot be null");
 		}
+		if(waterConnectionRequest.getWaterConnection().getOldConnectionNo() == null || waterConnectionRequest.getWaterConnection().getOldConnectionNo() == "") {
+			errorMap.put("INVALID_OLD_CONNECTION_NO","Old connection number cannot be empty");
+		}
 		ValidatorResult isMeterInfoValidated = meterInfoValidator.validate(waterConnectionRequest, reqType);
 		if (!isMeterInfoValidated.isStatus())
 			errorMap.putAll(isMeterInfoValidated.getErrorMessage());
 		if(waterConnectionRequest.getWaterConnection().getProcessInstance().getAction().equalsIgnoreCase("PAY"))
 			errorMap.put("INVALID_ACTION","Pay action cannot be perform directly");
-		
+
+		LocalDate date =Instant.ofEpochMilli(previousMetereReading).atZone(ZoneId.systemDefault()).toLocalDate();
+		if(date.isAfter(LocalDate.now().minusMonths(1))) {
+			errorMap.put("INVALID_BILLING_CYCLE","Cannot generate demands for future months");
+		}
 		if (waterConnectionRequest.getWaterConnection().getPaymentType() != null
 				&& !waterConnectionRequest.getWaterConnection().getPaymentType().isEmpty()) {
 
@@ -143,41 +161,92 @@ public class WaterConnectionValidator {
 		DemandResponse response =  validateUpdateForDemand(request,searchResult);
 		if(response != null) {
 			List<Demand> demands = response.getDemands();
-			CopyOnWriteArrayList<Demand> demList = new CopyOnWriteArrayList<>(response.getDemands());
-			List<Demand> demandList = new ArrayList<>(demList);
-
-			List<Boolean> data = new ArrayList<Boolean>();
-			if(demands != null && !demands.isEmpty()) {
-				for (Demand demand : demandList) {
+			CopyOnWriteArrayList<Demand> demList = null;
+			CopyOnWriteArrayList<Demand> allDemands = null;
+			if( demands != null && !demands.isEmpty()) {
+				demList = new CopyOnWriteArrayList<>(demands);
+				allDemands = new CopyOnWriteArrayList<>(demands);
+			}
+			 
+			if(allDemands != null && !allDemands.isEmpty()) {
+				for (Demand demand : allDemands) {
 					if(demand.isPaymentCompleted()) {
-						demandList.remove(demand);					}
+						demList.remove(demand);
+					}
+					Integer totalTax = demand.getDemandDetails().stream().mapToInt(i->i.getTaxAmount().intValue()).sum();
+					Integer totalCollection = demand.getDemandDetails().stream().mapToInt(i->i.getCollectionAmount().intValue()).sum();
+					if(totalTax.compareTo(totalCollection) == 0) {
+						demList.remove(demand);
+					}
+					
 				}
+			}
 				Boolean isArrear = false;
 				Boolean isAdvance = false;
-				
+				Boolean hasPayments=false;
+
+				if(!request.getWaterConnection().getStatus().equals(StatusEnum.INACTIVE)) {
+					hasPayments = checkForPayments(request);
+				}
+
 				if(request.getWaterConnection().getAdvance()!=null && request.getWaterConnection().getAdvance().compareTo(BigDecimal.ZERO) == 0) {
 					isAdvance =  true;
 				}
 				if(request.getWaterConnection().getArrears()!=null && request.getWaterConnection().getArrears().compareTo(BigDecimal.ZERO) == 0) {
 					isArrear =  true;
 				}
-				if ((request.getWaterConnection().getStatus().equals(StatusEnum.INACTIVE) && demList != null && demandList.size() > 0)
-						|| (searchResult.getArrears() != null && request.getWaterConnection().getArrears() == null
-								|| (isArrear && demList != null && demList.size() > 0))|| (request.getWaterConnection().getStatus().equals(StatusEnum.INACTIVE) && demList != null && demandList.size() > 0)
-						|| (searchResult.getAdvance() != null && request.getWaterConnection().getAdvance() == null
-						|| isAdvance)) {
-					for (Demand demand : demandList) {
+				if (!hasPayments && ((request.getWaterConnection().getStatus().equals(StatusEnum.INACTIVE) && demList != null && demList.size() > 0)
+						|| (searchResult.getArrears() != null && request.getWaterConnection().getArrears() == null && demList != null && demList.size() > 0
+								|| (isArrear && demList != null && demList.size() > 0))|| (request.getWaterConnection().getStatus().equals(StatusEnum.INACTIVE) && demList != null && demList.size() > 0)
+						|| (searchResult.getAdvance() != null && request.getWaterConnection().getAdvance() == null && demList != null && demList.size() > 0
+						|| isAdvance))) {
+					for (Demand demand : demList) {
 						demand.setStatus(org.egov.waterconnection.web.models.Demand.StatusEnum.CANCELLED);
 					}
-					updateDemand(request.getRequestInfo(), demandList);
+					updateDemand(request.getRequestInfo(), demList);
 
 				}
 			}
-			}
-			
-		
 	}
-/**
+
+	private Boolean checkForPayments(WaterConnectionRequest waterConnectionRequest) {
+		String consumerCode,service;
+		if(StringUtils.isEmpty(waterConnectionRequest.getWaterConnection().getConnectionNo())){
+			consumerCode = waterConnectionRequest.getWaterConnection().getApplicationNo();
+			service = businessService;
+		}
+		else{
+			consumerCode = waterConnectionRequest.getWaterConnection().getConnectionNo();
+			service = "WS";
+		}
+		StringBuilder uri = new StringBuilder();
+		uri.append(waterServiceUtil.getcollectionURL()).append(service).append("/_search").append("?").
+				append("tenantId=").append(waterConnectionRequest.getWaterConnection().getTenantId())
+				.append("&").
+				append("consumerCodes=").append(consumerCode)
+				.append("&").
+				append("businessService").append(service);
+		RequestInfoWrapper requestInfoWrapper = RequestInfoWrapper.builder().requestInfo(waterConnectionRequest.getRequestInfo()).build();
+		Object response = serviceRequestRepository.fetchResult(uri,requestInfoWrapper);
+		PaymentResponse paymentResponse=null;
+		try {
+			 paymentResponse = mapper.convertValue(response, PaymentResponse.class);
+		}
+		catch (Exception ex)
+		{
+			log.error("Response not found");
+		}
+		if(paymentResponse.getPayments()!=null)
+		{
+			if(!paymentResponse.getPayments().isEmpty())
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
  * GPWSC specific validation
  * @param request
  * @param searchResult

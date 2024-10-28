@@ -21,14 +21,23 @@
   <!-- iOS meta tags & icons -->
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
-  <meta name="apple-mobile-web-app-title" content="mgramseva">
+  <meta name="apple-mobile-web-app-title" content="mGramSeva">
   <link rel="apple-touch-icon" href="icons/Icon-192.png">
 
-  <title>mgramseva</title>
+  <title>mGramSeva</title>
   <script src="./webcomponents-lite.min.js"></script>
   <link rel="manifest" href="manifest.json">
+  <script>
+    // The value below is injected by flutter build, do not touch.
+    const serviceWorkerVersion = null;
+  </script>
+  <!-- This script adds the flutter initialization JS code -->
+  <script src="flutter.js" defer></script>
 </head>
 <style>
+  #payGovHiddenForm {
+    display: none;
+  }
   .loading {
     display: flex;
     justify-content: center;
@@ -76,20 +85,27 @@
   }
 </style>
 
-</script>
-</head>
-
 <body style="background: rgba(214, 213, 212, 1);">
-  <script type="text/javascript">
-
-    window.flutterWebRenderer = "canvaskit";
-
+<script>
+    window.addEventListener('load', function(ev) {
+      // Download main.dart.js
+      _flutter.loader.loadEntrypoint({
+        serviceWorker: {
+          serviceWorkerVersion: serviceWorkerVersion,
+        },
+        onEntrypointLoaded: function(engineInitializer) {
+          engineInitializer.initializeEngine().then(function(appRunner) {
+            appRunner.runApp();
+          });
+        }
+      });
+    });
   </script>
-  <image id="image1" alt="loading.." src="" onerror="this.style.display='none'" width="300px" height="640px"></image>
-  <image id="image" alt="loading.." onload="loadImage()" onerror="this.style.display='none'" src="" width="520px"
-    height="640px"></image>
+<image id="image1" alt="loading.." src="" onerror="this.style.display='none'" width="300px" height="640px"></image>
+<image id="image" alt="loading.." onload="loadImage()" onerror="this.style.display='none'" src="" width="520px"
+       height="640px"></image>
 
-  <script>
+<script>
 
 
     let progress = document.querySelector('#progress');
@@ -106,7 +122,7 @@
       function sendNextImageDataBatch(resolve, reject) {
         // Can only write 512 bytes at a time to the characteristic
         // Need to send the image data in 512 byte batches
-        
+
         if (index + 512 < data.length) {
           printCharacteristic.writeValueWithResponse(data.slice(index, index + 512)).then(() => {
             index += 512;
@@ -115,10 +131,10 @@
             .catch(error => reject(error));;
 
         } else {
-       
+
           // Send the last bytes
           if (index < data.length) {
-            console.log("ist completed");        
+            console.log("ist completed");
             printCharacteristic.writeValueWithResponse(data.slice(index, data.length)).then(() => {
                 console.log(index, data.length);
                 printCharacteristic.writeValueWithResponse(data.slice(index, data.length))
@@ -292,17 +308,73 @@
     };
 
   </script>
+<script>
 
+    function getValueForKey(key, arr) {
+    for (var i = 0; i < arr.length; i++){
+        if(arr[i]["key"]==key){
+            return arr[i]["value"]
+        }
+      }
+    }
 
-  <script></script>
-  <!-- This script installs service_worker.js to provide PWA functionality to
-       application. For more information, see:
-       https://developers.google.com/web/fundamentals/primers/service-workers -->
-  <script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-app.js"></script>
-  <!-- TODO: Add SDKs for Firebase products that you want to use
-           https://firebase.google.com/docs/web/setup#available-libraries -->
-  <script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-analytics.js"></script>
-  <script>
+    function sleep(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+     }
+
+    async function onCollectPayment(txURL,
+     checksum,
+     messageType,
+     merchantId,
+     serviceId,
+     orderId,
+     customerId,
+     transactionAmount,
+     currencyCode,
+     requestDateTime,
+     successUrl,
+     failUrl,
+     additionalField1,
+     additionalField2,
+     additionalField3,
+     additionalField4,
+     additionalField5){
+        var x = document.getElementById("payGovHiddenForm");
+      if (x.style.display === "none") {
+      console.log("block");
+        x.style.display = "block";
+      } else {
+      console.log("none");
+        x.style.display = "none";
+      }
+      document.getElementById("frmData").action = txURL;
+      document.getElementById("frmData").target = '_top' ;
+       document.getElementById("checksum").value = checksum;
+       document.getElementById("messageType").value = messageType;
+      document.getElementById("merchantId").value = merchantId;
+      document.getElementById("serviceId").value = serviceId ;
+      document.getElementById("orderId").value = orderId ;
+      document.getElementById("customerId").value = customerId ;
+      document.getElementById("transactionAmount").value = transactionAmount;
+      document.getElementById("currencyCode").value = currencyCode;
+      document.getElementById("requestDateTime").value = requestDateTime;
+      document.getElementById("successUrl").value = successUrl;
+      document.getElementById("failUrl").value = failUrl;
+      document.getElementById("additionalField1").value = additionalField1;
+      document.getElementById("additionalField2").value = additionalField2 ;
+      document.getElementById("additionalField3").value = additionalField3;
+      document.getElementById("additionalField4").value = additionalField4;
+      document.getElementById("additionalField5").value = additionalField5;
+      await sleep(2000);
+      document.forms["frmData"].submit();
+
+    }
+  </script>
+<script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-app.js"></script>
+<!-- TODO: Add SDKs for Firebase products that you want to use
+         https://firebase.google.com/docs/web/setup#available-libraries -->
+<script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-analytics.js"></script>
+<script>
      // Your web app's Firebase configuration
 <!--    var firebaseConfig = {-->
 <!--      apiKey: "AIzaSyA9ZfXItmFcJU_lbGHGBp1DJv8kmRoPwWA",-->
@@ -315,77 +387,33 @@
 <!--    };-->
 
      // Initialize Firebase
-    firebase.initializeApp(firebaseConfig);
-    firebase.analytics();
+<!--    firebase.initializeApp(firebaseConfig);-->
+<!--    firebase.analytics();-->
      </script>
-  <script>
-    var serviceWorkerVersion = null;
-    var scriptLoaded = false;
-    function loadMainDartJs() {
-      if (scriptLoaded) {
-        return;
-      }
-      scriptLoaded = true;
-      var scriptTag = document.createElement('script');
-      scriptTag.src = 'main.dart.js';
-      scriptTag.type = 'application/javascript';
-      document.body.append(scriptTag);
-    }
-
-    if ('serviceWorker' in navigator) {
-
-      // Service workers are supported. Use them.
-      window.addEventListener('load', function () {
-        // Wait for registration to finish before dropping the <script> tag.
-        // Otherwise, the browser will load the script multiple times,
-        // potentially different versions.
-        var serviceWorkerUrl = 'flutter_service_worker.js?v=' + serviceWorkerVersion;
-        navigator.serviceWorker.register(serviceWorkerUrl)
-          .then((reg) => {
-            function waitForActivation(serviceWorker) {
-              serviceWorker.addEventListener('statechange', () => {
-                if (serviceWorker.state == 'activated') {
-                  console.log('Installed new service worker.');
-                  loadMainDartJs();
-                }
-              });
-            }
-            if (!reg.active && (reg.installing || reg.waiting)) {
-              // No active web worker and we have installed or are installing
-              // one for the first time. Simply wait for it to activate.
-              waitForActivation(reg.installing ?? reg.waiting);
-            } else if (!reg.active.scriptURL.endsWith(serviceWorkerVersion)) {
-              // When the app updates the serviceWorkerVersion changes, so we
-              // need to ask the service worker to update.
-              console.log('New service worker available.');
-              reg.update();
-              waitForActivation(reg.installing);
-            } else {
-              // Existing service worker is still good.
-              console.log('Loading app from service worker.');
-              loadMainDartJs();
-            }
-          });
-
-        // If service worker doesn't succeed in a reasonable amount of time,
-        // fallback to plaint <script> tag.
-        setTimeout(() => {
-          if (!scriptLoaded) {
-            console.warn(
-              'Failed to load app from service worker. Falling back to plain <script> tag.',
-            );
-            loadMainDartJs();
-          }
-        }, 4000);
-      });
-    } else {
-      // Service workers not supported. Just drop the <script> tag.
-      loadMainDartJs();
-    }
-  </script>
-  <div class="loading">
-    <div class="loader"></div>
-  </div>
+<div class="loading">
+  <div class="loader"></div>
+</div>
+<div id="payGovHiddenForm">
+  <form id = 'frmData' name='frmData' role='form' method='post'>
+    <input type="hidden" id='checksum' name='checksum' />
+    <input type="text" id='messageType' class='form-control valid' name='messageType'/>
+    <input type="text" id='merchantId' class='form-control valid' name='merchantId' />
+    <input type="text" id='serviceId' class='form-control valid' name='serviceId' />
+    <input type="text" id='orderId' class='form-control' name='orderId' />
+    <input type="text" id='customerId' class='form-control valid' name='customerId'/>
+    <input type="text" id='transactionAmount' class='form-control valid' name='transactionAmount'/>
+    <input type="text" id='currencyCode' class='form-control' name='currencyCode'/>
+    <input type="text" id='requestDateTime' class='form-control hasDatePicker' name='requestDateTime'/>
+    <input type="text" id='successUrl' class='form-control' name='successUrl'/>
+    <input type="text" id='failUrl' class='form-control' name='failUrl' />
+    <input type="text" id='additionalField1' class='form-control valid' name='additionalField1'/>
+    <input type="text" id='additionalField2' class='form-control valid' name='additionalField2'/>
+    <input type="text" id='additionalField3' class='form-control valid' name='additionalField3'/>
+    <input type="text" id='additionalField4' class='form-control valid' name='additionalField4'/>
+    <input type="text" id='additionalField5' class='form-control valid' name='additionalField5'/>
+    <button type='submit' id='SubmitBtn'>Submit</button>
+  </form>
+</div>
 </body>
 
 </html>

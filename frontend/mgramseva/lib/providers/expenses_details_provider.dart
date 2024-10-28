@@ -1,12 +1,10 @@
 import 'dart:async';
 import 'dart:math';
-
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:mgramseva/model/connection/tenant_boundary.dart';
-import 'package:mgramseva/model/expensesDetails/expenses_details.dart';
-import 'package:mgramseva/model/expensesDetails/vendor.dart';
+import 'package:mgramseva/model/expenses_details/expenses_details.dart';
+import 'package:mgramseva/model/expenses_details/vendor.dart';
 import 'package:mgramseva/model/file/file_store.dart';
 import 'package:mgramseva/model/localization/language.dart';
 import 'package:mgramseva/model/mdms/expense_type.dart';
@@ -14,28 +12,24 @@ import 'package:mgramseva/model/success_handler.dart';
 import 'package:mgramseva/repository/consumer_details_repo.dart';
 import 'package:mgramseva/repository/core_repo.dart';
 import 'package:mgramseva/repository/expenses_repo.dart';
-import 'package:mgramseva/routers/Routers.dart';
-import 'package:mgramseva/screeens/AddExpense/AddExpenseWalkThrough/expenseWalkThrough.dart';
-import 'package:mgramseva/services/MDMS.dart';
-import 'package:mgramseva/utils/Locilization/application_localizations.dart';
+import 'package:mgramseva/routers/routers.dart';
+import 'package:mgramseva/screeens/add_expense/add_expense_walk_through/expense_walk_through.dart';
+import 'package:mgramseva/services/mdms.dart';
+import 'package:mgramseva/utils/localization/application_localizations.dart';
 import 'package:mgramseva/utils/common_methods.dart';
-
-import 'package:mgramseva/utils/constants.dart';
 import 'package:mgramseva/utils/custom_exception.dart';
 import 'package:mgramseva/utils/date_formats.dart';
 import 'package:mgramseva/utils/error_logging.dart';
 import 'package:mgramseva/utils/global_variables.dart';
 import 'package:mgramseva/utils/loaders.dart';
 import 'package:mgramseva/utils/models.dart';
-import 'package:mgramseva/utils/notifyers.dart';
-import 'package:mgramseva/widgets/CommonSuccessPage.dart';
-import 'package:mgramseva/widgets/FilePicker.dart';
+import 'package:mgramseva/utils/notifiers.dart';
+import 'package:mgramseva/widgets/common_success_page.dart';
+import 'package:mgramseva/widgets/file_picker.dart';
 import 'package:provider/provider.dart';
-import 'package:mgramseva/utils/Constants/I18KeyConstants.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:mgramseva/utils/constants/i18_key_constants.dart';
 
 import 'common_provider.dart';
-import 'package:universal_html/html.dart' as html;
 
 class ExpensesDetailsProvider with ChangeNotifier {
   late List<ExpenseWalkWidgets> expenseWalkthrougList;
@@ -43,13 +37,14 @@ class ExpensesDetailsProvider with ChangeNotifier {
   var expenditureDetails = ExpensesDetailsModel();
   late GlobalKey<FormState> formKey;
   var autoValidation = false;
-  int activeindex = 0;
+  int activeIndex = 0;
   LanguageList? languageList;
   var vendorList = <Vendor>[];
   late SuggestionsBoxController suggestionsBoxController;
   var phoneNumberAutoValidation = false;
   var dateAutoValidation = false;
   GlobalKey<FilePickerDemoState>? filePickerKey;
+  var isPSPCLEnabled = false;
 
 
   dispose() {
@@ -62,19 +57,36 @@ class ExpensesDetailsProvider with ChangeNotifier {
     try {
       if(expensesDetails != null || id != null) await fetchVendors();
       else fetchVendors();
+      var commonProvider =
+      Provider.of<CommonProvider>(context, listen: false);
+      if (languageList?.mdmsRes?.expense?.expenseList != null) {
+        var res = languageList?.mdmsRes?.pspclIntegration?.accountNumberGpMapping?.where((element) => element.departmentEntityCode==commonProvider.userDetails?.selectedtenant?.city?.code).toList();
+        if(res!=null && res.isNotEmpty){
+          isPSPCLEnabled = true;
+          notifyListeners();
+        }else{
+          isPSPCLEnabled = false;
+          notifyListeners();
+        }
+      }
       if (expensesDetails != null) {
         expenditureDetails = expensesDetails;
+        if(expenditureDetails.expenseType=='ELECTRICITY_BILL' && isPSPCLEnabled){
+          expenditureDetails.allowEdit = false;
+        }
         getStoreFileDetails();
       } else if (id != null) {
-        var commonProvider =
-            Provider.of<CommonProvider>(context, listen: false);
         var query = {
           'tenantId': commonProvider.userDetails?.selectedtenant?.code,
           'challanNo': id
         };
         var expenditure = await ExpensesRepository().searchExpense(query);
+
         if (expenditure != null && expenditure.isNotEmpty) {
           expenditureDetails = expenditure.first;
+          if(expenditureDetails.expenseType=='ELECTRICITY_BILL' && isPSPCLEnabled){
+            expenditureDetails.allowEdit = false;
+          }
           getStoreFileDetails();
         } else {
           streamController.add(i18.expense.NO_EXPENSE_RECORD_FOUND);
@@ -83,6 +95,10 @@ class ExpensesDetailsProvider with ChangeNotifier {
       }
 
       this.expenditureDetails.getText();
+      if(this.expenditureDetails.expenseType=='ELECTRICITY_BILL' && isPSPCLEnabled){
+        this.expenditureDetails.allowEdit = false;
+      }
+      notifyListeners();
       streamController.add(this.expenditureDetails);
     } on CustomException catch (e, s) {
       ErrorHandler.handleApiException(context, e, s);
@@ -269,7 +285,7 @@ class ExpensesDetailsProvider with ChangeNotifier {
       if (boundaryList.length > 0) {
         code = boundaryList.first.code;
       } else {
-        code = commonProvider.userDetails?.selectedtenant?.city?.code;
+        code = "WARD1";
       }
 
       var body = {
@@ -328,7 +344,7 @@ class ExpensesDetailsProvider with ChangeNotifier {
         expenditureDetails.selectedVendor = Vendor(res['name'], res['id']);
         status = true;
       }
-    } on CustomException catch (e, s) {
+    } on CustomException catch (e) {
       Notifiers.getToastMessage(context, e.message, 'ERROR');
     } catch (e) {
       Notifiers.getToastMessage(context, e.toString(), 'ERROR');
@@ -351,7 +367,7 @@ class ExpensesDetailsProvider with ChangeNotifier {
         Notifiers.getToastMessage(
             context, i18.expense.NO_EXPENSES_FOUND, 'ERROR');
       }
-    } on CustomException catch (e, s) {
+    } on CustomException catch (e) {
       Notifiers.getToastMessage(context, e.message, 'ERROR');
       Navigator.pop(context);
     } catch (e) {
@@ -390,6 +406,9 @@ class ExpensesDetailsProvider with ChangeNotifier {
       if(expenditureDetails.selectedVendor != null && (expenditureDetails.selectedVendor?.owner?.mobileNumber == null || expenditureDetails.selectedVendor!.owner!.mobileNumber.isEmpty)){
         var mobileNumber = vendorList.firstWhere((vendor) => vendor.id == expenditureDetails.vendorId, orElse: () => Vendor('', '')).owner?.mobileNumber ?? '';
         expenditureDetails.selectedVendor?.owner = Owner(mobileNumber);
+        if(expenditureDetails.mobileNumberController.text.isNotEmpty && expenditureDetails.mobileNumberController.text!=mobileNumber){
+          return true;
+        }
         expenditureDetails.mobileNumberController.text = mobileNumber;
       }
       return false;
@@ -438,6 +457,8 @@ class ExpensesDetailsProvider with ChangeNotifier {
       var res = await CoreRepository().getMdms(getExpenseMDMS(
           commonProvider.userDetails!.userRequest!.tenantId.toString()));
       languageList = res;
+      var pspcl = await CoreRepository().getPSPCLGpwscFromMdms(commonProvider.userDetails!.userRequest!.tenantId.toString().substring(0,2));
+      languageList?.mdmsRes?.pspclIntegration = pspcl;
       notifyListeners();
     } catch (e, s) {
       ErrorHandler.logError(e.toString(), s);
@@ -525,21 +546,26 @@ class ExpensesDetailsProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  List<DropdownMenuItem<Object>> getExpenseTypeList() {
+  List<dynamic> getExpenseTypeList({bool isSearch=false}) {
+    var commonProvider = Provider.of<CommonProvider>(
+        navigatorKey.currentContext!,
+        listen: false);
     if (languageList?.mdmsRes?.expense?.expenseList != null) {
-      return (languageList?.mdmsRes?.expense?.expenseList ?? <ExpenseType>[])
+      var res = languageList?.mdmsRes?.pspclIntegration?.accountNumberGpMapping?.where((element) => element.departmentEntityCode==commonProvider.userDetails?.selectedtenant?.city?.code).toList();
+      var tempList = languageList?.mdmsRes?.expense?.expenseList?.toList();
+      if(res!=null && res.isNotEmpty){
+        isSearch?{}:tempList!.removeWhere((element) => element.code=="ELECTRICITY_BILL");
+      }
+      return (tempList ?? <ExpenseType>[])
           .map((value) {
-        return DropdownMenuItem(
-          value: value.code,
-          child: new Text((value.code!)),
-        );
+        return value.code;
       }).toList();
     }
-    return <DropdownMenuItem<Object>>[];
+    return <dynamic>[];
   }
 
   incrementindex(index, expenseKey) async {
-    activeindex = index + 1;
+    activeIndex = index + 1;
     await Scrollable.ensureVisible(expenseKey.currentContext!,
         duration: new Duration(milliseconds: 100));
   }
@@ -556,6 +582,7 @@ class ExpensesDetailsProvider with ChangeNotifier {
           Vendor(vendorList[index].name.trim(), vendorList[index].id);
       expenditureDetails.selectedVendor?.owner ??= Owner(mobileNumber);
     }
+    notifyListeners();
   }
 
   callNotifyer() {

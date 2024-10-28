@@ -1,14 +1,19 @@
 package org.egov.waterconnection.web.controller;
 
 import java.util.List;
+import java.util.Map;
 
 import javax.validation.Valid;
 
 import org.egov.waterconnection.constants.WCConstants;
-import org.egov.waterconnection.repository.WaterDaoImpl;
 import org.egov.waterconnection.service.SchedulerService;
 import org.egov.waterconnection.service.WaterService;
 import org.egov.waterconnection.util.ResponseInfoFactory;
+import org.egov.waterconnection.web.models.*;
+import org.egov.waterconnection.web.models.BillReportData;
+import org.egov.waterconnection.web.models.BillReportResponse;
+import org.egov.waterconnection.web.models.CollectionReportData;
+import org.egov.waterconnection.web.models.CollectionReportResponse;
 import org.egov.waterconnection.web.models.FeedbackRequest;
 import org.egov.waterconnection.web.models.FeedbackResponse;
 import org.egov.waterconnection.web.models.FeedbackSearchCriteria;
@@ -31,6 +36,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -53,8 +59,6 @@ public class WaterController {
 	@Autowired
 	private final ResponseInfoFactory responseInfoFactory;
 
-	@Autowired
-	private WaterDaoImpl waterDaoImpl;
 	
 	@Autowired
 	private SchedulerService schedulerService;
@@ -191,4 +195,73 @@ public class WaterController {
 
 			return new ResponseEntity<>(response, HttpStatus.OK);
 		}
+	 
+	 @RequestMapping(value = "/_billReport", method = RequestMethod.POST)
+		public ResponseEntity<BillReportResponse> billReport(@Valid @RequestBody RequestInfoWrapper requestInfoWrapper,
+				@RequestParam(value = "demandStartDate", required = true) String demandStartDate,@RequestParam(value = "demandEndDate", required = true) String demandEndDate,@RequestParam(value = "tenantId",required = true) String tenantId,@RequestParam(value="offset",required = true) Integer offset,@RequestParam(value="limit",required = true)Integer limit,@RequestParam(value="sortOrder") String sortOrder) {
+		 List<BillReportData> billReport = waterService.billReport(demandStartDate,demandEndDate,tenantId,offset,limit,sortOrder,requestInfoWrapper.getRequestInfo());
+
+			BillReportResponse response =  BillReportResponse.builder().BillReportData(billReport)
+					.responseInfo(responseInfoFactory.createResponseInfoFromRequestInfo(requestInfoWrapper.getRequestInfo(),
+							true))
+					.build();
+			return new ResponseEntity<>(response, HttpStatus.OK);
+		}
+	 
+	 @RequestMapping(value = "/_collectionReport", method = RequestMethod.POST)
+		public ResponseEntity<CollectionReportResponse> collectionReport(@Valid @RequestBody RequestInfoWrapper requestInfoWrapper,
+				@RequestParam(value = "paymentStartDate", required = true) String paymentStartDate,@RequestParam(value = "paymentEndDate", required = true) String paymentEndDate,@RequestParam(value = "tenantId",required = true) String tenantId, @RequestParam(value="offset",required = true) Integer offset, @RequestParam(value="limit",required = true)Integer limit, @RequestParam(value="sortOrder") String sortOrder) {
+		 List<CollectionReportData> collectionReport = waterService.collectionReport(paymentStartDate,paymentEndDate,tenantId,offset,limit,sortOrder,requestInfoWrapper.getRequestInfo());
+
+			CollectionReportResponse response =  CollectionReportResponse.builder().CollectionReportData(collectionReport)
+					.responseInfo(responseInfoFactory.createResponseInfoFromRequestInfo(requestInfoWrapper.getRequestInfo(),
+							true))
+					.build();
+			return new ResponseEntity<>(response, HttpStatus.OK);
+		}
+	@RequestMapping(value = "/_inactiveConsumerReport",method = RequestMethod.POST)
+	   public ResponseEntity<InactiveConsumerReportResponse> inactiveConsumerReport(@Valid @RequestBody RequestInfoWrapper requestInfoWrapper,
+			  @RequestParam(value="monthStartDate",required = true) String monthStartDate,@RequestParam(value="monthEndDate",required = true) String monthEndDate,
+			  @RequestParam(value = "tenantId",required = true)	String tenantId,@RequestParam(value="offset",required = true) Integer offset, @RequestParam(value="limit",required = true)Integer limit)
+	{
+		List<InactiveConsumerReportData> inactiveConsumerReport=waterService.inactiveConsumerReport(monthStartDate,monthEndDate,tenantId,offset,limit,requestInfoWrapper.getRequestInfo());
+		InactiveConsumerReportResponse response=InactiveConsumerReportResponse.builder().InactiveConsumerReportData(inactiveConsumerReport)
+				.responseInfo(responseInfoFactory.createResponseInfoFromRequestInfo(requestInfoWrapper.getRequestInfo(),true)).build();
+
+        return new ResponseEntity<>(response,HttpStatus.OK);
+    }
+	@RequestMapping(value = "/_countWCbyDemandGenerationDate", method = RequestMethod.POST)
+	   public ResponseEntity<WaterConnectionByDemandGenerationDateResponse> countWCbyDemandGenerationDate(@Valid @RequestBody RequestInfoWrapper requestInfoWrapper, @Valid @ModelAttribute SearchCriteria criteria) {
+		WaterConnectionByDemandGenerationDateResponse response = waterService.countWCbyDemandGennerationDate(criteria, requestInfoWrapper.getRequestInfo());
+		return new ResponseEntity<>(response, HttpStatus.OK);
+	}
+
+	@PostMapping("/consumers/demand-not-generated")
+	public ResponseEntity<WaterConnectionResponse> getConsumersWithDemandNotGenerated(@Valid @RequestBody RequestInfoWrapper requestInfoWrapper,@RequestParam(value="previousMeterReading") String previousMeterReading,@RequestParam (value="tenantId") String tenantId)
+	{
+		WaterConnectionResponse response= waterService.getConsumersWithDemandNotGenerated(previousMeterReading,tenantId,requestInfoWrapper.getRequestInfo());
+		response.setResponseInfo(
+				responseInfoFactory.createResponseInfoFromRequestInfo(requestInfoWrapper.getRequestInfo(), true));
+		return new ResponseEntity<>(response, HttpStatus.OK);
+	}
+
+	@PostMapping("/ledger-report")
+	public ResponseEntity<LedgerReportResponse> getLedgerReport(@Valid @RequestBody RequestInfoWrapper requestInfoWrapper, @RequestParam String consumercode, @RequestParam String tenantId, @RequestParam Integer offset, @RequestParam Integer limit, @RequestParam String year) {
+		List<Map<String, Object>> list = waterService.ledgerReport(consumercode, tenantId, offset, limit, year,requestInfoWrapper);
+		LedgerReportResponse response = LedgerReportResponse.builder().ledgerReport(list).
+				responseInfo(responseInfoFactory.createResponseInfoFromRequestInfo(requestInfoWrapper.getRequestInfo(), true)).
+				tenantName(tenantId).financialYear(year).build();
+		return new ResponseEntity<>(response, HttpStatus.OK);
+	}
+
+	@PostMapping("/month-report")
+	public ResponseEntity<?> getMonthReport(@Valid @RequestBody RequestInfoWrapper requestInfoWrapper,@RequestParam String startDate,@RequestParam String endDate,@RequestParam String tenantId, @RequestParam Integer offset, @RequestParam Integer limit,@RequestParam String sortOrder)
+	{
+		List<MonthReport> monthReportList=waterService.monthReport(startDate,endDate,tenantId,offset,limit,sortOrder);
+		MonthReportResponse monthReportResponse=MonthReportResponse.builder().monthReport(monthReportList).
+				tenantName(tenantId).month(startDate.concat("-"+endDate)).
+				responseInfo(responseInfoFactory.createResponseInfoFromRequestInfo(requestInfoWrapper.getRequestInfo(),true)).build();
+		return new ResponseEntity<>(monthReportResponse,HttpStatus.OK);
+	}
+
 }
