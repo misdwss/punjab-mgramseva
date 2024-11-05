@@ -147,7 +147,7 @@ public class PaymentUpdateService {
 					Property property = validateProperty.getOrValidateProperty(waterConnectionRequest);
 
 					wfIntegrator.callWorkFlow(waterConnectionRequest, property);
-					enrichmentService.enrichFileStoreIds(waterConnectionRequest);
+					repo.enrichFileStoreIds(waterConnectionRequest);
 					repo.updateWaterConnection(waterConnectionRequest, false);
 				}
 			}
@@ -250,10 +250,15 @@ public class PaymentUpdateService {
 			}
 		}
 		if (config.getIsSMSEnabled() != null && config.getIsSMSEnabled()) {
-			List<SMSRequest> smsRequests = getSmsRequest(waterConnectionRequest, property, paymentDetail,WCConstants.PAYMENT_NOTIFICATION_SMS,paymentId);
-			smsRequests.addAll( getSmsRequest(waterConnectionRequest, property, paymentDetail,WCConstants.FEEDBACK_NOTIFICATION_SMS,paymentId));
+			List<SMSRequest> smsRequests= null;
+			if(config.isSMSforPaymentNotificationEnabled()) {
+				smsRequests = getSmsRequest(waterConnectionRequest, property, paymentDetail, WCConstants.PAYMENT_NOTIFICATION_SMS, paymentId);
+			}
+			if(config.isSMSForFeedbackNotificationEnabled()){
+				smsRequests.addAll( getSmsRequest(waterConnectionRequest, property, paymentDetail,WCConstants.FEEDBACK_NOTIFICATION_SMS,paymentId));
+			}
 			if (!CollectionUtils.isEmpty(smsRequests)) {
-				notificationUtil.sendSMS(smsRequests);
+					notificationUtil.sendSMS(smsRequests);
 			}
 		}
 	}
@@ -353,7 +358,7 @@ public class PaymentUpdateService {
 
 		List<SMSRequest> smsRequest = new ArrayList<>();
 		mobileNumberAndMessage.forEach((mobileNumber, msg) -> {
-			SMSRequest req = SMSRequest.builder().mobileNumber(mobileNumber).message(msg).category(Category.TRANSACTION).build();
+			SMSRequest req = SMSRequest.builder().mobileNumber(mobileNumber).message(msg).category(Category.TRANSACTION).tenantId(waterConnectionRequest.getWaterConnection().getTenantId()).build();
 			smsRequest.add(req);
 		});
 		return smsRequest;
