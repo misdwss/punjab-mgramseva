@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'success_handler.g.dart';
@@ -35,7 +34,7 @@ class SuccessHandler {
   @JsonKey(name: "printLabel")
   String? printLabel;
 
-  @JsonKey(name: "subHeaderFun")
+  @JsonKey(name: "subTextFun")
   String Function()? subTextFun;
 
   @JsonKey(name: "subtitleFun")

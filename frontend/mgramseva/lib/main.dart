@@ -1,20 +1,22 @@
 import 'dart:async';
+import 'dart:developer';
 import 'dart:io';
 import 'dart:isolate';
 import 'dart:ui';
-
+// import 'package:dart_ping_ios/dart_ping_ios.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
-import 'package:firebase_analytics/observer.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:mgramseva/Env/app_config.dart';
-import 'package:mgramseva/providers/authentication.dart';
+import 'package:mgramseva/env/app_config.dart';
+import 'package:mgramseva/providers/reports_provider.dart';
+import 'package:mgramseva/routing.dart';
+import 'package:mgramseva/providers/authentication_provider.dart';
 import 'package:mgramseva/providers/bill_generation_details_provider.dart';
 import 'package:mgramseva/providers/bill_payments_provider.dart';
-import 'package:mgramseva/providers/changePassword_details_provider.dart';
+import 'package:mgramseva/providers/change_password_details_provider.dart';
 import 'package:mgramseva/providers/common_provider.dart';
 import 'package:mgramseva/providers/consumer_details_provider.dart';
 import 'package:mgramseva/providers/demand_details_provider.dart';
@@ -24,39 +26,45 @@ import 'package:mgramseva/providers/forgot_password_provider.dart';
 import 'package:mgramseva/providers/home_provider.dart';
 import 'package:mgramseva/providers/household_details_provider.dart';
 import 'package:mgramseva/providers/household_register_provider.dart';
+import 'package:mgramseva/providers/ifix_hierarchy_provider.dart';
 import 'package:mgramseva/providers/language.dart';
 import 'package:mgramseva/providers/notification_screen_provider.dart';
 import 'package:mgramseva/providers/notifications_provider.dart';
 import 'package:mgramseva/providers/reset_password_provider.dart';
 import 'package:mgramseva/providers/search_connection_provider.dart';
 import 'package:mgramseva/providers/tenants_provider.dart';
+import 'package:mgramseva/providers/transaction_update_provider.dart';
 import 'package:mgramseva/providers/user_edit_profile_provider.dart';
 import 'package:mgramseva/providers/user_profile_provider.dart';
-import 'package:mgramseva/router.dart';
-import 'package:mgramseva/routers/Routers.dart';
-import 'package:mgramseva/screeens/Home/Home.dart';
-import 'package:mgramseva/screeens/SelectLanguage/languageSelection.dart';
+import 'package:mgramseva/routers/routers.dart';
+import 'package:mgramseva/screeens/home/home.dart';
+import 'package:mgramseva/screeens/select_language/select_language.dart';
 import 'package:mgramseva/theme.dart';
-import 'package:mgramseva/utils/Locilization/application_localizations.dart';
+import 'package:mgramseva/utils/localization/application_localizations.dart';
 import 'package:mgramseva/utils/common_methods.dart';
 import 'package:mgramseva/utils/error_logging.dart';
 import 'package:mgramseva/utils/global_variables.dart';
 import 'package:mgramseva/utils/loaders.dart';
-import 'package:mgramseva/utils/notifyers.dart';
-import 'package:open_file_safe/open_file_safe.dart';
+import 'package:mgramseva/utils/notifiers.dart';
+import 'package:open_filex/open_filex.dart';
 import 'package:provider/provider.dart';
 import 'package:url_strategy/url_strategy.dart';
 
-import 'providers/collect_payment.dart';
+import 'providers/collect_payment_provider.dart';
 import 'providers/dashboard_provider.dart';
-import 'providers/revenuedashboard_provider.dart';
+import 'providers/revenue_dashboard_provider.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 void main() {
   HttpOverrides.global = new MyHttpOverrides();
   setPathUrlStrategy();
   //configureApp();
   setEnvironment(Environment.dev);
-
+  // Register DartPingIOS
+  // if (Platform.isIOS) {
+  //   DartPingIOS.register();
+  // }
+  // Uncomment when compiling on iOS
   runZonedGuarded(() async {
     FlutterError.onError = (FlutterErrorDetails details) {
       FlutterError.dumpErrorToConsole(details);
@@ -65,10 +73,14 @@ void main() {
     };
 
     WidgetsFlutterBinding.ensureInitialized();
-
-    if (Firebase.apps.length == 0) {
+    await dotenv.load(fileName: 'assets/.env');
+    if (kIsWeb) {
+      await Firebase.initializeApp(
+          options: FirebaseConfigurations.firebaseOptions);
+    } else {
       await Firebase.initializeApp();
     }
+    if (Firebase.apps.length == 0) {}
 
     if (!kIsWeb) {
       await FlutterDownloader.initialize(
@@ -101,7 +113,7 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   late Locale _locale = Locale('en', 'IN');
-  static FirebaseAnalytics analytics = FirebaseAnalytics();
+  static FirebaseAnalytics analytics = FirebaseAnalytics.instance;
   static FirebaseAnalyticsObserver observer =
       FirebaseAnalyticsObserver(analytics: analytics);
   ReceivePort _port = ReceivePort();
@@ -124,12 +136,12 @@ class _MyAppState extends State<MyApp> {
     super.dispose();
   }
 
-  static void downloadCallback(
-      String id, DownloadTaskStatus status, int progress) {
+  @pragma('vm:entry-point')
+  static void downloadCallback(String id, int status, int progress) {
     final SendPort send =
         IsolateNameServer.lookupPortByName('downloader_send_port')!;
 
-    send.send([id, status, progress]);
+    send.send([id, DownloadTaskStatus.values.elementAt(status), progress]);
   }
 
   afterViewBuild() async {
@@ -139,11 +151,12 @@ class _MyAppState extends State<MyApp> {
     _port.listen((dynamic data) {
       String id = data[0];
       DownloadTaskStatus status = data[1];
-      int progress = data[2];
+      // int progress = data[2];
+      // print("Download progress: "+progress.toString());
       if (status == DownloadTaskStatus.complete) {
         if (CommonProvider.downloadUrl.containsKey(id)) {
-          if (Platform.isIOS && CommonProvider.downloadUrl[id] != null)
-            OpenFile.open(CommonProvider.downloadUrl[id] ?? '');
+          if (CommonProvider.downloadUrl[id] != null)
+            OpenFilex.open(CommonProvider.downloadUrl[id] ?? '');
           CommonProvider.downloadUrl.remove(id);
         } else if (status == DownloadTaskStatus.failed ||
             status == DownloadTaskStatus.canceled ||
@@ -152,7 +165,6 @@ class _MyAppState extends State<MyApp> {
             CommonProvider.downloadUrl.remove(id);
         }
       }
-      setState(() {});
     });
     FlutterDownloader.registerCallback(downloadCallback);
   }
@@ -180,14 +192,17 @@ class _MyAppState extends State<MyApp> {
           ChangeNotifierProvider(create: (_) => SearchConnectionProvider()),
           ChangeNotifierProvider(create: (_) => CollectPaymentProvider()),
           ChangeNotifierProvider(create: (_) => DashBoardProvider()),
-          ChangeNotifierProvider(create: (_) => BillPayemntsProvider()),
+          ChangeNotifierProvider(create: (_) => BillPaymentsProvider()),
           ChangeNotifierProvider(create: (_) => HomeProvider()),
-          ChangeNotifierProvider(create: (_) => DemadDetailProvider()),
+          ChangeNotifierProvider(create: (_) => DemandDetailProvider()),
           ChangeNotifierProvider(create: (_) => FetchBillProvider()),
           ChangeNotifierProvider(create: (_) => NotificationProvider()),
           ChangeNotifierProvider(create: (_) => RevenueDashboard()),
           ChangeNotifierProvider(create: (_) => HouseholdRegisterProvider()),
           ChangeNotifierProvider(create: (_) => NotificationScreenProvider()),
+          ChangeNotifierProvider(create: (_) => TransactionUpdateProvider()),
+          ChangeNotifierProvider(create: (_) => IfixHierarchyProvider()),
+          ChangeNotifierProvider(create: (_) => ReportsProvider()),
         ],
         child: Consumer<LanguageProvider>(
             builder: (_, userProvider, child) => GestureDetector(
@@ -226,7 +241,7 @@ class _MyAppState extends State<MyApp> {
                   navigatorKey: navigatorKey,
                   navigatorObservers: <NavigatorObserver>[observer],
                   initialRoute: Routes.LANDING_PAGE,
-                  onGenerateRoute: router.generateRoute,
+                  onGenerateRoute: Routing.generateRoute,
                   theme: theme,
                   // home: SelectLanguage((val) => setLocale(Locale(val, 'IN'))),
                 ))));
@@ -265,18 +280,15 @@ class _LandingPageState extends State<LandingPage> {
   //
   afterViewBuild() async {
     var commonProvider = Provider.of<CommonProvider>(context, listen: false);
-    commonProvider.getLoginCredentails();
+    commonProvider.getLoginCredentials();
     await commonProvider.getAppVersionDetails();
     if (!kIsWeb)
-      CommonMethods()
-          .checkVersion(context, commonProvider.appVersion!.latestAppVersion);
+      CommonMethods().checkVersion(context, commonProvider.appVersion!);
   }
 
   @override
   Widget build(BuildContext context) {
     var commonProvider = Provider.of<CommonProvider>(context, listen: false);
-    var languageProvider =
-        Provider.of<LanguageProvider>(context, listen: false);
     return Scaffold(
       body: StreamBuilder(
           stream: commonProvider.userLoggedStreamCtrl.stream,

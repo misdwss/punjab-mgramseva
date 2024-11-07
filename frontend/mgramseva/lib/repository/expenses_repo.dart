@@ -1,7 +1,7 @@
-import 'package:mgramseva/model/expensesDetails/expenses_details.dart';
-import 'package:mgramseva/model/expensesDetails/vendor.dart';
+import 'package:mgramseva/model/expenses_details/expenses_details.dart';
+import 'package:mgramseva/model/expenses_details/vendor.dart';
 import 'package:mgramseva/providers/common_provider.dart';
-import 'package:mgramseva/services/RequestInfo.dart';
+import 'package:mgramseva/services/request_info.dart';
 import 'package:mgramseva/services/base_service.dart';
 import 'package:mgramseva/services/urls.dart';
 import 'package:mgramseva/utils/global_variables.dart';
@@ -57,7 +57,16 @@ class ExpensesRepository extends BaseService {
 
     if (res != null && res['vendor'] != null) {
       vendorList =
-          res['vendor'].map<Vendor>((e) => Vendor.fromJson(e)).toList();
+          res['vendor'].map<Vendor>((e) {
+            if(e!=null){
+              if(e['owner']==null){
+                e['owner']={
+                  'mobileNumber':''
+                };
+              }
+            }
+            return Vendor.fromJson(e);
+          }).toList();
     }
     return vendorList;
   }

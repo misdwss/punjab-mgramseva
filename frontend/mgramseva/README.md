@@ -8,6 +8,7 @@ mGramSeva is a Hybrid Application (web + App(Android + IOS)) built using Open So
 
 ## Commands for flutter
 - **flutter run** : Command to run the app 
+- **flutter run --no-enable-impeller** : Command to run the app on mac virtual machine without GPU Passthrough
 - **flutter build web** : Command to build web 
 - **flutter build apk --release** : Command to build the apk of the application
 
@@ -19,7 +20,7 @@ Command:
 - Clone the repository [https://github.com/egovernments/punjab-mgramseva](https://github.com/egovernments/punjab-mgramseva)
 - $ cd /punjab-mgramseva/frontend/mgramseva
 - $ flutter pub get
-- Change the url in the lib/Env/app_config.dart to the desired instance url
+- Change the url in the lib/env/app_config.dart to the desired instance url
 
 ## About Flutter
 For help getting started with Flutter, view our
