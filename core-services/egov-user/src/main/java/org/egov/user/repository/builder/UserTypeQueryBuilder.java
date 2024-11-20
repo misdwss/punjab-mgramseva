@@ -103,6 +103,14 @@ public class UserTypeQueryBuilder {
         return addPagingClause(selectQuery, preparedStatementValues, userSearchCriteria);
     }
 
+    public String getQueryBytenants(final UserSearchCriteria userSearchCriteria, final List preparedStatementValues) {
+        final StringBuilder selectQuery = new StringBuilder(SELECT_USER_QUERY);
+        addWhereClauseUserRoles(selectQuery, preparedStatementValues, userSearchCriteria);
+        addOrderByClause(selectQuery, userSearchCriteria);
+        return addPagingClause(selectQuery, preparedStatementValues, userSearchCriteria);
+    }
+
+
     @SuppressWarnings("rawtypes")
     public String getQueryUserRoleSearch(final UserSearchCriteria userSearchCriteria, final List preparedStatementValues) {
         final StringBuilder selectQuery = new StringBuilder(SELECT_USER_ROLE_QUERY);
@@ -234,7 +242,7 @@ public class UserTypeQueryBuilder {
 
         selectQuery.append(" WHERE");
         boolean isAppendAndClause = false;
-
+       log.info("UserSearchCriteria:" +userSearchCriteria);
         if (userSearchCriteria.getTenantId() != null) {
             isAppendAndClause = addAndClauseIfRequired(false, selectQuery);
             selectQuery.append(" ur.role_tenantid like ? ");
